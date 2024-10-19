@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct RateLimit<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct RateLimit<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> RateLimit<C> {
+pub fn new<C: Client>(client: &C) -> RateLimit<C> where AdapterError: From<<C as Client>::Err> {
     RateLimit { client }
 }
 
 /// Errors for the [Get rate limit status for the authenticated user](RateLimit::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum RateLimitGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -51,9 +41,25 @@ pub enum RateLimitGetError {
     Generic { code: u16 },
 }
 
+impl From<RateLimitGetError> for AdapterError {
+    fn from(err: RateLimitGetError) -> Self {
+        let (description, status_code) = match err {
+            RateLimitGetError::Status304 => (String::from("Not modified"), 304),
+            RateLimitGetError::Status404(_) => (String::from("Resource not found"), 404),
+            RateLimitGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> RateLimit<'api, C> {
+
+impl<'api, C: Client> RateLimit<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get rate limit status for the authenticated user
@@ -78,19 +84,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> RateLimit<'api, C> {
     /// [GitHub API docs for get](https://docs.github.com/rest/rate-limit/rate-limit#get-rate-limit-status-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_async(&self) -> Result<RateLimitOverview, RateLimitGetError> {
+    pub async fn get_async(&self) -> Result<RateLimitOverview, AdapterError> {
 
         let request_uri = format!("{}/rate_limit", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -102,9 +108,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> RateLimit<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(RateLimitGetError::Status304),
-                404 => Err(RateLimitGetError::Status404(github_response.to_json_async().await?)),
-                code => Err(RateLimitGetError::Generic { code }),
+                304 => Err(RateLimitGetError::Status304.into()),
+                404 => Err(RateLimitGetError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(RateLimitGetError::Generic { code }.into()),
             }
         }
     }
@@ -134,7 +140,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> RateLimit<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self) -> Result<RateLimitOverview, RateLimitGetError> {
+    pub fn get(&self) -> Result<RateLimitOverview, AdapterError> {
 
         let request_uri = format!("{}/rate_limit", super::GITHUB_BASE_API_URL);
 
@@ -146,7 +152,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> RateLimit<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -158,9 +164,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> RateLimit<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(RateLimitGetError::Status304),
-                404 => Err(RateLimitGetError::Status404(github_response.to_json()?)),
-                code => Err(RateLimitGetError::Generic { code }),
+                304 => Err(RateLimitGetError::Status304.into()),
+                404 => Err(RateLimitGetError::Status404(github_response.to_json()?).into()),
+                code => Err(RateLimitGetError::Generic { code }.into()),
             }
         }
     }

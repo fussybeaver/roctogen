@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct CodeScanning<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct CodeScanning<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> CodeScanning<C> {
+pub fn new<C: Client>(client: &C) -> CodeScanning<C> where AdapterError: From<<C as Client>::Err> {
     CodeScanning { client }
 }
 
 /// Errors for the [Create a CodeQL variant analysis](CodeScanning::create_variant_analysis_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningCreateVariantAnalysisError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Unable to process variant analysis submission")]
@@ -53,19 +43,26 @@ pub enum CodeScanningCreateVariantAnalysisError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningCreateVariantAnalysisError> for AdapterError {
+    fn from(err: CodeScanningCreateVariantAnalysisError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningCreateVariantAnalysisError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningCreateVariantAnalysisError::Status422(_) => (String::from("Unable to process variant analysis submission"), 422),
+            CodeScanningCreateVariantAnalysisError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningCreateVariantAnalysisError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a code scanning analysis from a repository](CodeScanning::delete_analysis_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningDeleteAnalysisError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
@@ -78,19 +75,27 @@ pub enum CodeScanningDeleteAnalysisError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningDeleteAnalysisError> for AdapterError {
+    fn from(err: CodeScanningDeleteAnalysisError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningDeleteAnalysisError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeScanningDeleteAnalysisError::Status403(_) => (String::from("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningDeleteAnalysisError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningDeleteAnalysisError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningDeleteAnalysisError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a code scanning alert](CodeScanning::get_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetAlertError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
@@ -103,19 +108,27 @@ pub enum CodeScanningGetAlertError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningGetAlertError> for AdapterError {
+    fn from(err: CodeScanningGetAlertError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetAlertError::Status304 => (String::from("Not modified"), 304),
+            CodeScanningGetAlertError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningGetAlertError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningGetAlertError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetAlertError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a code scanning analysis for a repository](CodeScanning::get_analysis_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetAnalysisError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -126,19 +139,26 @@ pub enum CodeScanningGetAnalysisError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningGetAnalysisError> for AdapterError {
+    fn from(err: CodeScanningGetAnalysisError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetAnalysisError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningGetAnalysisError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningGetAnalysisError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetAnalysisError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a CodeQL database for a repository](CodeScanning::get_codeql_database_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetCodeqlDatabaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Found")]
     Status302,
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
@@ -151,19 +171,27 @@ pub enum CodeScanningGetCodeqlDatabaseError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningGetCodeqlDatabaseError> for AdapterError {
+    fn from(err: CodeScanningGetCodeqlDatabaseError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetCodeqlDatabaseError::Status302 => (String::from("Found"), 302),
+            CodeScanningGetCodeqlDatabaseError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningGetCodeqlDatabaseError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningGetCodeqlDatabaseError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetCodeqlDatabaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a code scanning default setup configuration](CodeScanning::get_default_setup_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetDefaultSetupError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -174,19 +202,26 @@ pub enum CodeScanningGetDefaultSetupError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningGetDefaultSetupError> for AdapterError {
+    fn from(err: CodeScanningGetDefaultSetupError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetDefaultSetupError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningGetDefaultSetupError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningGetDefaultSetupError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetDefaultSetupError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get information about a SARIF upload](CodeScanning::get_sarif_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetSarifError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Not Found if the sarif id does not match any upload")]
@@ -197,40 +232,53 @@ pub enum CodeScanningGetSarifError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningGetSarifError> for AdapterError {
+    fn from(err: CodeScanningGetSarifError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetSarifError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningGetSarifError::Status404 => (String::from("Not Found if the sarif id does not match any upload"), 404),
+            CodeScanningGetSarifError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetSarifError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get the summary of a CodeQL variant analysis](CodeScanning::get_variant_analysis_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetVariantAnalysisError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeScanningGetVariantAnalysisError> for AdapterError {
+    fn from(err: CodeScanningGetVariantAnalysisError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetVariantAnalysisError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningGetVariantAnalysisError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetVariantAnalysisError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the analysis status of a repository in a CodeQL variant analysis](CodeScanning::get_variant_analysis_repo_task_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetVariantAnalysisRepoTaskError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
@@ -239,19 +287,25 @@ pub enum CodeScanningGetVariantAnalysisRepoTaskError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningGetVariantAnalysisRepoTaskError> for AdapterError {
+    fn from(err: CodeScanningGetVariantAnalysisRepoTaskError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetVariantAnalysisRepoTaskError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningGetVariantAnalysisRepoTaskError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetVariantAnalysisRepoTaskError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List instances of a code scanning alert](CodeScanning::list_alert_instances_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningListAlertInstancesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -262,19 +316,26 @@ pub enum CodeScanningListAlertInstancesError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningListAlertInstancesError> for AdapterError {
+    fn from(err: CodeScanningListAlertInstancesError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningListAlertInstancesError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningListAlertInstancesError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningListAlertInstancesError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningListAlertInstancesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List code scanning alerts for an organization](CodeScanning::list_alerts_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningListAlertsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
@@ -283,19 +344,25 @@ pub enum CodeScanningListAlertsForOrgError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningListAlertsForOrgError> for AdapterError {
+    fn from(err: CodeScanningListAlertsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningListAlertsForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningListAlertsForOrgError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningListAlertsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List code scanning alerts for a repository](CodeScanning::list_alerts_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningListAlertsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
@@ -308,19 +375,27 @@ pub enum CodeScanningListAlertsForRepoError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningListAlertsForRepoError> for AdapterError {
+    fn from(err: CodeScanningListAlertsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningListAlertsForRepoError::Status304 => (String::from("Not modified"), 304),
+            CodeScanningListAlertsForRepoError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningListAlertsForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningListAlertsForRepoError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningListAlertsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List CodeQL databases for a repository](CodeScanning::list_codeql_databases_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningListCodeqlDatabasesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -329,21 +404,28 @@ pub enum CodeScanningListCodeqlDatabasesError {
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeScanningListCodeqlDatabasesError> for AdapterError {
+    fn from(err: CodeScanningListCodeqlDatabasesError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningListCodeqlDatabasesError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningListCodeqlDatabasesError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningListCodeqlDatabasesError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningListCodeqlDatabasesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List code scanning analyses for a repository](CodeScanning::list_recent_analyses_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningListRecentAnalysesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -354,19 +436,26 @@ pub enum CodeScanningListRecentAnalysesError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningListRecentAnalysesError> for AdapterError {
+    fn from(err: CodeScanningListRecentAnalysesError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningListRecentAnalysesError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningListRecentAnalysesError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningListRecentAnalysesError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningListRecentAnalysesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a code scanning alert](CodeScanning::update_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningUpdateAlertError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -377,19 +466,26 @@ pub enum CodeScanningUpdateAlertError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningUpdateAlertError> for AdapterError {
+    fn from(err: CodeScanningUpdateAlertError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningUpdateAlertError::Status403(_) => (String::from("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningUpdateAlertError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningUpdateAlertError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningUpdateAlertError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a code scanning default setup configuration](CodeScanning::update_default_setup_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningUpdateDefaultSetupError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status202(CodeScanningDefaultSetupUpdateResponse),
     #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
@@ -404,19 +500,28 @@ pub enum CodeScanningUpdateDefaultSetupError {
     Generic { code: u16 },
 }
 
+impl From<CodeScanningUpdateDefaultSetupError> for AdapterError {
+    fn from(err: CodeScanningUpdateDefaultSetupError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningUpdateDefaultSetupError::Status202(_) => (String::from("Response"), 202),
+            CodeScanningUpdateDefaultSetupError::Status403(_) => (String::from("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningUpdateDefaultSetupError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningUpdateDefaultSetupError::Status409(_) => (String::from("Response if there is already a validation run in progress with a different default setup configuration"), 409),
+            CodeScanningUpdateDefaultSetupError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningUpdateDefaultSetupError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Upload an analysis as SARIF data](CodeScanning::upload_sarif_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningUploadSarifError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request if the sarif field is invalid")]
     Status400,
     #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
@@ -429,6 +534,25 @@ pub enum CodeScanningUploadSarifError {
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeScanningUploadSarifError> for AdapterError {
+    fn from(err: CodeScanningUploadSarifError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningUploadSarifError::Status400 => (String::from("Bad Request if the sarif field is invalid"), 400),
+            CodeScanningUploadSarifError::Status403(_) => (String::from("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningUploadSarifError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningUploadSarifError::Status413 => (String::from("Payload Too Large if the sarif field is too large"), 413),
+            CodeScanningUploadSarifError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningUploadSarifError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -737,6 +861,10 @@ pub struct CodeScanningListAlertsForRepoParams<'req> {
     pr: Option<i32>, 
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    after: Option<&'req str>, 
     /// The property by which to sort the results.
     sort: Option<&'req str>, 
     /// If specified, only code scanning alerts with this state will be returned.
@@ -760,6 +888,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: self.state, 
             severity: self.severity, 
@@ -776,6 +906,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: self.state, 
             severity: self.severity, 
@@ -792,6 +924,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: self.state, 
             severity: self.severity, 
@@ -808,6 +942,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: self.state, 
             severity: self.severity, 
@@ -824,6 +960,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: Some(git_ref),
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: self.state, 
             severity: self.severity, 
@@ -840,6 +978,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: Some(pr),
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: self.state, 
             severity: self.severity, 
@@ -856,6 +996,44 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: Some(direction),
+            before: self.before, 
+            after: self.after, 
+            sort: self.sort, 
+            state: self.state, 
+            severity: self.severity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn before(self, before: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+            pr: self.pr, 
+            direction: self.direction, 
+            before: Some(before),
+            after: self.after, 
+            sort: self.sort, 
+            state: self.state, 
+            severity: self.severity, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn after(self, after: &'req str) -> Self {
+        Self {
+            tool_name: self.tool_name, 
+            tool_guid: self.tool_guid, 
+            page: self.page, 
+            per_page: self.per_page, 
+            git_ref: self.git_ref, 
+            pr: self.pr, 
+            direction: self.direction, 
+            before: self.before, 
+            after: Some(after),
             sort: self.sort, 
             state: self.state, 
             severity: self.severity, 
@@ -872,6 +1050,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: Some(sort),
             state: self.state, 
             severity: self.severity, 
@@ -888,6 +1068,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: Some(state),
             severity: self.severity, 
@@ -904,6 +1086,8 @@ impl<'req> CodeScanningListAlertsForRepoParams<'req> {
             git_ref: self.git_ref, 
             pr: self.pr, 
             direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
             sort: self.sort, 
             state: self.state, 
             severity: Some(severity),
@@ -1094,7 +1278,7 @@ impl<'enc> From<&'enc PerPage> for CodeScanningListRecentAnalysesParams<'enc> {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
+impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Create a CodeQL variant analysis
@@ -1111,19 +1295,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for create_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#create-a-codeql-variant-analysis)
     ///
     /// ---
-    pub async fn create_variant_analysis_async(&self, owner: &str, repo: &str, body: PostCodeScanningCreateVariantAnalysis) -> Result<CodeScanningVariantAnalysis, CodeScanningCreateVariantAnalysisError> {
+    pub async fn create_variant_analysis_async(&self, owner: &str, repo: &str, body: PostCodeScanningCreateVariantAnalysis) -> Result<CodeScanningVariantAnalysis, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeScanningCreateVariantAnalysis::from_json(body)?),
+            body: Some(C::from_json::<PostCodeScanningCreateVariantAnalysis>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1135,10 +1319,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }),
+                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1160,19 +1344,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_variant_analysis(&self, owner: &str, repo: &str, body: PostCodeScanningCreateVariantAnalysis) -> Result<CodeScanningVariantAnalysis, CodeScanningCreateVariantAnalysisError> {
+    pub fn create_variant_analysis(&self, owner: &str, repo: &str, body: PostCodeScanningCreateVariantAnalysis) -> Result<CodeScanningVariantAnalysis, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeScanningCreateVariantAnalysis::from_json(body)?),
+            body: Some(C::from_json::<PostCodeScanningCreateVariantAnalysis>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1184,10 +1368,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(github_response.to_json()?)),
-                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(github_response.to_json()?)),
-                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }),
+                404 => Err(CodeScanningCreateVariantAnalysisError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodeScanningCreateVariantAnalysisError::Status422(github_response.to_json()?).into()),
+                503 => Err(CodeScanningCreateVariantAnalysisError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningCreateVariantAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1264,7 +1448,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for delete_analysis](https://docs.github.com/rest/code-scanning/code-scanning#delete-a-code-scanning-analysis-from-a-repository)
     ///
     /// ---
-    pub async fn delete_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32, query_params: Option<impl Into<CodeScanningDeleteAnalysisParams<'api>>>) -> Result<CodeScanningAnalysisDeletion, CodeScanningDeleteAnalysisError> {
+    pub async fn delete_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32, query_params: Option<impl Into<CodeScanningDeleteAnalysisParams<'api>>>) -> Result<CodeScanningAnalysisDeletion, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
@@ -1275,12 +1459,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1292,11 +1476,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json_async().await?)),
-                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningDeleteAnalysisError::Generic { code }),
+                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningDeleteAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1374,7 +1558,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_analysis(&self, owner: &str, repo: &str, analysis_id: i32, query_params: Option<impl Into<CodeScanningDeleteAnalysisParams<'api>>>) -> Result<CodeScanningAnalysisDeletion, CodeScanningDeleteAnalysisError> {
+    pub fn delete_analysis(&self, owner: &str, repo: &str, analysis_id: i32, query_params: Option<impl Into<CodeScanningDeleteAnalysisParams<'api>>>) -> Result<CodeScanningAnalysisDeletion, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
@@ -1391,7 +1575,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1403,11 +1587,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json()?)),
-                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningDeleteAnalysisError::Generic { code }),
+                400 => Err(CodeScanningDeleteAnalysisError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeScanningDeleteAnalysisError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningDeleteAnalysisError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningDeleteAnalysisError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningDeleteAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1423,19 +1607,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-alert)
     ///
     /// ---
-    pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAlert, CodeScanningGetAlertError> {
+    pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1447,11 +1631,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeScanningGetAlertError::Status304),
-                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningGetAlertError::Generic { code }),
+                304 => Err(CodeScanningGetAlertError::Status304.into()),
+                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetAlertError::Generic { code }.into()),
             }
         }
     }
@@ -1468,7 +1652,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAlert, CodeScanningGetAlertError> {
+    pub fn get_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
@@ -1480,7 +1664,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1492,11 +1676,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeScanningGetAlertError::Status304),
-                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningGetAlertError::Generic { code }),
+                304 => Err(CodeScanningGetAlertError::Status304.into()),
+                403 => Err(CodeScanningGetAlertError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningGetAlertError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningGetAlertError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetAlertError::Generic { code }.into()),
             }
         }
     }
@@ -1526,19 +1710,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for get_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository)
     ///
     /// ---
-    pub async fn get_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, CodeScanningGetAnalysisError> {
+    pub async fn get_analysis_async(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1550,10 +1734,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningGetAnalysisError::Generic { code }),
+                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1584,7 +1768,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_analysis(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, CodeScanningGetAnalysisError> {
+    pub fn get_analysis(&self, owner: &str, repo: &str, analysis_id: i32) -> Result<CodeScanningAnalysis, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, analysis_id);
 
@@ -1596,7 +1780,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1608,10 +1792,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningGetAnalysisError::Generic { code }),
+                403 => Err(CodeScanningGetAnalysisError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1633,19 +1817,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for get_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#get-a-codeql-database-for-a-repository)
     ///
     /// ---
-    pub async fn get_codeql_database_async(&self, owner: &str, repo: &str, language: &str) -> Result<CodeScanningCodeqlDatabase, CodeScanningGetCodeqlDatabaseError> {
+    pub async fn get_codeql_database_async(&self, owner: &str, repo: &str, language: &str) -> Result<CodeScanningCodeqlDatabase, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases/{}", super::GITHUB_BASE_API_URL, owner, repo, language);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1657,11 +1841,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(CodeScanningGetCodeqlDatabaseError::Status302),
-                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }),
+                302 => Err(CodeScanningGetCodeqlDatabaseError::Status302.into()),
+                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }.into()),
             }
         }
     }
@@ -1684,7 +1868,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_codeql_database(&self, owner: &str, repo: &str, language: &str) -> Result<CodeScanningCodeqlDatabase, CodeScanningGetCodeqlDatabaseError> {
+    pub fn get_codeql_database(&self, owner: &str, repo: &str, language: &str) -> Result<CodeScanningCodeqlDatabase, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases/{}", super::GITHUB_BASE_API_URL, owner, repo, language);
 
@@ -1696,7 +1880,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1708,11 +1892,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(CodeScanningGetCodeqlDatabaseError::Status302),
-                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }),
+                302 => Err(CodeScanningGetCodeqlDatabaseError::Status302.into()),
+                403 => Err(CodeScanningGetCodeqlDatabaseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningGetCodeqlDatabaseError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningGetCodeqlDatabaseError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetCodeqlDatabaseError::Generic { code }.into()),
             }
         }
     }
@@ -1728,19 +1912,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for get_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-default-setup-configuration)
     ///
     /// ---
-    pub async fn get_default_setup_async(&self, owner: &str, repo: &str) -> Result<CodeScanningDefaultSetup, CodeScanningGetDefaultSetupError> {
+    pub async fn get_default_setup_async(&self, owner: &str, repo: &str) -> Result<CodeScanningDefaultSetup, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1752,10 +1936,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetDefaultSetupError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningGetDefaultSetupError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningGetDefaultSetupError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningGetDefaultSetupError::Generic { code }),
+                403 => Err(CodeScanningGetDefaultSetupError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningGetDefaultSetupError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningGetDefaultSetupError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetDefaultSetupError::Generic { code }.into()),
             }
         }
     }
@@ -1772,7 +1956,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_default_setup(&self, owner: &str, repo: &str) -> Result<CodeScanningDefaultSetup, CodeScanningGetDefaultSetupError> {
+    pub fn get_default_setup(&self, owner: &str, repo: &str) -> Result<CodeScanningDefaultSetup, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1784,7 +1968,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1796,10 +1980,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetDefaultSetupError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetDefaultSetupError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetDefaultSetupError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningGetDefaultSetupError::Generic { code }),
+                403 => Err(CodeScanningGetDefaultSetupError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningGetDefaultSetupError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningGetDefaultSetupError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetDefaultSetupError::Generic { code }.into()),
             }
         }
     }
@@ -1814,19 +1998,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for get_sarif](https://docs.github.com/rest/code-scanning/code-scanning#get-information-about-a-sarif-upload)
     ///
     /// ---
-    pub async fn get_sarif_async(&self, owner: &str, repo: &str, sarif_id: &str) -> Result<CodeScanningSarifsStatus, CodeScanningGetSarifError> {
+    pub async fn get_sarif_async(&self, owner: &str, repo: &str, sarif_id: &str) -> Result<CodeScanningSarifsStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs/{}", super::GITHUB_BASE_API_URL, owner, repo, sarif_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1838,10 +2022,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningGetSarifError::Status404),
-                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningGetSarifError::Generic { code }),
+                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningGetSarifError::Status404.into()),
+                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetSarifError::Generic { code }.into()),
             }
         }
     }
@@ -1857,7 +2041,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_sarif(&self, owner: &str, repo: &str, sarif_id: &str) -> Result<CodeScanningSarifsStatus, CodeScanningGetSarifError> {
+    pub fn get_sarif(&self, owner: &str, repo: &str, sarif_id: &str) -> Result<CodeScanningSarifsStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs/{}", super::GITHUB_BASE_API_URL, owner, repo, sarif_id);
 
@@ -1869,7 +2053,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1881,10 +2065,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningGetSarifError::Status404),
-                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningGetSarifError::Generic { code }),
+                403 => Err(CodeScanningGetSarifError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningGetSarifError::Status404.into()),
+                503 => Err(CodeScanningGetSarifError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetSarifError::Generic { code }.into()),
             }
         }
     }
@@ -1900,19 +2084,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for get_variant_analysis](https://docs.github.com/rest/code-scanning/code-scanning#get-the-summary-of-a-codeql-variant-analysis)
     ///
     /// ---
-    pub async fn get_variant_analysis_async(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32) -> Result<CodeScanningVariantAnalysis, CodeScanningGetVariantAnalysisError> {
+    pub async fn get_variant_analysis_async(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32) -> Result<CodeScanningVariantAnalysis, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1924,9 +2108,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningGetVariantAnalysisError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningGetVariantAnalysisError::Generic { code }),
+                404 => Err(CodeScanningGetVariantAnalysisError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningGetVariantAnalysisError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetVariantAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1943,7 +2127,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_variant_analysis(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32) -> Result<CodeScanningVariantAnalysis, CodeScanningGetVariantAnalysisError> {
+    pub fn get_variant_analysis(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32) -> Result<CodeScanningVariantAnalysis, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id);
 
@@ -1955,7 +2139,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1967,9 +2151,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetVariantAnalysisError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningGetVariantAnalysisError::Generic { code }),
+                404 => Err(CodeScanningGetVariantAnalysisError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningGetVariantAnalysisError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetVariantAnalysisError::Generic { code }.into()),
             }
         }
     }
@@ -1985,19 +2169,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for get_variant_analysis_repo_task](https://docs.github.com/rest/code-scanning/code-scanning#get-the-analysis-status-of-a-repository-in-a-codeql-variant-analysis)
     ///
     /// ---
-    pub async fn get_variant_analysis_repo_task_async(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32, repo_owner: &str, repo_name: &str) -> Result<CodeScanningVariantAnalysisRepoTask, CodeScanningGetVariantAnalysisRepoTaskError> {
+    pub async fn get_variant_analysis_repo_task_async(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32, repo_owner: &str, repo_name: &str) -> Result<CodeScanningVariantAnalysisRepoTask, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id, repo_owner, repo_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2009,9 +2193,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }),
+                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }.into()),
             }
         }
     }
@@ -2028,7 +2212,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_variant_analysis_repo_task(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32, repo_owner: &str, repo_name: &str) -> Result<CodeScanningVariantAnalysisRepoTask, CodeScanningGetVariantAnalysisRepoTaskError> {
+    pub fn get_variant_analysis_repo_task(&self, owner: &str, repo: &str, codeql_variant_analysis_id: i32, repo_owner: &str, repo_name: &str) -> Result<CodeScanningVariantAnalysisRepoTask, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/variant-analyses/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo, codeql_variant_analysis_id, repo_owner, repo_name);
 
@@ -2040,7 +2224,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2052,9 +2236,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }),
+                404 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningGetVariantAnalysisRepoTaskError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetVariantAnalysisRepoTaskError::Generic { code }.into()),
             }
         }
     }
@@ -2070,7 +2254,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for list_alert_instances](https://docs.github.com/rest/code-scanning/code-scanning#list-instances-of-a-code-scanning-alert)
     ///
     /// ---
-    pub async fn list_alert_instances_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertInstancesError> {
+    pub async fn list_alert_instances_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/instances", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
@@ -2081,12 +2265,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2098,10 +2282,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertInstancesError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningListAlertInstancesError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningListAlertInstancesError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningListAlertInstancesError::Generic { code }),
+                403 => Err(CodeScanningListAlertInstancesError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningListAlertInstancesError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningListAlertInstancesError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningListAlertInstancesError::Generic { code }.into()),
             }
         }
     }
@@ -2118,7 +2302,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alert_instances(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, CodeScanningListAlertInstancesError> {
+    pub fn list_alert_instances(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<CodeScanningListAlertInstancesParams>>) -> Result<Vec<CodeScanningAlertInstance>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/instances", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
@@ -2135,7 +2319,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2147,10 +2331,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListAlertInstancesError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListAlertInstancesError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListAlertInstancesError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningListAlertInstancesError::Generic { code }),
+                403 => Err(CodeScanningListAlertInstancesError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningListAlertInstancesError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningListAlertInstancesError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningListAlertInstancesError::Generic { code }.into()),
             }
         }
     }
@@ -2168,7 +2352,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-an-organization)
     ///
     /// ---
-    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<CodeScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<CodeScanningOrganizationAlertItems>, CodeScanningListAlertsForOrgError> {
+    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<CodeScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<CodeScanningOrganizationAlertItems>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, org);
 
@@ -2179,12 +2363,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2196,9 +2380,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningListAlertsForOrgError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningListAlertsForOrgError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningListAlertsForOrgError::Generic { code }),
+                404 => Err(CodeScanningListAlertsForOrgError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningListAlertsForOrgError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningListAlertsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2217,7 +2401,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<CodeScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<CodeScanningOrganizationAlertItems>, CodeScanningListAlertsForOrgError> {
+    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<CodeScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<CodeScanningOrganizationAlertItems>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, org);
 
@@ -2234,7 +2418,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2246,9 +2430,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodeScanningListAlertsForOrgError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListAlertsForOrgError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningListAlertsForOrgError::Generic { code }),
+                404 => Err(CodeScanningListAlertsForOrgError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningListAlertsForOrgError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningListAlertsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2268,7 +2452,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-a-repository)
     ///
     /// ---
-    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
+    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<CodeScanningAlertItems>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2279,12 +2463,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2296,11 +2480,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeScanningListAlertsForRepoError::Status304),
-                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningListAlertsForRepoError::Generic { code }),
+                304 => Err(CodeScanningListAlertsForRepoError::Status304.into()),
+                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningListAlertsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2321,7 +2505,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<CodeScanningAlertItems>, CodeScanningListAlertsForRepoError> {
+    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<CodeScanningAlertItems>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2338,7 +2522,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2350,11 +2534,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeScanningListAlertsForRepoError::Status304),
-                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningListAlertsForRepoError::Generic { code }),
+                304 => Err(CodeScanningListAlertsForRepoError::Status304.into()),
+                403 => Err(CodeScanningListAlertsForRepoError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningListAlertsForRepoError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningListAlertsForRepoError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningListAlertsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2370,19 +2554,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for list_codeql_databases](https://docs.github.com/rest/code-scanning/code-scanning#list-codeql-databases-for-a-repository)
     ///
     /// ---
-    pub async fn list_codeql_databases_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeScanningCodeqlDatabase>, CodeScanningListCodeqlDatabasesError> {
+    pub async fn list_codeql_databases_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeScanningCodeqlDatabase>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2394,10 +2578,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }),
+                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }.into()),
             }
         }
     }
@@ -2414,7 +2598,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_codeql_databases(&self, owner: &str, repo: &str) -> Result<Vec<CodeScanningCodeqlDatabase>, CodeScanningListCodeqlDatabasesError> {
+    pub fn list_codeql_databases(&self, owner: &str, repo: &str) -> Result<Vec<CodeScanningCodeqlDatabase>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2426,7 +2610,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2438,10 +2622,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }),
+                403 => Err(CodeScanningListCodeqlDatabasesError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningListCodeqlDatabasesError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningListCodeqlDatabasesError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningListCodeqlDatabasesError::Generic { code }.into()),
             }
         }
     }
@@ -2469,7 +2653,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for list_recent_analyses](https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-analyses-for-a-repository)
     ///
     /// ---
-    pub async fn list_recent_analyses_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams<'api>>>) -> Result<Vec<CodeScanningAnalysis>, CodeScanningListRecentAnalysesError> {
+    pub async fn list_recent_analyses_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams<'api>>>) -> Result<Vec<CodeScanningAnalysis>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/analyses", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2480,12 +2664,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2497,10 +2681,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningListRecentAnalysesError::Generic { code }),
+                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningListRecentAnalysesError::Generic { code }.into()),
             }
         }
     }
@@ -2529,7 +2713,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_recent_analyses(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams<'api>>>) -> Result<Vec<CodeScanningAnalysis>, CodeScanningListRecentAnalysesError> {
+    pub fn list_recent_analyses(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodeScanningListRecentAnalysesParams<'api>>>) -> Result<Vec<CodeScanningAnalysis>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/code-scanning/analyses", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2546,7 +2730,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2558,10 +2742,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningListRecentAnalysesError::Generic { code }),
+                403 => Err(CodeScanningListRecentAnalysesError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningListRecentAnalysesError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningListRecentAnalysesError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningListRecentAnalysesError::Generic { code }.into()),
             }
         }
     }
@@ -2576,19 +2760,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-alert)
     ///
     /// ---
-    pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchCodeScanningUpdateAlert) -> Result<CodeScanningAlert, CodeScanningUpdateAlertError> {
+    pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchCodeScanningUpdateAlert) -> Result<CodeScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodeScanningUpdateAlert::from_json(body)?),
+            body: Some(C::from_json::<PatchCodeScanningUpdateAlert>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2600,10 +2784,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningUpdateAlertError::Generic { code }),
+                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningUpdateAlertError::Generic { code }.into()),
             }
         }
     }
@@ -2619,19 +2803,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchCodeScanningUpdateAlert) -> Result<CodeScanningAlert, CodeScanningUpdateAlertError> {
+    pub fn update_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchCodeScanningUpdateAlert) -> Result<CodeScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodeScanningUpdateAlert::from_json(body)?),
+            body: Some(C::from_json::<PatchCodeScanningUpdateAlert>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2643,10 +2827,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json()?)),
-                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningUpdateAlertError::Generic { code }),
+                403 => Err(CodeScanningUpdateAlertError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningUpdateAlertError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningUpdateAlertError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningUpdateAlertError::Generic { code }.into()),
             }
         }
     }
@@ -2662,19 +2846,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for update_default_setup](https://docs.github.com/rest/code-scanning/code-scanning#update-a-code-scanning-default-setup-configuration)
     ///
     /// ---
-    pub async fn update_default_setup_async(&self, owner: &str, repo: &str, body: PatchCodeScanningUpdateDefaultSetup) -> Result<EmptyObject, CodeScanningUpdateDefaultSetupError> {
+    pub async fn update_default_setup_async(&self, owner: &str, repo: &str, body: PatchCodeScanningUpdateDefaultSetup) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodeScanningUpdateDefaultSetup::from_json(body)?),
+            body: Some(C::from_json::<PatchCodeScanningUpdateDefaultSetup>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2686,12 +2870,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(github_response.to_json_async().await?)),
-                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(github_response.to_json_async().await?)),
-                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(github_response.to_json_async().await?)),
-                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }),
+                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(github_response.to_json_async().await?).into()),
+                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }.into()),
             }
         }
     }
@@ -2708,19 +2892,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_default_setup(&self, owner: &str, repo: &str, body: PatchCodeScanningUpdateDefaultSetup) -> Result<EmptyObject, CodeScanningUpdateDefaultSetupError> {
+    pub fn update_default_setup(&self, owner: &str, repo: &str, body: PatchCodeScanningUpdateDefaultSetup) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/default-setup", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodeScanningUpdateDefaultSetup::from_json(body)?),
+            body: Some(C::from_json::<PatchCodeScanningUpdateDefaultSetup>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2732,12 +2916,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(github_response.to_json()?)),
-                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(github_response.to_json()?)),
-                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(github_response.to_json()?)),
-                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }),
+                202 => Err(CodeScanningUpdateDefaultSetupError::Status202(github_response.to_json()?).into()),
+                403 => Err(CodeScanningUpdateDefaultSetupError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningUpdateDefaultSetupError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodeScanningUpdateDefaultSetupError::Status409(github_response.to_json()?).into()),
+                503 => Err(CodeScanningUpdateDefaultSetupError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningUpdateDefaultSetupError::Generic { code }.into()),
             }
         }
     }
@@ -2784,19 +2968,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     /// [GitHub API docs for upload_sarif](https://docs.github.com/rest/code-scanning/code-scanning#upload-an-analysis-as-sarif-data)
     ///
     /// ---
-    pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
+    pub async fn upload_sarif_async(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeScanningUploadSarif::from_json(body)?),
+            body: Some(C::from_json::<PostCodeScanningUploadSarif>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2808,12 +2992,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningUploadSarifError::Status400),
-                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json_async().await?)),
-                413 => Err(CodeScanningUploadSarifError::Status413),
-                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodeScanningUploadSarifError::Generic { code }),
+                400 => Err(CodeScanningUploadSarifError::Status400.into()),
+                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json_async().await?).into()),
+                413 => Err(CodeScanningUploadSarifError::Status413.into()),
+                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningUploadSarifError::Generic { code }.into()),
             }
         }
     }
@@ -2861,19 +3045,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn upload_sarif(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, CodeScanningUploadSarifError> {
+    pub fn upload_sarif(&self, owner: &str, repo: &str, body: PostCodeScanningUploadSarif) -> Result<CodeScanningSarifsReceipt, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-scanning/sarifs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeScanningUploadSarif::from_json(body)?),
+            body: Some(C::from_json::<PostCodeScanningUploadSarif>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2885,12 +3069,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeScanningUploadSarifError::Status400),
-                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json()?)),
-                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json()?)),
-                413 => Err(CodeScanningUploadSarifError::Status413),
-                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json()?)),
-                code => Err(CodeScanningUploadSarifError::Generic { code }),
+                400 => Err(CodeScanningUploadSarifError::Status400.into()),
+                403 => Err(CodeScanningUploadSarifError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningUploadSarifError::Status404(github_response.to_json()?).into()),
+                413 => Err(CodeScanningUploadSarifError::Status413.into()),
+                503 => Err(CodeScanningUploadSarifError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningUploadSarifError::Generic { code }.into()),
             }
         }
     }

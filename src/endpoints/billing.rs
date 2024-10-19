@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,119 +22,143 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Billing<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Billing<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Billing<C> {
+pub fn new<C: Client>(client: &C) -> Billing<C> where AdapterError: From<<C as Client>::Err> {
     Billing { client }
 }
 
 /// Errors for the [Get GitHub Actions billing for an organization](Billing::get_github_actions_billing_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubActionsBillingOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<BillingGetGithubActionsBillingOrgError> for AdapterError {
+    fn from(err: BillingGetGithubActionsBillingOrgError) -> Self {
+        let (description, status_code) = match err {
+            BillingGetGithubActionsBillingOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Actions billing for a user](Billing::get_github_actions_billing_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubActionsBillingUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<BillingGetGithubActionsBillingUserError> for AdapterError {
+    fn from(err: BillingGetGithubActionsBillingUserError) -> Self {
+        let (description, status_code) = match err {
+            BillingGetGithubActionsBillingUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Packages billing for an organization](Billing::get_github_packages_billing_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubPackagesBillingOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<BillingGetGithubPackagesBillingOrgError> for AdapterError {
+    fn from(err: BillingGetGithubPackagesBillingOrgError) -> Self {
+        let (description, status_code) = match err {
+            BillingGetGithubPackagesBillingOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Packages billing for a user](Billing::get_github_packages_billing_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubPackagesBillingUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<BillingGetGithubPackagesBillingUserError> for AdapterError {
+    fn from(err: BillingGetGithubPackagesBillingUserError) -> Self {
+        let (description, status_code) = match err {
+            BillingGetGithubPackagesBillingUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get shared storage billing for an organization](Billing::get_shared_storage_billing_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetSharedStorageBillingOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<BillingGetSharedStorageBillingOrgError> for AdapterError {
+    fn from(err: BillingGetSharedStorageBillingOrgError) -> Self {
+        let (description, status_code) = match err {
+            BillingGetSharedStorageBillingOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get shared storage billing for a user](Billing::get_shared_storage_billing_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetSharedStorageBillingUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<BillingGetSharedStorageBillingUserError> for AdapterError {
+    fn from(err: BillingGetSharedStorageBillingUserError) -> Self {
+        let (description, status_code) = match err {
+            BillingGetSharedStorageBillingUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
+
+impl<'api, C: Client> Billing<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get GitHub Actions billing for an organization
@@ -148,19 +172,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     /// [GitHub API docs for get_github_actions_billing_org](https://docs.github.com/rest/billing/billing#get-github-actions-billing-for-an-organization)
     ///
     /// ---
-    pub async fn get_github_actions_billing_org_async(&self, org: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingOrgError> {
+    pub async fn get_github_actions_billing_org_async(&self, org: &str) -> Result<ActionsBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/settings/billing/actions", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -172,7 +196,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubActionsBillingOrgError::Generic { code }),
+                code => Err(BillingGetGithubActionsBillingOrgError::Generic { code }.into()),
             }
         }
     }
@@ -191,7 +215,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_billing_org(&self, org: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingOrgError> {
+    pub fn get_github_actions_billing_org(&self, org: &str) -> Result<ActionsBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/settings/billing/actions", super::GITHUB_BASE_API_URL, org);
 
@@ -203,7 +227,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -215,7 +239,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubActionsBillingOrgError::Generic { code }),
+                code => Err(BillingGetGithubActionsBillingOrgError::Generic { code }.into()),
             }
         }
     }
@@ -233,19 +257,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     /// [GitHub API docs for get_github_actions_billing_user](https://docs.github.com/rest/billing/billing#get-github-actions-billing-for-a-user)
     ///
     /// ---
-    pub async fn get_github_actions_billing_user_async(&self, username: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingUserError> {
+    pub async fn get_github_actions_billing_user_async(&self, username: &str) -> Result<ActionsBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/users/{}/settings/billing/actions", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -257,7 +281,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubActionsBillingUserError::Generic { code }),
+                code => Err(BillingGetGithubActionsBillingUserError::Generic { code }.into()),
             }
         }
     }
@@ -276,7 +300,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_billing_user(&self, username: &str) -> Result<ActionsBillingUsage, BillingGetGithubActionsBillingUserError> {
+    pub fn get_github_actions_billing_user(&self, username: &str) -> Result<ActionsBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/users/{}/settings/billing/actions", super::GITHUB_BASE_API_URL, username);
 
@@ -288,7 +312,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -300,7 +324,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubActionsBillingUserError::Generic { code }),
+                code => Err(BillingGetGithubActionsBillingUserError::Generic { code }.into()),
             }
         }
     }
@@ -318,19 +342,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     /// [GitHub API docs for get_github_packages_billing_org](https://docs.github.com/rest/billing/billing#get-github-packages-billing-for-an-organization)
     ///
     /// ---
-    pub async fn get_github_packages_billing_org_async(&self, org: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingOrgError> {
+    pub async fn get_github_packages_billing_org_async(&self, org: &str) -> Result<PackagesBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/settings/billing/packages", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -342,7 +366,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubPackagesBillingOrgError::Generic { code }),
+                code => Err(BillingGetGithubPackagesBillingOrgError::Generic { code }.into()),
             }
         }
     }
@@ -361,7 +385,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_packages_billing_org(&self, org: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingOrgError> {
+    pub fn get_github_packages_billing_org(&self, org: &str) -> Result<PackagesBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/settings/billing/packages", super::GITHUB_BASE_API_URL, org);
 
@@ -373,7 +397,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -385,7 +409,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubPackagesBillingOrgError::Generic { code }),
+                code => Err(BillingGetGithubPackagesBillingOrgError::Generic { code }.into()),
             }
         }
     }
@@ -403,19 +427,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     /// [GitHub API docs for get_github_packages_billing_user](https://docs.github.com/rest/billing/billing#get-github-packages-billing-for-a-user)
     ///
     /// ---
-    pub async fn get_github_packages_billing_user_async(&self, username: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingUserError> {
+    pub async fn get_github_packages_billing_user_async(&self, username: &str) -> Result<PackagesBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/users/{}/settings/billing/packages", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -427,7 +451,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubPackagesBillingUserError::Generic { code }),
+                code => Err(BillingGetGithubPackagesBillingUserError::Generic { code }.into()),
             }
         }
     }
@@ -446,7 +470,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_packages_billing_user(&self, username: &str) -> Result<PackagesBillingUsage, BillingGetGithubPackagesBillingUserError> {
+    pub fn get_github_packages_billing_user(&self, username: &str) -> Result<PackagesBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/users/{}/settings/billing/packages", super::GITHUB_BASE_API_URL, username);
 
@@ -458,7 +482,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -470,7 +494,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetGithubPackagesBillingUserError::Generic { code }),
+                code => Err(BillingGetGithubPackagesBillingUserError::Generic { code }.into()),
             }
         }
     }
@@ -488,19 +512,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     /// [GitHub API docs for get_shared_storage_billing_org](https://docs.github.com/rest/billing/billing#get-shared-storage-billing-for-an-organization)
     ///
     /// ---
-    pub async fn get_shared_storage_billing_org_async(&self, org: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingOrgError> {
+    pub async fn get_shared_storage_billing_org_async(&self, org: &str) -> Result<CombinedBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/settings/billing/shared-storage", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -512,7 +536,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetSharedStorageBillingOrgError::Generic { code }),
+                code => Err(BillingGetSharedStorageBillingOrgError::Generic { code }.into()),
             }
         }
     }
@@ -531,7 +555,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_shared_storage_billing_org(&self, org: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingOrgError> {
+    pub fn get_shared_storage_billing_org(&self, org: &str) -> Result<CombinedBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/settings/billing/shared-storage", super::GITHUB_BASE_API_URL, org);
 
@@ -543,7 +567,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -555,7 +579,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetSharedStorageBillingOrgError::Generic { code }),
+                code => Err(BillingGetSharedStorageBillingOrgError::Generic { code }.into()),
             }
         }
     }
@@ -573,19 +597,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     /// [GitHub API docs for get_shared_storage_billing_user](https://docs.github.com/rest/billing/billing#get-shared-storage-billing-for-a-user)
     ///
     /// ---
-    pub async fn get_shared_storage_billing_user_async(&self, username: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingUserError> {
+    pub async fn get_shared_storage_billing_user_async(&self, username: &str) -> Result<CombinedBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/users/{}/settings/billing/shared-storage", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -597,7 +621,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetSharedStorageBillingUserError::Generic { code }),
+                code => Err(BillingGetSharedStorageBillingUserError::Generic { code }.into()),
             }
         }
     }
@@ -616,7 +640,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_shared_storage_billing_user(&self, username: &str) -> Result<CombinedBillingUsage, BillingGetSharedStorageBillingUserError> {
+    pub fn get_shared_storage_billing_user(&self, username: &str) -> Result<CombinedBillingUsage, AdapterError> {
 
         let request_uri = format!("{}/users/{}/settings/billing/shared-storage", super::GITHUB_BASE_API_URL, username);
 
@@ -628,7 +652,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -640,7 +664,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Billing<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(BillingGetSharedStorageBillingUserError::Generic { code }),
+                code => Err(BillingGetSharedStorageBillingUserError::Generic { code }.into()),
             }
         }
     }

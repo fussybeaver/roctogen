@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Users<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Users<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Users<C> {
+pub fn new<C: Client>(client: &C) -> Users<C> where AdapterError: From<<C as Client>::Err> {
     Users { client }
 }
 
 /// Errors for the [Add an email address for the authenticated user](Users::add_email_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersAddEmailForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -55,21 +45,30 @@ pub enum UsersAddEmailForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersAddEmailForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersAddEmailForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersAddEmailForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersAddEmailForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersAddEmailForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersAddEmailForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersAddEmailForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersAddEmailForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Add social accounts for the authenticated user](Users::add_social_account_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersAddSocialAccountForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -82,21 +81,30 @@ pub enum UsersAddSocialAccountForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersAddSocialAccountForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersAddSocialAccountForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersAddSocialAccountForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersAddSocialAccountForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersAddSocialAccountForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersAddSocialAccountForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersAddSocialAccountForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersAddSocialAccountForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Block a user](Users::block_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersBlockError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -111,19 +119,28 @@ pub enum UsersBlockError {
     Generic { code: u16 },
 }
 
+impl From<UsersBlockError> for AdapterError {
+    fn from(err: UsersBlockError) -> Self {
+        let (description, status_code) = match err {
+            UsersBlockError::Status304 => (String::from("Not modified"), 304),
+            UsersBlockError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersBlockError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersBlockError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersBlockError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersBlockError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a user is blocked by the authenticated user](Users::check_blocked_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersCheckBlockedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("If the user is not blocked")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -136,38 +153,51 @@ pub enum UsersCheckBlockedError {
     Generic { code: u16 },
 }
 
+impl From<UsersCheckBlockedError> for AdapterError {
+    fn from(err: UsersCheckBlockedError) -> Self {
+        let (description, status_code) = match err {
+            UsersCheckBlockedError::Status404(_) => (String::from("If the user is not blocked"), 404),
+            UsersCheckBlockedError::Status304 => (String::from("Not modified"), 304),
+            UsersCheckBlockedError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersCheckBlockedError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersCheckBlockedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a user follows another user](Users::check_following_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersCheckFollowingForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("if the user does not follow the target user")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<UsersCheckFollowingForUserError> for AdapterError {
+    fn from(err: UsersCheckFollowingForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersCheckFollowingForUserError::Status404 => (String::from("if the user does not follow the target user"), 404),
+            UsersCheckFollowingForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a person is followed by the authenticated user](Users::check_person_is_followed_by_authenticated_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersCheckPersonIsFollowedByAuthenticatedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("if the person is not followed by the authenticated user")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -180,19 +210,27 @@ pub enum UsersCheckPersonIsFollowedByAuthenticatedError {
     Generic { code: u16 },
 }
 
+impl From<UsersCheckPersonIsFollowedByAuthenticatedError> for AdapterError {
+    fn from(err: UsersCheckPersonIsFollowedByAuthenticatedError) -> Self {
+        let (description, status_code) = match err {
+            UsersCheckPersonIsFollowedByAuthenticatedError::Status404(_) => (String::from("if the person is not followed by the authenticated user"), 404),
+            UsersCheckPersonIsFollowedByAuthenticatedError::Status304 => (String::from("Not modified"), 304),
+            UsersCheckPersonIsFollowedByAuthenticatedError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersCheckPersonIsFollowedByAuthenticatedError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersCheckPersonIsFollowedByAuthenticatedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a GPG key for the authenticated user](Users::create_gpg_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersCreateGpgKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -205,21 +243,30 @@ pub enum UsersCreateGpgKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersCreateGpgKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersCreateGpgKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersCreateGpgKeyForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersCreateGpgKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersCreateGpgKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersCreateGpgKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersCreateGpgKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersCreateGpgKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a public SSH key for the authenticated user](Users::create_public_ssh_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersCreatePublicSshKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -232,21 +279,30 @@ pub enum UsersCreatePublicSshKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersCreatePublicSshKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersCreatePublicSshKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersCreatePublicSshKeyForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersCreatePublicSshKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersCreatePublicSshKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersCreatePublicSshKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersCreatePublicSshKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersCreatePublicSshKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a SSH signing key for the authenticated user](Users::create_ssh_signing_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersCreateSshSigningKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -259,21 +315,30 @@ pub enum UsersCreateSshSigningKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersCreateSshSigningKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersCreateSshSigningKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersCreateSshSigningKeyForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersCreateSshSigningKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersCreateSshSigningKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersCreateSshSigningKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersCreateSshSigningKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersCreateSshSigningKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an email address for the authenticated user](Users::delete_email_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersDeleteEmailForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -286,21 +351,30 @@ pub enum UsersDeleteEmailForAuthenticatedUserError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersDeleteEmailForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersDeleteEmailForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersDeleteEmailForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersDeleteEmailForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersDeleteEmailForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersDeleteEmailForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersDeleteEmailForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersDeleteEmailForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a GPG key for the authenticated user](Users::delete_gpg_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersDeleteGpgKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -313,21 +387,30 @@ pub enum UsersDeleteGpgKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersDeleteGpgKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersDeleteGpgKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersDeleteGpgKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersDeleteGpgKeyForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersDeleteGpgKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersDeleteGpgKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersDeleteGpgKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersDeleteGpgKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a public SSH key for the authenticated user](Users::delete_public_ssh_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersDeletePublicSshKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -338,21 +421,29 @@ pub enum UsersDeletePublicSshKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersDeletePublicSshKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersDeletePublicSshKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersDeletePublicSshKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersDeletePublicSshKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersDeletePublicSshKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersDeletePublicSshKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersDeletePublicSshKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete social accounts for the authenticated user](Users::delete_social_account_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersDeleteSocialAccountForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -365,21 +456,30 @@ pub enum UsersDeleteSocialAccountForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersDeleteSocialAccountForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersDeleteSocialAccountForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersDeleteSocialAccountForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersDeleteSocialAccountForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersDeleteSocialAccountForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersDeleteSocialAccountForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersDeleteSocialAccountForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersDeleteSocialAccountForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an SSH signing key for the authenticated user](Users::delete_ssh_signing_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersDeleteSshSigningKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -390,21 +490,29 @@ pub enum UsersDeleteSshSigningKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersDeleteSshSigningKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersDeleteSshSigningKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersDeleteSshSigningKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersDeleteSshSigningKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersDeleteSshSigningKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersDeleteSshSigningKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Follow a user](Users::follow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersFollowError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -415,21 +523,29 @@ pub enum UsersFollowError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersFollowError> for AdapterError {
+    fn from(err: UsersFollowError) -> Self {
+        let (description, status_code) = match err {
+            UsersFollowError::Status304 => (String::from("Not modified"), 304),
+            UsersFollowError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersFollowError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersFollowError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersFollowError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the authenticated user](Users::get_authenticated_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetAuthenticatedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -440,57 +556,74 @@ pub enum UsersGetAuthenticatedError {
     Generic { code: u16 },
 }
 
+impl From<UsersGetAuthenticatedError> for AdapterError {
+    fn from(err: UsersGetAuthenticatedError) -> Self {
+        let (description, status_code) = match err {
+            UsersGetAuthenticatedError::Status304 => (String::from("Not modified"), 304),
+            UsersGetAuthenticatedError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersGetAuthenticatedError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersGetAuthenticatedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a user using their ID](Users::get_by_id_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetByIdError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersGetByIdError> for AdapterError {
+    fn from(err: UsersGetByIdError) -> Self {
+        let (description, status_code) = match err {
+            UsersGetByIdError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersGetByIdError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a user](Users::get_by_username_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetByUsernameError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<UsersGetByUsernameError> for AdapterError {
+    fn from(err: UsersGetByUsernameError) -> Self {
+        let (description, status_code) = match err {
+            UsersGetByUsernameError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersGetByUsernameError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get contextual information for a user](Users::get_context_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetContextForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -499,19 +632,25 @@ pub enum UsersGetContextForUserError {
     Generic { code: u16 },
 }
 
+impl From<UsersGetContextForUserError> for AdapterError {
+    fn from(err: UsersGetContextForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersGetContextForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersGetContextForUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersGetContextForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a GPG key for the authenticated user](Users::get_gpg_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetGpgKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -522,21 +661,29 @@ pub enum UsersGetGpgKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersGetGpgKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersGetGpgKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersGetGpgKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersGetGpgKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersGetGpgKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersGetGpgKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersGetGpgKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a public SSH key for the authenticated user](Users::get_public_ssh_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetPublicSshKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -547,21 +694,29 @@ pub enum UsersGetPublicSshKeyForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersGetPublicSshKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersGetPublicSshKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersGetPublicSshKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersGetPublicSshKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersGetPublicSshKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersGetPublicSshKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersGetPublicSshKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an SSH signing key for the authenticated user](Users::get_ssh_signing_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersGetSshSigningKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -574,38 +729,51 @@ pub enum UsersGetSshSigningKeyForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<UsersGetSshSigningKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersGetSshSigningKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersGetSshSigningKeyForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersGetSshSigningKeyForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersGetSshSigningKeyForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersGetSshSigningKeyForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersGetSshSigningKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List users](Users::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<UsersListError> for AdapterError {
+    fn from(err: UsersListError) -> Self {
+        let (description, status_code) = match err {
+            UsersListError::Status304 => (String::from("Not modified"), 304),
+            UsersListError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List attestations](Users::list_attestations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListAttestationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status201(EmptyObject),
     #[error("Response")]
@@ -616,19 +784,26 @@ pub enum UsersListAttestationsError {
     Generic { code: u16 },
 }
 
+impl From<UsersListAttestationsError> for AdapterError {
+    fn from(err: UsersListAttestationsError) -> Self {
+        let (description, status_code) = match err {
+            UsersListAttestationsError::Status201(_) => (String::from("Response"), 201),
+            UsersListAttestationsError::Status204 => (String::from("Response"), 204),
+            UsersListAttestationsError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListAttestationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List users blocked by the authenticated user](Users::list_blocked_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListBlockedByAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -639,21 +814,29 @@ pub enum UsersListBlockedByAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListBlockedByAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListBlockedByAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListBlockedByAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListBlockedByAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListBlockedByAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListBlockedByAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListBlockedByAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List email addresses for the authenticated user](Users::list_emails_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListEmailsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -664,21 +847,29 @@ pub enum UsersListEmailsForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListEmailsForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListEmailsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListEmailsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListEmailsForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListEmailsForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListEmailsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListEmailsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List the people the authenticated user follows](Users::list_followed_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListFollowedByAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -687,21 +878,28 @@ pub enum UsersListFollowedByAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListFollowedByAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListFollowedByAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListFollowedByAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListFollowedByAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListFollowedByAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListFollowedByAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List followers of the authenticated user](Users::list_followers_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListFollowersForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -710,55 +908,70 @@ pub enum UsersListFollowersForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListFollowersForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListFollowersForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListFollowersForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListFollowersForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListFollowersForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListFollowersForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List followers of a user](Users::list_followers_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListFollowersForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListFollowersForUserError> for AdapterError {
+    fn from(err: UsersListFollowersForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListFollowersForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List the people a user follows](Users::list_following_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListFollowingForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListFollowingForUserError> for AdapterError {
+    fn from(err: UsersListFollowingForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListFollowingForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List GPG keys for the authenticated user](Users::list_gpg_keys_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListGpgKeysForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -769,38 +982,50 @@ pub enum UsersListGpgKeysForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListGpgKeysForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListGpgKeysForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListGpgKeysForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListGpgKeysForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListGpgKeysForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListGpgKeysForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListGpgKeysForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List GPG keys for a user](Users::list_gpg_keys_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListGpgKeysForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListGpgKeysForUserError> for AdapterError {
+    fn from(err: UsersListGpgKeysForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListGpgKeysForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public email addresses for the authenticated user](Users::list_public_emails_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListPublicEmailsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -811,38 +1036,50 @@ pub enum UsersListPublicEmailsForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListPublicEmailsForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListPublicEmailsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListPublicEmailsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListPublicEmailsForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListPublicEmailsForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListPublicEmailsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListPublicEmailsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public keys for a user](Users::list_public_keys_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListPublicKeysForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListPublicKeysForUserError> for AdapterError {
+    fn from(err: UsersListPublicKeysForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListPublicKeysForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public SSH keys for the authenticated user](Users::list_public_ssh_keys_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListPublicSshKeysForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -853,21 +1090,29 @@ pub enum UsersListPublicSshKeysForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListPublicSshKeysForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListPublicSshKeysForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListPublicSshKeysForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListPublicSshKeysForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListPublicSshKeysForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListPublicSshKeysForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListPublicSshKeysForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List social accounts for the authenticated user](Users::list_social_accounts_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListSocialAccountsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -878,38 +1123,50 @@ pub enum UsersListSocialAccountsForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListSocialAccountsForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListSocialAccountsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListSocialAccountsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListSocialAccountsForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListSocialAccountsForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListSocialAccountsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListSocialAccountsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List social accounts for a user](Users::list_social_accounts_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListSocialAccountsForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListSocialAccountsForUserError> for AdapterError {
+    fn from(err: UsersListSocialAccountsForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListSocialAccountsForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List SSH signing keys for the authenticated user](Users::list_ssh_signing_keys_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListSshSigningKeysForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -920,38 +1177,50 @@ pub enum UsersListSshSigningKeysForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListSshSigningKeysForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersListSshSigningKeysForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListSshSigningKeysForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersListSshSigningKeysForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersListSshSigningKeysForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersListSshSigningKeysForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersListSshSigningKeysForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List SSH signing keys for a user](Users::list_ssh_signing_keys_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersListSshSigningKeysForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersListSshSigningKeysForUserError> for AdapterError {
+    fn from(err: UsersListSshSigningKeysForUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersListSshSigningKeysForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set primary email visibility for the authenticated user](Users::set_primary_email_visibility_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersSetPrimaryEmailVisibilityForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -964,21 +1233,30 @@ pub enum UsersSetPrimaryEmailVisibilityForAuthenticatedUserError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersSetPrimaryEmailVisibilityForAuthenticatedUserError> for AdapterError {
+    fn from(err: UsersSetPrimaryEmailVisibilityForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Unblock a user](Users::unblock_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersUnblockError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -989,21 +1267,29 @@ pub enum UsersUnblockError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersUnblockError> for AdapterError {
+    fn from(err: UsersUnblockError) -> Self {
+        let (description, status_code) = match err {
+            UsersUnblockError::Status304 => (String::from("Not modified"), 304),
+            UsersUnblockError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersUnblockError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersUnblockError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersUnblockError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Unfollow a user](Users::unfollow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersUnfollowError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -1016,19 +1302,27 @@ pub enum UsersUnfollowError {
     Generic { code: u16 },
 }
 
+impl From<UsersUnfollowError> for AdapterError {
+    fn from(err: UsersUnfollowError) -> Self {
+        let (description, status_code) = match err {
+            UsersUnfollowError::Status304 => (String::from("Not modified"), 304),
+            UsersUnfollowError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersUnfollowError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersUnfollowError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersUnfollowError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update the authenticated user](Users::update_authenticated_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum UsersUpdateAuthenticatedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -1041,6 +1335,25 @@ pub enum UsersUpdateAuthenticatedError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<UsersUpdateAuthenticatedError> for AdapterError {
+    fn from(err: UsersUpdateAuthenticatedError) -> Self {
+        let (description, status_code) = match err {
+            UsersUpdateAuthenticatedError::Status304 => (String::from("Not modified"), 304),
+            UsersUpdateAuthenticatedError::Status404(_) => (String::from("Resource not found"), 404),
+            UsersUpdateAuthenticatedError::Status403(_) => (String::from("Forbidden"), 403),
+            UsersUpdateAuthenticatedError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersUpdateAuthenticatedError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            UsersUpdateAuthenticatedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -1751,7 +2064,7 @@ impl<'enc> From<&'enc PerPage> for UsersListSshSigningKeysForUserParams {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
+impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add an email address for the authenticated user
@@ -1761,19 +2074,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for add_email_for_authenticated_user](https://docs.github.com/rest/users/emails#add-an-email-address-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn add_email_for_authenticated_user_async(&self, body: PostUsersAddEmailForAuthenticatedUser) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedUserError> {
+    pub async fn add_email_for_authenticated_user_async(&self, body: PostUsersAddEmailForAuthenticatedUser) -> Result<Vec<Email>, AdapterError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersAddEmailForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersAddEmailForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1785,12 +2098,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersAddEmailForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(UsersAddEmailForAuthenticatedUserError::Status304),
-                404 => Err(UsersAddEmailForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersAddEmailForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersAddEmailForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersAddEmailForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersAddEmailForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(UsersAddEmailForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersAddEmailForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersAddEmailForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersAddEmailForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersAddEmailForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1805,19 +2118,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_email_for_authenticated_user(&self, body: PostUsersAddEmailForAuthenticatedUser) -> Result<Vec<Email>, UsersAddEmailForAuthenticatedUserError> {
+    pub fn add_email_for_authenticated_user(&self, body: PostUsersAddEmailForAuthenticatedUser) -> Result<Vec<Email>, AdapterError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersAddEmailForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersAddEmailForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1829,12 +2142,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersAddEmailForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(UsersAddEmailForAuthenticatedUserError::Status304),
-                404 => Err(UsersAddEmailForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersAddEmailForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersAddEmailForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersAddEmailForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersAddEmailForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(UsersAddEmailForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersAddEmailForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersAddEmailForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersAddEmailForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersAddEmailForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1850,19 +2163,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for add_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#add-social-accounts-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn add_social_account_for_authenticated_user_async(&self, body: PostUsersAddSocialAccountForAuthenticatedUser) -> Result<Vec<SocialAccount>, UsersAddSocialAccountForAuthenticatedUserError> {
+    pub async fn add_social_account_for_authenticated_user_async(&self, body: PostUsersAddSocialAccountForAuthenticatedUser) -> Result<Vec<SocialAccount>, AdapterError> {
 
         let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersAddSocialAccountForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersAddSocialAccountForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1874,12 +2187,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status304),
-                404 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersAddSocialAccountForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersAddSocialAccountForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1896,19 +2209,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_social_account_for_authenticated_user(&self, body: PostUsersAddSocialAccountForAuthenticatedUser) -> Result<Vec<SocialAccount>, UsersAddSocialAccountForAuthenticatedUserError> {
+    pub fn add_social_account_for_authenticated_user(&self, body: PostUsersAddSocialAccountForAuthenticatedUser) -> Result<Vec<SocialAccount>, AdapterError> {
 
         let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersAddSocialAccountForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersAddSocialAccountForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1920,12 +2233,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status304),
-                404 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersAddSocialAccountForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersAddSocialAccountForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersAddSocialAccountForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1939,19 +2252,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for block](https://docs.github.com/rest/users/blocking#block-a-user)
     ///
     /// ---
-    pub async fn block_async(&self, username: &str) -> Result<(), UsersBlockError> {
+    pub async fn block_async(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/blocks/{}", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1963,12 +2276,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersBlockError::Status304),
-                404 => Err(UsersBlockError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersBlockError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersBlockError::Status401(github_response.to_json_async().await?)),
-                422 => Err(UsersBlockError::Status422(github_response.to_json_async().await?)),
-                code => Err(UsersBlockError::Generic { code }),
+                304 => Err(UsersBlockError::Status304.into()),
+                404 => Err(UsersBlockError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersBlockError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersBlockError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(UsersBlockError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(UsersBlockError::Generic { code }.into()),
             }
         }
     }
@@ -1983,7 +2296,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn block(&self, username: &str) -> Result<(), UsersBlockError> {
+    pub fn block(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/blocks/{}", super::GITHUB_BASE_API_URL, username);
 
@@ -1995,7 +2308,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2007,12 +2320,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersBlockError::Status304),
-                404 => Err(UsersBlockError::Status404(github_response.to_json()?)),
-                403 => Err(UsersBlockError::Status403(github_response.to_json()?)),
-                401 => Err(UsersBlockError::Status401(github_response.to_json()?)),
-                422 => Err(UsersBlockError::Status422(github_response.to_json()?)),
-                code => Err(UsersBlockError::Generic { code }),
+                304 => Err(UsersBlockError::Status304.into()),
+                404 => Err(UsersBlockError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersBlockError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersBlockError::Status401(github_response.to_json()?).into()),
+                422 => Err(UsersBlockError::Status422(github_response.to_json()?).into()),
+                code => Err(UsersBlockError::Generic { code }.into()),
             }
         }
     }
@@ -2026,19 +2339,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for check_blocked](https://docs.github.com/rest/users/blocking#check-if-a-user-is-blocked-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn check_blocked_async(&self, username: &str) -> Result<(), UsersCheckBlockedError> {
+    pub async fn check_blocked_async(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/blocks/{}", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2050,11 +2363,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersCheckBlockedError::Status404(github_response.to_json_async().await?)),
-                304 => Err(UsersCheckBlockedError::Status304),
-                403 => Err(UsersCheckBlockedError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersCheckBlockedError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersCheckBlockedError::Generic { code }),
+                404 => Err(UsersCheckBlockedError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(UsersCheckBlockedError::Status304.into()),
+                403 => Err(UsersCheckBlockedError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersCheckBlockedError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersCheckBlockedError::Generic { code }.into()),
             }
         }
     }
@@ -2069,7 +2382,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_blocked(&self, username: &str) -> Result<(), UsersCheckBlockedError> {
+    pub fn check_blocked(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/blocks/{}", super::GITHUB_BASE_API_URL, username);
 
@@ -2081,7 +2394,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2093,11 +2406,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersCheckBlockedError::Status404(github_response.to_json()?)),
-                304 => Err(UsersCheckBlockedError::Status304),
-                403 => Err(UsersCheckBlockedError::Status403(github_response.to_json()?)),
-                401 => Err(UsersCheckBlockedError::Status401(github_response.to_json()?)),
-                code => Err(UsersCheckBlockedError::Generic { code }),
+                404 => Err(UsersCheckBlockedError::Status404(github_response.to_json()?).into()),
+                304 => Err(UsersCheckBlockedError::Status304.into()),
+                403 => Err(UsersCheckBlockedError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersCheckBlockedError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersCheckBlockedError::Generic { code }.into()),
             }
         }
     }
@@ -2109,19 +2422,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for check_following_for_user](https://docs.github.com/rest/users/followers#check-if-a-user-follows-another-user)
     ///
     /// ---
-    pub async fn check_following_for_user_async(&self, username: &str, target_user: &str) -> Result<(), UsersCheckFollowingForUserError> {
+    pub async fn check_following_for_user_async(&self, username: &str, target_user: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/following/{}", super::GITHUB_BASE_API_URL, username, target_user);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2133,8 +2446,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersCheckFollowingForUserError::Status404),
-                code => Err(UsersCheckFollowingForUserError::Generic { code }),
+                404 => Err(UsersCheckFollowingForUserError::Status404.into()),
+                code => Err(UsersCheckFollowingForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2147,7 +2460,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_following_for_user(&self, username: &str, target_user: &str) -> Result<(), UsersCheckFollowingForUserError> {
+    pub fn check_following_for_user(&self, username: &str, target_user: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/following/{}", super::GITHUB_BASE_API_URL, username, target_user);
 
@@ -2159,7 +2472,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2171,8 +2484,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersCheckFollowingForUserError::Status404),
-                code => Err(UsersCheckFollowingForUserError::Generic { code }),
+                404 => Err(UsersCheckFollowingForUserError::Status404.into()),
+                code => Err(UsersCheckFollowingForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2184,19 +2497,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for check_person_is_followed_by_authenticated](https://docs.github.com/rest/users/followers#check-if-a-person-is-followed-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn check_person_is_followed_by_authenticated_async(&self, username: &str) -> Result<(), UsersCheckPersonIsFollowedByAuthenticatedError> {
+    pub async fn check_person_is_followed_by_authenticated_async(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/following/{}", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2208,11 +2521,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status404(github_response.to_json_async().await?)),
-                304 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status304),
-                403 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Generic { code }),
+                404 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status304.into()),
+                403 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Generic { code }.into()),
             }
         }
     }
@@ -2225,7 +2538,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_person_is_followed_by_authenticated(&self, username: &str) -> Result<(), UsersCheckPersonIsFollowedByAuthenticatedError> {
+    pub fn check_person_is_followed_by_authenticated(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/following/{}", super::GITHUB_BASE_API_URL, username);
 
@@ -2237,7 +2550,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2249,11 +2562,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status404(github_response.to_json()?)),
-                304 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status304),
-                403 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status403(github_response.to_json()?)),
-                401 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status401(github_response.to_json()?)),
-                code => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Generic { code }),
+                404 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status404(github_response.to_json()?).into()),
+                304 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status304.into()),
+                403 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Generic { code }.into()),
             }
         }
     }
@@ -2269,19 +2582,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for create_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#create-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_gpg_key_for_authenticated_user_async(&self, body: PostUsersCreateGpgKeyForAuthenticatedUser) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedUserError> {
+    pub async fn create_gpg_key_for_authenticated_user_async(&self, body: PostUsersCreateGpgKeyForAuthenticatedUser) -> Result<GpgKey, AdapterError> {
 
         let request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreateGpgKeyForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersCreateGpgKeyForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2293,12 +2606,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersCreateGpgKeyForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersCreateGpgKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2315,19 +2628,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_gpg_key_for_authenticated_user(&self, body: PostUsersCreateGpgKeyForAuthenticatedUser) -> Result<GpgKey, UsersCreateGpgKeyForAuthenticatedUserError> {
+    pub fn create_gpg_key_for_authenticated_user(&self, body: PostUsersCreateGpgKeyForAuthenticatedUser) -> Result<GpgKey, AdapterError> {
 
         let request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreateGpgKeyForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersCreateGpgKeyForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2339,12 +2652,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersCreateGpgKeyForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersCreateGpgKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersCreateGpgKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2360,19 +2673,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for create_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#create-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_public_ssh_key_for_authenticated_user_async(&self, body: PostUsersCreatePublicSshKeyForAuthenticatedUser) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedUserError> {
+    pub async fn create_public_ssh_key_for_authenticated_user_async(&self, body: PostUsersCreatePublicSshKeyForAuthenticatedUser) -> Result<Key, AdapterError> {
 
         let request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreatePublicSshKeyForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersCreatePublicSshKeyForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2384,12 +2697,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2406,19 +2719,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_public_ssh_key_for_authenticated_user(&self, body: PostUsersCreatePublicSshKeyForAuthenticatedUser) -> Result<Key, UsersCreatePublicSshKeyForAuthenticatedUserError> {
+    pub fn create_public_ssh_key_for_authenticated_user(&self, body: PostUsersCreatePublicSshKeyForAuthenticatedUser) -> Result<Key, AdapterError> {
 
         let request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreatePublicSshKeyForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersCreatePublicSshKeyForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2430,12 +2743,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersCreatePublicSshKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2451,19 +2764,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for create_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#create-a-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_ssh_signing_key_for_authenticated_user_async(&self, body: PostUsersCreateSshSigningKeyForAuthenticatedUser) -> Result<SshSigningKey, UsersCreateSshSigningKeyForAuthenticatedUserError> {
+    pub async fn create_ssh_signing_key_for_authenticated_user_async(&self, body: PostUsersCreateSshSigningKeyForAuthenticatedUser) -> Result<SshSigningKey, AdapterError> {
 
         let request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreateSshSigningKeyForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersCreateSshSigningKeyForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2475,12 +2788,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2497,19 +2810,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_ssh_signing_key_for_authenticated_user(&self, body: PostUsersCreateSshSigningKeyForAuthenticatedUser) -> Result<SshSigningKey, UsersCreateSshSigningKeyForAuthenticatedUserError> {
+    pub fn create_ssh_signing_key_for_authenticated_user(&self, body: PostUsersCreateSshSigningKeyForAuthenticatedUser) -> Result<SshSigningKey, AdapterError> {
 
         let request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostUsersCreateSshSigningKeyForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostUsersCreateSshSigningKeyForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2521,12 +2834,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersCreateSshSigningKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2540,19 +2853,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for delete_email_for_authenticated_user](https://docs.github.com/rest/users/emails#delete-an-email-address-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_email_for_authenticated_user_async(&self, body: DeleteUsersDeleteEmailForAuthenticatedUser) -> Result<(), UsersDeleteEmailForAuthenticatedUserError> {
+    pub async fn delete_email_for_authenticated_user_async(&self, body: DeleteUsersDeleteEmailForAuthenticatedUser) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteUsersDeleteEmailForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<DeleteUsersDeleteEmailForAuthenticatedUser>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2564,12 +2877,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeleteEmailForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersDeleteEmailForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersDeleteEmailForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                422 => Err(UsersDeleteEmailForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                code => Err(UsersDeleteEmailForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeleteEmailForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersDeleteEmailForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersDeleteEmailForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(UsersDeleteEmailForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(UsersDeleteEmailForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2584,19 +2897,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_email_for_authenticated_user(&self, body: DeleteUsersDeleteEmailForAuthenticatedUser) -> Result<(), UsersDeleteEmailForAuthenticatedUserError> {
+    pub fn delete_email_for_authenticated_user(&self, body: DeleteUsersDeleteEmailForAuthenticatedUser) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteUsersDeleteEmailForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<DeleteUsersDeleteEmailForAuthenticatedUser>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2608,12 +2921,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeleteEmailForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersDeleteEmailForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersDeleteEmailForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                422 => Err(UsersDeleteEmailForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                code => Err(UsersDeleteEmailForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeleteEmailForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersDeleteEmailForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersDeleteEmailForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                422 => Err(UsersDeleteEmailForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(UsersDeleteEmailForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2629,19 +2942,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for delete_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#delete-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedUserError> {
+    pub async fn delete_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2653,12 +2966,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                422 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2675,7 +2988,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_gpg_key_for_authenticated_user(&self, gpg_key_id: i32) -> Result<(), UsersDeleteGpgKeyForAuthenticatedUserError> {
+    pub fn delete_gpg_key_for_authenticated_user(&self, gpg_key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
@@ -2687,7 +3000,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2699,12 +3012,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                422 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2720,19 +3033,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for delete_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#delete-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedUserError> {
+    pub async fn delete_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2744,11 +3057,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2765,7 +3078,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_public_ssh_key_for_authenticated_user(&self, key_id: i32) -> Result<(), UsersDeletePublicSshKeyForAuthenticatedUserError> {
+    pub fn delete_public_ssh_key_for_authenticated_user(&self, key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
@@ -2777,7 +3090,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2789,11 +3102,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2809,19 +3122,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for delete_social_account_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#delete-social-accounts-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_social_account_for_authenticated_user_async(&self, body: DeleteUsersDeleteSocialAccountForAuthenticatedUser) -> Result<(), UsersDeleteSocialAccountForAuthenticatedUserError> {
+    pub async fn delete_social_account_for_authenticated_user_async(&self, body: DeleteUsersDeleteSocialAccountForAuthenticatedUser) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteUsersDeleteSocialAccountForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<DeleteUsersDeleteSocialAccountForAuthenticatedUser>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2833,12 +3146,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2855,19 +3168,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_social_account_for_authenticated_user(&self, body: DeleteUsersDeleteSocialAccountForAuthenticatedUser) -> Result<(), UsersDeleteSocialAccountForAuthenticatedUserError> {
+    pub fn delete_social_account_for_authenticated_user(&self, body: DeleteUsersDeleteSocialAccountForAuthenticatedUser) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteUsersDeleteSocialAccountForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<DeleteUsersDeleteSocialAccountForAuthenticatedUser>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2879,12 +3192,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Generic { code }),
+                422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2900,19 +3213,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for delete_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#delete-an-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_ssh_signing_key_for_authenticated_user_async(&self, ssh_signing_key_id: i32) -> Result<(), UsersDeleteSshSigningKeyForAuthenticatedUserError> {
+    pub async fn delete_ssh_signing_key_for_authenticated_user_async(&self, ssh_signing_key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2924,11 +3237,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2945,7 +3258,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_ssh_signing_key_for_authenticated_user(&self, ssh_signing_key_id: i32) -> Result<(), UsersDeleteSshSigningKeyForAuthenticatedUserError> {
+    pub fn delete_ssh_signing_key_for_authenticated_user(&self, ssh_signing_key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
 
@@ -2957,7 +3270,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2969,11 +3282,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304),
-                404 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2989,19 +3302,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for follow](https://docs.github.com/rest/users/followers#follow-a-user)
     ///
     /// ---
-    pub async fn follow_async(&self, username: &str) -> Result<(), UsersFollowError> {
+    pub async fn follow_async(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/following/{}", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3013,11 +3326,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersFollowError::Status304),
-                404 => Err(UsersFollowError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersFollowError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersFollowError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersFollowError::Generic { code }),
+                304 => Err(UsersFollowError::Status304.into()),
+                404 => Err(UsersFollowError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersFollowError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersFollowError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersFollowError::Generic { code }.into()),
             }
         }
     }
@@ -3034,7 +3347,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn follow(&self, username: &str) -> Result<(), UsersFollowError> {
+    pub fn follow(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/following/{}", super::GITHUB_BASE_API_URL, username);
 
@@ -3046,7 +3359,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3058,11 +3371,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersFollowError::Status304),
-                404 => Err(UsersFollowError::Status404(github_response.to_json()?)),
-                403 => Err(UsersFollowError::Status403(github_response.to_json()?)),
-                401 => Err(UsersFollowError::Status401(github_response.to_json()?)),
-                code => Err(UsersFollowError::Generic { code }),
+                304 => Err(UsersFollowError::Status304.into()),
+                404 => Err(UsersFollowError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersFollowError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersFollowError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersFollowError::Generic { code }.into()),
             }
         }
     }
@@ -3076,19 +3389,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/users/users#get-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_authenticated_async(&self) -> Result<GetUsersGetByUsernameResponse200, UsersGetAuthenticatedError> {
+    pub async fn get_authenticated_async(&self) -> Result<GetUsersGetByUsernameResponse200, AdapterError> {
 
         let request_uri = format!("{}/user", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3100,10 +3413,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersGetAuthenticatedError::Status304),
-                403 => Err(UsersGetAuthenticatedError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersGetAuthenticatedError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersGetAuthenticatedError::Generic { code }),
+                304 => Err(UsersGetAuthenticatedError::Status304.into()),
+                403 => Err(UsersGetAuthenticatedError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersGetAuthenticatedError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersGetAuthenticatedError::Generic { code }.into()),
             }
         }
     }
@@ -3118,7 +3431,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_authenticated(&self) -> Result<GetUsersGetByUsernameResponse200, UsersGetAuthenticatedError> {
+    pub fn get_authenticated(&self) -> Result<GetUsersGetByUsernameResponse200, AdapterError> {
 
         let request_uri = format!("{}/user", super::GITHUB_BASE_API_URL);
 
@@ -3130,7 +3443,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3142,10 +3455,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersGetAuthenticatedError::Status304),
-                403 => Err(UsersGetAuthenticatedError::Status403(github_response.to_json()?)),
-                401 => Err(UsersGetAuthenticatedError::Status401(github_response.to_json()?)),
-                code => Err(UsersGetAuthenticatedError::Generic { code }),
+                304 => Err(UsersGetAuthenticatedError::Status304.into()),
+                403 => Err(UsersGetAuthenticatedError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersGetAuthenticatedError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersGetAuthenticatedError::Generic { code }.into()),
             }
         }
     }
@@ -3163,19 +3476,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for get_by_id](https://docs.github.com/rest/users/users#get-a-user-using-their-id)
     ///
     /// ---
-    pub async fn get_by_id_async(&self, account_id: i32) -> Result<GetUsersGetByUsernameResponse200, UsersGetByIdError> {
+    pub async fn get_by_id_async(&self, account_id: i32) -> Result<GetUsersGetByUsernameResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/{}", super::GITHUB_BASE_API_URL, account_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3187,8 +3500,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetByIdError::Status404(github_response.to_json_async().await?)),
-                code => Err(UsersGetByIdError::Generic { code }),
+                404 => Err(UsersGetByIdError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(UsersGetByIdError::Generic { code }.into()),
             }
         }
     }
@@ -3207,7 +3520,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_by_id(&self, account_id: i32) -> Result<GetUsersGetByUsernameResponse200, UsersGetByIdError> {
+    pub fn get_by_id(&self, account_id: i32) -> Result<GetUsersGetByUsernameResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/{}", super::GITHUB_BASE_API_URL, account_id);
 
@@ -3219,7 +3532,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3231,8 +3544,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetByIdError::Status404(github_response.to_json()?)),
-                code => Err(UsersGetByIdError::Generic { code }),
+                404 => Err(UsersGetByIdError::Status404(github_response.to_json()?).into()),
+                code => Err(UsersGetByIdError::Generic { code }.into()),
             }
         }
     }
@@ -3250,19 +3563,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for get_by_username](https://docs.github.com/rest/users/users#get-a-user)
     ///
     /// ---
-    pub async fn get_by_username_async(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, UsersGetByUsernameError> {
+    pub async fn get_by_username_async(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, AdapterError> {
 
         let request_uri = format!("{}/users/{}", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3274,8 +3587,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetByUsernameError::Status404(github_response.to_json_async().await?)),
-                code => Err(UsersGetByUsernameError::Generic { code }),
+                404 => Err(UsersGetByUsernameError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(UsersGetByUsernameError::Generic { code }.into()),
             }
         }
     }
@@ -3294,7 +3607,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_by_username(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, UsersGetByUsernameError> {
+    pub fn get_by_username(&self, username: &str) -> Result<GetUsersGetByUsernameResponse200, AdapterError> {
 
         let request_uri = format!("{}/users/{}", super::GITHUB_BASE_API_URL, username);
 
@@ -3306,7 +3619,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3318,8 +3631,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetByUsernameError::Status404(github_response.to_json()?)),
-                code => Err(UsersGetByUsernameError::Generic { code }),
+                404 => Err(UsersGetByUsernameError::Status404(github_response.to_json()?).into()),
+                code => Err(UsersGetByUsernameError::Generic { code }.into()),
             }
         }
     }
@@ -3337,7 +3650,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for get_context_for_user](https://docs.github.com/rest/users/users#get-contextual-information-for-a-user)
     ///
     /// ---
-    pub async fn get_context_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, UsersGetContextForUserError> {
+    pub async fn get_context_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/hovercard", super::GITHUB_BASE_API_URL, username);
 
@@ -3348,12 +3661,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3365,9 +3678,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetContextForUserError::Status404(github_response.to_json_async().await?)),
-                422 => Err(UsersGetContextForUserError::Status422(github_response.to_json_async().await?)),
-                code => Err(UsersGetContextForUserError::Generic { code }),
+                404 => Err(UsersGetContextForUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(UsersGetContextForUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(UsersGetContextForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3386,7 +3699,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_context_for_user(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, UsersGetContextForUserError> {
+    pub fn get_context_for_user(&self, username: &str, query_params: Option<impl Into<UsersGetContextForUserParams<'api>>>) -> Result<Hovercard, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/hovercard", super::GITHUB_BASE_API_URL, username);
 
@@ -3403,7 +3716,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3415,9 +3728,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetContextForUserError::Status404(github_response.to_json()?)),
-                422 => Err(UsersGetContextForUserError::Status422(github_response.to_json()?)),
-                code => Err(UsersGetContextForUserError::Generic { code }),
+                404 => Err(UsersGetContextForUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(UsersGetContextForUserError::Status422(github_response.to_json()?).into()),
+                code => Err(UsersGetContextForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3433,19 +3746,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for get_gpg_key_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#get-a-gpg-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedUserError> {
+    pub async fn get_gpg_key_for_authenticated_user_async(&self, gpg_key_id: i32) -> Result<GpgKey, AdapterError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3457,11 +3770,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                304 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersGetGpgKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersGetGpgKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3478,7 +3791,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_gpg_key_for_authenticated_user(&self, gpg_key_id: i32) -> Result<GpgKey, UsersGetGpgKeyForAuthenticatedUserError> {
+    pub fn get_gpg_key_for_authenticated_user(&self, gpg_key_id: i32) -> Result<GpgKey, AdapterError> {
 
         let request_uri = format!("{}/user/gpg_keys/{}", super::GITHUB_BASE_API_URL, gpg_key_id);
 
@@ -3490,7 +3803,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3502,11 +3815,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                304 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersGetGpgKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                304 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersGetGpgKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersGetGpgKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3522,19 +3835,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for get_public_ssh_key_for_authenticated_user](https://docs.github.com/rest/users/keys#get-a-public-ssh-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedUserError> {
+    pub async fn get_public_ssh_key_for_authenticated_user_async(&self, key_id: i32) -> Result<Key, AdapterError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3546,11 +3859,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                304 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3567,7 +3880,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_public_ssh_key_for_authenticated_user(&self, key_id: i32) -> Result<Key, UsersGetPublicSshKeyForAuthenticatedUserError> {
+    pub fn get_public_ssh_key_for_authenticated_user(&self, key_id: i32) -> Result<Key, AdapterError> {
 
         let request_uri = format!("{}/user/keys/{}", super::GITHUB_BASE_API_URL, key_id);
 
@@ -3579,7 +3892,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3591,11 +3904,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                304 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                304 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersGetPublicSshKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3611,19 +3924,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for get_ssh_signing_key_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#get-an-ssh-signing-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_ssh_signing_key_for_authenticated_user_async(&self, ssh_signing_key_id: i32) -> Result<SshSigningKey, UsersGetSshSigningKeyForAuthenticatedUserError> {
+    pub async fn get_ssh_signing_key_for_authenticated_user_async(&self, ssh_signing_key_id: i32) -> Result<SshSigningKey, AdapterError> {
 
         let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3635,11 +3948,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                304 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3656,7 +3969,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_ssh_signing_key_for_authenticated_user(&self, ssh_signing_key_id: i32) -> Result<SshSigningKey, UsersGetSshSigningKeyForAuthenticatedUserError> {
+    pub fn get_ssh_signing_key_for_authenticated_user(&self, ssh_signing_key_id: i32) -> Result<SshSigningKey, AdapterError> {
 
         let request_uri = format!("{}/user/ssh_signing_keys/{}", super::GITHUB_BASE_API_URL, ssh_signing_key_id);
 
@@ -3668,7 +3981,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3680,11 +3993,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                304 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status304),
-                403 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Generic { code }),
+                404 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                304 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersGetSshSigningKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3700,7 +4013,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list](https://docs.github.com/rest/users/users#list-users)
     ///
     /// ---
-    pub async fn list_async(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, UsersListError> {
+    pub async fn list_async(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/users", super::GITHUB_BASE_API_URL);
 
@@ -3711,12 +4024,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3728,8 +4041,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListError::Status304),
-                code => Err(UsersListError::Generic { code }),
+                304 => Err(UsersListError::Status304.into()),
+                code => Err(UsersListError::Generic { code }.into()),
             }
         }
     }
@@ -3746,7 +4059,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, UsersListError> {
+    pub fn list(&self, query_params: Option<impl Into<UsersListParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/users", super::GITHUB_BASE_API_URL);
 
@@ -3763,7 +4076,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3775,8 +4088,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListError::Status304),
-                code => Err(UsersListError::Generic { code }),
+                304 => Err(UsersListError::Status304.into()),
+                code => Err(UsersListError::Generic { code }.into()),
             }
         }
     }
@@ -3794,7 +4107,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/users/attestations#list-attestations)
     ///
     /// ---
-    pub async fn list_attestations_async(&self, username: &str, subject_digest: &str, query_params: Option<impl Into<UsersListAttestationsParams<'api>>>) -> Result<GetUsersListAttestationsResponse200, UsersListAttestationsError> {
+    pub async fn list_attestations_async(&self, username: &str, subject_digest: &str, query_params: Option<impl Into<UsersListAttestationsParams<'api>>>) -> Result<GetUsersListAttestationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/attestations/{}", super::GITHUB_BASE_API_URL, username, subject_digest);
 
@@ -3805,12 +4118,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3822,10 +4135,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(UsersListAttestationsError::Status201(github_response.to_json_async().await?)),
-                204 => Err(UsersListAttestationsError::Status204),
-                404 => Err(UsersListAttestationsError::Status404(github_response.to_json_async().await?)),
-                code => Err(UsersListAttestationsError::Generic { code }),
+                201 => Err(UsersListAttestationsError::Status201(github_response.to_json_async().await?).into()),
+                204 => Err(UsersListAttestationsError::Status204.into()),
+                404 => Err(UsersListAttestationsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(UsersListAttestationsError::Generic { code }.into()),
             }
         }
     }
@@ -3844,7 +4157,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_attestations(&self, username: &str, subject_digest: &str, query_params: Option<impl Into<UsersListAttestationsParams<'api>>>) -> Result<GetUsersListAttestationsResponse200, UsersListAttestationsError> {
+    pub fn list_attestations(&self, username: &str, subject_digest: &str, query_params: Option<impl Into<UsersListAttestationsParams<'api>>>) -> Result<GetUsersListAttestationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/attestations/{}", super::GITHUB_BASE_API_URL, username, subject_digest);
 
@@ -3861,7 +4174,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3873,10 +4186,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(UsersListAttestationsError::Status201(github_response.to_json()?)),
-                204 => Err(UsersListAttestationsError::Status204),
-                404 => Err(UsersListAttestationsError::Status404(github_response.to_json()?)),
-                code => Err(UsersListAttestationsError::Generic { code }),
+                201 => Err(UsersListAttestationsError::Status201(github_response.to_json()?).into()),
+                204 => Err(UsersListAttestationsError::Status204.into()),
+                404 => Err(UsersListAttestationsError::Status404(github_response.to_json()?).into()),
+                code => Err(UsersListAttestationsError::Generic { code }.into()),
             }
         }
     }
@@ -3890,7 +4203,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_blocked_by_authenticated_user](https://docs.github.com/rest/users/blocking#list-users-blocked-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_blocked_by_authenticated_user_async(&self, query_params: Option<impl Into<UsersListBlockedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
+    pub async fn list_blocked_by_authenticated_user_async(&self, query_params: Option<impl Into<UsersListBlockedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
 
@@ -3901,12 +4214,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3918,11 +4231,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListBlockedByAuthenticatedUserError::Status304),
-                404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListBlockedByAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3937,7 +4250,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_blocked_by_authenticated_user(&self, query_params: Option<impl Into<UsersListBlockedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListBlockedByAuthenticatedUserError> {
+    pub fn list_blocked_by_authenticated_user(&self, query_params: Option<impl Into<UsersListBlockedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/user/blocks", super::GITHUB_BASE_API_URL);
 
@@ -3954,7 +4267,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3966,11 +4279,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListBlockedByAuthenticatedUserError::Status304),
-                404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListBlockedByAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListBlockedByAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersListBlockedByAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListBlockedByAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListBlockedByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3987,7 +4300,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-email-addresses-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedUserError> {
+    pub async fn list_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, AdapterError> {
 
         let mut request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
@@ -3998,12 +4311,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4015,11 +4328,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListEmailsForAuthenticatedUserError::Status304),
-                404 => Err(UsersListEmailsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersListEmailsForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListEmailsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListEmailsForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListEmailsForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListEmailsForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersListEmailsForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListEmailsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListEmailsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4037,7 +4350,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_emails_for_authenticated_user(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListEmailsForAuthenticatedUserError> {
+    pub fn list_emails_for_authenticated_user(&self, query_params: Option<impl Into<UsersListEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, AdapterError> {
 
         let mut request_uri = format!("{}/user/emails", super::GITHUB_BASE_API_URL);
 
@@ -4054,7 +4367,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4066,11 +4379,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListEmailsForAuthenticatedUserError::Status304),
-                404 => Err(UsersListEmailsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersListEmailsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListEmailsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListEmailsForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListEmailsForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListEmailsForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersListEmailsForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListEmailsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListEmailsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4084,7 +4397,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_followed_by_authenticated_user](https://docs.github.com/rest/users/followers#list-the-people-the-authenticated-user-follows)
     ///
     /// ---
-    pub async fn list_followed_by_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedUserError> {
+    pub async fn list_followed_by_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/user/following", super::GITHUB_BASE_API_URL);
 
@@ -4095,12 +4408,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4112,10 +4425,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListFollowedByAuthenticatedUserError::Status304),
-                403 => Err(UsersListFollowedByAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListFollowedByAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListFollowedByAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListFollowedByAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersListFollowedByAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListFollowedByAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListFollowedByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4130,7 +4443,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_followed_by_authenticated_user(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowedByAuthenticatedUserError> {
+    pub fn list_followed_by_authenticated_user(&self, query_params: Option<impl Into<UsersListFollowedByAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/user/following", super::GITHUB_BASE_API_URL);
 
@@ -4147,7 +4460,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4159,10 +4472,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListFollowedByAuthenticatedUserError::Status304),
-                403 => Err(UsersListFollowedByAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListFollowedByAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListFollowedByAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListFollowedByAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersListFollowedByAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListFollowedByAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListFollowedByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4176,7 +4489,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_followers_for_authenticated_user](https://docs.github.com/rest/users/followers#list-followers-of-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_followers_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowersForAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForAuthenticatedUserError> {
+    pub async fn list_followers_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListFollowersForAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/user/followers", super::GITHUB_BASE_API_URL);
 
@@ -4187,12 +4500,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4204,10 +4517,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListFollowersForAuthenticatedUserError::Status304),
-                403 => Err(UsersListFollowersForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListFollowersForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListFollowersForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListFollowersForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersListFollowersForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListFollowersForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListFollowersForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4222,7 +4535,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_followers_for_authenticated_user(&self, query_params: Option<impl Into<UsersListFollowersForAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForAuthenticatedUserError> {
+    pub fn list_followers_for_authenticated_user(&self, query_params: Option<impl Into<UsersListFollowersForAuthenticatedUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/user/followers", super::GITHUB_BASE_API_URL);
 
@@ -4239,7 +4552,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4251,10 +4564,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListFollowersForAuthenticatedUserError::Status304),
-                403 => Err(UsersListFollowersForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListFollowersForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListFollowersForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListFollowersForAuthenticatedUserError::Status304.into()),
+                403 => Err(UsersListFollowersForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListFollowersForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListFollowersForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4268,7 +4581,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_followers_for_user](https://docs.github.com/rest/users/followers#list-followers-of-a-user)
     ///
     /// ---
-    pub async fn list_followers_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowersForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForUserError> {
+    pub async fn list_followers_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowersForUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/followers", super::GITHUB_BASE_API_URL, username);
 
@@ -4279,12 +4592,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4296,7 +4609,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListFollowersForUserError::Generic { code }),
+                code => Err(UsersListFollowersForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4311,7 +4624,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_followers_for_user(&self, username: &str, query_params: Option<impl Into<UsersListFollowersForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowersForUserError> {
+    pub fn list_followers_for_user(&self, username: &str, query_params: Option<impl Into<UsersListFollowersForUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/followers", super::GITHUB_BASE_API_URL, username);
 
@@ -4328,7 +4641,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4340,7 +4653,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListFollowersForUserError::Generic { code }),
+                code => Err(UsersListFollowersForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4354,7 +4667,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_following_for_user](https://docs.github.com/rest/users/followers#list-the-people-a-user-follows)
     ///
     /// ---
-    pub async fn list_following_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowingForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowingForUserError> {
+    pub async fn list_following_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListFollowingForUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/following", super::GITHUB_BASE_API_URL, username);
 
@@ -4365,12 +4678,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4382,7 +4695,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListFollowingForUserError::Generic { code }),
+                code => Err(UsersListFollowingForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4397,7 +4710,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_following_for_user(&self, username: &str, query_params: Option<impl Into<UsersListFollowingForUserParams>>) -> Result<Vec<SimpleUser>, UsersListFollowingForUserError> {
+    pub fn list_following_for_user(&self, username: &str, query_params: Option<impl Into<UsersListFollowingForUserParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/following", super::GITHUB_BASE_API_URL, username);
 
@@ -4414,7 +4727,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4426,7 +4739,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListFollowingForUserError::Generic { code }),
+                code => Err(UsersListFollowingForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4442,7 +4755,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_gpg_keys_for_authenticated_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_gpg_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedUserError> {
+    pub async fn list_gpg_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedUserParams>>) -> Result<Vec<GpgKey>, AdapterError> {
 
         let mut request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
@@ -4453,12 +4766,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4470,11 +4783,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListGpgKeysForAuthenticatedUserError::Status304),
-                404 => Err(UsersListGpgKeysForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersListGpgKeysForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListGpgKeysForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListGpgKeysForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListGpgKeysForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListGpgKeysForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersListGpgKeysForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListGpgKeysForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListGpgKeysForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4491,7 +4804,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_gpg_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForAuthenticatedUserError> {
+    pub fn list_gpg_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListGpgKeysForAuthenticatedUserParams>>) -> Result<Vec<GpgKey>, AdapterError> {
 
         let mut request_uri = format!("{}/user/gpg_keys", super::GITHUB_BASE_API_URL);
 
@@ -4508,7 +4821,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4520,11 +4833,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListGpgKeysForAuthenticatedUserError::Status304),
-                404 => Err(UsersListGpgKeysForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersListGpgKeysForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListGpgKeysForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListGpgKeysForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListGpgKeysForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListGpgKeysForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersListGpgKeysForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListGpgKeysForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListGpgKeysForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4538,7 +4851,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_gpg_keys_for_user](https://docs.github.com/rest/users/gpg-keys#list-gpg-keys-for-a-user)
     ///
     /// ---
-    pub async fn list_gpg_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListGpgKeysForUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForUserError> {
+    pub async fn list_gpg_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListGpgKeysForUserParams>>) -> Result<Vec<GpgKey>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/gpg_keys", super::GITHUB_BASE_API_URL, username);
 
@@ -4549,12 +4862,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4566,7 +4879,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListGpgKeysForUserError::Generic { code }),
+                code => Err(UsersListGpgKeysForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4581,7 +4894,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_gpg_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListGpgKeysForUserParams>>) -> Result<Vec<GpgKey>, UsersListGpgKeysForUserError> {
+    pub fn list_gpg_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListGpgKeysForUserParams>>) -> Result<Vec<GpgKey>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/gpg_keys", super::GITHUB_BASE_API_URL, username);
 
@@ -4598,7 +4911,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4610,7 +4923,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListGpgKeysForUserError::Generic { code }),
+                code => Err(UsersListGpgKeysForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4628,7 +4941,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_public_emails_for_authenticated_user](https://docs.github.com/rest/users/emails#list-public-email-addresses-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_public_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedUserError> {
+    pub async fn list_public_emails_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, AdapterError> {
 
         let mut request_uri = format!("{}/user/public_emails", super::GITHUB_BASE_API_URL);
 
@@ -4639,12 +4952,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4656,11 +4969,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status304),
-                404 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListPublicEmailsForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListPublicEmailsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4679,7 +4992,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_emails_for_authenticated_user(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, UsersListPublicEmailsForAuthenticatedUserError> {
+    pub fn list_public_emails_for_authenticated_user(&self, query_params: Option<impl Into<UsersListPublicEmailsForAuthenticatedUserParams>>) -> Result<Vec<Email>, AdapterError> {
 
         let mut request_uri = format!("{}/user/public_emails", super::GITHUB_BASE_API_URL);
 
@@ -4696,7 +5009,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4708,11 +5021,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status304),
-                404 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListPublicEmailsForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListPublicEmailsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListPublicEmailsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4726,7 +5039,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_public_keys_for_user](https://docs.github.com/rest/users/keys#list-public-keys-for-a-user)
     ///
     /// ---
-    pub async fn list_public_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListPublicKeysForUserParams>>) -> Result<Vec<KeySimple>, UsersListPublicKeysForUserError> {
+    pub async fn list_public_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListPublicKeysForUserParams>>) -> Result<Vec<KeySimple>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/keys", super::GITHUB_BASE_API_URL, username);
 
@@ -4737,12 +5050,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4754,7 +5067,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListPublicKeysForUserError::Generic { code }),
+                code => Err(UsersListPublicKeysForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4769,7 +5082,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListPublicKeysForUserParams>>) -> Result<Vec<KeySimple>, UsersListPublicKeysForUserError> {
+    pub fn list_public_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListPublicKeysForUserParams>>) -> Result<Vec<KeySimple>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/keys", super::GITHUB_BASE_API_URL, username);
 
@@ -4786,7 +5099,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4798,7 +5111,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListPublicKeysForUserError::Generic { code }),
+                code => Err(UsersListPublicKeysForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4814,7 +5127,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_public_ssh_keys_for_authenticated_user](https://docs.github.com/rest/users/keys#list-public-ssh-keys-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_public_ssh_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedUserParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedUserError> {
+    pub async fn list_public_ssh_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedUserParams>>) -> Result<Vec<Key>, AdapterError> {
 
         let mut request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
@@ -4825,12 +5138,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4842,11 +5155,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status304),
-                404 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListPublicSshKeysForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListPublicSshKeysForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4863,7 +5176,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_ssh_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedUserParams>>) -> Result<Vec<Key>, UsersListPublicSshKeysForAuthenticatedUserError> {
+    pub fn list_public_ssh_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListPublicSshKeysForAuthenticatedUserParams>>) -> Result<Vec<Key>, AdapterError> {
 
         let mut request_uri = format!("{}/user/keys", super::GITHUB_BASE_API_URL);
 
@@ -4880,7 +5193,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4892,11 +5205,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status304),
-                404 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListPublicSshKeysForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListPublicSshKeysForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListPublicSshKeysForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4910,7 +5223,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_social_accounts_for_authenticated_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_social_accounts_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListSocialAccountsForAuthenticatedUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForAuthenticatedUserError> {
+    pub async fn list_social_accounts_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListSocialAccountsForAuthenticatedUserParams>>) -> Result<Vec<SocialAccount>, AdapterError> {
 
         let mut request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
 
@@ -4921,12 +5234,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4938,11 +5251,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status304),
-                404 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListSocialAccountsForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListSocialAccountsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4957,7 +5270,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_social_accounts_for_authenticated_user(&self, query_params: Option<impl Into<UsersListSocialAccountsForAuthenticatedUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForAuthenticatedUserError> {
+    pub fn list_social_accounts_for_authenticated_user(&self, query_params: Option<impl Into<UsersListSocialAccountsForAuthenticatedUserParams>>) -> Result<Vec<SocialAccount>, AdapterError> {
 
         let mut request_uri = format!("{}/user/social_accounts", super::GITHUB_BASE_API_URL);
 
@@ -4974,7 +5287,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4986,11 +5299,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status304),
-                404 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListSocialAccountsForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListSocialAccountsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListSocialAccountsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5004,7 +5317,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_social_accounts_for_user](https://docs.github.com/rest/users/social-accounts#list-social-accounts-for-a-user)
     ///
     /// ---
-    pub async fn list_social_accounts_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListSocialAccountsForUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForUserError> {
+    pub async fn list_social_accounts_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListSocialAccountsForUserParams>>) -> Result<Vec<SocialAccount>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/social_accounts", super::GITHUB_BASE_API_URL, username);
 
@@ -5015,12 +5328,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5032,7 +5345,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListSocialAccountsForUserError::Generic { code }),
+                code => Err(UsersListSocialAccountsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -5047,7 +5360,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_social_accounts_for_user(&self, username: &str, query_params: Option<impl Into<UsersListSocialAccountsForUserParams>>) -> Result<Vec<SocialAccount>, UsersListSocialAccountsForUserError> {
+    pub fn list_social_accounts_for_user(&self, username: &str, query_params: Option<impl Into<UsersListSocialAccountsForUserParams>>) -> Result<Vec<SocialAccount>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/social_accounts", super::GITHUB_BASE_API_URL, username);
 
@@ -5064,7 +5377,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5076,7 +5389,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListSocialAccountsForUserError::Generic { code }),
+                code => Err(UsersListSocialAccountsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -5092,7 +5405,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_ssh_signing_keys_for_authenticated_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_ssh_signing_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListSshSigningKeysForAuthenticatedUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForAuthenticatedUserError> {
+    pub async fn list_ssh_signing_keys_for_authenticated_user_async(&self, query_params: Option<impl Into<UsersListSshSigningKeysForAuthenticatedUserParams>>) -> Result<Vec<SshSigningKey>, AdapterError> {
 
         let mut request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
 
@@ -5103,12 +5416,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5120,11 +5433,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status304),
-                404 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersListSshSigningKeysForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersListSshSigningKeysForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5141,7 +5454,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_ssh_signing_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListSshSigningKeysForAuthenticatedUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForAuthenticatedUserError> {
+    pub fn list_ssh_signing_keys_for_authenticated_user(&self, query_params: Option<impl Into<UsersListSshSigningKeysForAuthenticatedUserParams>>) -> Result<Vec<SshSigningKey>, AdapterError> {
 
         let mut request_uri = format!("{}/user/ssh_signing_keys", super::GITHUB_BASE_API_URL);
 
@@ -5158,7 +5471,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5170,11 +5483,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status304),
-                404 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(UsersListSshSigningKeysForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersListSshSigningKeysForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersListSshSigningKeysForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5188,7 +5501,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for list_ssh_signing_keys_for_user](https://docs.github.com/rest/users/ssh-signing-keys#list-ssh-signing-keys-for-a-user)
     ///
     /// ---
-    pub async fn list_ssh_signing_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListSshSigningKeysForUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForUserError> {
+    pub async fn list_ssh_signing_keys_for_user_async(&self, username: &str, query_params: Option<impl Into<UsersListSshSigningKeysForUserParams>>) -> Result<Vec<SshSigningKey>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/ssh_signing_keys", super::GITHUB_BASE_API_URL, username);
 
@@ -5199,12 +5512,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5216,7 +5529,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListSshSigningKeysForUserError::Generic { code }),
+                code => Err(UsersListSshSigningKeysForUserError::Generic { code }.into()),
             }
         }
     }
@@ -5231,7 +5544,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_ssh_signing_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListSshSigningKeysForUserParams>>) -> Result<Vec<SshSigningKey>, UsersListSshSigningKeysForUserError> {
+    pub fn list_ssh_signing_keys_for_user(&self, username: &str, query_params: Option<impl Into<UsersListSshSigningKeysForUserParams>>) -> Result<Vec<SshSigningKey>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/ssh_signing_keys", super::GITHUB_BASE_API_URL, username);
 
@@ -5248,7 +5561,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5260,7 +5573,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(UsersListSshSigningKeysForUserError::Generic { code }),
+                code => Err(UsersListSshSigningKeysForUserError::Generic { code }.into()),
             }
         }
     }
@@ -5274,19 +5587,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for set_primary_email_visibility_for_authenticated_user](https://docs.github.com/rest/users/emails#set-primary-email-visibility-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn set_primary_email_visibility_for_authenticated_user_async(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedUserError> {
+    pub async fn set_primary_email_visibility_for_authenticated_user_async(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser) -> Result<Vec<Email>, AdapterError> {
 
         let request_uri = format!("{}/user/email/visibility", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5298,12 +5611,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status304),
-                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5318,19 +5631,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_primary_email_visibility_for_authenticated_user(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser) -> Result<Vec<Email>, UsersSetPrimaryEmailVisibilityForAuthenticatedUserError> {
+    pub fn set_primary_email_visibility_for_authenticated_user(&self, body: PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser) -> Result<Vec<Email>, AdapterError> {
 
         let request_uri = format!("{}/user/email/visibility", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PatchUsersSetPrimaryEmailVisibilityForAuthenticatedUser>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5342,12 +5655,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status304),
-                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Generic { code }),
+                304 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status304.into()),
+                404 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                422 => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(UsersSetPrimaryEmailVisibilityForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5361,19 +5674,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for unblock](https://docs.github.com/rest/users/blocking#unblock-a-user)
     ///
     /// ---
-    pub async fn unblock_async(&self, username: &str) -> Result<(), UsersUnblockError> {
+    pub async fn unblock_async(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/blocks/{}", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5385,11 +5698,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersUnblockError::Status304),
-                403 => Err(UsersUnblockError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersUnblockError::Status401(github_response.to_json_async().await?)),
-                404 => Err(UsersUnblockError::Status404(github_response.to_json_async().await?)),
-                code => Err(UsersUnblockError::Generic { code }),
+                304 => Err(UsersUnblockError::Status304.into()),
+                403 => Err(UsersUnblockError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersUnblockError::Status401(github_response.to_json_async().await?).into()),
+                404 => Err(UsersUnblockError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(UsersUnblockError::Generic { code }.into()),
             }
         }
     }
@@ -5404,7 +5717,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unblock(&self, username: &str) -> Result<(), UsersUnblockError> {
+    pub fn unblock(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/blocks/{}", super::GITHUB_BASE_API_URL, username);
 
@@ -5416,7 +5729,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5428,11 +5741,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersUnblockError::Status304),
-                403 => Err(UsersUnblockError::Status403(github_response.to_json()?)),
-                401 => Err(UsersUnblockError::Status401(github_response.to_json()?)),
-                404 => Err(UsersUnblockError::Status404(github_response.to_json()?)),
-                code => Err(UsersUnblockError::Generic { code }),
+                304 => Err(UsersUnblockError::Status304.into()),
+                403 => Err(UsersUnblockError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersUnblockError::Status401(github_response.to_json()?).into()),
+                404 => Err(UsersUnblockError::Status404(github_response.to_json()?).into()),
+                code => Err(UsersUnblockError::Generic { code }.into()),
             }
         }
     }
@@ -5446,19 +5759,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for unfollow](https://docs.github.com/rest/users/followers#unfollow-a-user)
     ///
     /// ---
-    pub async fn unfollow_async(&self, username: &str) -> Result<(), UsersUnfollowError> {
+    pub async fn unfollow_async(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/following/{}", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5470,11 +5783,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersUnfollowError::Status304),
-                404 => Err(UsersUnfollowError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersUnfollowError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersUnfollowError::Status401(github_response.to_json_async().await?)),
-                code => Err(UsersUnfollowError::Generic { code }),
+                304 => Err(UsersUnfollowError::Status304.into()),
+                404 => Err(UsersUnfollowError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersUnfollowError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersUnfollowError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(UsersUnfollowError::Generic { code }.into()),
             }
         }
     }
@@ -5489,7 +5802,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unfollow(&self, username: &str) -> Result<(), UsersUnfollowError> {
+    pub fn unfollow(&self, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/following/{}", super::GITHUB_BASE_API_URL, username);
 
@@ -5501,7 +5814,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5513,11 +5826,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersUnfollowError::Status304),
-                404 => Err(UsersUnfollowError::Status404(github_response.to_json()?)),
-                403 => Err(UsersUnfollowError::Status403(github_response.to_json()?)),
-                401 => Err(UsersUnfollowError::Status401(github_response.to_json()?)),
-                code => Err(UsersUnfollowError::Generic { code }),
+                304 => Err(UsersUnfollowError::Status304.into()),
+                404 => Err(UsersUnfollowError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersUnfollowError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersUnfollowError::Status401(github_response.to_json()?).into()),
+                code => Err(UsersUnfollowError::Generic { code }.into()),
             }
         }
     }
@@ -5531,19 +5844,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     /// [GitHub API docs for update_authenticated](https://docs.github.com/rest/users/users#update-the-authenticated-user)
     ///
     /// ---
-    pub async fn update_authenticated_async(&self, body: PatchUsersUpdateAuthenticated) -> Result<PrivateUser, UsersUpdateAuthenticatedError> {
+    pub async fn update_authenticated_async(&self, body: PatchUsersUpdateAuthenticated) -> Result<PrivateUser, AdapterError> {
 
         let request_uri = format!("{}/user", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchUsersUpdateAuthenticated::from_json(body)?),
+            body: Some(C::from_json::<PatchUsersUpdateAuthenticated>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5555,12 +5868,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersUpdateAuthenticatedError::Status304),
-                404 => Err(UsersUpdateAuthenticatedError::Status404(github_response.to_json_async().await?)),
-                403 => Err(UsersUpdateAuthenticatedError::Status403(github_response.to_json_async().await?)),
-                401 => Err(UsersUpdateAuthenticatedError::Status401(github_response.to_json_async().await?)),
-                422 => Err(UsersUpdateAuthenticatedError::Status422(github_response.to_json_async().await?)),
-                code => Err(UsersUpdateAuthenticatedError::Generic { code }),
+                304 => Err(UsersUpdateAuthenticatedError::Status304.into()),
+                404 => Err(UsersUpdateAuthenticatedError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(UsersUpdateAuthenticatedError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(UsersUpdateAuthenticatedError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(UsersUpdateAuthenticatedError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(UsersUpdateAuthenticatedError::Generic { code }.into()),
             }
         }
     }
@@ -5575,19 +5888,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_authenticated(&self, body: PatchUsersUpdateAuthenticated) -> Result<PrivateUser, UsersUpdateAuthenticatedError> {
+    pub fn update_authenticated(&self, body: PatchUsersUpdateAuthenticated) -> Result<PrivateUser, AdapterError> {
 
         let request_uri = format!("{}/user", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchUsersUpdateAuthenticated::from_json(body)?),
+            body: Some(C::from_json::<PatchUsersUpdateAuthenticated>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5599,12 +5912,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Users<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(UsersUpdateAuthenticatedError::Status304),
-                404 => Err(UsersUpdateAuthenticatedError::Status404(github_response.to_json()?)),
-                403 => Err(UsersUpdateAuthenticatedError::Status403(github_response.to_json()?)),
-                401 => Err(UsersUpdateAuthenticatedError::Status401(github_response.to_json()?)),
-                422 => Err(UsersUpdateAuthenticatedError::Status422(github_response.to_json()?)),
-                code => Err(UsersUpdateAuthenticatedError::Generic { code }),
+                304 => Err(UsersUpdateAuthenticatedError::Status304.into()),
+                404 => Err(UsersUpdateAuthenticatedError::Status404(github_response.to_json()?).into()),
+                403 => Err(UsersUpdateAuthenticatedError::Status403(github_response.to_json()?).into()),
+                401 => Err(UsersUpdateAuthenticatedError::Status401(github_response.to_json()?).into()),
+                422 => Err(UsersUpdateAuthenticatedError::Status422(github_response.to_json()?).into()),
+                code => Err(UsersUpdateAuthenticatedError::Generic { code }.into()),
             }
         }
     }

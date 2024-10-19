@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Copilot<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Copilot<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Copilot<C> {
+pub fn new<C: Client>(client: &C) -> Copilot<C> where AdapterError: From<<C as Client>::Err> {
     Copilot { client }
 }
 
 /// Errors for the [Add teams to the Copilot subscription for an organization](Copilot::add_copilot_seats_for_teams_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotAddCopilotSeatsForTeamsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -55,21 +45,30 @@ pub enum CopilotAddCopilotSeatsForTeamsError {
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CopilotAddCopilotSeatsForTeamsError> for AdapterError {
+    fn from(err: CopilotAddCopilotSeatsForTeamsError) -> Self {
+        let (description, status_code) = match err {
+            CopilotAddCopilotSeatsForTeamsError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotAddCopilotSeatsForTeamsError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotAddCopilotSeatsForTeamsError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotAddCopilotSeatsForTeamsError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotAddCopilotSeatsForTeamsError::Status422 => (String::from("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization's Copilot access setting is set to enable Copilot for all users or is unconfigured."), 422),
+            CopilotAddCopilotSeatsForTeamsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Add users to the Copilot subscription for an organization](Copilot::add_copilot_seats_for_users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotAddCopilotSeatsForUsersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -82,21 +81,30 @@ pub enum CopilotAddCopilotSeatsForUsersError {
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CopilotAddCopilotSeatsForUsersError> for AdapterError {
+    fn from(err: CopilotAddCopilotSeatsForUsersError) -> Self {
+        let (description, status_code) = match err {
+            CopilotAddCopilotSeatsForUsersError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotAddCopilotSeatsForUsersError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotAddCopilotSeatsForUsersError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotAddCopilotSeatsForUsersError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotAddCopilotSeatsForUsersError::Status422 => (String::from("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization's Copilot access setting is set to enable Copilot for all users or is unconfigured."), 422),
+            CopilotAddCopilotSeatsForUsersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove teams from the Copilot subscription for an organization](Copilot::cancel_copilot_seat_assignment_for_teams_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotCancelCopilotSeatAssignmentForTeamsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -111,19 +119,28 @@ pub enum CopilotCancelCopilotSeatAssignmentForTeamsError {
     Generic { code: u16 },
 }
 
+impl From<CopilotCancelCopilotSeatAssignmentForTeamsError> for AdapterError {
+    fn from(err: CopilotCancelCopilotSeatAssignmentForTeamsError) -> Self {
+        let (description, status_code) = match err {
+            CopilotCancelCopilotSeatAssignmentForTeamsError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotCancelCopilotSeatAssignmentForTeamsError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotCancelCopilotSeatAssignmentForTeamsError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotCancelCopilotSeatAssignmentForTeamsError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotCancelCopilotSeatAssignmentForTeamsError::Status422 => (String::from("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, or the organization's Copilot access setting is set to enable Copilot for all users or is unconfigured."), 422),
+            CopilotCancelCopilotSeatAssignmentForTeamsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove users from the Copilot subscription for an organization](Copilot::cancel_copilot_seat_assignment_for_users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotCancelCopilotSeatAssignmentForUsersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -138,19 +155,28 @@ pub enum CopilotCancelCopilotSeatAssignmentForUsersError {
     Generic { code: u16 },
 }
 
+impl From<CopilotCancelCopilotSeatAssignmentForUsersError> for AdapterError {
+    fn from(err: CopilotCancelCopilotSeatAssignmentForUsersError) -> Self {
+        let (description, status_code) = match err {
+            CopilotCancelCopilotSeatAssignmentForUsersError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotCancelCopilotSeatAssignmentForUsersError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotCancelCopilotSeatAssignmentForUsersError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotCancelCopilotSeatAssignmentForUsersError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotCancelCopilotSeatAssignmentForUsersError::Status422 => (String::from("Copilot Business or Enterprise is not enabled for this organization, billing has not been set up for this organization, a public code suggestions policy has not been set for this organization, the seat management setting is set to enable Copilot for all users or is unconfigured, or a user's seat cannot be cancelled because it was assigned to them via a team."), 422),
+            CopilotCancelCopilotSeatAssignmentForUsersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get Copilot seat information and settings for an organization](Copilot::get_copilot_organization_details_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotGetCopilotOrganizationDetailsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -165,19 +191,28 @@ pub enum CopilotGetCopilotOrganizationDetailsError {
     Generic { code: u16 },
 }
 
+impl From<CopilotGetCopilotOrganizationDetailsError> for AdapterError {
+    fn from(err: CopilotGetCopilotOrganizationDetailsError) -> Self {
+        let (description, status_code) = match err {
+            CopilotGetCopilotOrganizationDetailsError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotGetCopilotOrganizationDetailsError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotGetCopilotOrganizationDetailsError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotGetCopilotOrganizationDetailsError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotGetCopilotOrganizationDetailsError::Status422 => (String::from("There is a problem with your account's associated payment method."), 422),
+            CopilotGetCopilotOrganizationDetailsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get Copilot seat assignment details for a user](Copilot::get_copilot_seat_details_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotGetCopilotSeatDetailsForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -192,19 +227,28 @@ pub enum CopilotGetCopilotSeatDetailsForUserError {
     Generic { code: u16 },
 }
 
+impl From<CopilotGetCopilotSeatDetailsForUserError> for AdapterError {
+    fn from(err: CopilotGetCopilotSeatDetailsForUserError) -> Self {
+        let (description, status_code) = match err {
+            CopilotGetCopilotSeatDetailsForUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotGetCopilotSeatDetailsForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotGetCopilotSeatDetailsForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotGetCopilotSeatDetailsForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotGetCopilotSeatDetailsForUserError::Status422 => (String::from("Copilot Business or Enterprise is not enabled for this organization or the user has a pending organization invitation."), 422),
+            CopilotGetCopilotSeatDetailsForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List all Copilot seat assignments for an organization](Copilot::list_copilot_seats_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotListCopilotSeatsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -215,21 +259,29 @@ pub enum CopilotListCopilotSeatsError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CopilotListCopilotSeatsError> for AdapterError {
+    fn from(err: CopilotListCopilotSeatsError) -> Self {
+        let (description, status_code) = match err {
+            CopilotListCopilotSeatsError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotListCopilotSeatsError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotListCopilotSeatsError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotListCopilotSeatsError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotListCopilotSeatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List all Copilot seat assignments for an enterprise](Copilot::list_copilot_seats_for_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotListCopilotSeatsForEnterpriseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -240,21 +292,29 @@ pub enum CopilotListCopilotSeatsForEnterpriseError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CopilotListCopilotSeatsForEnterpriseError> for AdapterError {
+    fn from(err: CopilotListCopilotSeatsForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CopilotListCopilotSeatsForEnterpriseError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotListCopilotSeatsForEnterpriseError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotListCopilotSeatsForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotListCopilotSeatsForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotListCopilotSeatsForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a summary of Copilot usage for enterprise members](Copilot::usage_metrics_for_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotUsageMetricsForEnterpriseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -265,21 +325,29 @@ pub enum CopilotUsageMetricsForEnterpriseError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CopilotUsageMetricsForEnterpriseError> for AdapterError {
+    fn from(err: CopilotUsageMetricsForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CopilotUsageMetricsForEnterpriseError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotUsageMetricsForEnterpriseError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotUsageMetricsForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotUsageMetricsForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotUsageMetricsForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a summary of Copilot usage for an enterprise team](Copilot::usage_metrics_for_enterprise_team_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotUsageMetricsForEnterpriseTeamError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -290,21 +358,29 @@ pub enum CopilotUsageMetricsForEnterpriseTeamError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CopilotUsageMetricsForEnterpriseTeamError> for AdapterError {
+    fn from(err: CopilotUsageMetricsForEnterpriseTeamError) -> Self {
+        let (description, status_code) = match err {
+            CopilotUsageMetricsForEnterpriseTeamError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotUsageMetricsForEnterpriseTeamError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotUsageMetricsForEnterpriseTeamError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotUsageMetricsForEnterpriseTeamError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotUsageMetricsForEnterpriseTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a summary of Copilot usage for organization members](Copilot::usage_metrics_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotUsageMetricsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -317,19 +393,27 @@ pub enum CopilotUsageMetricsForOrgError {
     Generic { code: u16 },
 }
 
+impl From<CopilotUsageMetricsForOrgError> for AdapterError {
+    fn from(err: CopilotUsageMetricsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            CopilotUsageMetricsForOrgError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotUsageMetricsForOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotUsageMetricsForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotUsageMetricsForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotUsageMetricsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a summary of Copilot usage for a team](Copilot::usage_metrics_for_team_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotUsageMetricsForTeamError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -340,6 +424,24 @@ pub enum CopilotUsageMetricsForTeamError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CopilotUsageMetricsForTeamError> for AdapterError {
+    fn from(err: CopilotUsageMetricsForTeamError) -> Self {
+        let (description, status_code) = match err {
+            CopilotUsageMetricsForTeamError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotUsageMetricsForTeamError::Status401(_) => (String::from("Requires authentication"), 401),
+            CopilotUsageMetricsForTeamError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotUsageMetricsForTeamError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotUsageMetricsForTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -696,7 +798,7 @@ impl<'enc> From<&'enc PerPage> for CopilotUsageMetricsForTeamParams<'enc> {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
+impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add teams to the Copilot subscription for an organization
@@ -720,19 +822,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for add_copilot_seats_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#add-teams-to-the-copilot-subscription-for-an-organization)
     ///
     /// ---
-    pub async fn add_copilot_seats_for_teams_async(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, CopilotAddCopilotSeatsForTeamsError> {
+    pub async fn add_copilot_seats_for_teams_async(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCopilotAddCopilotSeatsForTeams::from_json(body)?),
+            body: Some(C::from_json::<PostCopilotAddCopilotSeatsForTeams>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -744,12 +846,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotAddCopilotSeatsForTeamsError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotAddCopilotSeatsForTeamsError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotAddCopilotSeatsForTeamsError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotAddCopilotSeatsForTeamsError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CopilotAddCopilotSeatsForTeamsError::Status422),
-                code => Err(CopilotAddCopilotSeatsForTeamsError::Generic { code }),
+                500 => Err(CopilotAddCopilotSeatsForTeamsError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotAddCopilotSeatsForTeamsError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotAddCopilotSeatsForTeamsError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotAddCopilotSeatsForTeamsError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotAddCopilotSeatsForTeamsError::Status422.into()),
+                code => Err(CopilotAddCopilotSeatsForTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -778,19 +880,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_copilot_seats_for_teams(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, CopilotAddCopilotSeatsForTeamsError> {
+    pub fn add_copilot_seats_for_teams(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCopilotAddCopilotSeatsForTeams::from_json(body)?),
+            body: Some(C::from_json::<PostCopilotAddCopilotSeatsForTeams>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -802,12 +904,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotAddCopilotSeatsForTeamsError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotAddCopilotSeatsForTeamsError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotAddCopilotSeatsForTeamsError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotAddCopilotSeatsForTeamsError::Status404(github_response.to_json()?)),
-                422 => Err(CopilotAddCopilotSeatsForTeamsError::Status422),
-                code => Err(CopilotAddCopilotSeatsForTeamsError::Generic { code }),
+                500 => Err(CopilotAddCopilotSeatsForTeamsError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotAddCopilotSeatsForTeamsError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotAddCopilotSeatsForTeamsError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotAddCopilotSeatsForTeamsError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotAddCopilotSeatsForTeamsError::Status422.into()),
+                code => Err(CopilotAddCopilotSeatsForTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -835,19 +937,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for add_copilot_seats_for_users](https://docs.github.com/rest/copilot/copilot-user-management#add-users-to-the-copilot-subscription-for-an-organization)
     ///
     /// ---
-    pub async fn add_copilot_seats_for_users_async(&self, org: &str, body: PostCopilotAddCopilotSeatsForUsers) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, CopilotAddCopilotSeatsForUsersError> {
+    pub async fn add_copilot_seats_for_users_async(&self, org: &str, body: PostCopilotAddCopilotSeatsForUsers) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCopilotAddCopilotSeatsForUsers::from_json(body)?),
+            body: Some(C::from_json::<PostCopilotAddCopilotSeatsForUsers>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -859,12 +961,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotAddCopilotSeatsForUsersError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotAddCopilotSeatsForUsersError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotAddCopilotSeatsForUsersError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotAddCopilotSeatsForUsersError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CopilotAddCopilotSeatsForUsersError::Status422),
-                code => Err(CopilotAddCopilotSeatsForUsersError::Generic { code }),
+                500 => Err(CopilotAddCopilotSeatsForUsersError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotAddCopilotSeatsForUsersError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotAddCopilotSeatsForUsersError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotAddCopilotSeatsForUsersError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotAddCopilotSeatsForUsersError::Status422.into()),
+                code => Err(CopilotAddCopilotSeatsForUsersError::Generic { code }.into()),
             }
         }
     }
@@ -893,19 +995,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_copilot_seats_for_users(&self, org: &str, body: PostCopilotAddCopilotSeatsForUsers) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, CopilotAddCopilotSeatsForUsersError> {
+    pub fn add_copilot_seats_for_users(&self, org: &str, body: PostCopilotAddCopilotSeatsForUsers) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCopilotAddCopilotSeatsForUsers::from_json(body)?),
+            body: Some(C::from_json::<PostCopilotAddCopilotSeatsForUsers>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -917,12 +1019,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotAddCopilotSeatsForUsersError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotAddCopilotSeatsForUsersError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotAddCopilotSeatsForUsersError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotAddCopilotSeatsForUsersError::Status404(github_response.to_json()?)),
-                422 => Err(CopilotAddCopilotSeatsForUsersError::Status422),
-                code => Err(CopilotAddCopilotSeatsForUsersError::Generic { code }),
+                500 => Err(CopilotAddCopilotSeatsForUsersError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotAddCopilotSeatsForUsersError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotAddCopilotSeatsForUsersError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotAddCopilotSeatsForUsersError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotAddCopilotSeatsForUsersError::Status422.into()),
+                code => Err(CopilotAddCopilotSeatsForUsersError::Generic { code }.into()),
             }
         }
     }
@@ -948,19 +1050,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for cancel_copilot_seat_assignment_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#remove-teams-from-the-copilot-subscription-for-an-organization)
     ///
     /// ---
-    pub async fn cancel_copilot_seat_assignment_for_teams_async(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, CopilotCancelCopilotSeatAssignmentForTeamsError> {
+    pub async fn cancel_copilot_seat_assignment_for_teams_async(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCopilotCancelCopilotSeatAssignmentForTeams::from_json(body)?),
+            body: Some(C::from_json::<DeleteCopilotCancelCopilotSeatAssignmentForTeams>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -972,12 +1074,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status422),
-                code => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Generic { code }),
+                500 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status422.into()),
+                code => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -1004,19 +1106,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_copilot_seat_assignment_for_teams(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, CopilotCancelCopilotSeatAssignmentForTeamsError> {
+    pub fn cancel_copilot_seat_assignment_for_teams(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCopilotCancelCopilotSeatAssignmentForTeams::from_json(body)?),
+            body: Some(C::from_json::<DeleteCopilotCancelCopilotSeatAssignmentForTeams>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1028,12 +1130,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status404(github_response.to_json()?)),
-                422 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status422),
-                code => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Generic { code }),
+                500 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Status422.into()),
+                code => Err(CopilotCancelCopilotSeatAssignmentForTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -1059,19 +1161,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for cancel_copilot_seat_assignment_for_users](https://docs.github.com/rest/copilot/copilot-user-management#remove-users-from-the-copilot-subscription-for-an-organization)
     ///
     /// ---
-    pub async fn cancel_copilot_seat_assignment_for_users_async(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForUsers) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, CopilotCancelCopilotSeatAssignmentForUsersError> {
+    pub async fn cancel_copilot_seat_assignment_for_users_async(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForUsers) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCopilotCancelCopilotSeatAssignmentForUsers::from_json(body)?),
+            body: Some(C::from_json::<DeleteCopilotCancelCopilotSeatAssignmentForUsers>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1083,12 +1185,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status422),
-                code => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Generic { code }),
+                500 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status422.into()),
+                code => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Generic { code }.into()),
             }
         }
     }
@@ -1115,19 +1217,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_copilot_seat_assignment_for_users(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForUsers) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, CopilotCancelCopilotSeatAssignmentForUsersError> {
+    pub fn cancel_copilot_seat_assignment_for_users(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForUsers) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCopilotCancelCopilotSeatAssignmentForUsers::from_json(body)?),
+            body: Some(C::from_json::<DeleteCopilotCancelCopilotSeatAssignmentForUsers>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1139,12 +1241,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status404(github_response.to_json()?)),
-                422 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status422),
-                code => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Generic { code }),
+                500 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Status422.into()),
+                code => Err(CopilotCancelCopilotSeatAssignmentForUsersError::Generic { code }.into()),
             }
         }
     }
@@ -1167,19 +1269,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for get_copilot_organization_details](https://docs.github.com/rest/copilot/copilot-user-management#get-copilot-seat-information-and-settings-for-an-organization)
     ///
     /// ---
-    pub async fn get_copilot_organization_details_async(&self, org: &str) -> Result<CopilotOrganizationDetails, CopilotGetCopilotOrganizationDetailsError> {
+    pub async fn get_copilot_organization_details_async(&self, org: &str) -> Result<CopilotOrganizationDetails, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1191,12 +1293,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotGetCopilotOrganizationDetailsError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotGetCopilotOrganizationDetailsError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotGetCopilotOrganizationDetailsError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotGetCopilotOrganizationDetailsError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CopilotGetCopilotOrganizationDetailsError::Status422),
-                code => Err(CopilotGetCopilotOrganizationDetailsError::Generic { code }),
+                500 => Err(CopilotGetCopilotOrganizationDetailsError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotGetCopilotOrganizationDetailsError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotGetCopilotOrganizationDetailsError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotGetCopilotOrganizationDetailsError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotGetCopilotOrganizationDetailsError::Status422.into()),
+                code => Err(CopilotGetCopilotOrganizationDetailsError::Generic { code }.into()),
             }
         }
     }
@@ -1220,7 +1322,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_copilot_organization_details(&self, org: &str) -> Result<CopilotOrganizationDetails, CopilotGetCopilotOrganizationDetailsError> {
+    pub fn get_copilot_organization_details(&self, org: &str) -> Result<CopilotOrganizationDetails, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing", super::GITHUB_BASE_API_URL, org);
 
@@ -1232,7 +1334,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1244,12 +1346,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotGetCopilotOrganizationDetailsError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotGetCopilotOrganizationDetailsError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotGetCopilotOrganizationDetailsError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotGetCopilotOrganizationDetailsError::Status404(github_response.to_json()?)),
-                422 => Err(CopilotGetCopilotOrganizationDetailsError::Status422),
-                code => Err(CopilotGetCopilotOrganizationDetailsError::Generic { code }),
+                500 => Err(CopilotGetCopilotOrganizationDetailsError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotGetCopilotOrganizationDetailsError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotGetCopilotOrganizationDetailsError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotGetCopilotOrganizationDetailsError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotGetCopilotOrganizationDetailsError::Status422.into()),
+                code => Err(CopilotGetCopilotOrganizationDetailsError::Generic { code }.into()),
             }
         }
     }
@@ -1270,19 +1372,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for get_copilot_seat_details_for_user](https://docs.github.com/rest/copilot/copilot-user-management#get-copilot-seat-assignment-details-for-a-user)
     ///
     /// ---
-    pub async fn get_copilot_seat_details_for_user_async(&self, org: &str, username: &str) -> Result<CopilotSeatDetails, CopilotGetCopilotSeatDetailsForUserError> {
+    pub async fn get_copilot_seat_details_for_user_async(&self, org: &str, username: &str) -> Result<CopilotSeatDetails, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}/copilot", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1294,12 +1396,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotGetCopilotSeatDetailsForUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotGetCopilotSeatDetailsForUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotGetCopilotSeatDetailsForUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotGetCopilotSeatDetailsForUserError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CopilotGetCopilotSeatDetailsForUserError::Status422),
-                code => Err(CopilotGetCopilotSeatDetailsForUserError::Generic { code }),
+                500 => Err(CopilotGetCopilotSeatDetailsForUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotGetCopilotSeatDetailsForUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotGetCopilotSeatDetailsForUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotGetCopilotSeatDetailsForUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotGetCopilotSeatDetailsForUserError::Status422.into()),
+                code => Err(CopilotGetCopilotSeatDetailsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1321,7 +1423,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_copilot_seat_details_for_user(&self, org: &str, username: &str) -> Result<CopilotSeatDetails, CopilotGetCopilotSeatDetailsForUserError> {
+    pub fn get_copilot_seat_details_for_user(&self, org: &str, username: &str) -> Result<CopilotSeatDetails, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}/copilot", super::GITHUB_BASE_API_URL, org, username);
 
@@ -1333,7 +1435,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1345,12 +1447,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotGetCopilotSeatDetailsForUserError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotGetCopilotSeatDetailsForUserError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotGetCopilotSeatDetailsForUserError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotGetCopilotSeatDetailsForUserError::Status404(github_response.to_json()?)),
-                422 => Err(CopilotGetCopilotSeatDetailsForUserError::Status422),
-                code => Err(CopilotGetCopilotSeatDetailsForUserError::Generic { code }),
+                500 => Err(CopilotGetCopilotSeatDetailsForUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotGetCopilotSeatDetailsForUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotGetCopilotSeatDetailsForUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotGetCopilotSeatDetailsForUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotGetCopilotSeatDetailsForUserError::Status422.into()),
+                code => Err(CopilotGetCopilotSeatDetailsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1370,7 +1472,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for list_copilot_seats](https://docs.github.com/rest/copilot/copilot-user-management#list-all-copilot-seat-assignments-for-an-organization)
     ///
     /// ---
-    pub async fn list_copilot_seats_async(&self, org: &str, query_params: Option<impl Into<CopilotListCopilotSeatsParams>>) -> Result<GetCopilotListCopilotSeatsResponse200, CopilotListCopilotSeatsError> {
+    pub async fn list_copilot_seats_async(&self, org: &str, query_params: Option<impl Into<CopilotListCopilotSeatsParams>>) -> Result<GetCopilotListCopilotSeatsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/copilot/billing/seats", super::GITHUB_BASE_API_URL, org);
 
@@ -1381,12 +1483,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1398,11 +1500,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotListCopilotSeatsError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotListCopilotSeatsError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotListCopilotSeatsError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotListCopilotSeatsError::Status404(github_response.to_json_async().await?)),
-                code => Err(CopilotListCopilotSeatsError::Generic { code }),
+                500 => Err(CopilotListCopilotSeatsError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotListCopilotSeatsError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotListCopilotSeatsError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotListCopilotSeatsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CopilotListCopilotSeatsError::Generic { code }.into()),
             }
         }
     }
@@ -1423,7 +1525,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_copilot_seats(&self, org: &str, query_params: Option<impl Into<CopilotListCopilotSeatsParams>>) -> Result<GetCopilotListCopilotSeatsResponse200, CopilotListCopilotSeatsError> {
+    pub fn list_copilot_seats(&self, org: &str, query_params: Option<impl Into<CopilotListCopilotSeatsParams>>) -> Result<GetCopilotListCopilotSeatsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/copilot/billing/seats", super::GITHUB_BASE_API_URL, org);
 
@@ -1440,7 +1542,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1452,11 +1554,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotListCopilotSeatsError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotListCopilotSeatsError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotListCopilotSeatsError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotListCopilotSeatsError::Status404(github_response.to_json()?)),
-                code => Err(CopilotListCopilotSeatsError::Generic { code }),
+                500 => Err(CopilotListCopilotSeatsError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotListCopilotSeatsError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotListCopilotSeatsError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotListCopilotSeatsError::Status404(github_response.to_json()?).into()),
+                code => Err(CopilotListCopilotSeatsError::Generic { code }.into()),
             }
         }
     }
@@ -1481,7 +1583,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for list_copilot_seats_for_enterprise](https://docs.github.com/rest/copilot/copilot-user-management#list-all-copilot-seat-assignments-for-an-enterprise)
     ///
     /// ---
-    pub async fn list_copilot_seats_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<CopilotListCopilotSeatsForEnterpriseParams>>) -> Result<GetCopilotListCopilotSeatsForEnterpriseResponse200, CopilotListCopilotSeatsForEnterpriseError> {
+    pub async fn list_copilot_seats_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<CopilotListCopilotSeatsForEnterpriseParams>>) -> Result<GetCopilotListCopilotSeatsForEnterpriseResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/copilot/billing/seats", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -1492,12 +1594,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1509,11 +1611,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotListCopilotSeatsForEnterpriseError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotListCopilotSeatsForEnterpriseError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotListCopilotSeatsForEnterpriseError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotListCopilotSeatsForEnterpriseError::Status404(github_response.to_json_async().await?)),
-                code => Err(CopilotListCopilotSeatsForEnterpriseError::Generic { code }),
+                500 => Err(CopilotListCopilotSeatsForEnterpriseError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotListCopilotSeatsForEnterpriseError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotListCopilotSeatsForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotListCopilotSeatsForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CopilotListCopilotSeatsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1539,7 +1641,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_copilot_seats_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<CopilotListCopilotSeatsForEnterpriseParams>>) -> Result<GetCopilotListCopilotSeatsForEnterpriseResponse200, CopilotListCopilotSeatsForEnterpriseError> {
+    pub fn list_copilot_seats_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<CopilotListCopilotSeatsForEnterpriseParams>>) -> Result<GetCopilotListCopilotSeatsForEnterpriseResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/copilot/billing/seats", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -1556,7 +1658,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1568,11 +1670,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotListCopilotSeatsForEnterpriseError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotListCopilotSeatsForEnterpriseError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotListCopilotSeatsForEnterpriseError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotListCopilotSeatsForEnterpriseError::Status404(github_response.to_json()?)),
-                code => Err(CopilotListCopilotSeatsForEnterpriseError::Generic { code }),
+                500 => Err(CopilotListCopilotSeatsForEnterpriseError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotListCopilotSeatsForEnterpriseError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotListCopilotSeatsForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotListCopilotSeatsForEnterpriseError::Status404(github_response.to_json()?).into()),
+                code => Err(CopilotListCopilotSeatsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1599,7 +1701,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for usage_metrics_for_enterprise](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-enterprise-members)
     ///
     /// ---
-    pub async fn usage_metrics_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForEnterpriseError> {
+    pub async fn usage_metrics_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/copilot/usage", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -1610,12 +1712,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1627,11 +1729,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForEnterpriseError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotUsageMetricsForEnterpriseError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotUsageMetricsForEnterpriseError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotUsageMetricsForEnterpriseError::Status404(github_response.to_json_async().await?)),
-                code => Err(CopilotUsageMetricsForEnterpriseError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForEnterpriseError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotUsageMetricsForEnterpriseError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotUsageMetricsForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotUsageMetricsForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CopilotUsageMetricsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1659,7 +1761,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn usage_metrics_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForEnterpriseError> {
+    pub fn usage_metrics_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/copilot/usage", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -1676,7 +1778,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1688,11 +1790,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForEnterpriseError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotUsageMetricsForEnterpriseError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotUsageMetricsForEnterpriseError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotUsageMetricsForEnterpriseError::Status404(github_response.to_json()?)),
-                code => Err(CopilotUsageMetricsForEnterpriseError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForEnterpriseError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotUsageMetricsForEnterpriseError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotUsageMetricsForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotUsageMetricsForEnterpriseError::Status404(github_response.to_json()?).into()),
+                code => Err(CopilotUsageMetricsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1722,7 +1824,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for usage_metrics_for_enterprise_team](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-an-enterprise-team)
     ///
     /// ---
-    pub async fn usage_metrics_for_enterprise_team_async(&self, enterprise: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForEnterpriseTeamError> {
+    pub async fn usage_metrics_for_enterprise_team_async(&self, enterprise: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/team/{}/copilot/usage", super::GITHUB_BASE_API_URL, enterprise, team_slug);
 
@@ -1733,12 +1835,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1750,11 +1852,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status404(github_response.to_json_async().await?)),
-                code => Err(CopilotUsageMetricsForEnterpriseTeamError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CopilotUsageMetricsForEnterpriseTeamError::Generic { code }.into()),
             }
         }
     }
@@ -1785,7 +1887,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn usage_metrics_for_enterprise_team(&self, enterprise: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForEnterpriseTeamError> {
+    pub fn usage_metrics_for_enterprise_team(&self, enterprise: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForEnterpriseTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/team/{}/copilot/usage", super::GITHUB_BASE_API_URL, enterprise, team_slug);
 
@@ -1802,7 +1904,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1814,11 +1916,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status404(github_response.to_json()?)),
-                code => Err(CopilotUsageMetricsForEnterpriseTeamError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotUsageMetricsForEnterpriseTeamError::Status404(github_response.to_json()?).into()),
+                code => Err(CopilotUsageMetricsForEnterpriseTeamError::Generic { code }.into()),
             }
         }
     }
@@ -1845,7 +1947,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for usage_metrics_for_org](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-organization-members)
     ///
     /// ---
-    pub async fn usage_metrics_for_org_async(&self, org: &str, query_params: Option<impl Into<CopilotUsageMetricsForOrgParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForOrgError> {
+    pub async fn usage_metrics_for_org_async(&self, org: &str, query_params: Option<impl Into<CopilotUsageMetricsForOrgParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/copilot/usage", super::GITHUB_BASE_API_URL, org);
 
@@ -1856,12 +1958,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1873,11 +1975,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForOrgError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotUsageMetricsForOrgError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotUsageMetricsForOrgError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotUsageMetricsForOrgError::Status404(github_response.to_json_async().await?)),
-                code => Err(CopilotUsageMetricsForOrgError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForOrgError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotUsageMetricsForOrgError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotUsageMetricsForOrgError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotUsageMetricsForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CopilotUsageMetricsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1905,7 +2007,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn usage_metrics_for_org(&self, org: &str, query_params: Option<impl Into<CopilotUsageMetricsForOrgParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForOrgError> {
+    pub fn usage_metrics_for_org(&self, org: &str, query_params: Option<impl Into<CopilotUsageMetricsForOrgParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/copilot/usage", super::GITHUB_BASE_API_URL, org);
 
@@ -1922,7 +2024,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1934,11 +2036,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForOrgError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotUsageMetricsForOrgError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotUsageMetricsForOrgError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotUsageMetricsForOrgError::Status404(github_response.to_json()?)),
-                code => Err(CopilotUsageMetricsForOrgError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForOrgError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotUsageMetricsForOrgError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotUsageMetricsForOrgError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotUsageMetricsForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(CopilotUsageMetricsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1968,7 +2070,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     /// [GitHub API docs for usage_metrics_for_team](https://docs.github.com/rest/copilot/copilot-usage#get-a-summary-of-copilot-usage-for-a-team)
     ///
     /// ---
-    pub async fn usage_metrics_for_team_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForTeamError> {
+    pub async fn usage_metrics_for_team_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/team/{}/copilot/usage", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -1979,12 +2081,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1996,11 +2098,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForTeamError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CopilotUsageMetricsForTeamError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CopilotUsageMetricsForTeamError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CopilotUsageMetricsForTeamError::Status404(github_response.to_json_async().await?)),
-                code => Err(CopilotUsageMetricsForTeamError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForTeamError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CopilotUsageMetricsForTeamError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotUsageMetricsForTeamError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotUsageMetricsForTeamError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CopilotUsageMetricsForTeamError::Generic { code }.into()),
             }
         }
     }
@@ -2031,7 +2133,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn usage_metrics_for_team(&self, org: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, CopilotUsageMetricsForTeamError> {
+    pub fn usage_metrics_for_team(&self, org: &str, team_slug: &str, query_params: Option<impl Into<CopilotUsageMetricsForTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetrics>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/team/{}/copilot/usage", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -2048,7 +2150,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2060,11 +2162,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Copilot<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CopilotUsageMetricsForTeamError::Status500(github_response.to_json()?)),
-                401 => Err(CopilotUsageMetricsForTeamError::Status401(github_response.to_json()?)),
-                403 => Err(CopilotUsageMetricsForTeamError::Status403(github_response.to_json()?)),
-                404 => Err(CopilotUsageMetricsForTeamError::Status404(github_response.to_json()?)),
-                code => Err(CopilotUsageMetricsForTeamError::Generic { code }),
+                500 => Err(CopilotUsageMetricsForTeamError::Status500(github_response.to_json()?).into()),
+                401 => Err(CopilotUsageMetricsForTeamError::Status401(github_response.to_json()?).into()),
+                403 => Err(CopilotUsageMetricsForTeamError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotUsageMetricsForTeamError::Status404(github_response.to_json()?).into()),
+                code => Err(CopilotUsageMetricsForTeamError::Generic { code }.into()),
             }
         }
     }

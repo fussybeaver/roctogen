@@ -3,6 +3,11 @@ use roctogen::api::{
     self, activity, gists, issues, licenses, meta, rate_limit, reactions, repos, search, users,
 };
 
+#[cfg(any(
+    feature = "reqwest",
+    feature = "ureq",
+    target_arch = "wasm32"
+))]
 use roctogen::adapters::client;
 use roctogen::auth::Auth;
 use roctogen::models;
@@ -105,6 +110,7 @@ fn issues_sync_ok() {
 #[cfg(all(not(target_arch = "wasm32"), not(feature = "reqwest")))]
 #[test]
 fn license_sync_ok() {
+    env_logger::try_init();
     use roctogen::api::licenses::LicensesGetForRepoParams;
 
     let auth = Auth::None;
@@ -112,6 +118,7 @@ fn license_sync_ok() {
     let license = licenses::new(&client);
     let req = license.get_for_repo("fussybeaver", "bollard", None::<LicensesGetForRepoParams>);
 
+    debug!("{:?}", req);
     assert!(req.is_ok());
 
     let req = license.get_all_commonly_used(None::<licenses::LicensesGetAllCommonlyUsedParams>);
@@ -194,8 +201,8 @@ fn post_sync_fail() {
         repos::new(&client).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
     match &req {
         Ok(_) => {}
-        Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
-            assert_eq!(404, *code);
+        Err(roctogen::adapters::AdapterError::Endpoint { description, status_code: 404, .. }) => {
+            debug!("{}", description);
         }
         Err(_) => {
             panic!();

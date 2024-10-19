@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Projects<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Projects<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Projects<C> {
+pub fn new<C: Client>(client: &C) -> Projects<C> where AdapterError: From<<C as Client>::Err> {
     Projects { client }
 }
 
 /// Errors for the [Add project collaborator](Projects::add_collaborator_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsAddCollaboratorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -57,19 +47,28 @@ pub enum ProjectsAddCollaboratorError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsAddCollaboratorError> for AdapterError {
+    fn from(err: ProjectsAddCollaboratorError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsAddCollaboratorError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsAddCollaboratorError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsAddCollaboratorError::Status304 => (String::from("Not modified"), 304),
+            ProjectsAddCollaboratorError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsAddCollaboratorError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsAddCollaboratorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a project card](Projects::create_card_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsCreateCardError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -84,19 +83,28 @@ pub enum ProjectsCreateCardError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsCreateCardError> for AdapterError {
+    fn from(err: ProjectsCreateCardError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsCreateCardError::Status304 => (String::from("Not modified"), 304),
+            ProjectsCreateCardError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsCreateCardError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsCreateCardError::Status422(_) => (String::from("Validation failed"), 422),
+            ProjectsCreateCardError::Status503(_) => (String::from("Response"), 503),
+            ProjectsCreateCardError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a project column](Projects::create_column_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsCreateColumnError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -107,21 +115,29 @@ pub enum ProjectsCreateColumnError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsCreateColumnError> for AdapterError {
+    fn from(err: ProjectsCreateColumnError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsCreateColumnError::Status304 => (String::from("Not modified"), 304),
+            ProjectsCreateColumnError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsCreateColumnError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsCreateColumnError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsCreateColumnError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a user project](Projects::create_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsCreateForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -132,21 +148,29 @@ pub enum ProjectsCreateForAuthenticatedUserError {
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsCreateForAuthenticatedUserError> for AdapterError {
+    fn from(err: ProjectsCreateForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsCreateForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ProjectsCreateForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsCreateForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsCreateForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsCreateForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create an organization project](Projects::create_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsCreateForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -159,21 +183,30 @@ pub enum ProjectsCreateForOrgError {
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsCreateForOrgError> for AdapterError {
+    fn from(err: ProjectsCreateForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsCreateForOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsCreateForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsCreateForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsCreateForOrgError::Status410(_) => (String::from("Gone"), 410),
+            ProjectsCreateForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsCreateForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a repository project](Projects::create_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsCreateForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -186,21 +219,30 @@ pub enum ProjectsCreateForRepoError {
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsCreateForRepoError> for AdapterError {
+    fn from(err: ProjectsCreateForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsCreateForRepoError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsCreateForRepoError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsCreateForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsCreateForRepoError::Status410(_) => (String::from("Gone"), 410),
+            ProjectsCreateForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsCreateForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a project](Projects::delete_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsDeleteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -213,21 +255,30 @@ pub enum ProjectsDeleteError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsDeleteError> for AdapterError {
+    fn from(err: ProjectsDeleteError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsDeleteError::Status304 => (String::from("Not modified"), 304),
+            ProjectsDeleteError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsDeleteError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsDeleteError::Status410(_) => (String::from("Gone"), 410),
+            ProjectsDeleteError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsDeleteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a project card](Projects::delete_card_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsDeleteCardError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -240,19 +291,27 @@ pub enum ProjectsDeleteCardError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsDeleteCardError> for AdapterError {
+    fn from(err: ProjectsDeleteCardError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsDeleteCardError::Status304 => (String::from("Not modified"), 304),
+            ProjectsDeleteCardError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsDeleteCardError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsDeleteCardError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsDeleteCardError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a project column](Projects::delete_column_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsDeleteColumnError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -261,21 +320,28 @@ pub enum ProjectsDeleteColumnError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsDeleteColumnError> for AdapterError {
+    fn from(err: ProjectsDeleteColumnError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsDeleteColumnError::Status304 => (String::from("Not modified"), 304),
+            ProjectsDeleteColumnError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsDeleteColumnError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsDeleteColumnError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a project](Projects::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -284,21 +350,28 @@ pub enum ProjectsGetError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsGetError> for AdapterError {
+    fn from(err: ProjectsGetError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsGetError::Status304 => (String::from("Not modified"), 304),
+            ProjectsGetError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsGetError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a project card](Projects::get_card_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsGetCardError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -309,21 +382,29 @@ pub enum ProjectsGetCardError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsGetCardError> for AdapterError {
+    fn from(err: ProjectsGetCardError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsGetCardError::Status304 => (String::from("Not modified"), 304),
+            ProjectsGetCardError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsGetCardError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsGetCardError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsGetCardError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a project column](Projects::get_column_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsGetColumnError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -334,21 +415,29 @@ pub enum ProjectsGetColumnError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsGetColumnError> for AdapterError {
+    fn from(err: ProjectsGetColumnError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsGetColumnError::Status304 => (String::from("Not modified"), 304),
+            ProjectsGetColumnError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsGetColumnError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsGetColumnError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsGetColumnError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get project permission for a user](Projects::get_permission_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsGetPermissionForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -361,21 +450,30 @@ pub enum ProjectsGetPermissionForUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsGetPermissionForUserError> for AdapterError {
+    fn from(err: ProjectsGetPermissionForUserError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsGetPermissionForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsGetPermissionForUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsGetPermissionForUserError::Status304 => (String::from("Not modified"), 304),
+            ProjectsGetPermissionForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsGetPermissionForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsGetPermissionForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List project cards](Projects::list_cards_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsListCardsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -386,19 +484,26 @@ pub enum ProjectsListCardsError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsListCardsError> for AdapterError {
+    fn from(err: ProjectsListCardsError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsListCardsError::Status304 => (String::from("Not modified"), 304),
+            ProjectsListCardsError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsListCardsError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsListCardsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List project collaborators](Projects::list_collaborators_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsListCollaboratorsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -413,19 +518,28 @@ pub enum ProjectsListCollaboratorsError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsListCollaboratorsError> for AdapterError {
+    fn from(err: ProjectsListCollaboratorsError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsListCollaboratorsError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsListCollaboratorsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsListCollaboratorsError::Status304 => (String::from("Not modified"), 304),
+            ProjectsListCollaboratorsError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsListCollaboratorsError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsListCollaboratorsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List project columns](Projects::list_columns_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsListColumnsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -436,38 +550,50 @@ pub enum ProjectsListColumnsError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsListColumnsError> for AdapterError {
+    fn from(err: ProjectsListColumnsError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsListColumnsError::Status304 => (String::from("Not modified"), 304),
+            ProjectsListColumnsError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsListColumnsError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsListColumnsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization projects](Projects::list_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsListForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ProjectsListForOrgError> for AdapterError {
+    fn from(err: ProjectsListForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsListForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsListForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository projects](Projects::list_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsListForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -482,38 +608,52 @@ pub enum ProjectsListForRepoError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsListForRepoError> for AdapterError {
+    fn from(err: ProjectsListForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsListForRepoError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsListForRepoError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsListForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsListForRepoError::Status410(_) => (String::from("Gone"), 410),
+            ProjectsListForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsListForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List user projects](Projects::list_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsListForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ProjectsListForUserError> for AdapterError {
+    fn from(err: ProjectsListForUserError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsListForUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsListForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Move a project card](Projects::move_card_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsMoveCardError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -528,19 +668,28 @@ pub enum ProjectsMoveCardError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsMoveCardError> for AdapterError {
+    fn from(err: ProjectsMoveCardError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsMoveCardError::Status304 => (String::from("Not modified"), 304),
+            ProjectsMoveCardError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsMoveCardError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsMoveCardError::Status503(_) => (String::from("Response"), 503),
+            ProjectsMoveCardError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsMoveCardError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Move a project column](Projects::move_column_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsMoveColumnError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -553,19 +702,27 @@ pub enum ProjectsMoveColumnError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsMoveColumnError> for AdapterError {
+    fn from(err: ProjectsMoveColumnError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsMoveColumnError::Status304 => (String::from("Not modified"), 304),
+            ProjectsMoveColumnError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsMoveColumnError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsMoveColumnError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsMoveColumnError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove user as a collaborator](Projects::remove_collaborator_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsRemoveCollaboratorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -580,19 +737,28 @@ pub enum ProjectsRemoveCollaboratorError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsRemoveCollaboratorError> for AdapterError {
+    fn from(err: ProjectsRemoveCollaboratorError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsRemoveCollaboratorError::Status304 => (String::from("Not modified"), 304),
+            ProjectsRemoveCollaboratorError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsRemoveCollaboratorError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsRemoveCollaboratorError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsRemoveCollaboratorError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsRemoveCollaboratorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a project](Projects::update_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsUpdateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if the authenticated user does not have access to the project")]
     Status404,
     #[error("Not modified")]
@@ -609,19 +775,29 @@ pub enum ProjectsUpdateError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsUpdateError> for AdapterError {
+    fn from(err: ProjectsUpdateError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsUpdateError::Status404 => (String::from("Not Found if the authenticated user does not have access to the project"), 404),
+            ProjectsUpdateError::Status304 => (String::from("Not modified"), 304),
+            ProjectsUpdateError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsUpdateError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsUpdateError::Status410(_) => (String::from("Gone"), 410),
+            ProjectsUpdateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsUpdateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an existing project card](Projects::update_card_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsUpdateCardError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -636,19 +812,28 @@ pub enum ProjectsUpdateCardError {
     Generic { code: u16 },
 }
 
+impl From<ProjectsUpdateCardError> for AdapterError {
+    fn from(err: ProjectsUpdateCardError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsUpdateCardError::Status304 => (String::from("Not modified"), 304),
+            ProjectsUpdateCardError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsUpdateCardError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsUpdateCardError::Status404(_) => (String::from("Resource not found"), 404),
+            ProjectsUpdateCardError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ProjectsUpdateCardError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an existing project column](Projects::update_column_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ProjectsUpdateColumnError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -657,6 +842,23 @@ pub enum ProjectsUpdateColumnError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ProjectsUpdateColumnError> for AdapterError {
+    fn from(err: ProjectsUpdateColumnError) -> Self {
+        let (description, status_code) = match err {
+            ProjectsUpdateColumnError::Status304 => (String::from("Not modified"), 304),
+            ProjectsUpdateColumnError::Status403(_) => (String::from("Forbidden"), 403),
+            ProjectsUpdateColumnError::Status401(_) => (String::from("Requires authentication"), 401),
+            ProjectsUpdateColumnError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -966,7 +1168,7 @@ impl<'enc> From<&'enc PerPage> for ProjectsListForUserParams<'enc> {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
+impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add project collaborator
@@ -976,19 +1178,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/projects/collaborators#add-project-collaborator)
     ///
     /// ---
-    pub async fn add_collaborator_async(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), ProjectsAddCollaboratorError> {
+    pub async fn add_collaborator_async(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutProjectsAddCollaborator::from_json(body)?),
+            body: Some(C::from_json::<PutProjectsAddCollaborator>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1000,12 +1202,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsAddCollaboratorError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ProjectsAddCollaboratorError::Status422(github_response.to_json_async().await?)),
-                304 => Err(ProjectsAddCollaboratorError::Status304),
-                403 => Err(ProjectsAddCollaboratorError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsAddCollaboratorError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsAddCollaboratorError::Generic { code }),
+                404 => Err(ProjectsAddCollaboratorError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsAddCollaboratorError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(ProjectsAddCollaboratorError::Status304.into()),
+                403 => Err(ProjectsAddCollaboratorError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsAddCollaboratorError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsAddCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -1020,19 +1222,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_collaborator(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), ProjectsAddCollaboratorError> {
+    pub fn add_collaborator(&self, project_id: i32, username: &str, body: PutProjectsAddCollaborator) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutProjectsAddCollaborator::from_json(body)?),
+            body: Some(C::from_json::<PutProjectsAddCollaborator>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1044,12 +1246,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsAddCollaboratorError::Status404(github_response.to_json()?)),
-                422 => Err(ProjectsAddCollaboratorError::Status422(github_response.to_json()?)),
-                304 => Err(ProjectsAddCollaboratorError::Status304),
-                403 => Err(ProjectsAddCollaboratorError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsAddCollaboratorError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsAddCollaboratorError::Generic { code }),
+                404 => Err(ProjectsAddCollaboratorError::Status404(github_response.to_json()?).into()),
+                422 => Err(ProjectsAddCollaboratorError::Status422(github_response.to_json()?).into()),
+                304 => Err(ProjectsAddCollaboratorError::Status304.into()),
+                403 => Err(ProjectsAddCollaboratorError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsAddCollaboratorError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsAddCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -1061,19 +1263,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for create_card](https://docs.github.com/rest/projects/cards#create-a-project-card)
     ///
     /// ---
-    pub async fn create_card_async(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, ProjectsCreateCardError> {
+    pub async fn create_card_async(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateCard::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateCard>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1085,12 +1287,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsCreateCardError::Status304),
-                403 => Err(ProjectsCreateCardError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsCreateCardError::Status401(github_response.to_json_async().await?)),
-                422 => Err(ProjectsCreateCardError::Status422(github_response.to_json_async().await?)),
-                503 => Err(ProjectsCreateCardError::Status503(github_response.to_json_async().await?)),
-                code => Err(ProjectsCreateCardError::Generic { code }),
+                304 => Err(ProjectsCreateCardError::Status304.into()),
+                403 => Err(ProjectsCreateCardError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsCreateCardError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsCreateCardError::Status422(github_response.to_json_async().await?).into()),
+                503 => Err(ProjectsCreateCardError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsCreateCardError::Generic { code }.into()),
             }
         }
     }
@@ -1103,19 +1305,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_card(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, ProjectsCreateCardError> {
+    pub fn create_card(&self, column_id: i32, body: PostProjectsCreateCard) -> Result<ProjectCard, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateCard::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateCard>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1127,12 +1329,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsCreateCardError::Status304),
-                403 => Err(ProjectsCreateCardError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsCreateCardError::Status401(github_response.to_json()?)),
-                422 => Err(ProjectsCreateCardError::Status422(github_response.to_json()?)),
-                503 => Err(ProjectsCreateCardError::Status503(github_response.to_json()?)),
-                code => Err(ProjectsCreateCardError::Generic { code }),
+                304 => Err(ProjectsCreateCardError::Status304.into()),
+                403 => Err(ProjectsCreateCardError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsCreateCardError::Status401(github_response.to_json()?).into()),
+                422 => Err(ProjectsCreateCardError::Status422(github_response.to_json()?).into()),
+                503 => Err(ProjectsCreateCardError::Status503(github_response.to_json()?).into()),
+                code => Err(ProjectsCreateCardError::Generic { code }.into()),
             }
         }
     }
@@ -1146,19 +1348,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for create_column](https://docs.github.com/rest/projects/columns#create-a-project-column)
     ///
     /// ---
-    pub async fn create_column_async(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, ProjectsCreateColumnError> {
+    pub async fn create_column_async(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, AdapterError> {
 
         let request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateColumn::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateColumn>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1170,11 +1372,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsCreateColumnError::Status304),
-                403 => Err(ProjectsCreateColumnError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ProjectsCreateColumnError::Status422(github_response.to_json_async().await?)),
-                401 => Err(ProjectsCreateColumnError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsCreateColumnError::Generic { code }),
+                304 => Err(ProjectsCreateColumnError::Status304.into()),
+                403 => Err(ProjectsCreateColumnError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsCreateColumnError::Status422(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsCreateColumnError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsCreateColumnError::Generic { code }.into()),
             }
         }
     }
@@ -1189,19 +1391,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_column(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, ProjectsCreateColumnError> {
+    pub fn create_column(&self, project_id: i32, body: PostProjectsCreateColumn) -> Result<ProjectColumn, AdapterError> {
 
         let request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateColumn::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateColumn>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1213,11 +1415,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsCreateColumnError::Status304),
-                403 => Err(ProjectsCreateColumnError::Status403(github_response.to_json()?)),
-                422 => Err(ProjectsCreateColumnError::Status422(github_response.to_json()?)),
-                401 => Err(ProjectsCreateColumnError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsCreateColumnError::Generic { code }),
+                304 => Err(ProjectsCreateColumnError::Status304.into()),
+                403 => Err(ProjectsCreateColumnError::Status403(github_response.to_json()?).into()),
+                422 => Err(ProjectsCreateColumnError::Status422(github_response.to_json()?).into()),
+                401 => Err(ProjectsCreateColumnError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsCreateColumnError::Generic { code }.into()),
             }
         }
     }
@@ -1231,19 +1433,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/projects/projects#create-a-user-project)
     ///
     /// ---
-    pub async fn create_for_authenticated_user_async(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, ProjectsCreateForAuthenticatedUserError> {
+    pub async fn create_for_authenticated_user_async(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/user/projects", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1255,11 +1457,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsCreateForAuthenticatedUserError::Status304),
-                403 => Err(ProjectsCreateForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsCreateForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                422 => Err(ProjectsCreateForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsCreateForAuthenticatedUserError::Generic { code }),
+                304 => Err(ProjectsCreateForAuthenticatedUserError::Status304.into()),
+                403 => Err(ProjectsCreateForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsCreateForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsCreateForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsCreateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1274,19 +1476,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_authenticated_user(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, ProjectsCreateForAuthenticatedUserError> {
+    pub fn create_for_authenticated_user(&self, body: PostProjectsCreateForAuthenticatedUser) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/user/projects", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1298,11 +1500,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsCreateForAuthenticatedUserError::Status304),
-                403 => Err(ProjectsCreateForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsCreateForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                422 => Err(ProjectsCreateForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsCreateForAuthenticatedUserError::Generic { code }),
+                304 => Err(ProjectsCreateForAuthenticatedUserError::Status304.into()),
+                403 => Err(ProjectsCreateForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsCreateForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                422 => Err(ProjectsCreateForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsCreateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1316,19 +1518,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/projects/projects#create-an-organization-project)
     ///
     /// ---
-    pub async fn create_for_org_async(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, ProjectsCreateForOrgError> {
+    pub async fn create_for_org_async(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1340,12 +1542,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(ProjectsCreateForOrgError::Status401(github_response.to_json_async().await?)),
-                403 => Err(ProjectsCreateForOrgError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ProjectsCreateForOrgError::Status404(github_response.to_json_async().await?)),
-                410 => Err(ProjectsCreateForOrgError::Status410(github_response.to_json_async().await?)),
-                422 => Err(ProjectsCreateForOrgError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsCreateForOrgError::Generic { code }),
+                401 => Err(ProjectsCreateForOrgError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(ProjectsCreateForOrgError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsCreateForOrgError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(ProjectsCreateForOrgError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsCreateForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsCreateForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1360,19 +1562,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_org(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, ProjectsCreateForOrgError> {
+    pub fn create_for_org(&self, org: &str, body: PostProjectsCreateForOrg) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1384,12 +1586,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(ProjectsCreateForOrgError::Status401(github_response.to_json()?)),
-                403 => Err(ProjectsCreateForOrgError::Status403(github_response.to_json()?)),
-                404 => Err(ProjectsCreateForOrgError::Status404(github_response.to_json()?)),
-                410 => Err(ProjectsCreateForOrgError::Status410(github_response.to_json()?)),
-                422 => Err(ProjectsCreateForOrgError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsCreateForOrgError::Generic { code }),
+                401 => Err(ProjectsCreateForOrgError::Status401(github_response.to_json()?).into()),
+                403 => Err(ProjectsCreateForOrgError::Status403(github_response.to_json()?).into()),
+                404 => Err(ProjectsCreateForOrgError::Status404(github_response.to_json()?).into()),
+                410 => Err(ProjectsCreateForOrgError::Status410(github_response.to_json()?).into()),
+                422 => Err(ProjectsCreateForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsCreateForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1403,19 +1605,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/projects/projects#create-a-repository-project)
     ///
     /// ---
-    pub async fn create_for_repo_async(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, ProjectsCreateForRepoError> {
+    pub async fn create_for_repo_async(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateForRepo::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateForRepo>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1427,12 +1629,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(ProjectsCreateForRepoError::Status401(github_response.to_json_async().await?)),
-                403 => Err(ProjectsCreateForRepoError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ProjectsCreateForRepoError::Status404(github_response.to_json_async().await?)),
-                410 => Err(ProjectsCreateForRepoError::Status410(github_response.to_json_async().await?)),
-                422 => Err(ProjectsCreateForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsCreateForRepoError::Generic { code }),
+                401 => Err(ProjectsCreateForRepoError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(ProjectsCreateForRepoError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsCreateForRepoError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(ProjectsCreateForRepoError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsCreateForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsCreateForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -1447,19 +1649,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_repo(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, ProjectsCreateForRepoError> {
+    pub fn create_for_repo(&self, owner: &str, repo: &str, body: PostProjectsCreateForRepo) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsCreateForRepo::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsCreateForRepo>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1471,12 +1673,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(ProjectsCreateForRepoError::Status401(github_response.to_json()?)),
-                403 => Err(ProjectsCreateForRepoError::Status403(github_response.to_json()?)),
-                404 => Err(ProjectsCreateForRepoError::Status404(github_response.to_json()?)),
-                410 => Err(ProjectsCreateForRepoError::Status410(github_response.to_json()?)),
-                422 => Err(ProjectsCreateForRepoError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsCreateForRepoError::Generic { code }),
+                401 => Err(ProjectsCreateForRepoError::Status401(github_response.to_json()?).into()),
+                403 => Err(ProjectsCreateForRepoError::Status403(github_response.to_json()?).into()),
+                404 => Err(ProjectsCreateForRepoError::Status404(github_response.to_json()?).into()),
+                410 => Err(ProjectsCreateForRepoError::Status410(github_response.to_json()?).into()),
+                422 => Err(ProjectsCreateForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsCreateForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -1490,19 +1692,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for delete](https://docs.github.com/rest/projects/projects#delete-a-project)
     ///
     /// ---
-    pub async fn delete_async(&self, project_id: i32) -> Result<(), ProjectsDeleteError> {
+    pub async fn delete_async(&self, project_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1514,12 +1716,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsDeleteError::Status304),
-                403 => Err(ProjectsDeleteError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsDeleteError::Status401(github_response.to_json_async().await?)),
-                410 => Err(ProjectsDeleteError::Status410(github_response.to_json_async().await?)),
-                404 => Err(ProjectsDeleteError::Status404(github_response.to_json_async().await?)),
-                code => Err(ProjectsDeleteError::Generic { code }),
+                304 => Err(ProjectsDeleteError::Status304.into()),
+                403 => Err(ProjectsDeleteError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsDeleteError::Status401(github_response.to_json_async().await?).into()),
+                410 => Err(ProjectsDeleteError::Status410(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsDeleteError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -1534,7 +1736,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete(&self, project_id: i32) -> Result<(), ProjectsDeleteError> {
+    pub fn delete(&self, project_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
 
@@ -1546,7 +1748,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1558,12 +1760,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsDeleteError::Status304),
-                403 => Err(ProjectsDeleteError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsDeleteError::Status401(github_response.to_json()?)),
-                410 => Err(ProjectsDeleteError::Status410(github_response.to_json()?)),
-                404 => Err(ProjectsDeleteError::Status404(github_response.to_json()?)),
-                code => Err(ProjectsDeleteError::Generic { code }),
+                304 => Err(ProjectsDeleteError::Status304.into()),
+                403 => Err(ProjectsDeleteError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsDeleteError::Status401(github_response.to_json()?).into()),
+                410 => Err(ProjectsDeleteError::Status410(github_response.to_json()?).into()),
+                404 => Err(ProjectsDeleteError::Status404(github_response.to_json()?).into()),
+                code => Err(ProjectsDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -1577,19 +1779,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/projects/cards#delete-a-project-card)
     ///
     /// ---
-    pub async fn delete_card_async(&self, card_id: i32) -> Result<(), ProjectsDeleteCardError> {
+    pub async fn delete_card_async(&self, card_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1601,11 +1803,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsDeleteCardError::Status304),
-                403 => Err(ProjectsDeleteCardError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsDeleteCardError::Status401(github_response.to_json_async().await?)),
-                404 => Err(ProjectsDeleteCardError::Status404(github_response.to_json_async().await?)),
-                code => Err(ProjectsDeleteCardError::Generic { code }),
+                304 => Err(ProjectsDeleteCardError::Status304.into()),
+                403 => Err(ProjectsDeleteCardError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsDeleteCardError::Status401(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsDeleteCardError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsDeleteCardError::Generic { code }.into()),
             }
         }
     }
@@ -1620,7 +1822,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_card(&self, card_id: i32) -> Result<(), ProjectsDeleteCardError> {
+    pub fn delete_card(&self, card_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
 
@@ -1632,7 +1834,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1644,11 +1846,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsDeleteCardError::Status304),
-                403 => Err(ProjectsDeleteCardError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsDeleteCardError::Status401(github_response.to_json()?)),
-                404 => Err(ProjectsDeleteCardError::Status404(github_response.to_json()?)),
-                code => Err(ProjectsDeleteCardError::Generic { code }),
+                304 => Err(ProjectsDeleteCardError::Status304.into()),
+                403 => Err(ProjectsDeleteCardError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsDeleteCardError::Status401(github_response.to_json()?).into()),
+                404 => Err(ProjectsDeleteCardError::Status404(github_response.to_json()?).into()),
+                code => Err(ProjectsDeleteCardError::Generic { code }.into()),
             }
         }
     }
@@ -1662,19 +1864,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/projects/columns#delete-a-project-column)
     ///
     /// ---
-    pub async fn delete_column_async(&self, column_id: i32) -> Result<(), ProjectsDeleteColumnError> {
+    pub async fn delete_column_async(&self, column_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1686,10 +1888,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsDeleteColumnError::Status304),
-                403 => Err(ProjectsDeleteColumnError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsDeleteColumnError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsDeleteColumnError::Generic { code }),
+                304 => Err(ProjectsDeleteColumnError::Status304.into()),
+                403 => Err(ProjectsDeleteColumnError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsDeleteColumnError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsDeleteColumnError::Generic { code }.into()),
             }
         }
     }
@@ -1704,7 +1906,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_column(&self, column_id: i32) -> Result<(), ProjectsDeleteColumnError> {
+    pub fn delete_column(&self, column_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
 
@@ -1716,7 +1918,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1728,10 +1930,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsDeleteColumnError::Status304),
-                403 => Err(ProjectsDeleteColumnError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsDeleteColumnError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsDeleteColumnError::Generic { code }),
+                304 => Err(ProjectsDeleteColumnError::Status304.into()),
+                403 => Err(ProjectsDeleteColumnError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsDeleteColumnError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsDeleteColumnError::Generic { code }.into()),
             }
         }
     }
@@ -1745,19 +1947,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for get](https://docs.github.com/rest/projects/projects#get-a-project)
     ///
     /// ---
-    pub async fn get_async(&self, project_id: i32) -> Result<Project, ProjectsGetError> {
+    pub async fn get_async(&self, project_id: i32) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1769,10 +1971,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsGetError::Status304),
-                403 => Err(ProjectsGetError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsGetError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsGetError::Generic { code }),
+                304 => Err(ProjectsGetError::Status304.into()),
+                403 => Err(ProjectsGetError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsGetError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsGetError::Generic { code }.into()),
             }
         }
     }
@@ -1787,7 +1989,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, project_id: i32) -> Result<Project, ProjectsGetError> {
+    pub fn get(&self, project_id: i32) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
 
@@ -1799,7 +2001,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1811,10 +2013,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsGetError::Status304),
-                403 => Err(ProjectsGetError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsGetError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsGetError::Generic { code }),
+                304 => Err(ProjectsGetError::Status304.into()),
+                403 => Err(ProjectsGetError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsGetError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsGetError::Generic { code }.into()),
             }
         }
     }
@@ -1828,19 +2030,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for get_card](https://docs.github.com/rest/projects/cards#get-a-project-card)
     ///
     /// ---
-    pub async fn get_card_async(&self, card_id: i32) -> Result<ProjectCard, ProjectsGetCardError> {
+    pub async fn get_card_async(&self, card_id: i32) -> Result<ProjectCard, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1852,11 +2054,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsGetCardError::Status304),
-                403 => Err(ProjectsGetCardError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsGetCardError::Status401(github_response.to_json_async().await?)),
-                404 => Err(ProjectsGetCardError::Status404(github_response.to_json_async().await?)),
-                code => Err(ProjectsGetCardError::Generic { code }),
+                304 => Err(ProjectsGetCardError::Status304.into()),
+                403 => Err(ProjectsGetCardError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsGetCardError::Status401(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsGetCardError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsGetCardError::Generic { code }.into()),
             }
         }
     }
@@ -1871,7 +2073,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_card(&self, card_id: i32) -> Result<ProjectCard, ProjectsGetCardError> {
+    pub fn get_card(&self, card_id: i32) -> Result<ProjectCard, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
 
@@ -1883,7 +2085,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1895,11 +2097,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsGetCardError::Status304),
-                403 => Err(ProjectsGetCardError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsGetCardError::Status401(github_response.to_json()?)),
-                404 => Err(ProjectsGetCardError::Status404(github_response.to_json()?)),
-                code => Err(ProjectsGetCardError::Generic { code }),
+                304 => Err(ProjectsGetCardError::Status304.into()),
+                403 => Err(ProjectsGetCardError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsGetCardError::Status401(github_response.to_json()?).into()),
+                404 => Err(ProjectsGetCardError::Status404(github_response.to_json()?).into()),
+                code => Err(ProjectsGetCardError::Generic { code }.into()),
             }
         }
     }
@@ -1913,19 +2115,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for get_column](https://docs.github.com/rest/projects/columns#get-a-project-column)
     ///
     /// ---
-    pub async fn get_column_async(&self, column_id: i32) -> Result<ProjectColumn, ProjectsGetColumnError> {
+    pub async fn get_column_async(&self, column_id: i32) -> Result<ProjectColumn, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1937,11 +2139,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsGetColumnError::Status304),
-                403 => Err(ProjectsGetColumnError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ProjectsGetColumnError::Status404(github_response.to_json_async().await?)),
-                401 => Err(ProjectsGetColumnError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsGetColumnError::Generic { code }),
+                304 => Err(ProjectsGetColumnError::Status304.into()),
+                403 => Err(ProjectsGetColumnError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsGetColumnError::Status404(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsGetColumnError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsGetColumnError::Generic { code }.into()),
             }
         }
     }
@@ -1956,7 +2158,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_column(&self, column_id: i32) -> Result<ProjectColumn, ProjectsGetColumnError> {
+    pub fn get_column(&self, column_id: i32) -> Result<ProjectColumn, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
 
@@ -1968,7 +2170,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1980,11 +2182,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsGetColumnError::Status304),
-                403 => Err(ProjectsGetColumnError::Status403(github_response.to_json()?)),
-                404 => Err(ProjectsGetColumnError::Status404(github_response.to_json()?)),
-                401 => Err(ProjectsGetColumnError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsGetColumnError::Generic { code }),
+                304 => Err(ProjectsGetColumnError::Status304.into()),
+                403 => Err(ProjectsGetColumnError::Status403(github_response.to_json()?).into()),
+                404 => Err(ProjectsGetColumnError::Status404(github_response.to_json()?).into()),
+                401 => Err(ProjectsGetColumnError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsGetColumnError::Generic { code }.into()),
             }
         }
     }
@@ -1998,19 +2200,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user)
     ///
     /// ---
-    pub async fn get_permission_for_user_async(&self, project_id: i32, username: &str) -> Result<ProjectCollaboratorPermission, ProjectsGetPermissionForUserError> {
+    pub async fn get_permission_for_user_async(&self, project_id: i32, username: &str) -> Result<ProjectCollaboratorPermission, AdapterError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}/permission", super::GITHUB_BASE_API_URL, project_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2022,12 +2224,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsGetPermissionForUserError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ProjectsGetPermissionForUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(ProjectsGetPermissionForUserError::Status304),
-                403 => Err(ProjectsGetPermissionForUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsGetPermissionForUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsGetPermissionForUserError::Generic { code }),
+                404 => Err(ProjectsGetPermissionForUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsGetPermissionForUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(ProjectsGetPermissionForUserError::Status304.into()),
+                403 => Err(ProjectsGetPermissionForUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsGetPermissionForUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsGetPermissionForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2042,7 +2244,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_permission_for_user(&self, project_id: i32, username: &str) -> Result<ProjectCollaboratorPermission, ProjectsGetPermissionForUserError> {
+    pub fn get_permission_for_user(&self, project_id: i32, username: &str) -> Result<ProjectCollaboratorPermission, AdapterError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}/permission", super::GITHUB_BASE_API_URL, project_id, username);
 
@@ -2054,7 +2256,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2066,12 +2268,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsGetPermissionForUserError::Status404(github_response.to_json()?)),
-                422 => Err(ProjectsGetPermissionForUserError::Status422(github_response.to_json()?)),
-                304 => Err(ProjectsGetPermissionForUserError::Status304),
-                403 => Err(ProjectsGetPermissionForUserError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsGetPermissionForUserError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsGetPermissionForUserError::Generic { code }),
+                404 => Err(ProjectsGetPermissionForUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(ProjectsGetPermissionForUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(ProjectsGetPermissionForUserError::Status304.into()),
+                403 => Err(ProjectsGetPermissionForUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsGetPermissionForUserError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsGetPermissionForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2085,7 +2287,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/projects/cards#list-project-cards)
     ///
     /// ---
-    pub async fn list_cards_async(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, ProjectsListCardsError> {
+    pub async fn list_cards_async(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, AdapterError> {
 
         let mut request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
 
@@ -2096,12 +2298,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2113,10 +2315,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsListCardsError::Status304),
-                403 => Err(ProjectsListCardsError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsListCardsError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsListCardsError::Generic { code }),
+                304 => Err(ProjectsListCardsError::Status304.into()),
+                403 => Err(ProjectsListCardsError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsListCardsError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsListCardsError::Generic { code }.into()),
             }
         }
     }
@@ -2131,7 +2333,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_cards(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, ProjectsListCardsError> {
+    pub fn list_cards(&self, column_id: i32, query_params: Option<impl Into<ProjectsListCardsParams<'api>>>) -> Result<Vec<ProjectCard>, AdapterError> {
 
         let mut request_uri = format!("{}/projects/columns/{}/cards", super::GITHUB_BASE_API_URL, column_id);
 
@@ -2148,7 +2350,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2160,10 +2362,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsListCardsError::Status304),
-                403 => Err(ProjectsListCardsError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsListCardsError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsListCardsError::Generic { code }),
+                304 => Err(ProjectsListCardsError::Status304.into()),
+                403 => Err(ProjectsListCardsError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsListCardsError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsListCardsError::Generic { code }.into()),
             }
         }
     }
@@ -2177,7 +2379,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/projects/collaborators#list-project-collaborators)
     ///
     /// ---
-    pub async fn list_collaborators_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, ProjectsListCollaboratorsError> {
+    pub async fn list_collaborators_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/projects/{}/collaborators", super::GITHUB_BASE_API_URL, project_id);
 
@@ -2188,12 +2390,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2205,12 +2407,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsListCollaboratorsError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ProjectsListCollaboratorsError::Status422(github_response.to_json_async().await?)),
-                304 => Err(ProjectsListCollaboratorsError::Status304),
-                403 => Err(ProjectsListCollaboratorsError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsListCollaboratorsError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsListCollaboratorsError::Generic { code }),
+                404 => Err(ProjectsListCollaboratorsError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsListCollaboratorsError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(ProjectsListCollaboratorsError::Status304.into()),
+                403 => Err(ProjectsListCollaboratorsError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsListCollaboratorsError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsListCollaboratorsError::Generic { code }.into()),
             }
         }
     }
@@ -2225,7 +2427,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_collaborators(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, ProjectsListCollaboratorsError> {
+    pub fn list_collaborators(&self, project_id: i32, query_params: Option<impl Into<ProjectsListCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/projects/{}/collaborators", super::GITHUB_BASE_API_URL, project_id);
 
@@ -2242,7 +2444,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2254,12 +2456,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsListCollaboratorsError::Status404(github_response.to_json()?)),
-                422 => Err(ProjectsListCollaboratorsError::Status422(github_response.to_json()?)),
-                304 => Err(ProjectsListCollaboratorsError::Status304),
-                403 => Err(ProjectsListCollaboratorsError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsListCollaboratorsError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsListCollaboratorsError::Generic { code }),
+                404 => Err(ProjectsListCollaboratorsError::Status404(github_response.to_json()?).into()),
+                422 => Err(ProjectsListCollaboratorsError::Status422(github_response.to_json()?).into()),
+                304 => Err(ProjectsListCollaboratorsError::Status304.into()),
+                403 => Err(ProjectsListCollaboratorsError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsListCollaboratorsError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsListCollaboratorsError::Generic { code }.into()),
             }
         }
     }
@@ -2273,7 +2475,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/projects/columns#list-project-columns)
     ///
     /// ---
-    pub async fn list_columns_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, ProjectsListColumnsError> {
+    pub async fn list_columns_async(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, AdapterError> {
 
         let mut request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
 
@@ -2284,12 +2486,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2301,10 +2503,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsListColumnsError::Status304),
-                403 => Err(ProjectsListColumnsError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsListColumnsError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsListColumnsError::Generic { code }),
+                304 => Err(ProjectsListColumnsError::Status304.into()),
+                403 => Err(ProjectsListColumnsError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsListColumnsError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsListColumnsError::Generic { code }.into()),
             }
         }
     }
@@ -2319,7 +2521,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_columns(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, ProjectsListColumnsError> {
+    pub fn list_columns(&self, project_id: i32, query_params: Option<impl Into<ProjectsListColumnsParams>>) -> Result<Vec<ProjectColumn>, AdapterError> {
 
         let mut request_uri = format!("{}/projects/{}/columns", super::GITHUB_BASE_API_URL, project_id);
 
@@ -2336,7 +2538,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2348,10 +2550,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsListColumnsError::Status304),
-                403 => Err(ProjectsListColumnsError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsListColumnsError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsListColumnsError::Generic { code }),
+                304 => Err(ProjectsListColumnsError::Status304.into()),
+                403 => Err(ProjectsListColumnsError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsListColumnsError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsListColumnsError::Generic { code }.into()),
             }
         }
     }
@@ -2365,7 +2567,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/projects/projects#list-organization-projects)
     ///
     /// ---
-    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, ProjectsListForOrgError> {
+    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
 
@@ -2376,12 +2578,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2393,8 +2595,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ProjectsListForOrgError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsListForOrgError::Generic { code }),
+                422 => Err(ProjectsListForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2409,7 +2611,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, ProjectsListForOrgError> {
+    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<ProjectsListForOrgParams<'api>>>) -> Result<Vec<Project>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/projects", super::GITHUB_BASE_API_URL, org);
 
@@ -2426,7 +2628,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2438,8 +2640,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ProjectsListForOrgError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsListForOrgError::Generic { code }),
+                422 => Err(ProjectsListForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2453,7 +2655,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/projects/projects#list-repository-projects)
     ///
     /// ---
-    pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, ProjectsListForRepoError> {
+    pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2464,12 +2666,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2481,12 +2683,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(ProjectsListForRepoError::Status401(github_response.to_json_async().await?)),
-                403 => Err(ProjectsListForRepoError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ProjectsListForRepoError::Status404(github_response.to_json_async().await?)),
-                410 => Err(ProjectsListForRepoError::Status410(github_response.to_json_async().await?)),
-                422 => Err(ProjectsListForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsListForRepoError::Generic { code }),
+                401 => Err(ProjectsListForRepoError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(ProjectsListForRepoError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsListForRepoError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(ProjectsListForRepoError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsListForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsListForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2501,7 +2703,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, ProjectsListForRepoError> {
+    pub fn list_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ProjectsListForRepoParams<'api>>>) -> Result<Vec<Project>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/projects", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2518,7 +2720,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2530,12 +2732,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(ProjectsListForRepoError::Status401(github_response.to_json()?)),
-                403 => Err(ProjectsListForRepoError::Status403(github_response.to_json()?)),
-                404 => Err(ProjectsListForRepoError::Status404(github_response.to_json()?)),
-                410 => Err(ProjectsListForRepoError::Status410(github_response.to_json()?)),
-                422 => Err(ProjectsListForRepoError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsListForRepoError::Generic { code }),
+                401 => Err(ProjectsListForRepoError::Status401(github_response.to_json()?).into()),
+                403 => Err(ProjectsListForRepoError::Status403(github_response.to_json()?).into()),
+                404 => Err(ProjectsListForRepoError::Status404(github_response.to_json()?).into()),
+                410 => Err(ProjectsListForRepoError::Status410(github_response.to_json()?).into()),
+                422 => Err(ProjectsListForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsListForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2549,7 +2751,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/projects/projects#list-user-projects)
     ///
     /// ---
-    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, ProjectsListForUserError> {
+    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/projects", super::GITHUB_BASE_API_URL, username);
 
@@ -2560,12 +2762,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2577,8 +2779,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ProjectsListForUserError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsListForUserError::Generic { code }),
+                422 => Err(ProjectsListForUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2593,7 +2795,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, ProjectsListForUserError> {
+    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<ProjectsListForUserParams<'api>>>) -> Result<Vec<Project>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/projects", super::GITHUB_BASE_API_URL, username);
 
@@ -2610,7 +2812,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2622,8 +2824,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ProjectsListForUserError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsListForUserError::Generic { code }),
+                422 => Err(ProjectsListForUserError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2635,19 +2837,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for move_card](https://docs.github.com/rest/projects/cards#move-a-project-card)
     ///
     /// ---
-    pub async fn move_card_async(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, ProjectsMoveCardError> {
+    pub async fn move_card_async(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}/moves", super::GITHUB_BASE_API_URL, card_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsMoveCard::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsMoveCard>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2659,12 +2861,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsMoveCardError::Status304),
-                403 => Err(ProjectsMoveCardError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsMoveCardError::Status401(github_response.to_json_async().await?)),
-                503 => Err(ProjectsMoveCardError::Status503(github_response.to_json_async().await?)),
-                422 => Err(ProjectsMoveCardError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsMoveCardError::Generic { code }),
+                304 => Err(ProjectsMoveCardError::Status304.into()),
+                403 => Err(ProjectsMoveCardError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsMoveCardError::Status401(github_response.to_json_async().await?).into()),
+                503 => Err(ProjectsMoveCardError::Status503(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsMoveCardError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsMoveCardError::Generic { code }.into()),
             }
         }
     }
@@ -2677,19 +2879,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn move_card(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, ProjectsMoveCardError> {
+    pub fn move_card(&self, card_id: i32, body: PostProjectsMoveCard) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}/moves", super::GITHUB_BASE_API_URL, card_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsMoveCard::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsMoveCard>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2701,12 +2903,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsMoveCardError::Status304),
-                403 => Err(ProjectsMoveCardError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsMoveCardError::Status401(github_response.to_json()?)),
-                503 => Err(ProjectsMoveCardError::Status503(github_response.to_json()?)),
-                422 => Err(ProjectsMoveCardError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsMoveCardError::Generic { code }),
+                304 => Err(ProjectsMoveCardError::Status304.into()),
+                403 => Err(ProjectsMoveCardError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsMoveCardError::Status401(github_response.to_json()?).into()),
+                503 => Err(ProjectsMoveCardError::Status503(github_response.to_json()?).into()),
+                422 => Err(ProjectsMoveCardError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsMoveCardError::Generic { code }.into()),
             }
         }
     }
@@ -2718,19 +2920,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for move_column](https://docs.github.com/rest/projects/columns#move-a-project-column)
     ///
     /// ---
-    pub async fn move_column_async(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, ProjectsMoveColumnError> {
+    pub async fn move_column_async(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}/moves", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsMoveColumn::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsMoveColumn>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2742,11 +2944,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsMoveColumnError::Status304),
-                403 => Err(ProjectsMoveColumnError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ProjectsMoveColumnError::Status422(github_response.to_json_async().await?)),
-                401 => Err(ProjectsMoveColumnError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsMoveColumnError::Generic { code }),
+                304 => Err(ProjectsMoveColumnError::Status304.into()),
+                403 => Err(ProjectsMoveColumnError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsMoveColumnError::Status422(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsMoveColumnError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsMoveColumnError::Generic { code }.into()),
             }
         }
     }
@@ -2759,19 +2961,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn move_column(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, ProjectsMoveColumnError> {
+    pub fn move_column(&self, column_id: i32, body: PostProjectsMoveColumn) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}/moves", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostProjectsMoveColumn::from_json(body)?),
+            body: Some(C::from_json::<PostProjectsMoveColumn>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2783,11 +2985,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsMoveColumnError::Status304),
-                403 => Err(ProjectsMoveColumnError::Status403(github_response.to_json()?)),
-                422 => Err(ProjectsMoveColumnError::Status422(github_response.to_json()?)),
-                401 => Err(ProjectsMoveColumnError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsMoveColumnError::Generic { code }),
+                304 => Err(ProjectsMoveColumnError::Status304.into()),
+                403 => Err(ProjectsMoveColumnError::Status403(github_response.to_json()?).into()),
+                422 => Err(ProjectsMoveColumnError::Status422(github_response.to_json()?).into()),
+                401 => Err(ProjectsMoveColumnError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsMoveColumnError::Generic { code }.into()),
             }
         }
     }
@@ -2801,19 +3003,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator)
     ///
     /// ---
-    pub async fn remove_collaborator_async(&self, project_id: i32, username: &str) -> Result<(), ProjectsRemoveCollaboratorError> {
+    pub async fn remove_collaborator_async(&self, project_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2825,12 +3027,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsRemoveCollaboratorError::Status304),
-                404 => Err(ProjectsRemoveCollaboratorError::Status404(github_response.to_json_async().await?)),
-                403 => Err(ProjectsRemoveCollaboratorError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ProjectsRemoveCollaboratorError::Status422(github_response.to_json_async().await?)),
-                401 => Err(ProjectsRemoveCollaboratorError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsRemoveCollaboratorError::Generic { code }),
+                304 => Err(ProjectsRemoveCollaboratorError::Status304.into()),
+                404 => Err(ProjectsRemoveCollaboratorError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(ProjectsRemoveCollaboratorError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsRemoveCollaboratorError::Status422(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsRemoveCollaboratorError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsRemoveCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -2845,7 +3047,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_collaborator(&self, project_id: i32, username: &str) -> Result<(), ProjectsRemoveCollaboratorError> {
+    pub fn remove_collaborator(&self, project_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/projects/{}/collaborators/{}", super::GITHUB_BASE_API_URL, project_id, username);
 
@@ -2857,7 +3059,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2869,12 +3071,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsRemoveCollaboratorError::Status304),
-                404 => Err(ProjectsRemoveCollaboratorError::Status404(github_response.to_json()?)),
-                403 => Err(ProjectsRemoveCollaboratorError::Status403(github_response.to_json()?)),
-                422 => Err(ProjectsRemoveCollaboratorError::Status422(github_response.to_json()?)),
-                401 => Err(ProjectsRemoveCollaboratorError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsRemoveCollaboratorError::Generic { code }),
+                304 => Err(ProjectsRemoveCollaboratorError::Status304.into()),
+                404 => Err(ProjectsRemoveCollaboratorError::Status404(github_response.to_json()?).into()),
+                403 => Err(ProjectsRemoveCollaboratorError::Status403(github_response.to_json()?).into()),
+                422 => Err(ProjectsRemoveCollaboratorError::Status422(github_response.to_json()?).into()),
+                401 => Err(ProjectsRemoveCollaboratorError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsRemoveCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -2888,19 +3090,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for update](https://docs.github.com/rest/projects/projects#update-a-project)
     ///
     /// ---
-    pub async fn update_async(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, ProjectsUpdateError> {
+    pub async fn update_async(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchProjectsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchProjectsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2912,13 +3114,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsUpdateError::Status404),
-                304 => Err(ProjectsUpdateError::Status304),
-                403 => Err(ProjectsUpdateError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsUpdateError::Status401(github_response.to_json_async().await?)),
-                410 => Err(ProjectsUpdateError::Status410(github_response.to_json_async().await?)),
-                422 => Err(ProjectsUpdateError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsUpdateError::Generic { code }),
+                404 => Err(ProjectsUpdateError::Status404.into()),
+                304 => Err(ProjectsUpdateError::Status304.into()),
+                403 => Err(ProjectsUpdateError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsUpdateError::Status401(github_response.to_json_async().await?).into()),
+                410 => Err(ProjectsUpdateError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsUpdateError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -2933,19 +3135,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, ProjectsUpdateError> {
+    pub fn update(&self, project_id: i32, body: PatchProjectsUpdate) -> Result<Project, AdapterError> {
 
         let request_uri = format!("{}/projects/{}", super::GITHUB_BASE_API_URL, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchProjectsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchProjectsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2957,13 +3159,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ProjectsUpdateError::Status404),
-                304 => Err(ProjectsUpdateError::Status304),
-                403 => Err(ProjectsUpdateError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsUpdateError::Status401(github_response.to_json()?)),
-                410 => Err(ProjectsUpdateError::Status410(github_response.to_json()?)),
-                422 => Err(ProjectsUpdateError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsUpdateError::Generic { code }),
+                404 => Err(ProjectsUpdateError::Status404.into()),
+                304 => Err(ProjectsUpdateError::Status304.into()),
+                403 => Err(ProjectsUpdateError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsUpdateError::Status401(github_response.to_json()?).into()),
+                410 => Err(ProjectsUpdateError::Status410(github_response.to_json()?).into()),
+                422 => Err(ProjectsUpdateError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -2975,19 +3177,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for update_card](https://docs.github.com/rest/projects/cards#update-an-existing-project-card)
     ///
     /// ---
-    pub async fn update_card_async(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, ProjectsUpdateCardError> {
+    pub async fn update_card_async(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchProjectsUpdateCard::from_json(body)?),
+            body: Some(C::from_json::<PatchProjectsUpdateCard>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2999,12 +3201,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsUpdateCardError::Status304),
-                403 => Err(ProjectsUpdateCardError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsUpdateCardError::Status401(github_response.to_json_async().await?)),
-                404 => Err(ProjectsUpdateCardError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ProjectsUpdateCardError::Status422(github_response.to_json_async().await?)),
-                code => Err(ProjectsUpdateCardError::Generic { code }),
+                304 => Err(ProjectsUpdateCardError::Status304.into()),
+                403 => Err(ProjectsUpdateCardError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsUpdateCardError::Status401(github_response.to_json_async().await?).into()),
+                404 => Err(ProjectsUpdateCardError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ProjectsUpdateCardError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsUpdateCardError::Generic { code }.into()),
             }
         }
     }
@@ -3017,19 +3219,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_card(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, ProjectsUpdateCardError> {
+    pub fn update_card(&self, card_id: i32, body: PatchProjectsUpdateCard) -> Result<ProjectCard, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/cards/{}", super::GITHUB_BASE_API_URL, card_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchProjectsUpdateCard::from_json(body)?),
+            body: Some(C::from_json::<PatchProjectsUpdateCard>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3041,12 +3243,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsUpdateCardError::Status304),
-                403 => Err(ProjectsUpdateCardError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsUpdateCardError::Status401(github_response.to_json()?)),
-                404 => Err(ProjectsUpdateCardError::Status404(github_response.to_json()?)),
-                422 => Err(ProjectsUpdateCardError::Status422(github_response.to_json()?)),
-                code => Err(ProjectsUpdateCardError::Generic { code }),
+                304 => Err(ProjectsUpdateCardError::Status304.into()),
+                403 => Err(ProjectsUpdateCardError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsUpdateCardError::Status401(github_response.to_json()?).into()),
+                404 => Err(ProjectsUpdateCardError::Status404(github_response.to_json()?).into()),
+                422 => Err(ProjectsUpdateCardError::Status422(github_response.to_json()?).into()),
+                code => Err(ProjectsUpdateCardError::Generic { code }.into()),
             }
         }
     }
@@ -3058,19 +3260,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     /// [GitHub API docs for update_column](https://docs.github.com/rest/projects/columns#update-an-existing-project-column)
     ///
     /// ---
-    pub async fn update_column_async(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, ProjectsUpdateColumnError> {
+    pub async fn update_column_async(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchProjectsUpdateColumn::from_json(body)?),
+            body: Some(C::from_json::<PatchProjectsUpdateColumn>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3082,10 +3284,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsUpdateColumnError::Status304),
-                403 => Err(ProjectsUpdateColumnError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ProjectsUpdateColumnError::Status401(github_response.to_json_async().await?)),
-                code => Err(ProjectsUpdateColumnError::Generic { code }),
+                304 => Err(ProjectsUpdateColumnError::Status304.into()),
+                403 => Err(ProjectsUpdateColumnError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ProjectsUpdateColumnError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ProjectsUpdateColumnError::Generic { code }.into()),
             }
         }
     }
@@ -3098,19 +3300,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_column(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, ProjectsUpdateColumnError> {
+    pub fn update_column(&self, column_id: i32, body: PatchProjectsUpdateColumn) -> Result<ProjectColumn, AdapterError> {
 
         let request_uri = format!("{}/projects/columns/{}", super::GITHUB_BASE_API_URL, column_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchProjectsUpdateColumn::from_json(body)?),
+            body: Some(C::from_json::<PatchProjectsUpdateColumn>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3122,10 +3324,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Projects<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ProjectsUpdateColumnError::Status304),
-                403 => Err(ProjectsUpdateColumnError::Status403(github_response.to_json()?)),
-                401 => Err(ProjectsUpdateColumnError::Status401(github_response.to_json()?)),
-                code => Err(ProjectsUpdateColumnError::Generic { code }),
+                304 => Err(ProjectsUpdateColumnError::Status304.into()),
+                403 => Err(ProjectsUpdateColumnError::Status403(github_response.to_json()?).into()),
+                401 => Err(ProjectsUpdateColumnError::Status401(github_response.to_json()?).into()),
+                code => Err(ProjectsUpdateColumnError::Generic { code }.into()),
             }
         }
     }

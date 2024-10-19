@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,165 +22,188 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Checks<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Checks<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Checks<C> {
+pub fn new<C: Client>(client: &C) -> Checks<C> where AdapterError: From<<C as Client>::Err> {
     Checks { client }
 }
 
 /// Errors for the [Create a check run](Checks::create_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksCreateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksCreateError> for AdapterError {
+    fn from(err: ChecksCreateError) -> Self {
+        let (description, status_code) = match err {
+            ChecksCreateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a check suite](Checks::create_suite_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksCreateSuiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the suite was created")]
     Status201(CheckSuite),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ChecksCreateSuiteError> for AdapterError {
+    fn from(err: ChecksCreateSuiteError) -> Self {
+        let (description, status_code) = match err {
+            ChecksCreateSuiteError::Status201(_) => (String::from("Response when the suite was created"), 201),
+            ChecksCreateSuiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a check run](Checks::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksGetError> for AdapterError {
+    fn from(err: ChecksGetError) -> Self {
+        let (description, status_code) = match err {
+            ChecksGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a check suite](Checks::get_suite_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksGetSuiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksGetSuiteError> for AdapterError {
+    fn from(err: ChecksGetSuiteError) -> Self {
+        let (description, status_code) = match err {
+            ChecksGetSuiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List check run annotations](Checks::list_annotations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksListAnnotationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksListAnnotationsError> for AdapterError {
+    fn from(err: ChecksListAnnotationsError) -> Self {
+        let (description, status_code) = match err {
+            ChecksListAnnotationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List check runs for a Git reference](Checks::list_for_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksListForRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksListForRefError> for AdapterError {
+    fn from(err: ChecksListForRefError) -> Self {
+        let (description, status_code) = match err {
+            ChecksListForRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List check runs in a check suite](Checks::list_for_suite_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksListForSuiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksListForSuiteError> for AdapterError {
+    fn from(err: ChecksListForSuiteError) -> Self {
+        let (description, status_code) = match err {
+            ChecksListForSuiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List check suites for a Git reference](Checks::list_suites_for_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksListSuitesForRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksListSuitesForRefError> for AdapterError {
+    fn from(err: ChecksListSuitesForRefError) -> Self {
+        let (description, status_code) = match err {
+            ChecksListSuitesForRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Rerequest a check run](Checks::rerequest_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksRerequestRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden if the check run is not rerequestable or doesn't belong to the authenticated GitHub App")]
     Status403(BasicError),
     #[error("Validation error if the check run is not rerequestable")]
@@ -191,55 +214,84 @@ pub enum ChecksRerequestRunError {
     Generic { code: u16 },
 }
 
+impl From<ChecksRerequestRunError> for AdapterError {
+    fn from(err: ChecksRerequestRunError) -> Self {
+        let (description, status_code) = match err {
+            ChecksRerequestRunError::Status403(_) => (String::from("Forbidden if the check run is not rerequestable or doesn't belong to the authenticated GitHub App"), 403),
+            ChecksRerequestRunError::Status422(_) => (String::from("Validation error if the check run is not rerequestable"), 422),
+            ChecksRerequestRunError::Status404(_) => (String::from("Resource not found"), 404),
+            ChecksRerequestRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Rerequest a check suite](Checks::rerequest_suite_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksRerequestSuiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksRerequestSuiteError> for AdapterError {
+    fn from(err: ChecksRerequestSuiteError) -> Self {
+        let (description, status_code) = match err {
+            ChecksRerequestSuiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update repository preferences for check suites](Checks::set_suites_preferences_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksSetSuitesPreferencesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksSetSuitesPreferencesError> for AdapterError {
+    fn from(err: ChecksSetSuitesPreferencesError) -> Self {
+        let (description, status_code) = match err {
+            ChecksSetSuitesPreferencesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a check run](Checks::update_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksUpdateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ChecksUpdateError> for AdapterError {
+    fn from(err: ChecksUpdateError) -> Self {
+        let (description, status_code) = match err {
+            ChecksUpdateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -541,7 +593,7 @@ impl<'enc> From<&'enc PerPage> for ChecksListSuitesForRefParams<'enc> {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
+impl<'api, C: Client> Checks<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Create a check run
@@ -558,19 +610,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for create](https://docs.github.com/rest/checks/runs#create-a-check-run)
     ///
     /// ---
-    pub async fn create_async(&self, owner: &str, repo: &str, body: PostChecksCreate) -> Result<CheckRun, ChecksCreateError> {
+    pub async fn create_async(&self, owner: &str, repo: &str, body: PostChecksCreate) -> Result<CheckRun, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostChecksCreate::from_json(body)?),
+            body: Some(C::from_json::<PostChecksCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -582,7 +634,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksCreateError::Generic { code }),
+                code => Err(ChecksCreateError::Generic { code }.into()),
             }
         }
     }
@@ -604,19 +656,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create(&self, owner: &str, repo: &str, body: PostChecksCreate) -> Result<CheckRun, ChecksCreateError> {
+    pub fn create(&self, owner: &str, repo: &str, body: PostChecksCreate) -> Result<CheckRun, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostChecksCreate::from_json(body)?),
+            body: Some(C::from_json::<PostChecksCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -628,7 +680,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksCreateError::Generic { code }),
+                code => Err(ChecksCreateError::Generic { code }.into()),
             }
         }
     }
@@ -647,19 +699,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for create_suite](https://docs.github.com/rest/checks/suites#create-a-check-suite)
     ///
     /// ---
-    pub async fn create_suite_async(&self, owner: &str, repo: &str, body: PostChecksCreateSuite) -> Result<CheckSuite, ChecksCreateSuiteError> {
+    pub async fn create_suite_async(&self, owner: &str, repo: &str, body: PostChecksCreateSuite) -> Result<CheckSuite, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostChecksCreateSuite::from_json(body)?),
+            body: Some(C::from_json::<PostChecksCreateSuite>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -671,8 +723,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ChecksCreateSuiteError::Status201(github_response.to_json_async().await?)),
-                code => Err(ChecksCreateSuiteError::Generic { code }),
+                201 => Err(ChecksCreateSuiteError::Status201(github_response.to_json_async().await?).into()),
+                code => Err(ChecksCreateSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -692,19 +744,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_suite(&self, owner: &str, repo: &str, body: PostChecksCreateSuite) -> Result<CheckSuite, ChecksCreateSuiteError> {
+    pub fn create_suite(&self, owner: &str, repo: &str, body: PostChecksCreateSuite) -> Result<CheckSuite, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostChecksCreateSuite::from_json(body)?),
+            body: Some(C::from_json::<PostChecksCreateSuite>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -716,8 +768,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ChecksCreateSuiteError::Status201(github_response.to_json()?)),
-                code => Err(ChecksCreateSuiteError::Generic { code }),
+                201 => Err(ChecksCreateSuiteError::Status201(github_response.to_json()?).into()),
+                code => Err(ChecksCreateSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -736,19 +788,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for get](https://docs.github.com/rest/checks/runs#get-a-check-run)
     ///
     /// ---
-    pub async fn get_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<CheckRun, ChecksGetError> {
+    pub async fn get_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<CheckRun, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -760,7 +812,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksGetError::Generic { code }),
+                code => Err(ChecksGetError::Generic { code }.into()),
             }
         }
     }
@@ -780,7 +832,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<CheckRun, ChecksGetError> {
+    pub fn get(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<CheckRun, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
@@ -792,7 +844,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -804,7 +856,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksGetError::Generic { code }),
+                code => Err(ChecksGetError::Generic { code }.into()),
             }
         }
     }
@@ -823,19 +875,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for get_suite](https://docs.github.com/rest/checks/suites#get-a-check-suite)
     ///
     /// ---
-    pub async fn get_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<CheckSuite, ChecksGetSuiteError> {
+    pub async fn get_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<CheckSuite, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -847,7 +899,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksGetSuiteError::Generic { code }),
+                code => Err(ChecksGetSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -867,7 +919,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<CheckSuite, ChecksGetSuiteError> {
+    pub fn get_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<CheckSuite, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
@@ -879,7 +931,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -891,7 +943,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksGetSuiteError::Generic { code }),
+                code => Err(ChecksGetSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -907,7 +959,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for list_annotations](https://docs.github.com/rest/checks/runs#list-check-run-annotations)
     ///
     /// ---
-    pub async fn list_annotations_async(&self, owner: &str, repo: &str, check_run_id: i32, query_params: Option<impl Into<ChecksListAnnotationsParams>>) -> Result<Vec<CheckAnnotation>, ChecksListAnnotationsError> {
+    pub async fn list_annotations_async(&self, owner: &str, repo: &str, check_run_id: i32, query_params: Option<impl Into<ChecksListAnnotationsParams>>) -> Result<Vec<CheckAnnotation>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/check-runs/{}/annotations", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
@@ -918,12 +970,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -935,7 +987,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListAnnotationsError::Generic { code }),
+                code => Err(ChecksListAnnotationsError::Generic { code }.into()),
             }
         }
     }
@@ -952,7 +1004,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_annotations(&self, owner: &str, repo: &str, check_run_id: i32, query_params: Option<impl Into<ChecksListAnnotationsParams>>) -> Result<Vec<CheckAnnotation>, ChecksListAnnotationsError> {
+    pub fn list_annotations(&self, owner: &str, repo: &str, check_run_id: i32, query_params: Option<impl Into<ChecksListAnnotationsParams>>) -> Result<Vec<CheckAnnotation>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/check-runs/{}/annotations", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
@@ -969,7 +1021,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -981,7 +1033,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListAnnotationsError::Generic { code }),
+                code => Err(ChecksListAnnotationsError::Generic { code }.into()),
             }
         }
     }
@@ -1002,7 +1054,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for list_for_ref](https://docs.github.com/rest/checks/runs#list-check-runs-for-a-git-reference)
     ///
     /// ---
-    pub async fn list_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListForRefParams<'api>>>) -> Result<GetChecksListForRefResponse200, ChecksListForRefError> {
+    pub async fn list_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListForRefParams<'api>>>) -> Result<GetChecksListForRefResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/check-runs", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -1013,12 +1065,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1030,7 +1082,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListForRefError::Generic { code }),
+                code => Err(ChecksListForRefError::Generic { code }.into()),
             }
         }
     }
@@ -1052,7 +1104,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListForRefParams<'api>>>) -> Result<GetChecksListForRefResponse200, ChecksListForRefError> {
+    pub fn list_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListForRefParams<'api>>>) -> Result<GetChecksListForRefResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/check-runs", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -1069,7 +1121,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1081,7 +1133,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListForRefError::Generic { code }),
+                code => Err(ChecksListForRefError::Generic { code }.into()),
             }
         }
     }
@@ -1100,7 +1152,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for list_for_suite](https://docs.github.com/rest/checks/runs#list-check-runs-in-a-check-suite)
     ///
     /// ---
-    pub async fn list_for_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32, query_params: Option<impl Into<ChecksListForSuiteParams<'api>>>) -> Result<GetChecksListForRefResponse200, ChecksListForSuiteError> {
+    pub async fn list_for_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32, query_params: Option<impl Into<ChecksListForSuiteParams<'api>>>) -> Result<GetChecksListForRefResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/check-suites/{}/check-runs", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
@@ -1111,12 +1163,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1128,7 +1180,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListForSuiteError::Generic { code }),
+                code => Err(ChecksListForSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -1148,7 +1200,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_suite(&self, owner: &str, repo: &str, check_suite_id: i32, query_params: Option<impl Into<ChecksListForSuiteParams<'api>>>) -> Result<GetChecksListForRefResponse200, ChecksListForSuiteError> {
+    pub fn list_for_suite(&self, owner: &str, repo: &str, check_suite_id: i32, query_params: Option<impl Into<ChecksListForSuiteParams<'api>>>) -> Result<GetChecksListForRefResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/check-suites/{}/check-runs", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
@@ -1165,7 +1217,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1177,7 +1229,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListForSuiteError::Generic { code }),
+                code => Err(ChecksListForSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -1196,7 +1248,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for list_suites_for_ref](https://docs.github.com/rest/checks/suites#list-check-suites-for-a-git-reference)
     ///
     /// ---
-    pub async fn list_suites_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListSuitesForRefParams<'api>>>) -> Result<GetChecksListSuitesForRefResponse200, ChecksListSuitesForRefError> {
+    pub async fn list_suites_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListSuitesForRefParams<'api>>>) -> Result<GetChecksListSuitesForRefResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/check-suites", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -1207,12 +1259,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1224,7 +1276,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListSuitesForRefError::Generic { code }),
+                code => Err(ChecksListSuitesForRefError::Generic { code }.into()),
             }
         }
     }
@@ -1244,7 +1296,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_suites_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListSuitesForRefParams<'api>>>) -> Result<GetChecksListSuitesForRefResponse200, ChecksListSuitesForRefError> {
+    pub fn list_suites_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ChecksListSuitesForRefParams<'api>>>) -> Result<GetChecksListSuitesForRefResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/check-suites", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -1261,7 +1313,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1273,7 +1325,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksListSuitesForRefError::Generic { code }),
+                code => Err(ChecksListSuitesForRefError::Generic { code }.into()),
             }
         }
     }
@@ -1291,19 +1343,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for rerequest_run](https://docs.github.com/rest/checks/runs#rerequest-a-check-run)
     ///
     /// ---
-    pub async fn rerequest_run_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<EmptyObject, ChecksRerequestRunError> {
+    pub async fn rerequest_run_async(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1315,10 +1367,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ChecksRerequestRunError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ChecksRerequestRunError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ChecksRerequestRunError::Status404(github_response.to_json_async().await?)),
-                code => Err(ChecksRerequestRunError::Generic { code }),
+                403 => Err(ChecksRerequestRunError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ChecksRerequestRunError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ChecksRerequestRunError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ChecksRerequestRunError::Generic { code }.into()),
             }
         }
     }
@@ -1337,7 +1389,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn rerequest_run(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<EmptyObject, ChecksRerequestRunError> {
+    pub fn rerequest_run(&self, owner: &str, repo: &str, check_run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
@@ -1349,7 +1401,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1361,10 +1413,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ChecksRerequestRunError::Status403(github_response.to_json()?)),
-                422 => Err(ChecksRerequestRunError::Status422(github_response.to_json()?)),
-                404 => Err(ChecksRerequestRunError::Status404(github_response.to_json()?)),
-                code => Err(ChecksRerequestRunError::Generic { code }),
+                403 => Err(ChecksRerequestRunError::Status403(github_response.to_json()?).into()),
+                422 => Err(ChecksRerequestRunError::Status422(github_response.to_json()?).into()),
+                404 => Err(ChecksRerequestRunError::Status404(github_response.to_json()?).into()),
+                code => Err(ChecksRerequestRunError::Generic { code }.into()),
             }
         }
     }
@@ -1380,19 +1432,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for rerequest_suite](https://docs.github.com/rest/checks/suites#rerequest-a-check-suite)
     ///
     /// ---
-    pub async fn rerequest_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<EmptyObject, ChecksRerequestSuiteError> {
+    pub async fn rerequest_suite_async(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1404,7 +1456,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksRerequestSuiteError::Generic { code }),
+                code => Err(ChecksRerequestSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -1421,7 +1473,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn rerequest_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<EmptyObject, ChecksRerequestSuiteError> {
+    pub fn rerequest_suite(&self, owner: &str, repo: &str, check_suite_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/{}/rerequest", super::GITHUB_BASE_API_URL, owner, repo, check_suite_id);
 
@@ -1433,7 +1485,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1445,7 +1497,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksRerequestSuiteError::Generic { code }),
+                code => Err(ChecksRerequestSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -1460,19 +1512,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for set_suites_preferences](https://docs.github.com/rest/checks/suites#update-repository-preferences-for-check-suites)
     ///
     /// ---
-    pub async fn set_suites_preferences_async(&self, owner: &str, repo: &str, body: PatchChecksSetSuitesPreferences) -> Result<CheckSuitePreference, ChecksSetSuitesPreferencesError> {
+    pub async fn set_suites_preferences_async(&self, owner: &str, repo: &str, body: PatchChecksSetSuitesPreferences) -> Result<CheckSuitePreference, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/preferences", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchChecksSetSuitesPreferences::from_json(body)?),
+            body: Some(C::from_json::<PatchChecksSetSuitesPreferences>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1484,7 +1536,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksSetSuitesPreferencesError::Generic { code }),
+                code => Err(ChecksSetSuitesPreferencesError::Generic { code }.into()),
             }
         }
     }
@@ -1500,19 +1552,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_suites_preferences(&self, owner: &str, repo: &str, body: PatchChecksSetSuitesPreferences) -> Result<CheckSuitePreference, ChecksSetSuitesPreferencesError> {
+    pub fn set_suites_preferences(&self, owner: &str, repo: &str, body: PatchChecksSetSuitesPreferences) -> Result<CheckSuitePreference, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-suites/preferences", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchChecksSetSuitesPreferences::from_json(body)?),
+            body: Some(C::from_json::<PatchChecksSetSuitesPreferences>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1524,7 +1576,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksSetSuitesPreferencesError::Generic { code }),
+                code => Err(ChecksSetSuitesPreferencesError::Generic { code }.into()),
             }
         }
     }
@@ -1543,19 +1595,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     /// [GitHub API docs for update](https://docs.github.com/rest/checks/runs#update-a-check-run)
     ///
     /// ---
-    pub async fn update_async(&self, owner: &str, repo: &str, check_run_id: i32, body: PatchChecksUpdate) -> Result<CheckRun, ChecksUpdateError> {
+    pub async fn update_async(&self, owner: &str, repo: &str, check_run_id: i32, body: PatchChecksUpdate) -> Result<CheckRun, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchChecksUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchChecksUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1567,7 +1619,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksUpdateError::Generic { code }),
+                code => Err(ChecksUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -1587,19 +1639,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update(&self, owner: &str, repo: &str, check_run_id: i32, body: PatchChecksUpdate) -> Result<CheckRun, ChecksUpdateError> {
+    pub fn update(&self, owner: &str, repo: &str, check_run_id: i32, body: PatchChecksUpdate) -> Result<CheckRun, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/check-runs/{}", super::GITHUB_BASE_API_URL, owner, repo, check_run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchChecksUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchChecksUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1611,7 +1663,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Checks<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ChecksUpdateError::Generic { code }),
+                code => Err(ChecksUpdateError::Generic { code }.into()),
             }
         }
     }

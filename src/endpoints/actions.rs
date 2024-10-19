@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,48 +22,44 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Actions<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Actions<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Actions<C> {
+pub fn new<C: Client>(client: &C) -> Actions<C> where AdapterError: From<<C as Client>::Err> {
     Actions { client }
 }
 
 /// Errors for the [Add custom labels to a self-hosted runner for an organization](Actions::add_custom_labels_to_self_hosted_runner_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsAddCustomLabelsToSelfHostedRunnerForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsAddCustomLabelsToSelfHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsAddCustomLabelsToSelfHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Add custom labels to a self-hosted runner for a repository](Actions::add_custom_labels_to_self_hosted_runner_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsAddCustomLabelsToSelfHostedRunnerForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -72,57 +68,115 @@ pub enum ActionsAddCustomLabelsToSelfHostedRunnerForRepoError {
     Generic { code: u16 },
 }
 
+impl From<ActionsAddCustomLabelsToSelfHostedRunnerForRepoError> for AdapterError {
+    fn from(err: ActionsAddCustomLabelsToSelfHostedRunnerForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Add repository access to a self-hosted runner group in an organization](Actions::add_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError> for AdapterError {
+    fn from(err: ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add selected repository to an organization secret](Actions::add_selected_repo_to_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsAddSelectedRepoToOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict when visibility type is not set to selected")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsAddSelectedRepoToOrgSecretError> for AdapterError {
+    fn from(err: ActionsAddSelectedRepoToOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsAddSelectedRepoToOrgSecretError::Status409 => (String::from("Conflict when visibility type is not set to selected"), 409),
+            ActionsAddSelectedRepoToOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add selected repository to an organization variable](Actions::add_selected_repo_to_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsAddSelectedRepoToOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsAddSelectedRepoToOrgVariableError> for AdapterError {
+    fn from(err: ActionsAddSelectedRepoToOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsAddSelectedRepoToOrgVariableError::Status409 => (String::from("Response when the visibility of the variable is not set to `selected`"), 409),
+            ActionsAddSelectedRepoToOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Add a self-hosted runner to a group for an organization](Actions::add_self_hosted_runner_to_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsAddSelfHostedRunnerToGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsAddSelfHostedRunnerToGroupForOrgError> for AdapterError {
+    fn from(err: ActionsAddSelfHostedRunnerToGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Approve a workflow run for a fork pull request](Actions::approve_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsApproveWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -131,435 +185,583 @@ pub enum ActionsApproveWorkflowRunError {
     Generic { code: u16 },
 }
 
+impl From<ActionsApproveWorkflowRunError> for AdapterError {
+    fn from(err: ActionsApproveWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsApproveWorkflowRunError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsApproveWorkflowRunError::Status403(_) => (String::from("Forbidden"), 403),
+            ActionsApproveWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Cancel a workflow run](Actions::cancel_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCancelWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsCancelWorkflowRunError> for AdapterError {
+    fn from(err: ActionsCancelWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCancelWorkflowRunError::Status409(_) => (String::from("Conflict"), 409),
+            ActionsCancelWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an environment variable](Actions::create_environment_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateEnvironmentVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateEnvironmentVariableError> for AdapterError {
+    fn from(err: ActionsCreateEnvironmentVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateEnvironmentVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create or update an environment secret](Actions::create_or_update_environment_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateOrUpdateEnvironmentSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when updating a secret")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateOrUpdateEnvironmentSecretError> for AdapterError {
+    fn from(err: ActionsCreateOrUpdateEnvironmentSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateOrUpdateEnvironmentSecretError::Status204 => (String::from("Response when updating a secret"), 204),
+            ActionsCreateOrUpdateEnvironmentSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create or update an organization secret](Actions::create_or_update_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateOrUpdateOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when updating a secret")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateOrUpdateOrgSecretError> for AdapterError {
+    fn from(err: ActionsCreateOrUpdateOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateOrUpdateOrgSecretError::Status204 => (String::from("Response when updating a secret"), 204),
+            ActionsCreateOrUpdateOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create or update a repository secret](Actions::create_or_update_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateOrUpdateRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when updating a secret")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsCreateOrUpdateRepoSecretError> for AdapterError {
+    fn from(err: ActionsCreateOrUpdateRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateOrUpdateRepoSecretError::Status204 => (String::from("Response when updating a secret"), 204),
+            ActionsCreateOrUpdateRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an organization variable](Actions::create_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateOrgVariableError> for AdapterError {
+    fn from(err: ActionsCreateOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a registration token for an organization](Actions::create_registration_token_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateRegistrationTokenForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateRegistrationTokenForOrgError> for AdapterError {
+    fn from(err: ActionsCreateRegistrationTokenForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateRegistrationTokenForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a registration token for a repository](Actions::create_registration_token_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateRegistrationTokenForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateRegistrationTokenForRepoError> for AdapterError {
+    fn from(err: ActionsCreateRegistrationTokenForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateRegistrationTokenForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a remove token for an organization](Actions::create_remove_token_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateRemoveTokenForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateRemoveTokenForOrgError> for AdapterError {
+    fn from(err: ActionsCreateRemoveTokenForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateRemoveTokenForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a remove token for a repository](Actions::create_remove_token_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateRemoveTokenForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateRemoveTokenForRepoError> for AdapterError {
+    fn from(err: ActionsCreateRemoveTokenForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateRemoveTokenForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a repository variable](Actions::create_repo_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateRepoVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateRepoVariableError> for AdapterError {
+    fn from(err: ActionsCreateRepoVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateRepoVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Create a self-hosted runner group for an organization](Actions::create_self_hosted_runner_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsCreateSelfHostedRunnerGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsCreateSelfHostedRunnerGroupForOrgError> for AdapterError {
+    fn from(err: ActionsCreateSelfHostedRunnerGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateSelfHostedRunnerGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a workflow dispatch event](Actions::create_workflow_dispatch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateWorkflowDispatchError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsCreateWorkflowDispatchError> for AdapterError {
+    fn from(err: ActionsCreateWorkflowDispatchError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateWorkflowDispatchError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a GitHub Actions cache for a repository (using a cache ID)](Actions::delete_actions_cache_by_id_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteActionsCacheByIdError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteActionsCacheByIdError> for AdapterError {
+    fn from(err: ActionsDeleteActionsCacheByIdError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteActionsCacheByIdError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete GitHub Actions caches for a repository (using a cache key)](Actions::delete_actions_cache_by_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteActionsCacheByKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteActionsCacheByKeyError> for AdapterError {
+    fn from(err: ActionsDeleteActionsCacheByKeyError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteActionsCacheByKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an artifact](Actions::delete_artifact_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteArtifactError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteArtifactError> for AdapterError {
+    fn from(err: ActionsDeleteArtifactError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteArtifactError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an environment secret](Actions::delete_environment_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteEnvironmentSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteEnvironmentSecretError> for AdapterError {
+    fn from(err: ActionsDeleteEnvironmentSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteEnvironmentSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an environment variable](Actions::delete_environment_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteEnvironmentVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteEnvironmentVariableError> for AdapterError {
+    fn from(err: ActionsDeleteEnvironmentVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteEnvironmentVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an organization secret](Actions::delete_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteOrgSecretError> for AdapterError {
+    fn from(err: ActionsDeleteOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an organization variable](Actions::delete_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteOrgVariableError> for AdapterError {
+    fn from(err: ActionsDeleteOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a repository secret](Actions::delete_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteRepoSecretError> for AdapterError {
+    fn from(err: ActionsDeleteRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a repository variable](Actions::delete_repo_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteRepoVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteRepoVariableError> for AdapterError {
+    fn from(err: ActionsDeleteRepoVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteRepoVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a self-hosted runner from an organization](Actions::delete_self_hosted_runner_from_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteSelfHostedRunnerFromOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteSelfHostedRunnerFromOrgError> for AdapterError {
+    fn from(err: ActionsDeleteSelfHostedRunnerFromOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a self-hosted runner from a repository](Actions::delete_self_hosted_runner_from_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteSelfHostedRunnerFromRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteSelfHostedRunnerFromRepoError> for AdapterError {
+    fn from(err: ActionsDeleteSelfHostedRunnerFromRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Delete a self-hosted runner group from an organization](Actions::delete_self_hosted_runner_group_from_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDeleteSelfHostedRunnerGroupFromOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsDeleteSelfHostedRunnerGroupFromOrgError> for AdapterError {
+    fn from(err: ActionsDeleteSelfHostedRunnerGroupFromOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a workflow run](Actions::delete_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDeleteWorkflowRunError> for AdapterError {
+    fn from(err: ActionsDeleteWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete workflow run logs](Actions::delete_workflow_run_logs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDeleteWorkflowRunLogsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Internal Error")]
@@ -568,53 +770,67 @@ pub enum ActionsDeleteWorkflowRunLogsError {
     Generic { code: u16 },
 }
 
+impl From<ActionsDeleteWorkflowRunLogsError> for AdapterError {
+    fn from(err: ActionsDeleteWorkflowRunLogsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteWorkflowRunLogsError::Status403(_) => (String::from("Forbidden"), 403),
+            ActionsDeleteWorkflowRunLogsError::Status500(_) => (String::from("Internal Error"), 500),
+            ActionsDeleteWorkflowRunLogsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Disable a selected repository for GitHub Actions in an organization](Actions::disable_selected_repository_github_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDisableSelectedRepositoryGithubActionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDisableSelectedRepositoryGithubActionsOrganizationError> for AdapterError {
+    fn from(err: ActionsDisableSelectedRepositoryGithubActionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Disable a workflow](Actions::disable_workflow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDisableWorkflowError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDisableWorkflowError> for AdapterError {
+    fn from(err: ActionsDisableWorkflowError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDisableWorkflowError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Download an artifact](Actions::download_artifact_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDownloadArtifactError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Gone")]
@@ -623,150 +839,190 @@ pub enum ActionsDownloadArtifactError {
     Generic { code: u16 },
 }
 
+impl From<ActionsDownloadArtifactError> for AdapterError {
+    fn from(err: ActionsDownloadArtifactError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDownloadArtifactError::Status302 => (String::from("Response"), 302),
+            ActionsDownloadArtifactError::Status410(_) => (String::from("Gone"), 410),
+            ActionsDownloadArtifactError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Download job logs for a workflow run](Actions::download_job_logs_for_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDownloadJobLogsForWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDownloadJobLogsForWorkflowRunError> for AdapterError {
+    fn from(err: ActionsDownloadJobLogsForWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDownloadJobLogsForWorkflowRunError::Status302 => (String::from("Response"), 302),
+            ActionsDownloadJobLogsForWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Download workflow run attempt logs](Actions::download_workflow_run_attempt_logs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDownloadWorkflowRunAttemptLogsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsDownloadWorkflowRunAttemptLogsError> for AdapterError {
+    fn from(err: ActionsDownloadWorkflowRunAttemptLogsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDownloadWorkflowRunAttemptLogsError::Status302 => (String::from("Response"), 302),
+            ActionsDownloadWorkflowRunAttemptLogsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Download workflow run logs](Actions::download_workflow_run_logs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsDownloadWorkflowRunLogsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsDownloadWorkflowRunLogsError> for AdapterError {
+    fn from(err: ActionsDownloadWorkflowRunLogsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDownloadWorkflowRunLogsError::Status302 => (String::from("Response"), 302),
+            ActionsDownloadWorkflowRunLogsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Enable a selected repository for GitHub Actions in an organization](Actions::enable_selected_repository_github_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsEnableSelectedRepositoryGithubActionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsEnableSelectedRepositoryGithubActionsOrganizationError> for AdapterError {
+    fn from(err: ActionsEnableSelectedRepositoryGithubActionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Enable a workflow](Actions::enable_workflow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsEnableWorkflowError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsEnableWorkflowError> for AdapterError {
+    fn from(err: ActionsEnableWorkflowError) -> Self {
+        let (description, status_code) = match err {
+            ActionsEnableWorkflowError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Force cancel a workflow run](Actions::force_cancel_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsForceCancelWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsForceCancelWorkflowRunError> for AdapterError {
+    fn from(err: ActionsForceCancelWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsForceCancelWorkflowRunError::Status409(_) => (String::from("Conflict"), 409),
+            ActionsForceCancelWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create configuration for a just-in-time runner for an organization](Actions::generate_runner_jitconfig_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGenerateRunnerJitconfigForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGenerateRunnerJitconfigForOrgError> for AdapterError {
+    fn from(err: ActionsGenerateRunnerJitconfigForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGenerateRunnerJitconfigForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsGenerateRunnerJitconfigForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsGenerateRunnerJitconfigForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create configuration for a just-in-time runner for a repository](Actions::generate_runner_jitconfig_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGenerateRunnerJitconfigForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -775,138 +1031,172 @@ pub enum ActionsGenerateRunnerJitconfigForRepoError {
     Generic { code: u16 },
 }
 
+impl From<ActionsGenerateRunnerJitconfigForRepoError> for AdapterError {
+    fn from(err: ActionsGenerateRunnerJitconfigForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGenerateRunnerJitconfigForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsGenerateRunnerJitconfigForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsGenerateRunnerJitconfigForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List GitHub Actions caches for a repository](Actions::get_actions_cache_list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetActionsCacheListError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetActionsCacheListError> for AdapterError {
+    fn from(err: ActionsGetActionsCacheListError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetActionsCacheListError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Actions cache usage for a repository](Actions::get_actions_cache_usage_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetActionsCacheUsageError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetActionsCacheUsageError> for AdapterError {
+    fn from(err: ActionsGetActionsCacheUsageError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetActionsCacheUsageError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories with GitHub Actions cache usage for an organization](Actions::get_actions_cache_usage_by_repo_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetActionsCacheUsageByRepoForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetActionsCacheUsageByRepoForOrgError> for AdapterError {
+    fn from(err: ActionsGetActionsCacheUsageByRepoForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetActionsCacheUsageByRepoForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Actions cache usage for an organization](Actions::get_actions_cache_usage_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetActionsCacheUsageForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetActionsCacheUsageForOrgError> for AdapterError {
+    fn from(err: ActionsGetActionsCacheUsageForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetActionsCacheUsageForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get allowed actions and reusable workflows for an organization](Actions::get_allowed_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetAllowedActionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetAllowedActionsOrganizationError> for AdapterError {
+    fn from(err: ActionsGetAllowedActionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetAllowedActionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get allowed actions and reusable workflows for a repository](Actions::get_allowed_actions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetAllowedActionsRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetAllowedActionsRepositoryError> for AdapterError {
+    fn from(err: ActionsGetAllowedActionsRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetAllowedActionsRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an artifact](Actions::get_artifact_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetArtifactError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetArtifactError> for AdapterError {
+    fn from(err: ActionsGetArtifactError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetArtifactError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the customization template for an OIDC subject claim for a repository](Actions::get_custom_oidc_sub_claim_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetCustomOidcSubClaimForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Resource not found")]
@@ -915,955 +1205,1270 @@ pub enum ActionsGetCustomOidcSubClaimForRepoError {
     Generic { code: u16 },
 }
 
+impl From<ActionsGetCustomOidcSubClaimForRepoError> for AdapterError {
+    fn from(err: ActionsGetCustomOidcSubClaimForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetCustomOidcSubClaimForRepoError::Status400(_) => (String::from("Bad Request"), 400),
+            ActionsGetCustomOidcSubClaimForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsGetCustomOidcSubClaimForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get an environment public key](Actions::get_environment_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetEnvironmentPublicKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetEnvironmentPublicKeyError> for AdapterError {
+    fn from(err: ActionsGetEnvironmentPublicKeyError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetEnvironmentPublicKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an environment secret](Actions::get_environment_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetEnvironmentSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetEnvironmentSecretError> for AdapterError {
+    fn from(err: ActionsGetEnvironmentSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetEnvironmentSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an environment variable](Actions::get_environment_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetEnvironmentVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetEnvironmentVariableError> for AdapterError {
+    fn from(err: ActionsGetEnvironmentVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetEnvironmentVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get default workflow permissions for an organization](Actions::get_github_actions_default_workflow_permissions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError> for AdapterError {
+    fn from(err: ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get default workflow permissions for a repository](Actions::get_github_actions_default_workflow_permissions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError> for AdapterError {
+    fn from(err: ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Actions permissions for an organization](Actions::get_github_actions_permissions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetGithubActionsPermissionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetGithubActionsPermissionsOrganizationError> for AdapterError {
+    fn from(err: ActionsGetGithubActionsPermissionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetGithubActionsPermissionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Actions permissions for a repository](Actions::get_github_actions_permissions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetGithubActionsPermissionsRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetGithubActionsPermissionsRepositoryError> for AdapterError {
+    fn from(err: ActionsGetGithubActionsPermissionsRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetGithubActionsPermissionsRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a job for a workflow run](Actions::get_job_for_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetJobForWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetJobForWorkflowRunError> for AdapterError {
+    fn from(err: ActionsGetJobForWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetJobForWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization public key](Actions::get_org_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetOrgPublicKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetOrgPublicKeyError> for AdapterError {
+    fn from(err: ActionsGetOrgPublicKeyError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetOrgPublicKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization secret](Actions::get_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetOrgSecretError> for AdapterError {
+    fn from(err: ActionsGetOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization variable](Actions::get_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetOrgVariableError> for AdapterError {
+    fn from(err: ActionsGetOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get pending deployments for a workflow run](Actions::get_pending_deployments_for_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetPendingDeploymentsForRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetPendingDeploymentsForRunError> for AdapterError {
+    fn from(err: ActionsGetPendingDeploymentsForRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetPendingDeploymentsForRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository public key](Actions::get_repo_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetRepoPublicKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetRepoPublicKeyError> for AdapterError {
+    fn from(err: ActionsGetRepoPublicKeyError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetRepoPublicKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository secret](Actions::get_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetRepoSecretError> for AdapterError {
+    fn from(err: ActionsGetRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository variable](Actions::get_repo_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetRepoVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetRepoVariableError> for AdapterError {
+    fn from(err: ActionsGetRepoVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetRepoVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the review history for a workflow run](Actions::get_reviews_for_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetReviewsForRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetReviewsForRunError> for AdapterError {
+    fn from(err: ActionsGetReviewsForRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetReviewsForRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a self-hosted runner for an organization](Actions::get_self_hosted_runner_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetSelfHostedRunnerForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetSelfHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsGetSelfHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetSelfHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a self-hosted runner for a repository](Actions::get_self_hosted_runner_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetSelfHostedRunnerForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetSelfHostedRunnerForRepoError> for AdapterError {
+    fn from(err: ActionsGetSelfHostedRunnerForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetSelfHostedRunnerForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get a self-hosted runner group for an organization](Actions::get_self_hosted_runner_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetSelfHostedRunnerGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsGetSelfHostedRunnerGroupForOrgError> for AdapterError {
+    fn from(err: ActionsGetSelfHostedRunnerGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetSelfHostedRunnerGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a workflow](Actions::get_workflow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetWorkflowError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetWorkflowError> for AdapterError {
+    fn from(err: ActionsGetWorkflowError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetWorkflowError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the level of access for workflows outside of the repository](Actions::get_workflow_access_to_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetWorkflowAccessToRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetWorkflowAccessToRepositoryError> for AdapterError {
+    fn from(err: ActionsGetWorkflowAccessToRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetWorkflowAccessToRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a workflow run](Actions::get_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetWorkflowRunError> for AdapterError {
+    fn from(err: ActionsGetWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a workflow run attempt](Actions::get_workflow_run_attempt_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetWorkflowRunAttemptError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetWorkflowRunAttemptError> for AdapterError {
+    fn from(err: ActionsGetWorkflowRunAttemptError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetWorkflowRunAttemptError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get workflow run usage](Actions::get_workflow_run_usage_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetWorkflowRunUsageError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetWorkflowRunUsageError> for AdapterError {
+    fn from(err: ActionsGetWorkflowRunUsageError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetWorkflowRunUsageError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get workflow usage](Actions::get_workflow_usage_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetWorkflowUsageError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsGetWorkflowUsageError> for AdapterError {
+    fn from(err: ActionsGetWorkflowUsageError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetWorkflowUsageError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List artifacts for a repository](Actions::list_artifacts_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListArtifactsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListArtifactsForRepoError> for AdapterError {
+    fn from(err: ActionsListArtifactsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListArtifactsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List environment secrets](Actions::list_environment_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListEnvironmentSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListEnvironmentSecretsError> for AdapterError {
+    fn from(err: ActionsListEnvironmentSecretsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListEnvironmentSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List environment variables](Actions::list_environment_variables_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListEnvironmentVariablesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListEnvironmentVariablesError> for AdapterError {
+    fn from(err: ActionsListEnvironmentVariablesError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListEnvironmentVariablesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List jobs for a workflow run](Actions::list_jobs_for_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListJobsForWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListJobsForWorkflowRunError> for AdapterError {
+    fn from(err: ActionsListJobsForWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListJobsForWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List jobs for a workflow run attempt](Actions::list_jobs_for_workflow_run_attempt_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListJobsForWorkflowRunAttemptError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListJobsForWorkflowRunAttemptError> for AdapterError {
+    fn from(err: ActionsListJobsForWorkflowRunAttemptError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListJobsForWorkflowRunAttemptError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsListJobsForWorkflowRunAttemptError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List labels for a self-hosted runner for an organization](Actions::list_labels_for_self_hosted_runner_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListLabelsForSelfHostedRunnerForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListLabelsForSelfHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsListLabelsForSelfHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListLabelsForSelfHostedRunnerForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsListLabelsForSelfHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List labels for a self-hosted runner for a repository](Actions::list_labels_for_self_hosted_runner_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListLabelsForSelfHostedRunnerForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsListLabelsForSelfHostedRunnerForRepoError> for AdapterError {
+    fn from(err: ActionsListLabelsForSelfHostedRunnerForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListLabelsForSelfHostedRunnerForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsListLabelsForSelfHostedRunnerForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization secrets](Actions::list_org_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListOrgSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListOrgSecretsError> for AdapterError {
+    fn from(err: ActionsListOrgSecretsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListOrgSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organization variables](Actions::list_org_variables_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListOrgVariablesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListOrgVariablesError> for AdapterError {
+    fn from(err: ActionsListOrgVariablesError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListOrgVariablesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [List repository access to a self-hosted runner group in an organization](Actions::list_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError> for AdapterError {
+    fn from(err: ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository organization secrets](Actions::list_repo_organization_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRepoOrganizationSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListRepoOrganizationSecretsError> for AdapterError {
+    fn from(err: ActionsListRepoOrganizationSecretsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRepoOrganizationSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository organization variables](Actions::list_repo_organization_variables_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRepoOrganizationVariablesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListRepoOrganizationVariablesError> for AdapterError {
+    fn from(err: ActionsListRepoOrganizationVariablesError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRepoOrganizationVariablesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository secrets](Actions::list_repo_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRepoSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListRepoSecretsError> for AdapterError {
+    fn from(err: ActionsListRepoSecretsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRepoSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository variables](Actions::list_repo_variables_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRepoVariablesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListRepoVariablesError> for AdapterError {
+    fn from(err: ActionsListRepoVariablesError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRepoVariablesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository workflows](Actions::list_repo_workflows_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRepoWorkflowsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListRepoWorkflowsError> for AdapterError {
+    fn from(err: ActionsListRepoWorkflowsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRepoWorkflowsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List runner applications for an organization](Actions::list_runner_applications_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRunnerApplicationsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListRunnerApplicationsForOrgError> for AdapterError {
+    fn from(err: ActionsListRunnerApplicationsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRunnerApplicationsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List runner applications for a repository](Actions::list_runner_applications_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListRunnerApplicationsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListRunnerApplicationsForRepoError> for AdapterError {
+    fn from(err: ActionsListRunnerApplicationsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListRunnerApplicationsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List selected repositories for an organization secret](Actions::list_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListSelectedReposForOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListSelectedReposForOrgSecretError> for AdapterError {
+    fn from(err: ActionsListSelectedReposForOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListSelectedReposForOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List selected repositories for an organization variable](Actions::list_selected_repos_for_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListSelectedReposForOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsListSelectedReposForOrgVariableError> for AdapterError {
+    fn from(err: ActionsListSelectedReposForOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListSelectedReposForOrgVariableError::Status409 => (String::from("Response when the visibility of the variable is not set to `selected`"), 409),
+            ActionsListSelectedReposForOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List selected repositories enabled for GitHub Actions in an organization](Actions::list_selected_repositories_enabled_github_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> for AdapterError {
+    fn from(err: ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [List self-hosted runner groups for an organization](Actions::list_self_hosted_runner_groups_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListSelfHostedRunnerGroupsForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsListSelfHostedRunnerGroupsForOrgError> for AdapterError {
+    fn from(err: ActionsListSelfHostedRunnerGroupsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListSelfHostedRunnerGroupsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List self-hosted runners for an organization](Actions::list_self_hosted_runners_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListSelfHostedRunnersForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListSelfHostedRunnersForOrgError> for AdapterError {
+    fn from(err: ActionsListSelfHostedRunnersForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListSelfHostedRunnersForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List self-hosted runners for a repository](Actions::list_self_hosted_runners_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListSelfHostedRunnersForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListSelfHostedRunnersForRepoError> for AdapterError {
+    fn from(err: ActionsListSelfHostedRunnersForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListSelfHostedRunnersForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [List self-hosted runners in a group for an organization](Actions::list_self_hosted_runners_in_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListSelfHostedRunnersInGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsListSelfHostedRunnersInGroupForOrgError> for AdapterError {
+    fn from(err: ActionsListSelfHostedRunnersInGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListSelfHostedRunnersInGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List workflow run artifacts](Actions::list_workflow_run_artifacts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListWorkflowRunArtifactsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListWorkflowRunArtifactsError> for AdapterError {
+    fn from(err: ActionsListWorkflowRunArtifactsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListWorkflowRunArtifactsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List workflow runs for a workflow](Actions::list_workflow_runs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListWorkflowRunsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListWorkflowRunsError> for AdapterError {
+    fn from(err: ActionsListWorkflowRunsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListWorkflowRunsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List workflow runs for a repository](Actions::list_workflow_runs_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsListWorkflowRunsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsListWorkflowRunsForRepoError> for AdapterError {
+    fn from(err: ActionsListWorkflowRunsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListWorkflowRunsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Re-run a job from a workflow run](Actions::re_run_job_for_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsReRunJobForWorkflowRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsReRunJobForWorkflowRunError> for AdapterError {
+    fn from(err: ActionsReRunJobForWorkflowRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsReRunJobForWorkflowRunError::Status403(_) => (String::from("Forbidden"), 403),
+            ActionsReRunJobForWorkflowRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Re-run a workflow](Actions::re_run_workflow_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsReRunWorkflowError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsReRunWorkflowError> for AdapterError {
+    fn from(err: ActionsReRunWorkflowError) -> Self {
+        let (description, status_code) = match err {
+            ActionsReRunWorkflowError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Re-run failed jobs from a workflow run](Actions::re_run_workflow_failed_jobs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsReRunWorkflowFailedJobsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsReRunWorkflowFailedJobsError> for AdapterError {
+    fn from(err: ActionsReRunWorkflowFailedJobsError) -> Self {
+        let (description, status_code) = match err {
+            ActionsReRunWorkflowFailedJobsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove all custom labels from a self-hosted runner for an organization](Actions::remove_all_custom_labels_from_self_hosted_runner_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove all custom labels from a self-hosted runner for a repository](Actions::remove_all_custom_labels_from_self_hosted_runner_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError> for AdapterError {
+    fn from(err: ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a custom label from a self-hosted runner for an organization](Actions::remove_custom_label_from_self_hosted_runner_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a custom label from a self-hosted runner for a repository](Actions::remove_custom_label_from_self_hosted_runner_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -1872,146 +2477,226 @@ pub enum ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError {
     Generic { code: u16 },
 }
 
+impl From<ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError> for AdapterError {
+    fn from(err: ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Remove repository access to a self-hosted runner group in an organization](Actions::remove_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError> for AdapterError {
+    fn from(err: ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove selected repository from an organization secret](Actions::remove_selected_repo_from_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsRemoveSelectedRepoFromOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict when visibility type not set to selected")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsRemoveSelectedRepoFromOrgSecretError> for AdapterError {
+    fn from(err: ActionsRemoveSelectedRepoFromOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveSelectedRepoFromOrgSecretError::Status409 => (String::from("Conflict when visibility type not set to selected"), 409),
+            ActionsRemoveSelectedRepoFromOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove selected repository from an organization variable](Actions::remove_selected_repo_from_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsRemoveSelectedRepoFromOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsRemoveSelectedRepoFromOrgVariableError> for AdapterError {
+    fn from(err: ActionsRemoveSelectedRepoFromOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveSelectedRepoFromOrgVariableError::Status409 => (String::from("Response when the visibility of the variable is not set to `selected`"), 409),
+            ActionsRemoveSelectedRepoFromOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Remove a self-hosted runner from a group for an organization](Actions::remove_self_hosted_runner_from_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsRemoveSelfHostedRunnerFromGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsRemoveSelfHostedRunnerFromGroupForOrgError> for AdapterError {
+    fn from(err: ActionsRemoveSelfHostedRunnerFromGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Review custom deployment protection rules for a workflow run](Actions::review_custom_gates_for_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsReviewCustomGatesForRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsReviewCustomGatesForRunError> for AdapterError {
+    fn from(err: ActionsReviewCustomGatesForRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsReviewCustomGatesForRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Review pending deployments for a workflow run](Actions::review_pending_deployments_for_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsReviewPendingDeploymentsForRunError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsReviewPendingDeploymentsForRunError> for AdapterError {
+    fn from(err: ActionsReviewPendingDeploymentsForRunError) -> Self {
+        let (description, status_code) = match err {
+            ActionsReviewPendingDeploymentsForRunError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set allowed actions and reusable workflows for an organization](Actions::set_allowed_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetAllowedActionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetAllowedActionsOrganizationError> for AdapterError {
+    fn from(err: ActionsSetAllowedActionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetAllowedActionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set allowed actions and reusable workflows for a repository](Actions::set_allowed_actions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetAllowedActionsRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetAllowedActionsRepositoryError> for AdapterError {
+    fn from(err: ActionsSetAllowedActionsRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetAllowedActionsRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set custom labels for a self-hosted runner for an organization](Actions::set_custom_labels_for_self_hosted_runner_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetCustomLabelsForSelfHostedRunnerForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetCustomLabelsForSelfHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsSetCustomLabelsForSelfHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set custom labels for a self-hosted runner for a repository](Actions::set_custom_labels_for_self_hosted_runner_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetCustomLabelsForSelfHostedRunnerForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -2020,19 +2705,25 @@ pub enum ActionsSetCustomLabelsForSelfHostedRunnerForRepoError {
     Generic { code: u16 },
 }
 
+impl From<ActionsSetCustomLabelsForSelfHostedRunnerForRepoError> for AdapterError {
+    fn from(err: ActionsSetCustomLabelsForSelfHostedRunnerForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set the customization template for an OIDC subject claim for a repository](Actions::set_custom_oidc_sub_claim_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetCustomOidcSubClaimForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Bad Request")]
@@ -2043,195 +2734,321 @@ pub enum ActionsSetCustomOidcSubClaimForRepoError {
     Generic { code: u16 },
 }
 
+impl From<ActionsSetCustomOidcSubClaimForRepoError> for AdapterError {
+    fn from(err: ActionsSetCustomOidcSubClaimForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetCustomOidcSubClaimForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            ActionsSetCustomOidcSubClaimForRepoError::Status400(_) => (String::from("Bad Request"), 400),
+            ActionsSetCustomOidcSubClaimForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsSetCustomOidcSubClaimForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set default workflow permissions for an organization](Actions::set_github_actions_default_workflow_permissions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError> for AdapterError {
+    fn from(err: ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set default workflow permissions for a repository](Actions::set_github_actions_default_workflow_permissions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict response when changing a setting is prevented by the owning organization")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError> for AdapterError {
+    fn from(err: ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409 => (String::from("Conflict response when changing a setting is prevented by the owning organization"), 409),
+            ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set GitHub Actions permissions for an organization](Actions::set_github_actions_permissions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetGithubActionsPermissionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetGithubActionsPermissionsOrganizationError> for AdapterError {
+    fn from(err: ActionsSetGithubActionsPermissionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetGithubActionsPermissionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set GitHub Actions permissions for a repository](Actions::set_github_actions_permissions_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetGithubActionsPermissionsRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetGithubActionsPermissionsRepositoryError> for AdapterError {
+    fn from(err: ActionsSetGithubActionsPermissionsRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetGithubActionsPermissionsRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Set repository access for a self-hosted runner group in an organization](Actions::set_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError> for AdapterError {
+    fn from(err: ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set selected repositories for an organization secret](Actions::set_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetSelectedReposForOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetSelectedReposForOrgSecretError> for AdapterError {
+    fn from(err: ActionsSetSelectedReposForOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetSelectedReposForOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set selected repositories for an organization variable](Actions::set_selected_repos_for_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetSelectedReposForOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the visibility of the variable is not set to `selected`")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActionsSetSelectedReposForOrgVariableError> for AdapterError {
+    fn from(err: ActionsSetSelectedReposForOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetSelectedReposForOrgVariableError::Status409 => (String::from("Response when the visibility of the variable is not set to `selected`"), 409),
+            ActionsSetSelectedReposForOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set selected repositories enabled for GitHub Actions in an organization](Actions::set_selected_repositories_enabled_github_actions_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError> for AdapterError {
+    fn from(err: ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Set self-hosted runners in a group for an organization](Actions::set_self_hosted_runners_in_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsSetSelfHostedRunnersInGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsSetSelfHostedRunnersInGroupForOrgError> for AdapterError {
+    fn from(err: ActionsSetSelfHostedRunnersInGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set the level of access for workflows outside of the repository](Actions::set_workflow_access_to_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsSetWorkflowAccessToRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsSetWorkflowAccessToRepositoryError> for AdapterError {
+    fn from(err: ActionsSetWorkflowAccessToRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            ActionsSetWorkflowAccessToRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update an environment variable](Actions::update_environment_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsUpdateEnvironmentVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsUpdateEnvironmentVariableError> for AdapterError {
+    fn from(err: ActionsUpdateEnvironmentVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsUpdateEnvironmentVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update an organization variable](Actions::update_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsUpdateOrgVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsUpdateOrgVariableError> for AdapterError {
+    fn from(err: ActionsUpdateOrgVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsUpdateOrgVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a repository variable](Actions::update_repo_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsUpdateRepoVariableError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActionsUpdateRepoVariableError> for AdapterError {
+    fn from(err: ActionsUpdateRepoVariableError) -> Self {
+        let (description, status_code) = match err {
+            ActionsUpdateRepoVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Update a self-hosted runner group for an organization](Actions::update_self_hosted_runner_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsUpdateSelfHostedRunnerGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsUpdateSelfHostedRunnerGroupForOrgError> for AdapterError {
+    fn from(err: ActionsUpdateSelfHostedRunnerGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsUpdateSelfHostedRunnerGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -2756,6 +3573,46 @@ impl<'enc> From<&'enc PerPage> for ActionsListOrgVariablesParams {
         }
     }
 }
+/// Query parameters for the [List repository access to a self-hosted runner group in an organization](Actions::list_repo_access_to_self_hosted_runner_group_in_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
+}
+
+impl ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List repository organization secrets](Actions::list_repo_organization_secrets_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListRepoOrganizationSecretsParams {
@@ -3076,6 +3933,59 @@ impl<'enc> From<&'enc PerPage> for ActionsListSelectedRepositoriesEnabledGithubA
         }
     }
 }
+/// Query parameters for the [List self-hosted runner groups for an organization](Actions::list_self_hosted_runner_groups_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListSelfHostedRunnerGroupsForOrgParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// Only return runner groups that are allowed to be used by this repository.
+    visible_to_repository: Option<&'req str>
+}
+
+impl<'req> ActionsListSelfHostedRunnerGroupsForOrgParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+            visible_to_repository: self.visible_to_repository, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+            visible_to_repository: self.visible_to_repository, 
+        }
+    }
+
+    /// Only return runner groups that are allowed to be used by this repository.
+    pub fn visible_to_repository(self, visible_to_repository: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: self.page, 
+            visible_to_repository: Some(visible_to_repository),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnerGroupsForOrgParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List self-hosted runners for an organization](Actions::list_self_hosted_runners_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct ActionsListSelfHostedRunnersForOrgParams<'req> {
@@ -3174,6 +4084,46 @@ impl<'req> ActionsListSelfHostedRunnersForRepoParams<'req> {
 }
 
 impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersForRepoParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List self-hosted runners in a group for an organization](Actions::list_self_hosted_runners_in_group_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListSelfHostedRunnersInGroupForOrgParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsListSelfHostedRunnersInGroupForOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListSelfHostedRunnersInGroupForOrgParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -3636,7 +4586,7 @@ impl<'enc> From<&'enc PerPage> for ActionsListWorkflowRunsForRepoParams<'enc> {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
+impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add custom labels to a self-hosted runner for an organization
@@ -3650,19 +4600,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
-    pub async fn add_custom_labels_to_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForOrgError> {
+    pub async fn add_custom_labels_to_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostActionsAddCustomLabelsToSelfHostedRunnerForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3674,9 +4624,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3695,19 +4645,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_custom_labels_to_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForOrgError> {
+    pub fn add_custom_labels_to_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostActionsAddCustomLabelsToSelfHostedRunnerForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3719,9 +4669,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status422(github_response.to_json()?)),
-                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3739,19 +4689,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for add_custom_labels_to_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#add-custom-labels-to-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
-    pub async fn add_custom_labels_to_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForRepoError> {
+    pub async fn add_custom_labels_to_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForRepo::from_json(body)?),
+            body: Some(C::from_json::<PostActionsAddCustomLabelsToSelfHostedRunnerForRepo>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3763,9 +4713,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -3784,19 +4734,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_custom_labels_to_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsAddCustomLabelsToSelfHostedRunnerForRepoError> {
+    pub fn add_custom_labels_to_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, body: PostActionsAddCustomLabelsToSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsAddCustomLabelsToSelfHostedRunnerForRepo::from_json(body)?),
+            body: Some(C::from_json::<PostActionsAddCustomLabelsToSelfHostedRunnerForRepo>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3808,9 +4758,90 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status422(github_response.to_json()?)),
-                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsAddCustomLabelsToSelfHostedRunnerForRepoError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add repository access to a self-hosted runner group in an organization
+    ///
+    /// Adds a repository to the list of repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#add-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    pub async fn add_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add repository access to a self-hosted runner group in an organization
+    ///
+    /// Adds a repository to the list of repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#add-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3830,19 +4861,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/actions/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
-    pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgSecretError> {
+    pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3854,8 +4885,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409),
-                code => Err(ActionsAddSelectedRepoToOrgSecretError::Generic { code }),
+                409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409.into()),
+                code => Err(ActionsAddSelectedRepoToOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -3876,7 +4907,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgSecretError> {
+    pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
@@ -3888,7 +4919,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3900,8 +4931,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409),
-                code => Err(ActionsAddSelectedRepoToOrgSecretError::Generic { code }),
+                409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409.into()),
+                code => Err(ActionsAddSelectedRepoToOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -3920,19 +4951,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for add_selected_repo_to_org_variable](https://docs.github.com/rest/actions/variables#add-selected-repository-to-an-organization-variable)
     ///
     /// ---
-    pub async fn add_selected_repo_to_org_variable_async(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgVariableError> {
+    pub async fn add_selected_repo_to_org_variable_async(&self, org: &str, name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3944,8 +4975,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409),
-                code => Err(ActionsAddSelectedRepoToOrgVariableError::Generic { code }),
+                409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409.into()),
+                code => Err(ActionsAddSelectedRepoToOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -3965,7 +4996,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_selected_repo_to_org_variable(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsAddSelectedRepoToOrgVariableError> {
+    pub fn add_selected_repo_to_org_variable(&self, org: &str, name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
@@ -3977,7 +5008,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3989,8 +5020,89 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409),
-                code => Err(ActionsAddSelectedRepoToOrgVariableError::Generic { code }),
+                409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409.into()),
+                code => Err(ActionsAddSelectedRepoToOrgVariableError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add a self-hosted runner to a group for an organization
+    ///
+    /// Adds a self-hosted runner to a runner group configured in an organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_self_hosted_runner_to_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#add-a-self-hosted-runner-to-a-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn add_self_hosted_runner_to_group_for_org_async(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add a self-hosted runner to a group for an organization
+    ///
+    /// Adds a self-hosted runner to a runner group configured in an organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for add_self_hosted_runner_to_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#add-a-self-hosted-runner-to-a-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_self_hosted_runner_to_group_for_org(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4006,19 +5118,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for approve_workflow_run](https://docs.github.com/rest/actions/workflow-runs#approve-a-workflow-run-for-a-fork-pull-request)
     ///
     /// ---
-    pub async fn approve_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsApproveWorkflowRunError> {
+    pub async fn approve_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/approve", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4030,9 +5142,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsApproveWorkflowRunError::Status404(github_response.to_json_async().await?)),
-                403 => Err(ActionsApproveWorkflowRunError::Status403(github_response.to_json_async().await?)),
-                code => Err(ActionsApproveWorkflowRunError::Generic { code }),
+                404 => Err(ActionsApproveWorkflowRunError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(ActionsApproveWorkflowRunError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ActionsApproveWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -4049,7 +5161,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn approve_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsApproveWorkflowRunError> {
+    pub fn approve_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/approve", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -4061,7 +5173,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4073,9 +5185,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsApproveWorkflowRunError::Status404(github_response.to_json()?)),
-                403 => Err(ActionsApproveWorkflowRunError::Status403(github_response.to_json()?)),
-                code => Err(ActionsApproveWorkflowRunError::Generic { code }),
+                404 => Err(ActionsApproveWorkflowRunError::Status404(github_response.to_json()?).into()),
+                403 => Err(ActionsApproveWorkflowRunError::Status403(github_response.to_json()?).into()),
+                code => Err(ActionsApproveWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -4091,19 +5203,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run)
     ///
     /// ---
-    pub async fn cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsCancelWorkflowRunError> {
+    pub async fn cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4115,8 +5227,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsCancelWorkflowRunError::Status409(github_response.to_json_async().await?)),
-                code => Err(ActionsCancelWorkflowRunError::Generic { code }),
+                409 => Err(ActionsCancelWorkflowRunError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ActionsCancelWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -4133,7 +5245,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsCancelWorkflowRunError> {
+    pub fn cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -4145,7 +5257,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4157,8 +5269,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsCancelWorkflowRunError::Status409(github_response.to_json()?)),
-                code => Err(ActionsCancelWorkflowRunError::Generic { code }),
+                409 => Err(ActionsCancelWorkflowRunError::Status409(github_response.to_json()?).into()),
+                code => Err(ActionsCancelWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -4176,19 +5288,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_environment_variable](https://docs.github.com/rest/actions/variables#create-an-environment-variable)
     ///
     /// ---
-    pub async fn create_environment_variable_async(&self, owner: &str, repo: &str, environment_name: &str, body: PostActionsCreateEnvironmentVariable) -> Result<EmptyObject, ActionsCreateEnvironmentVariableError> {
+    pub async fn create_environment_variable_async(&self, owner: &str, repo: &str, environment_name: &str, body: PostActionsCreateEnvironmentVariable) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateEnvironmentVariable::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateEnvironmentVariable>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4200,7 +5312,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsCreateEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -4219,19 +5331,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_environment_variable(&self, owner: &str, repo: &str, environment_name: &str, body: PostActionsCreateEnvironmentVariable) -> Result<EmptyObject, ActionsCreateEnvironmentVariableError> {
+    pub fn create_environment_variable(&self, owner: &str, repo: &str, environment_name: &str, body: PostActionsCreateEnvironmentVariable) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateEnvironmentVariable::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateEnvironmentVariable>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4243,7 +5355,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsCreateEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -4262,19 +5374,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_or_update_environment_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-environment-secret)
     ///
     /// ---
-    pub async fn create_or_update_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
+    pub async fn create_or_update_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsCreateOrUpdateEnvironmentSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsCreateOrUpdateEnvironmentSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4286,8 +5398,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(ActionsCreateOrUpdateEnvironmentSecretError::Status204),
-                code => Err(ActionsCreateOrUpdateEnvironmentSecretError::Generic { code }),
+                204 => Err(ActionsCreateOrUpdateEnvironmentSecretError::Status204.into()),
+                code => Err(ActionsCreateOrUpdateEnvironmentSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4307,19 +5419,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, ActionsCreateOrUpdateEnvironmentSecretError> {
+    pub fn create_or_update_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str, body: PutActionsCreateOrUpdateEnvironmentSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsCreateOrUpdateEnvironmentSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsCreateOrUpdateEnvironmentSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4331,8 +5443,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(ActionsCreateOrUpdateEnvironmentSecretError::Status204),
-                code => Err(ActionsCreateOrUpdateEnvironmentSecretError::Generic { code }),
+                204 => Err(ActionsCreateOrUpdateEnvironmentSecretError::Status204.into()),
+                code => Err(ActionsCreateOrUpdateEnvironmentSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4351,19 +5463,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/actions/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
-    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<EmptyObject, ActionsCreateOrUpdateOrgSecretError> {
+    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsCreateOrUpdateOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsCreateOrUpdateOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4375,8 +5487,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(ActionsCreateOrUpdateOrgSecretError::Status204),
-                code => Err(ActionsCreateOrUpdateOrgSecretError::Generic { code }),
+                204 => Err(ActionsCreateOrUpdateOrgSecretError::Status204.into()),
+                code => Err(ActionsCreateOrUpdateOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4396,19 +5508,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<EmptyObject, ActionsCreateOrUpdateOrgSecretError> {
+    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutActionsCreateOrUpdateOrgSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsCreateOrUpdateOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsCreateOrUpdateOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4420,8 +5532,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(ActionsCreateOrUpdateOrgSecretError::Status204),
-                code => Err(ActionsCreateOrUpdateOrgSecretError::Generic { code }),
+                204 => Err(ActionsCreateOrUpdateOrgSecretError::Status204.into()),
+                code => Err(ActionsCreateOrUpdateOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4440,19 +5552,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/actions/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
-    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<EmptyObject, ActionsCreateOrUpdateRepoSecretError> {
+    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsCreateOrUpdateRepoSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsCreateOrUpdateRepoSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4464,8 +5576,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(ActionsCreateOrUpdateRepoSecretError::Status204),
-                code => Err(ActionsCreateOrUpdateRepoSecretError::Generic { code }),
+                204 => Err(ActionsCreateOrUpdateRepoSecretError::Status204.into()),
+                code => Err(ActionsCreateOrUpdateRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4485,19 +5597,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<EmptyObject, ActionsCreateOrUpdateRepoSecretError> {
+    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutActionsCreateOrUpdateRepoSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsCreateOrUpdateRepoSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsCreateOrUpdateRepoSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4509,8 +5621,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(ActionsCreateOrUpdateRepoSecretError::Status204),
-                code => Err(ActionsCreateOrUpdateRepoSecretError::Generic { code }),
+                204 => Err(ActionsCreateOrUpdateRepoSecretError::Status204.into()),
+                code => Err(ActionsCreateOrUpdateRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4528,19 +5640,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_org_variable](https://docs.github.com/rest/actions/variables#create-an-organization-variable)
     ///
     /// ---
-    pub async fn create_org_variable_async(&self, org: &str, body: PostActionsCreateOrgVariable) -> Result<EmptyObject, ActionsCreateOrgVariableError> {
+    pub async fn create_org_variable_async(&self, org: &str, body: PostActionsCreateOrgVariable) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateOrgVariable::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateOrgVariable>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4552,7 +5664,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateOrgVariableError::Generic { code }),
+                code => Err(ActionsCreateOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -4571,19 +5683,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_org_variable(&self, org: &str, body: PostActionsCreateOrgVariable) -> Result<EmptyObject, ActionsCreateOrgVariableError> {
+    pub fn create_org_variable(&self, org: &str, body: PostActionsCreateOrgVariable) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateOrgVariable::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateOrgVariable>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4595,7 +5707,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateOrgVariableError::Generic { code }),
+                code => Err(ActionsCreateOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -4619,19 +5731,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_registration_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-an-organization)
     ///
     /// ---
-    pub async fn create_registration_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForOrgError> {
+    pub async fn create_registration_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/registration-token", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4643,7 +5755,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRegistrationTokenForOrgError::Generic { code }),
+                code => Err(ActionsCreateRegistrationTokenForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4668,7 +5780,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_registration_token_for_org(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForOrgError> {
+    pub fn create_registration_token_for_org(&self, org: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/registration-token", super::GITHUB_BASE_API_URL, org);
 
@@ -4680,7 +5792,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4692,7 +5804,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRegistrationTokenForOrgError::Generic { code }),
+                code => Err(ActionsCreateRegistrationTokenForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4716,19 +5828,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_registration_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository)
     ///
     /// ---
-    pub async fn create_registration_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForRepoError> {
+    pub async fn create_registration_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/registration-token", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4740,7 +5852,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRegistrationTokenForRepoError::Generic { code }),
+                code => Err(ActionsCreateRegistrationTokenForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4765,7 +5877,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_registration_token_for_repo(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRegistrationTokenForRepoError> {
+    pub fn create_registration_token_for_repo(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/registration-token", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4777,7 +5889,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4789,7 +5901,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRegistrationTokenForRepoError::Generic { code }),
+                code => Err(ActionsCreateRegistrationTokenForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4813,19 +5925,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_remove_token_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-an-organization)
     ///
     /// ---
-    pub async fn create_remove_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForOrgError> {
+    pub async fn create_remove_token_for_org_async(&self, org: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/remove-token", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4837,7 +5949,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRemoveTokenForOrgError::Generic { code }),
+                code => Err(ActionsCreateRemoveTokenForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4862,7 +5974,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_remove_token_for_org(&self, org: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForOrgError> {
+    pub fn create_remove_token_for_org(&self, org: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/remove-token", super::GITHUB_BASE_API_URL, org);
 
@@ -4874,7 +5986,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4886,7 +5998,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRemoveTokenForOrgError::Generic { code }),
+                code => Err(ActionsCreateRemoveTokenForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4910,19 +6022,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_remove_token_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-a-remove-token-for-a-repository)
     ///
     /// ---
-    pub async fn create_remove_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForRepoError> {
+    pub async fn create_remove_token_for_repo_async(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/remove-token", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4934,7 +6046,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRemoveTokenForRepoError::Generic { code }),
+                code => Err(ActionsCreateRemoveTokenForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4959,7 +6071,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_remove_token_for_repo(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, ActionsCreateRemoveTokenForRepoError> {
+    pub fn create_remove_token_for_repo(&self, owner: &str, repo: &str) -> Result<AuthenticationToken, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/remove-token", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4971,7 +6083,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4983,7 +6095,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRemoveTokenForRepoError::Generic { code }),
+                code => Err(ActionsCreateRemoveTokenForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -5001,19 +6113,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_repo_variable](https://docs.github.com/rest/actions/variables#create-a-repository-variable)
     ///
     /// ---
-    pub async fn create_repo_variable_async(&self, owner: &str, repo: &str, body: PostActionsCreateRepoVariable) -> Result<EmptyObject, ActionsCreateRepoVariableError> {
+    pub async fn create_repo_variable_async(&self, owner: &str, repo: &str, body: PostActionsCreateRepoVariable) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateRepoVariable::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateRepoVariable>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5025,7 +6137,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRepoVariableError::Generic { code }),
+                code => Err(ActionsCreateRepoVariableError::Generic { code }.into()),
             }
         }
     }
@@ -5044,19 +6156,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_repo_variable(&self, owner: &str, repo: &str, body: PostActionsCreateRepoVariable) -> Result<EmptyObject, ActionsCreateRepoVariableError> {
+    pub fn create_repo_variable(&self, owner: &str, repo: &str, body: PostActionsCreateRepoVariable) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateRepoVariable::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateRepoVariable>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5068,7 +6180,88 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateRepoVariableError::Generic { code }),
+                code => Err(ActionsCreateRepoVariableError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a self-hosted runner group for an organization
+    ///
+    /// Creates a new self-hosted runner group for an organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_self_hosted_runner_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#create-a-self-hosted-runner-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn create_self_hosted_runner_group_for_org_async(&self, org: &str, body: PostActionsCreateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostActionsCreateSelfHostedRunnerGroupForOrg>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateSelfHostedRunnerGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a self-hosted runner group for an organization
+    ///
+    /// Creates a new self-hosted runner group for an organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_self_hosted_runner_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#create-a-self-hosted-runner-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_self_hosted_runner_group_for_org(&self, org: &str, body: PostActionsCreateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostActionsCreateSelfHostedRunnerGroupForOrg>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateSelfHostedRunnerGroupForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5086,19 +6279,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for create_workflow_dispatch](https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event)
     ///
     /// ---
-    pub async fn create_workflow_dispatch_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, body: PostActionsCreateWorkflowDispatch) -> Result<(), ActionsCreateWorkflowDispatchError> {
+    pub async fn create_workflow_dispatch_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, body: PostActionsCreateWorkflowDispatch) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/dispatches", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateWorkflowDispatch::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateWorkflowDispatch>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5110,7 +6303,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateWorkflowDispatchError::Generic { code }),
+                code => Err(ActionsCreateWorkflowDispatchError::Generic { code }.into()),
             }
         }
     }
@@ -5129,19 +6322,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_workflow_dispatch(&self, owner: &str, repo: &str, workflow_id: WorkflowId, body: PostActionsCreateWorkflowDispatch) -> Result<(), ActionsCreateWorkflowDispatchError> {
+    pub fn create_workflow_dispatch(&self, owner: &str, repo: &str, workflow_id: WorkflowId, body: PostActionsCreateWorkflowDispatch) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/dispatches", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsCreateWorkflowDispatch::from_json(body)?),
+            body: Some(C::from_json::<PostActionsCreateWorkflowDispatch>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5153,7 +6346,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsCreateWorkflowDispatchError::Generic { code }),
+                code => Err(ActionsCreateWorkflowDispatchError::Generic { code }.into()),
             }
         }
     }
@@ -5169,19 +6362,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_actions_cache_by_id](https://docs.github.com/rest/actions/cache#delete-a-github-actions-cache-for-a-repository-using-a-cache-id)
     ///
     /// ---
-    pub async fn delete_actions_cache_by_id_async(&self, owner: &str, repo: &str, cache_id: i32) -> Result<(), ActionsDeleteActionsCacheByIdError> {
+    pub async fn delete_actions_cache_by_id_async(&self, owner: &str, repo: &str, cache_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/caches/{}", super::GITHUB_BASE_API_URL, owner, repo, cache_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5193,7 +6386,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }),
+                code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }.into()),
             }
         }
     }
@@ -5210,7 +6403,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_actions_cache_by_id(&self, owner: &str, repo: &str, cache_id: i32) -> Result<(), ActionsDeleteActionsCacheByIdError> {
+    pub fn delete_actions_cache_by_id(&self, owner: &str, repo: &str, cache_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/caches/{}", super::GITHUB_BASE_API_URL, owner, repo, cache_id);
 
@@ -5222,7 +6415,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5234,7 +6427,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }),
+                code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }.into()),
             }
         }
     }
@@ -5250,7 +6443,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_actions_cache_by_key](https://docs.github.com/rest/actions/cache#delete-github-actions-caches-for-a-repository-using-a-cache-key)
     ///
     /// ---
-    pub async fn delete_actions_cache_by_key_async(&self, owner: &str, repo: &str, query_params: impl Into<ActionsDeleteActionsCacheByKeyParams<'api>>) -> Result<ActionsCacheList, ActionsDeleteActionsCacheByKeyError> {
+    pub async fn delete_actions_cache_by_key_async(&self, owner: &str, repo: &str, query_params: impl Into<ActionsDeleteActionsCacheByKeyParams<'api>>) -> Result<ActionsCacheList, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -5259,12 +6452,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5276,7 +6469,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteActionsCacheByKeyError::Generic { code }),
+                code => Err(ActionsDeleteActionsCacheByKeyError::Generic { code }.into()),
             }
         }
     }
@@ -5293,7 +6486,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_actions_cache_by_key(&self, owner: &str, repo: &str, query_params: impl Into<ActionsDeleteActionsCacheByKeyParams<'api>>) -> Result<ActionsCacheList, ActionsDeleteActionsCacheByKeyError> {
+    pub fn delete_actions_cache_by_key(&self, owner: &str, repo: &str, query_params: impl Into<ActionsDeleteActionsCacheByKeyParams<'api>>) -> Result<ActionsCacheList, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -5308,7 +6501,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5320,7 +6513,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteActionsCacheByKeyError::Generic { code }),
+                code => Err(ActionsDeleteActionsCacheByKeyError::Generic { code }.into()),
             }
         }
     }
@@ -5335,19 +6528,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_artifact](https://docs.github.com/rest/actions/artifacts#delete-an-artifact)
     ///
     /// ---
-    pub async fn delete_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<(), ActionsDeleteArtifactError> {
+    pub async fn delete_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/artifacts/{}", super::GITHUB_BASE_API_URL, owner, repo, artifact_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5359,7 +6552,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteArtifactError::Generic { code }),
+                code => Err(ActionsDeleteArtifactError::Generic { code }.into()),
             }
         }
     }
@@ -5375,7 +6568,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_artifact(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<(), ActionsDeleteArtifactError> {
+    pub fn delete_artifact(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/artifacts/{}", super::GITHUB_BASE_API_URL, owner, repo, artifact_id);
 
@@ -5387,7 +6580,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5399,7 +6592,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteArtifactError::Generic { code }),
+                code => Err(ActionsDeleteArtifactError::Generic { code }.into()),
             }
         }
     }
@@ -5417,19 +6610,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_environment_secret](https://docs.github.com/rest/actions/secrets#delete-an-environment-secret)
     ///
     /// ---
-    pub async fn delete_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
+    pub async fn delete_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5441,7 +6634,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }),
+                code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5460,7 +6653,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<(), ActionsDeleteEnvironmentSecretError> {
+    pub fn delete_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
@@ -5472,7 +6665,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5484,7 +6677,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }),
+                code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5502,19 +6695,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_environment_variable](https://docs.github.com/rest/actions/variables#delete-an-environment-variable)
     ///
     /// ---
-    pub async fn delete_environment_variable_async(&self, owner: &str, repo: &str, name: &str, environment_name: &str) -> Result<(), ActionsDeleteEnvironmentVariableError> {
+    pub async fn delete_environment_variable_async(&self, owner: &str, repo: &str, name: &str, environment_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5526,7 +6719,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -5545,7 +6738,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_environment_variable(&self, owner: &str, repo: &str, name: &str, environment_name: &str) -> Result<(), ActionsDeleteEnvironmentVariableError> {
+    pub fn delete_environment_variable(&self, owner: &str, repo: &str, name: &str, environment_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
 
@@ -5557,7 +6750,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5569,7 +6762,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -5587,19 +6780,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/actions/secrets#delete-an-organization-secret)
     ///
     /// ---
-    pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), ActionsDeleteOrgSecretError> {
+    pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5611,7 +6804,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteOrgSecretError::Generic { code }),
+                code => Err(ActionsDeleteOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5630,7 +6823,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), ActionsDeleteOrgSecretError> {
+    pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -5642,7 +6835,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5654,7 +6847,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteOrgSecretError::Generic { code }),
+                code => Err(ActionsDeleteOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5672,19 +6865,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_org_variable](https://docs.github.com/rest/actions/variables#delete-an-organization-variable)
     ///
     /// ---
-    pub async fn delete_org_variable_async(&self, org: &str, name: &str) -> Result<(), ActionsDeleteOrgVariableError> {
+    pub async fn delete_org_variable_async(&self, org: &str, name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5696,7 +6889,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteOrgVariableError::Generic { code }),
+                code => Err(ActionsDeleteOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -5715,7 +6908,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_org_variable(&self, org: &str, name: &str) -> Result<(), ActionsDeleteOrgVariableError> {
+    pub fn delete_org_variable(&self, org: &str, name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
 
@@ -5727,7 +6920,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5739,7 +6932,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteOrgVariableError::Generic { code }),
+                code => Err(ActionsDeleteOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -5757,19 +6950,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/actions/secrets#delete-a-repository-secret)
     ///
     /// ---
-    pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), ActionsDeleteRepoSecretError> {
+    pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5781,7 +6974,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteRepoSecretError::Generic { code }),
+                code => Err(ActionsDeleteRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5800,7 +6993,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), ActionsDeleteRepoSecretError> {
+    pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -5812,7 +7005,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5824,7 +7017,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteRepoSecretError::Generic { code }),
+                code => Err(ActionsDeleteRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5842,19 +7035,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_repo_variable](https://docs.github.com/rest/actions/variables#delete-a-repository-variable)
     ///
     /// ---
-    pub async fn delete_repo_variable_async(&self, owner: &str, repo: &str, name: &str) -> Result<(), ActionsDeleteRepoVariableError> {
+    pub async fn delete_repo_variable_async(&self, owner: &str, repo: &str, name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5866,7 +7059,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteRepoVariableError::Generic { code }),
+                code => Err(ActionsDeleteRepoVariableError::Generic { code }.into()),
             }
         }
     }
@@ -5885,7 +7078,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_repo_variable(&self, owner: &str, repo: &str, name: &str) -> Result<(), ActionsDeleteRepoVariableError> {
+    pub fn delete_repo_variable(&self, owner: &str, repo: &str, name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
@@ -5897,7 +7090,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5909,7 +7102,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteRepoVariableError::Generic { code }),
+                code => Err(ActionsDeleteRepoVariableError::Generic { code }.into()),
             }
         }
     }
@@ -5927,19 +7120,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_self_hosted_runner_from_org](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-an-organization)
     ///
     /// ---
-    pub async fn delete_self_hosted_runner_from_org_async(&self, org: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromOrgError> {
+    pub async fn delete_self_hosted_runner_from_org_async(&self, org: &str, runner_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5951,7 +7144,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }),
+                code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5970,7 +7163,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_self_hosted_runner_from_org(&self, org: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromOrgError> {
+    pub fn delete_self_hosted_runner_from_org(&self, org: &str, runner_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, org, runner_id);
 
@@ -5982,7 +7175,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5994,7 +7187,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }),
+                code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6012,19 +7205,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_self_hosted_runner_from_repo](https://docs.github.com/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-a-repository)
     ///
     /// ---
-    pub async fn delete_self_hosted_runner_from_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromRepoError> {
+    pub async fn delete_self_hosted_runner_from_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6036,7 +7229,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }),
+                code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }.into()),
             }
         }
     }
@@ -6055,7 +7248,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_self_hosted_runner_from_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<(), ActionsDeleteSelfHostedRunnerFromRepoError> {
+    pub fn delete_self_hosted_runner_from_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
@@ -6067,7 +7260,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6079,7 +7272,88 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }),
+                code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a self-hosted runner group from an organization
+    ///
+    /// Deletes a self-hosted runner group for an organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_self_hosted_runner_group_from_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#delete-a-self-hosted-runner-group-from-an-organization)
+    ///
+    /// ---
+    pub async fn delete_self_hosted_runner_group_from_org_async(&self, org: &str, runner_group_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a self-hosted runner group from an organization
+    ///
+    /// Deletes a self-hosted runner group for an organization.
+    /// 
+    /// OAuth tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_self_hosted_runner_group_from_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#delete-a-self-hosted-runner-group-from-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_self_hosted_runner_group_from_org(&self, org: &str, runner_group_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6097,19 +7371,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_workflow_run](https://docs.github.com/rest/actions/workflow-runs#delete-a-workflow-run)
     ///
     /// ---
-    pub async fn delete_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunError> {
+    pub async fn delete_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6121,7 +7395,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteWorkflowRunError::Generic { code }),
+                code => Err(ActionsDeleteWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -6140,7 +7414,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunError> {
+    pub fn delete_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -6152,7 +7426,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6164,7 +7438,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDeleteWorkflowRunError::Generic { code }),
+                code => Err(ActionsDeleteWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -6180,19 +7454,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for delete_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#delete-workflow-run-logs)
     ///
     /// ---
-    pub async fn delete_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunLogsError> {
+    pub async fn delete_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6204,9 +7478,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(github_response.to_json_async().await?)),
-                500 => Err(ActionsDeleteWorkflowRunLogsError::Status500(github_response.to_json_async().await?)),
-                code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }),
+                403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(github_response.to_json_async().await?).into()),
+                500 => Err(ActionsDeleteWorkflowRunLogsError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }.into()),
             }
         }
     }
@@ -6223,7 +7497,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_workflow_run_logs(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDeleteWorkflowRunLogsError> {
+    pub fn delete_workflow_run_logs(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -6235,7 +7509,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6247,9 +7521,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(github_response.to_json()?)),
-                500 => Err(ActionsDeleteWorkflowRunLogsError::Status500(github_response.to_json()?)),
-                code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }),
+                403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(github_response.to_json()?).into()),
+                500 => Err(ActionsDeleteWorkflowRunLogsError::Status500(github_response.to_json()?).into()),
+                code => Err(ActionsDeleteWorkflowRunLogsError::Generic { code }.into()),
             }
         }
     }
@@ -6265,19 +7539,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for disable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#disable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
-    pub async fn disable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), ActionsDisableSelectedRepositoryGithubActionsOrganizationError> {
+    pub async fn disable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/repositories/{}", super::GITHUB_BASE_API_URL, org, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6289,7 +7563,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -6306,7 +7580,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn disable_selected_repository_github_actions_organization(&self, org: &str, repository_id: i32) -> Result<(), ActionsDisableSelectedRepositoryGithubActionsOrganizationError> {
+    pub fn disable_selected_repository_github_actions_organization(&self, org: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/repositories/{}", super::GITHUB_BASE_API_URL, org, repository_id);
 
@@ -6318,7 +7592,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6330,7 +7604,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -6346,19 +7620,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for disable_workflow](https://docs.github.com/rest/actions/workflows#disable-a-workflow)
     ///
     /// ---
-    pub async fn disable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsDisableWorkflowError> {
+    pub async fn disable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/disable", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6370,7 +7644,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDisableWorkflowError::Generic { code }),
+                code => Err(ActionsDisableWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -6387,7 +7661,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn disable_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsDisableWorkflowError> {
+    pub fn disable_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/disable", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
@@ -6399,7 +7673,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6411,7 +7685,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsDisableWorkflowError::Generic { code }),
+                code => Err(ActionsDisableWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -6428,19 +7702,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for download_artifact](https://docs.github.com/rest/actions/artifacts#download-an-artifact)
     ///
     /// ---
-    pub async fn download_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32, archive_format: &str) -> Result<(), ActionsDownloadArtifactError> {
+    pub async fn download_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32, archive_format: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/artifacts/{}/{}", super::GITHUB_BASE_API_URL, owner, repo, artifact_id, archive_format);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6452,9 +7726,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadArtifactError::Status302),
-                410 => Err(ActionsDownloadArtifactError::Status410(github_response.to_json_async().await?)),
-                code => Err(ActionsDownloadArtifactError::Generic { code }),
+                302 => Err(ActionsDownloadArtifactError::Status302.into()),
+                410 => Err(ActionsDownloadArtifactError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(ActionsDownloadArtifactError::Generic { code }.into()),
             }
         }
     }
@@ -6472,7 +7746,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn download_artifact(&self, owner: &str, repo: &str, artifact_id: i32, archive_format: &str) -> Result<(), ActionsDownloadArtifactError> {
+    pub fn download_artifact(&self, owner: &str, repo: &str, artifact_id: i32, archive_format: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/artifacts/{}/{}", super::GITHUB_BASE_API_URL, owner, repo, artifact_id, archive_format);
 
@@ -6484,7 +7758,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6496,9 +7770,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadArtifactError::Status302),
-                410 => Err(ActionsDownloadArtifactError::Status410(github_response.to_json()?)),
-                code => Err(ActionsDownloadArtifactError::Generic { code }),
+                302 => Err(ActionsDownloadArtifactError::Status302.into()),
+                410 => Err(ActionsDownloadArtifactError::Status410(github_response.to_json()?).into()),
+                code => Err(ActionsDownloadArtifactError::Generic { code }.into()),
             }
         }
     }
@@ -6517,19 +7791,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for download_job_logs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#download-job-logs-for-a-workflow-run)
     ///
     /// ---
-    pub async fn download_job_logs_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<(), ActionsDownloadJobLogsForWorkflowRunError> {
+    pub async fn download_job_logs_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, job_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6541,8 +7815,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302),
-                code => Err(ActionsDownloadJobLogsForWorkflowRunError::Generic { code }),
+                302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302.into()),
+                code => Err(ActionsDownloadJobLogsForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -6562,7 +7836,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn download_job_logs_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32) -> Result<(), ActionsDownloadJobLogsForWorkflowRunError> {
+    pub fn download_job_logs_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, job_id);
 
@@ -6574,7 +7848,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6586,8 +7860,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302),
-                code => Err(ActionsDownloadJobLogsForWorkflowRunError::Generic { code }),
+                302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302.into()),
+                code => Err(ActionsDownloadJobLogsForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -6606,19 +7880,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for download_workflow_run_attempt_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-attempt-logs)
     ///
     /// ---
-    pub async fn download_workflow_run_attempt_logs_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32) -> Result<(), ActionsDownloadWorkflowRunAttemptLogsError> {
+    pub async fn download_workflow_run_attempt_logs_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6630,8 +7904,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302),
-                code => Err(ActionsDownloadWorkflowRunAttemptLogsError::Generic { code }),
+                302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302.into()),
+                code => Err(ActionsDownloadWorkflowRunAttemptLogsError::Generic { code }.into()),
             }
         }
     }
@@ -6651,7 +7925,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn download_workflow_run_attempt_logs(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32) -> Result<(), ActionsDownloadWorkflowRunAttemptLogsError> {
+    pub fn download_workflow_run_attempt_logs(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
 
@@ -6663,7 +7937,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6675,8 +7949,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302),
-                code => Err(ActionsDownloadWorkflowRunAttemptLogsError::Generic { code }),
+                302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302.into()),
+                code => Err(ActionsDownloadWorkflowRunAttemptLogsError::Generic { code }.into()),
             }
         }
     }
@@ -6695,19 +7969,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for download_workflow_run_logs](https://docs.github.com/rest/actions/workflow-runs#download-workflow-run-logs)
     ///
     /// ---
-    pub async fn download_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDownloadWorkflowRunLogsError> {
+    pub async fn download_workflow_run_logs_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6719,8 +7993,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadWorkflowRunLogsError::Status302),
-                code => Err(ActionsDownloadWorkflowRunLogsError::Generic { code }),
+                302 => Err(ActionsDownloadWorkflowRunLogsError::Status302.into()),
+                code => Err(ActionsDownloadWorkflowRunLogsError::Generic { code }.into()),
             }
         }
     }
@@ -6740,7 +8014,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn download_workflow_run_logs(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), ActionsDownloadWorkflowRunLogsError> {
+    pub fn download_workflow_run_logs(&self, owner: &str, repo: &str, run_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/logs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -6752,7 +8026,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6764,8 +8038,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(ActionsDownloadWorkflowRunLogsError::Status302),
-                code => Err(ActionsDownloadWorkflowRunLogsError::Generic { code }),
+                302 => Err(ActionsDownloadWorkflowRunLogsError::Status302.into()),
+                code => Err(ActionsDownloadWorkflowRunLogsError::Generic { code }.into()),
             }
         }
     }
@@ -6781,19 +8055,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for enable_selected_repository_github_actions_organization](https://docs.github.com/rest/actions/permissions#enable-a-selected-repository-for-github-actions-in-an-organization)
     ///
     /// ---
-    pub async fn enable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), ActionsEnableSelectedRepositoryGithubActionsOrganizationError> {
+    pub async fn enable_selected_repository_github_actions_organization_async(&self, org: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/repositories/{}", super::GITHUB_BASE_API_URL, org, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6805,7 +8079,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -6822,7 +8096,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn enable_selected_repository_github_actions_organization(&self, org: &str, repository_id: i32) -> Result<(), ActionsEnableSelectedRepositoryGithubActionsOrganizationError> {
+    pub fn enable_selected_repository_github_actions_organization(&self, org: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/repositories/{}", super::GITHUB_BASE_API_URL, org, repository_id);
 
@@ -6834,7 +8108,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6846,7 +8120,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -6862,19 +8136,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for enable_workflow](https://docs.github.com/rest/actions/workflows#enable-a-workflow)
     ///
     /// ---
-    pub async fn enable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsEnableWorkflowError> {
+    pub async fn enable_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/enable", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6886,7 +8160,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsEnableWorkflowError::Generic { code }),
+                code => Err(ActionsEnableWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -6903,7 +8177,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn enable_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), ActionsEnableWorkflowError> {
+    pub fn enable_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/enable", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
@@ -6915,7 +8189,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6927,7 +8201,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsEnableWorkflowError::Generic { code }),
+                code => Err(ActionsEnableWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -6944,19 +8218,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for force_cancel_workflow_run](https://docs.github.com/rest/actions/workflow-runs#force-cancel-a-workflow-run)
     ///
     /// ---
-    pub async fn force_cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsForceCancelWorkflowRunError> {
+    pub async fn force_cancel_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/force-cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6968,8 +8242,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsForceCancelWorkflowRunError::Status409(github_response.to_json_async().await?)),
-                code => Err(ActionsForceCancelWorkflowRunError::Generic { code }),
+                409 => Err(ActionsForceCancelWorkflowRunError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ActionsForceCancelWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -6987,7 +8261,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn force_cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, ActionsForceCancelWorkflowRunError> {
+    pub fn force_cancel_workflow_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/force-cancel", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -6999,7 +8273,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7011,8 +8285,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsForceCancelWorkflowRunError::Status409(github_response.to_json()?)),
-                code => Err(ActionsForceCancelWorkflowRunError::Generic { code }),
+                409 => Err(ActionsForceCancelWorkflowRunError::Status409(github_response.to_json()?).into()),
+                code => Err(ActionsForceCancelWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -7030,19 +8304,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for generate_runner_jitconfig_for_org](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-an-organization)
     ///
     /// ---
-    pub async fn generate_runner_jitconfig_for_org_async(&self, org: &str, body: PostActionsGenerateRunnerJitconfigForOrg) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForOrgError> {
+    pub async fn generate_runner_jitconfig_for_org_async(&self, org: &str, body: PostActionsGenerateRunnerJitconfigForOrg) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsGenerateRunnerJitconfigForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostActionsGenerateRunnerJitconfigForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7054,9 +8328,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }),
+                404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7075,19 +8349,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn generate_runner_jitconfig_for_org(&self, org: &str, body: PostActionsGenerateRunnerJitconfigForOrg) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForOrgError> {
+    pub fn generate_runner_jitconfig_for_org(&self, org: &str, body: PostActionsGenerateRunnerJitconfigForOrg) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsGenerateRunnerJitconfigForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostActionsGenerateRunnerJitconfigForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7099,9 +8373,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(github_response.to_json()?)),
-                code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }),
+                404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7119,19 +8393,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for generate_runner_jitconfig_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository)
     ///
     /// ---
-    pub async fn generate_runner_jitconfig_for_repo_async(&self, owner: &str, repo: &str, body: PostActionsGenerateRunnerJitconfigForRepo) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForRepoError> {
+    pub async fn generate_runner_jitconfig_for_repo_async(&self, owner: &str, repo: &str, body: PostActionsGenerateRunnerJitconfigForRepo) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsGenerateRunnerJitconfigForRepo::from_json(body)?),
+            body: Some(C::from_json::<PostActionsGenerateRunnerJitconfigForRepo>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7143,9 +8417,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }),
+                404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -7164,19 +8438,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn generate_runner_jitconfig_for_repo(&self, owner: &str, repo: &str, body: PostActionsGenerateRunnerJitconfigForRepo) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, ActionsGenerateRunnerJitconfigForRepoError> {
+    pub fn generate_runner_jitconfig_for_repo(&self, owner: &str, repo: &str, body: PostActionsGenerateRunnerJitconfigForRepo) -> Result<PostActionsGenerateRunnerJitconfigForRepoResponse201, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/generate-jitconfig", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsGenerateRunnerJitconfigForRepo::from_json(body)?),
+            body: Some(C::from_json::<PostActionsGenerateRunnerJitconfigForRepo>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7188,9 +8462,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(github_response.to_json()?)),
-                code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }),
+                404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -7206,7 +8480,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_actions_cache_list](https://docs.github.com/rest/actions/cache#list-github-actions-caches-for-a-repository)
     ///
     /// ---
-    pub async fn get_actions_cache_list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsGetActionsCacheListParams<'api>>>) -> Result<ActionsCacheList, ActionsGetActionsCacheListError> {
+    pub async fn get_actions_cache_list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsGetActionsCacheListParams<'api>>>) -> Result<ActionsCacheList, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7217,12 +8491,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7234,7 +8508,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheListError::Generic { code }),
+                code => Err(ActionsGetActionsCacheListError::Generic { code }.into()),
             }
         }
     }
@@ -7251,7 +8525,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_actions_cache_list(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsGetActionsCacheListParams<'api>>>) -> Result<ActionsCacheList, ActionsGetActionsCacheListError> {
+    pub fn get_actions_cache_list(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsGetActionsCacheListParams<'api>>>) -> Result<ActionsCacheList, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/caches", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7268,7 +8542,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7280,7 +8554,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheListError::Generic { code }),
+                code => Err(ActionsGetActionsCacheListError::Generic { code }.into()),
             }
         }
     }
@@ -7299,19 +8573,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_actions_cache_usage](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-a-repository)
     ///
     /// ---
-    pub async fn get_actions_cache_usage_async(&self, owner: &str, repo: &str) -> Result<ActionsCacheUsageByRepository, ActionsGetActionsCacheUsageError> {
+    pub async fn get_actions_cache_usage_async(&self, owner: &str, repo: &str) -> Result<ActionsCacheUsageByRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7323,7 +8597,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheUsageError::Generic { code }),
+                code => Err(ActionsGetActionsCacheUsageError::Generic { code }.into()),
             }
         }
     }
@@ -7343,7 +8617,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_actions_cache_usage(&self, owner: &str, repo: &str) -> Result<ActionsCacheUsageByRepository, ActionsGetActionsCacheUsageError> {
+    pub fn get_actions_cache_usage(&self, owner: &str, repo: &str) -> Result<ActionsCacheUsageByRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7355,7 +8629,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7367,7 +8641,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheUsageError::Generic { code }),
+                code => Err(ActionsGetActionsCacheUsageError::Generic { code }.into()),
             }
         }
     }
@@ -7384,7 +8658,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_actions_cache_usage_by_repo_for_org](https://docs.github.com/rest/actions/cache#list-repositories-with-github-actions-cache-usage-for-an-organization)
     ///
     /// ---
-    pub async fn get_actions_cache_usage_by_repo_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsGetActionsCacheUsageByRepoForOrgParams>>) -> Result<GetActionsGetActionsCacheUsageByRepoForOrgResponse200, ActionsGetActionsCacheUsageByRepoForOrgError> {
+    pub async fn get_actions_cache_usage_by_repo_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsGetActionsCacheUsageByRepoForOrgParams>>) -> Result<GetActionsGetActionsCacheUsageByRepoForOrgResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/cache/usage-by-repository", super::GITHUB_BASE_API_URL, org);
 
@@ -7395,12 +8669,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7412,7 +8686,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheUsageByRepoForOrgError::Generic { code }),
+                code => Err(ActionsGetActionsCacheUsageByRepoForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7430,7 +8704,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_actions_cache_usage_by_repo_for_org(&self, org: &str, query_params: Option<impl Into<ActionsGetActionsCacheUsageByRepoForOrgParams>>) -> Result<GetActionsGetActionsCacheUsageByRepoForOrgResponse200, ActionsGetActionsCacheUsageByRepoForOrgError> {
+    pub fn get_actions_cache_usage_by_repo_for_org(&self, org: &str, query_params: Option<impl Into<ActionsGetActionsCacheUsageByRepoForOrgParams>>) -> Result<GetActionsGetActionsCacheUsageByRepoForOrgResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/cache/usage-by-repository", super::GITHUB_BASE_API_URL, org);
 
@@ -7447,7 +8721,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7459,7 +8733,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheUsageByRepoForOrgError::Generic { code }),
+                code => Err(ActionsGetActionsCacheUsageByRepoForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7476,19 +8750,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_actions_cache_usage_for_org](https://docs.github.com/rest/actions/cache#get-github-actions-cache-usage-for-an-organization)
     ///
     /// ---
-    pub async fn get_actions_cache_usage_for_org_async(&self, org: &str) -> Result<ActionsCacheUsageOrgEnterprise, ActionsGetActionsCacheUsageForOrgError> {
+    pub async fn get_actions_cache_usage_for_org_async(&self, org: &str) -> Result<ActionsCacheUsageOrgEnterprise, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7500,7 +8774,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheUsageForOrgError::Generic { code }),
+                code => Err(ActionsGetActionsCacheUsageForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7518,7 +8792,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_actions_cache_usage_for_org(&self, org: &str) -> Result<ActionsCacheUsageOrgEnterprise, ActionsGetActionsCacheUsageForOrgError> {
+    pub fn get_actions_cache_usage_for_org(&self, org: &str) -> Result<ActionsCacheUsageOrgEnterprise, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/cache/usage", super::GITHUB_BASE_API_URL, org);
 
@@ -7530,7 +8804,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7542,7 +8816,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetActionsCacheUsageForOrgError::Generic { code }),
+                code => Err(ActionsGetActionsCacheUsageForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7558,19 +8832,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
-    pub async fn get_allowed_actions_organization_async(&self, org: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsOrganizationError> {
+    pub async fn get_allowed_actions_organization_async(&self, org: &str) -> Result<PutActionsSetAllowedActionsRepository, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7582,7 +8856,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetAllowedActionsOrganizationError::Generic { code }),
+                code => Err(ActionsGetAllowedActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -7599,7 +8873,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_allowed_actions_organization(&self, org: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsOrganizationError> {
+    pub fn get_allowed_actions_organization(&self, org: &str) -> Result<PutActionsSetAllowedActionsRepository, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, org);
 
@@ -7611,7 +8885,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7623,7 +8897,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetAllowedActionsOrganizationError::Generic { code }),
+                code => Err(ActionsGetAllowedActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -7639,19 +8913,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#get-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
-    pub async fn get_allowed_actions_repository_async(&self, owner: &str, repo: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsRepositoryError> {
+    pub async fn get_allowed_actions_repository_async(&self, owner: &str, repo: &str) -> Result<PutActionsSetAllowedActionsRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7663,7 +8937,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetAllowedActionsRepositoryError::Generic { code }),
+                code => Err(ActionsGetAllowedActionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -7680,7 +8954,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_allowed_actions_repository(&self, owner: &str, repo: &str) -> Result<PutActionsSetAllowedActionsRepository, ActionsGetAllowedActionsRepositoryError> {
+    pub fn get_allowed_actions_repository(&self, owner: &str, repo: &str) -> Result<PutActionsSetAllowedActionsRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7692,7 +8966,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7704,7 +8978,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetAllowedActionsRepositoryError::Generic { code }),
+                code => Err(ActionsGetAllowedActionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -7722,19 +8996,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_artifact](https://docs.github.com/rest/actions/artifacts#get-an-artifact)
     ///
     /// ---
-    pub async fn get_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<Artifact, ActionsGetArtifactError> {
+    pub async fn get_artifact_async(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<Artifact, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/artifacts/{}", super::GITHUB_BASE_API_URL, owner, repo, artifact_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7746,7 +9020,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetArtifactError::Generic { code }),
+                code => Err(ActionsGetArtifactError::Generic { code }.into()),
             }
         }
     }
@@ -7765,7 +9039,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_artifact(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<Artifact, ActionsGetArtifactError> {
+    pub fn get_artifact(&self, owner: &str, repo: &str, artifact_id: i32) -> Result<Artifact, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/artifacts/{}", super::GITHUB_BASE_API_URL, owner, repo, artifact_id);
 
@@ -7777,7 +9051,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7789,7 +9063,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetArtifactError::Generic { code }),
+                code => Err(ActionsGetArtifactError::Generic { code }.into()),
             }
         }
     }
@@ -7805,19 +9079,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
     ///
     /// ---
-    pub async fn get_custom_oidc_sub_claim_for_repo_async(&self, owner: &str, repo: &str) -> Result<OidcCustomSubRepo, ActionsGetCustomOidcSubClaimForRepoError> {
+    pub async fn get_custom_oidc_sub_claim_for_repo_async(&self, owner: &str, repo: &str) -> Result<OidcCustomSubRepo, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7829,9 +9103,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status400(github_response.to_json_async().await?)),
-                404 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status404(github_response.to_json_async().await?)),
-                code => Err(ActionsGetCustomOidcSubClaimForRepoError::Generic { code }),
+                400 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status400(github_response.to_json_async().await?).into()),
+                404 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ActionsGetCustomOidcSubClaimForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -7848,7 +9122,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_custom_oidc_sub_claim_for_repo(&self, owner: &str, repo: &str) -> Result<OidcCustomSubRepo, ActionsGetCustomOidcSubClaimForRepoError> {
+    pub fn get_custom_oidc_sub_claim_for_repo(&self, owner: &str, repo: &str) -> Result<OidcCustomSubRepo, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7860,7 +9134,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7872,9 +9146,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status400(github_response.to_json()?)),
-                404 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status404(github_response.to_json()?)),
-                code => Err(ActionsGetCustomOidcSubClaimForRepoError::Generic { code }),
+                400 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status400(github_response.to_json()?).into()),
+                404 => Err(ActionsGetCustomOidcSubClaimForRepoError::Status404(github_response.to_json()?).into()),
+                code => Err(ActionsGetCustomOidcSubClaimForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -7893,19 +9167,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_environment_public_key](https://docs.github.com/rest/actions/secrets#get-an-environment-public-key)
     ///
     /// ---
-    pub async fn get_environment_public_key_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
+    pub async fn get_environment_public_key_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<ActionsPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7917,7 +9191,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetEnvironmentPublicKeyError::Generic { code }),
+                code => Err(ActionsGetEnvironmentPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -7937,7 +9211,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_environment_public_key(&self, owner: &str, repo: &str, environment_name: &str) -> Result<ActionsPublicKey, ActionsGetEnvironmentPublicKeyError> {
+    pub fn get_environment_public_key(&self, owner: &str, repo: &str, environment_name: &str) -> Result<ActionsPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -7949,7 +9223,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7961,7 +9235,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetEnvironmentPublicKeyError::Generic { code }),
+                code => Err(ActionsGetEnvironmentPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -7979,19 +9253,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_environment_secret](https://docs.github.com/rest/actions/secrets#get-an-environment-secret)
     ///
     /// ---
-    pub async fn get_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
+    pub async fn get_environment_secret_async(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8003,7 +9277,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetEnvironmentSecretError::Generic { code }),
+                code => Err(ActionsGetEnvironmentSecretError::Generic { code }.into()),
             }
         }
     }
@@ -8022,7 +9296,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetEnvironmentSecretError> {
+    pub fn get_environment_secret(&self, owner: &str, repo: &str, environment_name: &str, secret_name: &str) -> Result<ActionsSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, secret_name);
 
@@ -8034,7 +9308,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8046,7 +9320,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetEnvironmentSecretError::Generic { code }),
+                code => Err(ActionsGetEnvironmentSecretError::Generic { code }.into()),
             }
         }
     }
@@ -8064,19 +9338,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_environment_variable](https://docs.github.com/rest/actions/variables#get-an-environment-variable)
     ///
     /// ---
-    pub async fn get_environment_variable_async(&self, owner: &str, repo: &str, environment_name: &str, name: &str) -> Result<ActionsVariable, ActionsGetEnvironmentVariableError> {
+    pub async fn get_environment_variable_async(&self, owner: &str, repo: &str, environment_name: &str, name: &str) -> Result<ActionsVariable, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8088,7 +9362,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsGetEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -8107,7 +9381,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_environment_variable(&self, owner: &str, repo: &str, environment_name: &str, name: &str) -> Result<ActionsVariable, ActionsGetEnvironmentVariableError> {
+    pub fn get_environment_variable(&self, owner: &str, repo: &str, environment_name: &str, name: &str) -> Result<ActionsVariable, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, name);
 
@@ -8119,7 +9393,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8131,7 +9405,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsGetEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -8149,19 +9423,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-an-organization)
     ///
     /// ---
-    pub async fn get_github_actions_default_workflow_permissions_organization_async(&self, org: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+    pub async fn get_github_actions_default_workflow_permissions_organization_async(&self, org: &str) -> Result<ActionsGetDefaultWorkflowPermissions, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8173,7 +9447,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -8192,7 +9466,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_default_workflow_permissions_organization(&self, org: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+    pub fn get_github_actions_default_workflow_permissions_organization(&self, org: &str) -> Result<ActionsGetDefaultWorkflowPermissions, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
 
@@ -8204,7 +9478,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8216,7 +9490,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -8234,19 +9508,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#get-default-workflow-permissions-for-a-repository)
     ///
     /// ---
-    pub async fn get_github_actions_default_workflow_permissions_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+    pub async fn get_github_actions_default_workflow_permissions_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsGetDefaultWorkflowPermissions, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8258,7 +9532,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -8277,7 +9551,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_default_workflow_permissions_repository(&self, owner: &str, repo: &str) -> Result<ActionsGetDefaultWorkflowPermissions, ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+    pub fn get_github_actions_default_workflow_permissions_repository(&self, owner: &str, repo: &str) -> Result<ActionsGetDefaultWorkflowPermissions, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -8289,7 +9563,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8301,7 +9575,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
+                code => Err(ActionsGetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -8317,19 +9591,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-an-organization)
     ///
     /// ---
-    pub async fn get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
+    pub async fn get_github_actions_permissions_organization_async(&self, org: &str) -> Result<ActionsOrganizationPermissions, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8341,7 +9615,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -8358,7 +9632,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_permissions_organization(&self, org: &str) -> Result<ActionsOrganizationPermissions, ActionsGetGithubActionsPermissionsOrganizationError> {
+    pub fn get_github_actions_permissions_organization(&self, org: &str) -> Result<ActionsOrganizationPermissions, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
 
@@ -8370,7 +9644,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8382,7 +9656,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsGetGithubActionsPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -8398,19 +9672,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#get-github-actions-permissions-for-a-repository)
     ///
     /// ---
-    pub async fn get_github_actions_permissions_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsRepositoryPermissions, ActionsGetGithubActionsPermissionsRepositoryError> {
+    pub async fn get_github_actions_permissions_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsRepositoryPermissions, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8422,7 +9696,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsPermissionsRepositoryError::Generic { code }),
+                code => Err(ActionsGetGithubActionsPermissionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -8439,7 +9713,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_github_actions_permissions_repository(&self, owner: &str, repo: &str) -> Result<ActionsRepositoryPermissions, ActionsGetGithubActionsPermissionsRepositoryError> {
+    pub fn get_github_actions_permissions_repository(&self, owner: &str, repo: &str) -> Result<ActionsRepositoryPermissions, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -8451,7 +9725,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8463,7 +9737,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetGithubActionsPermissionsRepositoryError::Generic { code }),
+                code => Err(ActionsGetGithubActionsPermissionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -8481,19 +9755,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#get-a-job-for-a-workflow-run)
     ///
     /// ---
-    pub async fn get_job_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<Job, ActionsGetJobForWorkflowRunError> {
+    pub async fn get_job_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32) -> Result<Job, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}", super::GITHUB_BASE_API_URL, owner, repo, job_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8505,7 +9779,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetJobForWorkflowRunError::Generic { code }),
+                code => Err(ActionsGetJobForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -8524,7 +9798,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_job_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32) -> Result<Job, ActionsGetJobForWorkflowRunError> {
+    pub fn get_job_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32) -> Result<Job, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}", super::GITHUB_BASE_API_URL, owner, repo, job_id);
 
@@ -8536,7 +9810,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8548,7 +9822,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetJobForWorkflowRunError::Generic { code }),
+                code => Err(ActionsGetJobForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -8567,19 +9841,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/actions/secrets#get-an-organization-public-key)
     ///
     /// ---
-    pub async fn get_org_public_key_async(&self, org: &str) -> Result<ActionsPublicKey, ActionsGetOrgPublicKeyError> {
+    pub async fn get_org_public_key_async(&self, org: &str) -> Result<ActionsPublicKey, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/public-key", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8591,7 +9865,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetOrgPublicKeyError::Generic { code }),
+                code => Err(ActionsGetOrgPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -8611,7 +9885,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_public_key(&self, org: &str) -> Result<ActionsPublicKey, ActionsGetOrgPublicKeyError> {
+    pub fn get_org_public_key(&self, org: &str) -> Result<ActionsPublicKey, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/public-key", super::GITHUB_BASE_API_URL, org);
 
@@ -8623,7 +9897,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8635,7 +9909,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetOrgPublicKeyError::Generic { code }),
+                code => Err(ActionsGetOrgPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -8653,19 +9927,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/actions/secrets#get-an-organization-secret)
     ///
     /// ---
-    pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<OrganizationActionsSecret, ActionsGetOrgSecretError> {
+    pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<OrganizationActionsSecret, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8677,7 +9951,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetOrgSecretError::Generic { code }),
+                code => Err(ActionsGetOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -8696,7 +9970,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<OrganizationActionsSecret, ActionsGetOrgSecretError> {
+    pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<OrganizationActionsSecret, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -8708,7 +9982,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8720,7 +9994,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetOrgSecretError::Generic { code }),
+                code => Err(ActionsGetOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -8738,19 +10012,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_org_variable](https://docs.github.com/rest/actions/variables#get-an-organization-variable)
     ///
     /// ---
-    pub async fn get_org_variable_async(&self, org: &str, name: &str) -> Result<OrganizationActionsVariable, ActionsGetOrgVariableError> {
+    pub async fn get_org_variable_async(&self, org: &str, name: &str) -> Result<OrganizationActionsVariable, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8762,7 +10036,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetOrgVariableError::Generic { code }),
+                code => Err(ActionsGetOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -8781,7 +10055,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_variable(&self, org: &str, name: &str) -> Result<OrganizationActionsVariable, ActionsGetOrgVariableError> {
+    pub fn get_org_variable(&self, org: &str, name: &str) -> Result<OrganizationActionsVariable, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
 
@@ -8793,7 +10067,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8805,7 +10079,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetOrgVariableError::Generic { code }),
+                code => Err(ActionsGetOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -8823,19 +10097,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#get-pending-deployments-for-a-workflow-run)
     ///
     /// ---
-    pub async fn get_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<PendingDeployment>, ActionsGetPendingDeploymentsForRunError> {
+    pub async fn get_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<PendingDeployment>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/pending_deployments", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8847,7 +10121,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetPendingDeploymentsForRunError::Generic { code }),
+                code => Err(ActionsGetPendingDeploymentsForRunError::Generic { code }.into()),
             }
         }
     }
@@ -8866,7 +10140,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_pending_deployments_for_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<PendingDeployment>, ActionsGetPendingDeploymentsForRunError> {
+    pub fn get_pending_deployments_for_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<PendingDeployment>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/pending_deployments", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -8878,7 +10152,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8890,7 +10164,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetPendingDeploymentsForRunError::Generic { code }),
+                code => Err(ActionsGetPendingDeploymentsForRunError::Generic { code }.into()),
             }
         }
     }
@@ -8909,19 +10183,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/actions/secrets#get-a-repository-public-key)
     ///
     /// ---
-    pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<ActionsPublicKey, ActionsGetRepoPublicKeyError> {
+    pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<ActionsPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8933,7 +10207,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetRepoPublicKeyError::Generic { code }),
+                code => Err(ActionsGetRepoPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -8953,7 +10227,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<ActionsPublicKey, ActionsGetRepoPublicKeyError> {
+    pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<ActionsPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -8965,7 +10239,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8977,7 +10251,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetRepoPublicKeyError::Generic { code }),
+                code => Err(ActionsGetRepoPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -8995,19 +10269,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/actions/secrets#get-a-repository-secret)
     ///
     /// ---
-    pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetRepoSecretError> {
+    pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<ActionsSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9019,7 +10293,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetRepoSecretError::Generic { code }),
+                code => Err(ActionsGetRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -9038,7 +10312,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<ActionsSecret, ActionsGetRepoSecretError> {
+    pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<ActionsSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -9050,7 +10324,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9062,7 +10336,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetRepoSecretError::Generic { code }),
+                code => Err(ActionsGetRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -9080,19 +10354,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_repo_variable](https://docs.github.com/rest/actions/variables#get-a-repository-variable)
     ///
     /// ---
-    pub async fn get_repo_variable_async(&self, owner: &str, repo: &str, name: &str) -> Result<ActionsVariable, ActionsGetRepoVariableError> {
+    pub async fn get_repo_variable_async(&self, owner: &str, repo: &str, name: &str) -> Result<ActionsVariable, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9104,7 +10378,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetRepoVariableError::Generic { code }),
+                code => Err(ActionsGetRepoVariableError::Generic { code }.into()),
             }
         }
     }
@@ -9123,7 +10397,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_variable(&self, owner: &str, repo: &str, name: &str) -> Result<ActionsVariable, ActionsGetRepoVariableError> {
+    pub fn get_repo_variable(&self, owner: &str, repo: &str, name: &str) -> Result<ActionsVariable, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
@@ -9135,7 +10409,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9147,7 +10421,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetRepoVariableError::Generic { code }),
+                code => Err(ActionsGetRepoVariableError::Generic { code }.into()),
             }
         }
     }
@@ -9163,19 +10437,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_reviews_for_run](https://docs.github.com/rest/actions/workflow-runs#get-the-review-history-for-a-workflow-run)
     ///
     /// ---
-    pub async fn get_reviews_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<EnvironmentApprovals>, ActionsGetReviewsForRunError> {
+    pub async fn get_reviews_for_run_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<EnvironmentApprovals>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/approvals", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9187,7 +10461,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetReviewsForRunError::Generic { code }),
+                code => Err(ActionsGetReviewsForRunError::Generic { code }.into()),
             }
         }
     }
@@ -9204,7 +10478,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_reviews_for_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<EnvironmentApprovals>, ActionsGetReviewsForRunError> {
+    pub fn get_reviews_for_run(&self, owner: &str, repo: &str, run_id: i32) -> Result<Vec<EnvironmentApprovals>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/approvals", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -9216,7 +10490,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9228,7 +10502,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetReviewsForRunError::Generic { code }),
+                code => Err(ActionsGetReviewsForRunError::Generic { code }.into()),
             }
         }
     }
@@ -9246,19 +10520,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
-    pub async fn get_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForOrgError> {
+    pub async fn get_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<Runner, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9270,7 +10544,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetSelfHostedRunnerForOrgError::Generic { code }),
+                code => Err(ActionsGetSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -9289,7 +10563,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForOrgError> {
+    pub fn get_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<Runner, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, org, runner_id);
 
@@ -9301,7 +10575,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9313,7 +10587,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetSelfHostedRunnerForOrgError::Generic { code }),
+                code => Err(ActionsGetSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -9331,19 +10605,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#get-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
-    pub async fn get_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForRepoError> {
+    pub async fn get_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<Runner, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9355,7 +10629,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetSelfHostedRunnerForRepoError::Generic { code }),
+                code => Err(ActionsGetSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -9374,7 +10648,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<Runner, ActionsGetSelfHostedRunnerForRepoError> {
+    pub fn get_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<Runner, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
@@ -9386,7 +10660,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9398,7 +10672,88 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetSelfHostedRunnerForRepoError::Generic { code }),
+                code => Err(ActionsGetSelfHostedRunnerForRepoError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a self-hosted runner group for an organization
+    ///
+    /// Gets a specific self-hosted runner group for an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_self_hosted_runner_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#get-a-self-hosted-runner-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_self_hosted_runner_group_for_org_async(&self, org: &str, runner_group_id: i32) -> Result<RunnerGroupsOrg, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetSelfHostedRunnerGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a self-hosted runner group for an organization
+    ///
+    /// Gets a specific self-hosted runner group for an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_self_hosted_runner_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#get-a-self-hosted-runner-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_self_hosted_runner_group_for_org(&self, org: &str, runner_group_id: i32) -> Result<RunnerGroupsOrg, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetSelfHostedRunnerGroupForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -9417,19 +10772,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_workflow](https://docs.github.com/rest/actions/workflows#get-a-workflow)
     ///
     /// ---
-    pub async fn get_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<Workflow, ActionsGetWorkflowError> {
+    pub async fn get_workflow_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<Workflow, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9441,7 +10796,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowError::Generic { code }),
+                code => Err(ActionsGetWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -9461,7 +10816,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<Workflow, ActionsGetWorkflowError> {
+    pub fn get_workflow(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<Workflow, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
@@ -9473,7 +10828,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9485,7 +10840,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowError::Generic { code }),
+                code => Err(ActionsGetWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -9503,19 +10858,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#get-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
-    pub async fn get_workflow_access_to_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsWorkflowAccessToRepository, ActionsGetWorkflowAccessToRepositoryError> {
+    pub async fn get_workflow_access_to_repository_async(&self, owner: &str, repo: &str) -> Result<ActionsWorkflowAccessToRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9527,7 +10882,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowAccessToRepositoryError::Generic { code }),
+                code => Err(ActionsGetWorkflowAccessToRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -9546,7 +10901,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_workflow_access_to_repository(&self, owner: &str, repo: &str) -> Result<ActionsWorkflowAccessToRepository, ActionsGetWorkflowAccessToRepositoryError> {
+    pub fn get_workflow_access_to_repository(&self, owner: &str, repo: &str) -> Result<ActionsWorkflowAccessToRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -9558,7 +10913,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9570,7 +10925,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowAccessToRepositoryError::Generic { code }),
+                code => Err(ActionsGetWorkflowAccessToRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -9588,7 +10943,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_workflow_run](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run)
     ///
     /// ---
-    pub async fn get_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsGetWorkflowRunParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
+    pub async fn get_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsGetWorkflowRunParams>>) -> Result<WorkflowRun, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -9599,12 +10954,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9616,7 +10971,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowRunError::Generic { code }),
+                code => Err(ActionsGetWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -9635,7 +10990,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_workflow_run(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsGetWorkflowRunParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunError> {
+    pub fn get_workflow_run(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsGetWorkflowRunParams>>) -> Result<WorkflowRun, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -9652,7 +11007,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9664,7 +11019,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowRunError::Generic { code }),
+                code => Err(ActionsGetWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -9682,7 +11037,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run-attempt)
     ///
     /// ---
-    pub async fn get_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsGetWorkflowRunAttemptParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunAttemptError> {
+    pub async fn get_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsGetWorkflowRunAttemptParams>>) -> Result<WorkflowRun, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
 
@@ -9693,12 +11048,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9710,7 +11065,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowRunAttemptError::Generic { code }),
+                code => Err(ActionsGetWorkflowRunAttemptError::Generic { code }.into()),
             }
         }
     }
@@ -9729,7 +11084,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_workflow_run_attempt(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsGetWorkflowRunAttemptParams>>) -> Result<WorkflowRun, ActionsGetWorkflowRunAttemptError> {
+    pub fn get_workflow_run_attempt(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsGetWorkflowRunAttemptParams>>) -> Result<WorkflowRun, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
 
@@ -9746,7 +11101,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9758,7 +11113,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowRunAttemptError::Generic { code }),
+                code => Err(ActionsGetWorkflowRunAttemptError::Generic { code }.into()),
             }
         }
     }
@@ -9776,19 +11131,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_workflow_run_usage](https://docs.github.com/rest/actions/workflow-runs#get-workflow-run-usage)
     ///
     /// ---
-    pub async fn get_workflow_run_usage_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRunUsage, ActionsGetWorkflowRunUsageError> {
+    pub async fn get_workflow_run_usage_async(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRunUsage, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/timing", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9800,7 +11155,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowRunUsageError::Generic { code }),
+                code => Err(ActionsGetWorkflowRunUsageError::Generic { code }.into()),
             }
         }
     }
@@ -9819,7 +11174,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_workflow_run_usage(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRunUsage, ActionsGetWorkflowRunUsageError> {
+    pub fn get_workflow_run_usage(&self, owner: &str, repo: &str, run_id: i32) -> Result<WorkflowRunUsage, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/timing", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -9831,7 +11186,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9843,7 +11198,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowRunUsageError::Generic { code }),
+                code => Err(ActionsGetWorkflowRunUsageError::Generic { code }.into()),
             }
         }
     }
@@ -9863,19 +11218,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for get_workflow_usage](https://docs.github.com/rest/actions/workflows#get-workflow-usage)
     ///
     /// ---
-    pub async fn get_workflow_usage_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<WorkflowUsage, ActionsGetWorkflowUsageError> {
+    pub async fn get_workflow_usage_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<WorkflowUsage, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/timing", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9887,7 +11242,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowUsageError::Generic { code }),
+                code => Err(ActionsGetWorkflowUsageError::Generic { code }.into()),
             }
         }
     }
@@ -9908,7 +11263,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_workflow_usage(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<WorkflowUsage, ActionsGetWorkflowUsageError> {
+    pub fn get_workflow_usage(&self, owner: &str, repo: &str, workflow_id: WorkflowId) -> Result<WorkflowUsage, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/timing", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
@@ -9920,7 +11275,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9932,7 +11287,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsGetWorkflowUsageError::Generic { code }),
+                code => Err(ActionsGetWorkflowUsageError::Generic { code }.into()),
             }
         }
     }
@@ -9950,7 +11305,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_artifacts_for_repo](https://docs.github.com/rest/actions/artifacts#list-artifacts-for-a-repository)
     ///
     /// ---
-    pub async fn list_artifacts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
+    pub async fn list_artifacts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/artifacts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -9961,12 +11316,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9978,7 +11333,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListArtifactsForRepoError::Generic { code }),
+                code => Err(ActionsListArtifactsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -9997,7 +11352,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_artifacts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListArtifactsForRepoError> {
+    pub fn list_artifacts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListArtifactsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/artifacts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -10014,7 +11369,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10026,7 +11381,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListArtifactsForRepoError::Generic { code }),
+                code => Err(ActionsListArtifactsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -10045,7 +11400,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_environment_secrets](https://docs.github.com/rest/actions/secrets#list-environment-secrets)
     ///
     /// ---
-    pub async fn list_environment_secrets_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
+    pub async fn list_environment_secrets_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/secrets", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -10056,12 +11411,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10073,7 +11428,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListEnvironmentSecretsError::Generic { code }),
+                code => Err(ActionsListEnvironmentSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -10093,7 +11448,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_environment_secrets(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListEnvironmentSecretsError> {
+    pub fn list_environment_secrets(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/secrets", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -10110,7 +11465,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10122,7 +11477,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListEnvironmentSecretsError::Generic { code }),
+                code => Err(ActionsListEnvironmentSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -10140,7 +11495,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_environment_variables](https://docs.github.com/rest/actions/variables#list-environment-variables)
     ///
     /// ---
-    pub async fn list_environment_variables_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListEnvironmentVariablesError> {
+    pub async fn list_environment_variables_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -10151,12 +11506,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10168,7 +11523,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListEnvironmentVariablesError::Generic { code }),
+                code => Err(ActionsListEnvironmentVariablesError::Generic { code }.into()),
             }
         }
     }
@@ -10187,7 +11542,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_environment_variables(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListEnvironmentVariablesError> {
+    pub fn list_environment_variables(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ActionsListEnvironmentVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/variables", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -10204,7 +11559,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10216,7 +11571,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListEnvironmentVariablesError::Generic { code }),
+                code => Err(ActionsListEnvironmentVariablesError::Generic { code }.into()),
             }
         }
     }
@@ -10235,7 +11590,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_jobs_for_workflow_run](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run)
     ///
     /// ---
-    pub async fn list_jobs_for_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunParams<'api>>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunError> {
+    pub async fn list_jobs_for_workflow_run_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunParams<'api>>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -10246,12 +11601,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10263,7 +11618,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListJobsForWorkflowRunError::Generic { code }),
+                code => Err(ActionsListJobsForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -10283,7 +11638,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_jobs_for_workflow_run(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunParams<'api>>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunError> {
+    pub fn list_jobs_for_workflow_run(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunParams<'api>>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -10300,7 +11655,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10312,7 +11667,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListJobsForWorkflowRunError::Generic { code }),
+                code => Err(ActionsListJobsForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -10331,7 +11686,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_jobs_for_workflow_run_attempt](https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt)
     ///
     /// ---
-    pub async fn list_jobs_for_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunAttemptParams>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunAttemptError> {
+    pub async fn list_jobs_for_workflow_run_attempt_async(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunAttemptParams>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
 
@@ -10342,12 +11697,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10359,8 +11714,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsListJobsForWorkflowRunAttemptError::Status404(github_response.to_json_async().await?)),
-                code => Err(ActionsListJobsForWorkflowRunAttemptError::Generic { code }),
+                404 => Err(ActionsListJobsForWorkflowRunAttemptError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ActionsListJobsForWorkflowRunAttemptError::Generic { code }.into()),
             }
         }
     }
@@ -10380,7 +11735,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_jobs_for_workflow_run_attempt(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunAttemptParams>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, ActionsListJobsForWorkflowRunAttemptError> {
+    pub fn list_jobs_for_workflow_run_attempt(&self, owner: &str, repo: &str, run_id: i32, attempt_number: i32, query_params: Option<impl Into<ActionsListJobsForWorkflowRunAttemptParams>>) -> Result<GetActionsListJobsForWorkflowRunResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/attempts/{}/jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id, attempt_number);
 
@@ -10397,7 +11752,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10409,8 +11764,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsListJobsForWorkflowRunAttemptError::Status404(github_response.to_json()?)),
-                code => Err(ActionsListJobsForWorkflowRunAttemptError::Generic { code }),
+                404 => Err(ActionsListJobsForWorkflowRunAttemptError::Status404(github_response.to_json()?).into()),
+                code => Err(ActionsListJobsForWorkflowRunAttemptError::Generic { code }.into()),
             }
         }
     }
@@ -10428,19 +11783,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
-    pub async fn list_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForOrgError> {
+    pub async fn list_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10452,8 +11807,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?)),
-                code => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -10472,7 +11827,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_labels_for_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForOrgError> {
+    pub fn list_labels_for_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
@@ -10484,7 +11839,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10496,8 +11851,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json()?)),
-                code => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -10515,19 +11870,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
-    pub async fn list_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForRepoError> {
+    pub async fn list_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10539,8 +11894,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?)),
-                code => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -10559,7 +11914,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_labels_for_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsListLabelsForSelfHostedRunnerForRepoError> {
+    pub fn list_labels_for_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
@@ -10571,7 +11926,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10583,8 +11938,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json()?)),
-                code => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json()?).into()),
+                code => Err(ActionsListLabelsForSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -10603,7 +11958,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/actions/secrets#list-organization-secrets)
     ///
     /// ---
-    pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<ActionsListOrgSecretsParams>>) -> Result<GetActionsListOrgSecretsResponse200, ActionsListOrgSecretsError> {
+    pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<ActionsListOrgSecretsParams>>) -> Result<GetActionsListOrgSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/secrets", super::GITHUB_BASE_API_URL, org);
 
@@ -10614,12 +11969,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10631,7 +11986,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListOrgSecretsError::Generic { code }),
+                code => Err(ActionsListOrgSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -10651,7 +12006,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<ActionsListOrgSecretsParams>>) -> Result<GetActionsListOrgSecretsResponse200, ActionsListOrgSecretsError> {
+    pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<ActionsListOrgSecretsParams>>) -> Result<GetActionsListOrgSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/secrets", super::GITHUB_BASE_API_URL, org);
 
@@ -10668,7 +12023,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10680,7 +12035,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListOrgSecretsError::Generic { code }),
+                code => Err(ActionsListOrgSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -10698,7 +12053,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_org_variables](https://docs.github.com/rest/actions/variables#list-organization-variables)
     ///
     /// ---
-    pub async fn list_org_variables_async(&self, org: &str, query_params: Option<impl Into<ActionsListOrgVariablesParams>>) -> Result<GetActionsListOrgVariablesResponse200, ActionsListOrgVariablesError> {
+    pub async fn list_org_variables_async(&self, org: &str, query_params: Option<impl Into<ActionsListOrgVariablesParams>>) -> Result<GetActionsListOrgVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
 
@@ -10709,12 +12064,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10726,7 +12081,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListOrgVariablesError::Generic { code }),
+                code => Err(ActionsListOrgVariablesError::Generic { code }.into()),
             }
         }
     }
@@ -10745,7 +12100,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_variables(&self, org: &str, query_params: Option<impl Into<ActionsListOrgVariablesParams>>) -> Result<GetActionsListOrgVariablesResponse200, ActionsListOrgVariablesError> {
+    pub fn list_org_variables(&self, org: &str, query_params: Option<impl Into<ActionsListOrgVariablesParams>>) -> Result<GetActionsListOrgVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/variables", super::GITHUB_BASE_API_URL, org);
 
@@ -10762,7 +12117,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10774,7 +12129,97 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListOrgVariablesError::Generic { code }),
+                code => Err(ActionsListOrgVariablesError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository access to a self-hosted runner group in an organization
+    ///
+    /// Lists the repositories with access to a self-hosted runner group configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    pub async fn list_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List repository access to a self-hosted runner group in an organization
+    ///
+    /// Lists the repositories with access to a self-hosted runner group configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams>>) -> Result<GetActionsListRepoAccessToSelfHostedRunnerGroupInOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListRepoAccessToSelfHostedRunnerGroupInOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -10793,7 +12238,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_repo_organization_secrets](https://docs.github.com/rest/actions/secrets#list-repository-organization-secrets)
     ///
     /// ---
-    pub async fn list_repo_organization_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoOrganizationSecretsError> {
+    pub async fn list_repo_organization_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/organization-secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -10804,12 +12249,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10821,7 +12266,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoOrganizationSecretsError::Generic { code }),
+                code => Err(ActionsListRepoOrganizationSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -10841,7 +12286,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_organization_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoOrganizationSecretsError> {
+    pub fn list_repo_organization_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/organization-secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -10858,7 +12303,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10870,7 +12315,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoOrganizationSecretsError::Generic { code }),
+                code => Err(ActionsListRepoOrganizationSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -10888,7 +12333,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_repo_organization_variables](https://docs.github.com/rest/actions/variables#list-repository-organization-variables)
     ///
     /// ---
-    pub async fn list_repo_organization_variables_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoOrganizationVariablesError> {
+    pub async fn list_repo_organization_variables_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/organization-variables", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -10899,12 +12344,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10916,7 +12361,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoOrganizationVariablesError::Generic { code }),
+                code => Err(ActionsListRepoOrganizationVariablesError::Generic { code }.into()),
             }
         }
     }
@@ -10935,7 +12380,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_organization_variables(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoOrganizationVariablesError> {
+    pub fn list_repo_organization_variables(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoOrganizationVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/organization-variables", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -10952,7 +12397,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10964,7 +12409,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoOrganizationVariablesError::Generic { code }),
+                code => Err(ActionsListRepoOrganizationVariablesError::Generic { code }.into()),
             }
         }
     }
@@ -10983,7 +12428,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/actions/secrets#list-repository-secrets)
     ///
     /// ---
-    pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoSecretsError> {
+    pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -10994,12 +12439,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11011,7 +12456,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoSecretsError::Generic { code }),
+                code => Err(ActionsListRepoSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -11031,7 +12476,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, ActionsListRepoSecretsError> {
+    pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoSecretsParams>>) -> Result<GetActionsListEnvironmentSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11048,7 +12493,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11060,7 +12505,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoSecretsError::Generic { code }),
+                code => Err(ActionsListRepoSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -11078,7 +12523,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_repo_variables](https://docs.github.com/rest/actions/variables#list-repository-variables)
     ///
     /// ---
-    pub async fn list_repo_variables_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoVariablesError> {
+    pub async fn list_repo_variables_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11089,12 +12534,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11106,7 +12551,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoVariablesError::Generic { code }),
+                code => Err(ActionsListRepoVariablesError::Generic { code }.into()),
             }
         }
     }
@@ -11125,7 +12570,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_variables(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, ActionsListRepoVariablesError> {
+    pub fn list_repo_variables(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoVariablesParams>>) -> Result<GetActionsListEnvironmentVariablesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/variables", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11142,7 +12587,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11154,7 +12599,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoVariablesError::Generic { code }),
+                code => Err(ActionsListRepoVariablesError::Generic { code }.into()),
             }
         }
     }
@@ -11172,7 +12617,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_repo_workflows](https://docs.github.com/rest/actions/workflows#list-repository-workflows)
     ///
     /// ---
-    pub async fn list_repo_workflows_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoWorkflowsParams>>) -> Result<GetActionsListRepoWorkflowsResponse200, ActionsListRepoWorkflowsError> {
+    pub async fn list_repo_workflows_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoWorkflowsParams>>) -> Result<GetActionsListRepoWorkflowsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/workflows", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11183,12 +12628,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11200,7 +12645,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoWorkflowsError::Generic { code }),
+                code => Err(ActionsListRepoWorkflowsError::Generic { code }.into()),
             }
         }
     }
@@ -11219,7 +12664,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_workflows(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoWorkflowsParams>>) -> Result<GetActionsListRepoWorkflowsResponse200, ActionsListRepoWorkflowsError> {
+    pub fn list_repo_workflows(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListRepoWorkflowsParams>>) -> Result<GetActionsListRepoWorkflowsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/workflows", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11236,7 +12681,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11248,7 +12693,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRepoWorkflowsError::Generic { code }),
+                code => Err(ActionsListRepoWorkflowsError::Generic { code }.into()),
             }
         }
     }
@@ -11266,19 +12711,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_runner_applications_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-an-organization)
     ///
     /// ---
-    pub async fn list_runner_applications_for_org_async(&self, org: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForOrgError> {
+    pub async fn list_runner_applications_for_org_async(&self, org: &str) -> Result<Vec<RunnerApplication>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/downloads", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11290,7 +12735,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRunnerApplicationsForOrgError::Generic { code }),
+                code => Err(ActionsListRunnerApplicationsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -11309,7 +12754,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_runner_applications_for_org(&self, org: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForOrgError> {
+    pub fn list_runner_applications_for_org(&self, org: &str) -> Result<Vec<RunnerApplication>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/downloads", super::GITHUB_BASE_API_URL, org);
 
@@ -11321,7 +12766,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11333,7 +12778,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRunnerApplicationsForOrgError::Generic { code }),
+                code => Err(ActionsListRunnerApplicationsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -11351,19 +12796,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_runner_applications_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-runner-applications-for-a-repository)
     ///
     /// ---
-    pub async fn list_runner_applications_for_repo_async(&self, owner: &str, repo: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForRepoError> {
+    pub async fn list_runner_applications_for_repo_async(&self, owner: &str, repo: &str) -> Result<Vec<RunnerApplication>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/downloads", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11375,7 +12820,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRunnerApplicationsForRepoError::Generic { code }),
+                code => Err(ActionsListRunnerApplicationsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -11394,7 +12839,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_runner_applications_for_repo(&self, owner: &str, repo: &str) -> Result<Vec<RunnerApplication>, ActionsListRunnerApplicationsForRepoError> {
+    pub fn list_runner_applications_for_repo(&self, owner: &str, repo: &str) -> Result<Vec<RunnerApplication>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/downloads", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11406,7 +12851,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11418,7 +12863,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListRunnerApplicationsForRepoError::Generic { code }),
+                code => Err(ActionsListRunnerApplicationsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -11437,7 +12882,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
-    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgSecretError> {
+    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -11448,12 +12893,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11465,7 +12910,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(ActionsListSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -11485,7 +12930,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgSecretError> {
+    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -11502,7 +12947,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11514,7 +12959,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(ActionsListSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -11533,7 +12978,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#list-selected-repositories-for-an-organization-variable)
     ///
     /// ---
-    pub async fn list_selected_repos_for_org_variable_async(&self, org: &str, name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgVariableParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgVariableError> {
+    pub async fn list_selected_repos_for_org_variable_async(&self, org: &str, name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgVariableParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
 
@@ -11544,12 +12989,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11561,8 +13006,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsListSelectedReposForOrgVariableError::Status409),
-                code => Err(ActionsListSelectedReposForOrgVariableError::Generic { code }),
+                409 => Err(ActionsListSelectedReposForOrgVariableError::Status409.into()),
+                code => Err(ActionsListSelectedReposForOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -11582,7 +13027,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_selected_repos_for_org_variable(&self, org: &str, name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgVariableParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, ActionsListSelectedReposForOrgVariableError> {
+    pub fn list_selected_repos_for_org_variable(&self, org: &str, name: &str, query_params: Option<impl Into<ActionsListSelectedReposForOrgVariableParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
 
@@ -11599,7 +13044,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11611,8 +13056,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsListSelectedReposForOrgVariableError::Status409),
-                code => Err(ActionsListSelectedReposForOrgVariableError::Generic { code }),
+                409 => Err(ActionsListSelectedReposForOrgVariableError::Status409.into()),
+                code => Err(ActionsListSelectedReposForOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -11628,7 +13073,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#list-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
-    pub async fn list_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListSelectedRepositoriesEnabledGithubActionsOrganizationResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
+    pub async fn list_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListSelectedRepositoriesEnabledGithubActionsOrganizationResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/permissions/repositories", super::GITHUB_BASE_API_URL, org);
 
@@ -11639,12 +13084,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11656,7 +13101,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -11673,7 +13118,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_selected_repositories_enabled_github_actions_organization(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListSelectedRepositoriesEnabledGithubActionsOrganizationResponse200, ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError> {
+    pub fn list_selected_repositories_enabled_github_actions_organization(&self, org: &str, query_params: Option<impl Into<ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationParams>>) -> Result<GetActionsListSelectedRepositoriesEnabledGithubActionsOrganizationResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/permissions/repositories", super::GITHUB_BASE_API_URL, org);
 
@@ -11690,7 +13135,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11702,7 +13147,97 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsListSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List self-hosted runner groups for an organization
+    ///
+    /// Lists all self-hosted runner groups configured in an organization and inherited from an enterprise.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_self_hosted_runner_groups_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-self-hosted-runner-groups-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_self_hosted_runner_groups_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnerGroupsForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnerGroupsForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListSelfHostedRunnerGroupsForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List self-hosted runner groups for an organization
+    ///
+    /// Lists all self-hosted runner groups configured in an organization and inherited from an enterprise.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_self_hosted_runner_groups_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-self-hosted-runner-groups-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_self_hosted_runner_groups_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnerGroupsForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnerGroupsForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListSelfHostedRunnerGroupsForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListSelfHostedRunnerGroupsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -11720,7 +13255,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_self_hosted_runners_for_org](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-an-organization)
     ///
     /// ---
-    pub async fn list_self_hosted_runners_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
+    pub async fn list_self_hosted_runners_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/runners", super::GITHUB_BASE_API_URL, org);
 
@@ -11731,12 +13266,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11748,7 +13283,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnersForOrgError::Generic { code }),
+                code => Err(ActionsListSelfHostedRunnersForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -11767,7 +13302,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_self_hosted_runners_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForOrgError> {
+    pub fn list_self_hosted_runners_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForOrgParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/actions/runners", super::GITHUB_BASE_API_URL, org);
 
@@ -11784,7 +13319,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11796,7 +13331,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnersForOrgError::Generic { code }),
+                code => Err(ActionsListSelfHostedRunnersForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -11814,7 +13349,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_self_hosted_runners_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#list-self-hosted-runners-for-a-repository)
     ///
     /// ---
-    pub async fn list_self_hosted_runners_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
+    pub async fn list_self_hosted_runners_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runners", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11825,12 +13360,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11842,7 +13377,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnersForRepoError::Generic { code }),
+                code => Err(ActionsListSelfHostedRunnersForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -11861,7 +13396,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_self_hosted_runners_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, ActionsListSelfHostedRunnersForRepoError> {
+    pub fn list_self_hosted_runners_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListSelfHostedRunnersForRepoParams<'api>>>) -> Result<GetActionsListSelfHostedRunnersForRepoResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runners", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11878,7 +13413,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11890,7 +13425,97 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListSelfHostedRunnersForRepoError::Generic { code }),
+                code => Err(ActionsListSelfHostedRunnersForRepoError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List self-hosted runners in a group for an organization
+    ///
+    /// Lists self-hosted runners that are in a specific organization group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-self-hosted-runners-in-a-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_self_hosted_runners_in_group_for_org_async(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListSelfHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListSelfHostedRunnersInGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List self-hosted runners in a group for an organization
+    ///
+    /// Lists self-hosted runners that are in a specific organization group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-self-hosted-runners-in-a-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_self_hosted_runners_in_group_for_org(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListSelfHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListSelfHostedRunnersInGroupForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListSelfHostedRunnersInGroupForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListSelfHostedRunnersInGroupForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -11908,7 +13533,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_workflow_run_artifacts](https://docs.github.com/rest/actions/artifacts#list-workflow-run-artifacts)
     ///
     /// ---
-    pub async fn list_workflow_run_artifacts_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
+    pub async fn list_workflow_run_artifacts_async(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/artifacts", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -11919,12 +13544,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11936,7 +13561,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListWorkflowRunArtifactsError::Generic { code }),
+                code => Err(ActionsListWorkflowRunArtifactsError::Generic { code }.into()),
             }
         }
     }
@@ -11955,7 +13580,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_workflow_run_artifacts(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, ActionsListWorkflowRunArtifactsError> {
+    pub fn list_workflow_run_artifacts(&self, owner: &str, repo: &str, run_id: i32, query_params: Option<impl Into<ActionsListWorkflowRunArtifactsParams<'api>>>) -> Result<GetActionsListWorkflowRunArtifactsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs/{}/artifacts", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
@@ -11972,7 +13597,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11984,7 +13609,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListWorkflowRunArtifactsError::Generic { code }),
+                code => Err(ActionsListWorkflowRunArtifactsError::Generic { code }.into()),
             }
         }
     }
@@ -12002,7 +13627,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     ///
     /// ---
-    pub async fn list_workflow_runs_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, query_params: Option<impl Into<ActionsListWorkflowRunsParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsError> {
+    pub async fn list_workflow_runs_async(&self, owner: &str, repo: &str, workflow_id: WorkflowId, query_params: Option<impl Into<ActionsListWorkflowRunsParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/runs", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
@@ -12013,12 +13638,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12030,7 +13655,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListWorkflowRunsError::Generic { code }),
+                code => Err(ActionsListWorkflowRunsError::Generic { code }.into()),
             }
         }
     }
@@ -12049,7 +13674,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_workflow_runs(&self, owner: &str, repo: &str, workflow_id: WorkflowId, query_params: Option<impl Into<ActionsListWorkflowRunsParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsError> {
+    pub fn list_workflow_runs(&self, owner: &str, repo: &str, workflow_id: WorkflowId, query_params: Option<impl Into<ActionsListWorkflowRunsParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/workflows/{}/runs", super::GITHUB_BASE_API_URL, owner, repo, workflow_id);
 
@@ -12066,7 +13691,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12078,7 +13703,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListWorkflowRunsError::Generic { code }),
+                code => Err(ActionsListWorkflowRunsError::Generic { code }.into()),
             }
         }
     }
@@ -12098,7 +13723,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     ///
     /// ---
-    pub async fn list_workflow_runs_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListWorkflowRunsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsForRepoError> {
+    pub async fn list_workflow_runs_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListWorkflowRunsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12109,12 +13734,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12126,7 +13751,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListWorkflowRunsForRepoError::Generic { code }),
+                code => Err(ActionsListWorkflowRunsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -12147,7 +13772,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_workflow_runs_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListWorkflowRunsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, ActionsListWorkflowRunsForRepoError> {
+    pub fn list_workflow_runs_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActionsListWorkflowRunsForRepoParams<'api>>>) -> Result<GetActionsListWorkflowRunsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/actions/runs", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12164,7 +13789,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12176,7 +13801,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsListWorkflowRunsForRepoError::Generic { code }),
+                code => Err(ActionsListWorkflowRunsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -12192,19 +13817,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for re_run_job_for_workflow_run](https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run)
     ///
     /// ---
-    pub async fn re_run_job_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32, body: PostActionsReRunJobForWorkflowRun) -> Result<EmptyObject, ActionsReRunJobForWorkflowRunError> {
+    pub async fn re_run_job_for_workflow_run_async(&self, owner: &str, repo: &str, job_id: i32, body: PostActionsReRunJobForWorkflowRun) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, job_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReRunJobForWorkflowRun::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReRunJobForWorkflowRun>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12216,8 +13841,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActionsReRunJobForWorkflowRunError::Status403(github_response.to_json_async().await?)),
-                code => Err(ActionsReRunJobForWorkflowRunError::Generic { code }),
+                403 => Err(ActionsReRunJobForWorkflowRunError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ActionsReRunJobForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -12234,19 +13859,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn re_run_job_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32, body: PostActionsReRunJobForWorkflowRun) -> Result<EmptyObject, ActionsReRunJobForWorkflowRunError> {
+    pub fn re_run_job_for_workflow_run(&self, owner: &str, repo: &str, job_id: i32, body: PostActionsReRunJobForWorkflowRun) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/jobs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, job_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReRunJobForWorkflowRun::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReRunJobForWorkflowRun>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12258,8 +13883,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActionsReRunJobForWorkflowRunError::Status403(github_response.to_json()?)),
-                code => Err(ActionsReRunJobForWorkflowRunError::Generic { code }),
+                403 => Err(ActionsReRunJobForWorkflowRunError::Status403(github_response.to_json()?).into()),
+                code => Err(ActionsReRunJobForWorkflowRunError::Generic { code }.into()),
             }
         }
     }
@@ -12275,19 +13900,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for re_run_workflow](https://docs.github.com/rest/actions/workflow-runs#re-run-a-workflow)
     ///
     /// ---
-    pub async fn re_run_workflow_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflow) -> Result<EmptyObject, ActionsReRunWorkflowError> {
+    pub async fn re_run_workflow_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflow) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReRunWorkflow::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReRunWorkflow>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12299,7 +13924,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReRunWorkflowError::Generic { code }),
+                code => Err(ActionsReRunWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -12316,19 +13941,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn re_run_workflow(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflow) -> Result<EmptyObject, ActionsReRunWorkflowError> {
+    pub fn re_run_workflow(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflow) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReRunWorkflow::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReRunWorkflow>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12340,7 +13965,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReRunWorkflowError::Generic { code }),
+                code => Err(ActionsReRunWorkflowError::Generic { code }.into()),
             }
         }
     }
@@ -12356,19 +13981,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for re_run_workflow_failed_jobs](https://docs.github.com/rest/actions/workflow-runs#re-run-failed-jobs-from-a-workflow-run)
     ///
     /// ---
-    pub async fn re_run_workflow_failed_jobs_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflowFailedJobs) -> Result<EmptyObject, ActionsReRunWorkflowFailedJobsError> {
+    pub async fn re_run_workflow_failed_jobs_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflowFailedJobs) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun-failed-jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReRunWorkflowFailedJobs::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReRunWorkflowFailedJobs>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12380,7 +14005,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReRunWorkflowFailedJobsError::Generic { code }),
+                code => Err(ActionsReRunWorkflowFailedJobsError::Generic { code }.into()),
             }
         }
     }
@@ -12397,19 +14022,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn re_run_workflow_failed_jobs(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflowFailedJobs) -> Result<EmptyObject, ActionsReRunWorkflowFailedJobsError> {
+    pub fn re_run_workflow_failed_jobs(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReRunWorkflowFailedJobs) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/rerun-failed-jobs", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReRunWorkflowFailedJobs::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReRunWorkflowFailedJobs>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12421,7 +14046,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReRunWorkflowFailedJobsError::Generic { code }),
+                code => Err(ActionsReRunWorkflowFailedJobsError::Generic { code }.into()),
             }
         }
     }
@@ -12440,19 +14065,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
-    pub async fn remove_all_custom_labels_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError> {
+    pub async fn remove_all_custom_labels_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12464,8 +14089,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?)),
-                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -12485,7 +14110,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_all_custom_labels_from_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError> {
+    pub fn remove_all_custom_labels_from_self_hosted_runner_for_org(&self, org: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
@@ -12497,7 +14122,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12509,8 +14134,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Status404(github_response.to_json()?)),
-                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -12529,19 +14154,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for remove_all_custom_labels_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-all-custom-labels-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
-    pub async fn remove_all_custom_labels_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError> {
+    pub async fn remove_all_custom_labels_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12553,8 +14178,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?)),
-                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -12574,7 +14199,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_all_custom_labels_from_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError> {
+    pub fn remove_all_custom_labels_from_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
@@ -12586,7 +14211,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12598,8 +14223,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Status404(github_response.to_json()?)),
-                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Status404(github_response.to_json()?).into()),
+                code => Err(ActionsRemoveAllCustomLabelsFromSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -12621,19 +14246,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
-    pub async fn remove_custom_label_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError> {
+    pub async fn remove_custom_label_from_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, org, runner_id, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12645,9 +14270,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -12670,7 +14295,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_custom_label_from_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError> {
+    pub fn remove_custom_label_from_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, org, runner_id, name);
 
@@ -12682,7 +14307,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12694,9 +14319,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status422(github_response.to_json()?)),
-                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -12718,19 +14343,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for remove_custom_label_from_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#remove-a-custom-label-from-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
-    pub async fn remove_custom_label_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError> {
+    pub async fn remove_custom_label_from_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12742,9 +14367,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -12767,7 +14392,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_custom_label_from_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError> {
+    pub fn remove_custom_label_from_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, name: &str) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, runner_id, name);
 
@@ -12779,7 +14404,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12791,9 +14416,90 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status422(github_response.to_json()?)),
-                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsRemoveCustomLabelFromSelfHostedRunnerForRepoError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove repository access to a self-hosted runner group in an organization
+    ///
+    /// Removes a repository from the list of selected repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#remove-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    pub async fn remove_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove repository access to a self-hosted runner group in an organization
+    ///
+    /// Removes a repository from the list of selected repositories that can access a self-hosted runner group. The runner group must have `visibility` set to `selected`. For more information, see "[Create a self-hosted runner group for an organization](#create-a-self-hosted-runner-group-for-an-organization)."
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#remove-repository-access-to-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, repository_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, repository_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -12813,19 +14519,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/actions/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
-    pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgSecretError> {
+    pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12837,8 +14543,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409),
-                code => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+                409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409.into()),
+                code => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -12859,7 +14565,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgSecretError> {
+    pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
@@ -12871,7 +14577,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12883,8 +14589,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409),
-                code => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+                409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409.into()),
+                code => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -12904,19 +14610,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for remove_selected_repo_from_org_variable](https://docs.github.com/rest/actions/variables#remove-selected-repository-from-an-organization-variable)
     ///
     /// ---
-    pub async fn remove_selected_repo_from_org_variable_async(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgVariableError> {
+    pub async fn remove_selected_repo_from_org_variable_async(&self, org: &str, name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12928,8 +14634,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409),
-                code => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Generic { code }),
+                409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409.into()),
+                code => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -12950,7 +14656,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_selected_repo_from_org_variable(&self, org: &str, name: &str, repository_id: i32) -> Result<(), ActionsRemoveSelectedRepoFromOrgVariableError> {
+    pub fn remove_selected_repo_from_org_variable(&self, org: &str, name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, name, repository_id);
 
@@ -12962,7 +14668,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12974,8 +14680,89 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409),
-                code => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Generic { code }),
+                409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409.into()),
+                code => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a self-hosted runner from a group for an organization
+    ///
+    /// Removes a self-hosted runner from a group configured in an organization. The runner is then returned to the default group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_self_hosted_runner_from_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#remove-a-self-hosted-runner-from-a-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn remove_self_hosted_runner_from_group_for_org_async(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove a self-hosted runner from a group for an organization
+    ///
+    /// Removes a self-hosted runner from a group configured in an organization. The runner is then returned to the default group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for remove_self_hosted_runner_from_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#remove-a-self-hosted-runner-from-a-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_self_hosted_runner_from_group_for_org(&self, org: &str, runner_group_id: i32, runner_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners/{}", super::GITHUB_BASE_API_URL, org, runner_group_id, runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -12994,19 +14781,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for review_custom_gates_for_run](https://docs.github.com/rest/actions/workflow-runs#review-custom-deployment-protection-rules-for-a-workflow-run)
     ///
     /// ---
-    pub async fn review_custom_gates_for_run_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewCustomGatesForRun) -> Result<(), ActionsReviewCustomGatesForRunError> {
+    pub async fn review_custom_gates_for_run_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewCustomGatesForRun) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/deployment_protection_rule", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReviewCustomGatesForRun::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReviewCustomGatesForRun>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13018,7 +14805,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReviewCustomGatesForRunError::Generic { code }),
+                code => Err(ActionsReviewCustomGatesForRunError::Generic { code }.into()),
             }
         }
     }
@@ -13038,19 +14825,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn review_custom_gates_for_run(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewCustomGatesForRun) -> Result<(), ActionsReviewCustomGatesForRunError> {
+    pub fn review_custom_gates_for_run(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewCustomGatesForRun) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/deployment_protection_rule", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReviewCustomGatesForRun::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReviewCustomGatesForRun>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13062,7 +14849,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReviewCustomGatesForRunError::Generic { code }),
+                code => Err(ActionsReviewCustomGatesForRunError::Generic { code }.into()),
             }
         }
     }
@@ -13080,19 +14867,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for review_pending_deployments_for_run](https://docs.github.com/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run)
     ///
     /// ---
-    pub async fn review_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewPendingDeploymentsForRun) -> Result<Vec<Deployment>, ActionsReviewPendingDeploymentsForRunError> {
+    pub async fn review_pending_deployments_for_run_async(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewPendingDeploymentsForRun) -> Result<Vec<Deployment>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/pending_deployments", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReviewPendingDeploymentsForRun::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReviewPendingDeploymentsForRun>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13104,7 +14891,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReviewPendingDeploymentsForRunError::Generic { code }),
+                code => Err(ActionsReviewPendingDeploymentsForRunError::Generic { code }.into()),
             }
         }
     }
@@ -13123,19 +14910,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn review_pending_deployments_for_run(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewPendingDeploymentsForRun) -> Result<Vec<Deployment>, ActionsReviewPendingDeploymentsForRunError> {
+    pub fn review_pending_deployments_for_run(&self, owner: &str, repo: &str, run_id: i32, body: PostActionsReviewPendingDeploymentsForRun) -> Result<Vec<Deployment>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runs/{}/pending_deployments", super::GITHUB_BASE_API_URL, owner, repo, run_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostActionsReviewPendingDeploymentsForRun::from_json(body)?),
+            body: Some(C::from_json::<PostActionsReviewPendingDeploymentsForRun>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13147,7 +14934,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsReviewPendingDeploymentsForRunError::Generic { code }),
+                code => Err(ActionsReviewPendingDeploymentsForRunError::Generic { code }.into()),
             }
         }
     }
@@ -13163,19 +14950,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_allowed_actions_organization](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-an-organization)
     ///
     /// ---
-    pub async fn set_allowed_actions_organization_async(&self, org: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsOrganizationError> {
+    pub async fn set_allowed_actions_organization_async(&self, org: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetAllowedActionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetAllowedActionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13187,7 +14974,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -13204,19 +14991,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_allowed_actions_organization(&self, org: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsOrganizationError> {
+    pub fn set_allowed_actions_organization(&self, org: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetAllowedActionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetAllowedActionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13228,7 +15015,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -13244,19 +15031,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_allowed_actions_repository](https://docs.github.com/rest/actions/permissions#set-allowed-actions-and-reusable-workflows-for-a-repository)
     ///
     /// ---
-    pub async fn set_allowed_actions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsRepositoryError> {
+    pub async fn set_allowed_actions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetAllowedActionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetAllowedActionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13268,7 +15055,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }),
+                code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -13285,19 +15072,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_allowed_actions_repository(&self, owner: &str, repo: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), ActionsSetAllowedActionsRepositoryError> {
+    pub fn set_allowed_actions_repository(&self, owner: &str, repo: &str, body: PutActionsSetAllowedActionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/selected-actions", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetAllowedActionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetAllowedActionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13309,7 +15096,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }),
+                code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -13328,19 +15115,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_org](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-an-organization)
     ///
     /// ---
-    pub async fn set_custom_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForOrgError> {
+    pub async fn set_custom_labels_for_self_hosted_runner_for_org_async(&self, org: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForOrg::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetCustomLabelsForSelfHostedRunnerForOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13352,9 +15139,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -13374,19 +15161,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_custom_labels_for_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForOrgError> {
+    pub fn set_custom_labels_for_self_hosted_runner_for_org(&self, org: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForOrg) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, org, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForOrg::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetCustomLabelsForSelfHostedRunnerForOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13398,9 +15185,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status422(github_response.to_json()?)),
-                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Generic { code }),
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -13419,19 +15206,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_custom_labels_for_self_hosted_runner_for_repo](https://docs.github.com/rest/actions/self-hosted-runners#set-custom-labels-for-a-self-hosted-runner-for-a-repository)
     ///
     /// ---
-    pub async fn set_custom_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForRepoError> {
+    pub async fn set_custom_labels_for_self_hosted_runner_for_repo_async(&self, owner: &str, repo: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForRepo::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetCustomLabelsForSelfHostedRunnerForRepo>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13443,9 +15230,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -13465,19 +15252,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_custom_labels_for_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, ActionsSetCustomLabelsForSelfHostedRunnerForRepoError> {
+    pub fn set_custom_labels_for_self_hosted_runner_for_repo(&self, owner: &str, repo: &str, runner_id: i32, body: PutActionsSetCustomLabelsForSelfHostedRunnerForRepo) -> Result<DeleteActionsRemoveCustomLabelFromSelfHostedRunnerForRepoResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/runners/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, runner_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetCustomLabelsForSelfHostedRunnerForRepo::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetCustomLabelsForSelfHostedRunnerForRepo>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13489,9 +15276,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json()?)),
-                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status422(github_response.to_json()?)),
-                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Generic { code }),
+                404 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status404(github_response.to_json()?).into()),
+                422 => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsSetCustomLabelsForSelfHostedRunnerForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -13507,19 +15294,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_custom_oidc_sub_claim_for_repo](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-a-repository)
     ///
     /// ---
-    pub async fn set_custom_oidc_sub_claim_for_repo_async(&self, owner: &str, repo: &str, body: ActionsOidcSubjectCustomizationForARepository) -> Result<EmptyObject, ActionsSetCustomOidcSubClaimForRepoError> {
+    pub async fn set_custom_oidc_sub_claim_for_repo_async(&self, owner: &str, repo: &str, body: ActionsOidcSubjectCustomizationForARepository) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(ActionsOidcSubjectCustomizationForARepository::from_json(body)?),
+            body: Some(C::from_json::<ActionsOidcSubjectCustomizationForARepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13531,10 +15318,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status404(github_response.to_json_async().await?)),
-                400 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status400(github_response.to_json_async().await?)),
-                422 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(ActionsSetCustomOidcSubClaimForRepoError::Generic { code }),
+                404 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status404(github_response.to_json_async().await?).into()),
+                400 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActionsSetCustomOidcSubClaimForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -13551,19 +15338,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_custom_oidc_sub_claim_for_repo(&self, owner: &str, repo: &str, body: ActionsOidcSubjectCustomizationForARepository) -> Result<EmptyObject, ActionsSetCustomOidcSubClaimForRepoError> {
+    pub fn set_custom_oidc_sub_claim_for_repo(&self, owner: &str, repo: &str, body: ActionsOidcSubjectCustomizationForARepository) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(ActionsOidcSubjectCustomizationForARepository::from_json(body)?),
+            body: Some(C::from_json::<ActionsOidcSubjectCustomizationForARepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13575,10 +15362,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status404(github_response.to_json()?)),
-                400 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status400(github_response.to_json()?)),
-                422 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status422(github_response.to_json()?)),
-                code => Err(ActionsSetCustomOidcSubClaimForRepoError::Generic { code }),
+                404 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status404(github_response.to_json()?).into()),
+                400 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status400(github_response.to_json()?).into()),
+                422 => Err(ActionsSetCustomOidcSubClaimForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ActionsSetCustomOidcSubClaimForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -13596,19 +15383,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_github_actions_default_workflow_permissions_organization](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-an-organization)
     ///
     /// ---
-    pub async fn set_github_actions_default_workflow_permissions_organization_async(&self, org: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+    pub async fn set_github_actions_default_workflow_permissions_organization_async(&self, org: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13620,7 +15407,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -13639,19 +15426,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_github_actions_default_workflow_permissions_organization(&self, org: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError> {
+    pub fn set_github_actions_default_workflow_permissions_organization(&self, org: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13663,7 +15450,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -13681,19 +15468,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_github_actions_default_workflow_permissions_repository](https://docs.github.com/rest/actions/permissions#set-default-workflow-permissions-for-a-repository)
     ///
     /// ---
-    pub async fn set_github_actions_default_workflow_permissions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+    pub async fn set_github_actions_default_workflow_permissions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13705,8 +15492,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409),
-                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
+                409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409.into()),
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -13725,19 +15512,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_github_actions_default_workflow_permissions_repository(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError> {
+    pub fn set_github_actions_default_workflow_permissions_repository(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/workflow", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsDefaultWorkflowPermissionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13749,8 +15536,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409),
-                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }),
+                409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409.into()),
+                code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -13766,19 +15553,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_github_actions_permissions_organization](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-an-organization)
     ///
     /// ---
-    pub async fn set_github_actions_permissions_organization_async(&self, org: &str, body: PutActionsSetGithubActionsPermissionsOrganization) -> Result<(), ActionsSetGithubActionsPermissionsOrganizationError> {
+    pub async fn set_github_actions_permissions_organization_async(&self, org: &str, body: PutActionsSetGithubActionsPermissionsOrganization) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsPermissionsOrganization::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsPermissionsOrganization>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13790,7 +15577,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -13807,19 +15594,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_github_actions_permissions_organization(&self, org: &str, body: PutActionsSetGithubActionsPermissionsOrganization) -> Result<(), ActionsSetGithubActionsPermissionsOrganizationError> {
+    pub fn set_github_actions_permissions_organization(&self, org: &str, body: PutActionsSetGithubActionsPermissionsOrganization) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsPermissionsOrganization::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsPermissionsOrganization>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13831,7 +15618,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -13847,19 +15634,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_github_actions_permissions_repository](https://docs.github.com/rest/actions/permissions#set-github-actions-permissions-for-a-repository)
     ///
     /// ---
-    pub async fn set_github_actions_permissions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsPermissionsRepository) -> Result<(), ActionsSetGithubActionsPermissionsRepositoryError> {
+    pub async fn set_github_actions_permissions_repository_async(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsPermissionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsPermissionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsPermissionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13871,7 +15658,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }),
+                code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -13888,19 +15675,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_github_actions_permissions_repository(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsPermissionsRepository) -> Result<(), ActionsSetGithubActionsPermissionsRepositoryError> {
+    pub fn set_github_actions_permissions_repository(&self, owner: &str, repo: &str, body: PutActionsSetGithubActionsPermissionsRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetGithubActionsPermissionsRepository::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetGithubActionsPermissionsRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13912,7 +15699,88 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }),
+                code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set repository access for a self-hosted runner group in an organization
+    ///
+    /// Replaces the list of repositories that have access to a self-hosted runner group configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#set-repository-access-for-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    pub async fn set_repo_access_to_self_hosted_runner_group_in_org_async(&self, org: &str, runner_group_id: i32, body: PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg>(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set repository access for a self-hosted runner group in an organization
+    ///
+    /// Replaces the list of repositories that have access to a self-hosted runner group configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_repo_access_to_self_hosted_runner_group_in_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#set-repository-access-for-a-self-hosted-runner-group-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_repo_access_to_self_hosted_runner_group_in_org(&self, org: &str, runner_group_id: i32, body: PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/repositories", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PutActionsSetRepoAccessToSelfHostedRunnerGroupInOrg>(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -13932,19 +15800,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/actions/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
-    pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsSetSelectedReposForOrgSecret) -> Result<(), ActionsSetSelectedReposForOrgSecretError> {
+    pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutActionsSetSelectedReposForOrgSecret) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelectedReposForOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetSelectedReposForOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13956,7 +15824,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -13977,19 +15845,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutActionsSetSelectedReposForOrgSecret) -> Result<(), ActionsSetSelectedReposForOrgSecretError> {
+    pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutActionsSetSelectedReposForOrgSecret) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelectedReposForOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetSelectedReposForOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14001,7 +15869,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -14021,19 +15889,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_selected_repos_for_org_variable](https://docs.github.com/rest/actions/variables#set-selected-repositories-for-an-organization-variable)
     ///
     /// ---
-    pub async fn set_selected_repos_for_org_variable_async(&self, org: &str, name: &str, body: PutActionsSetSelectedReposForOrgVariable) -> Result<(), ActionsSetSelectedReposForOrgVariableError> {
+    pub async fn set_selected_repos_for_org_variable_async(&self, org: &str, name: &str, body: PutActionsSetSelectedReposForOrgVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelectedReposForOrgVariable::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetSelectedReposForOrgVariable>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14045,8 +15913,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409),
-                code => Err(ActionsSetSelectedReposForOrgVariableError::Generic { code }),
+                409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409.into()),
+                code => Err(ActionsSetSelectedReposForOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -14067,19 +15935,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_selected_repos_for_org_variable(&self, org: &str, name: &str, body: PutActionsSetSelectedReposForOrgVariable) -> Result<(), ActionsSetSelectedReposForOrgVariableError> {
+    pub fn set_selected_repos_for_org_variable(&self, org: &str, name: &str, body: PutActionsSetSelectedReposForOrgVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}/repositories", super::GITHUB_BASE_API_URL, org, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelectedReposForOrgVariable::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetSelectedReposForOrgVariable>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14091,8 +15959,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409),
-                code => Err(ActionsSetSelectedReposForOrgVariableError::Generic { code }),
+                409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409.into()),
+                code => Err(ActionsSetSelectedReposForOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -14109,19 +15977,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_selected_repositories_enabled_github_actions_organization](https://docs.github.com/rest/actions/permissions#set-selected-repositories-enabled-for-github-actions-in-an-organization)
     ///
     /// ---
-    pub async fn set_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, body: PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization) -> Result<(), ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError> {
+    pub async fn set_selected_repositories_enabled_github_actions_organization_async(&self, org: &str, body: PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/repositories", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14133,7 +16001,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -14151,19 +16019,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_selected_repositories_enabled_github_actions_organization(&self, org: &str, body: PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization) -> Result<(), ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError> {
+    pub fn set_selected_repositories_enabled_github_actions_organization(&self, org: &str, body: PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/permissions/repositories", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization::from_json(body)?),
+            body: Some(C::from_json::<PutActionsSetSelectedRepositoriesEnabledGithubActionsOrganization>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14175,7 +16043,88 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }),
+                code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set self-hosted runners in a group for an organization
+    ///
+    /// Replaces the list of self-hosted runners that are part of an organization runner group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#set-self-hosted-runners-in-a-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn set_self_hosted_runners_in_group_for_org_async(&self, org: &str, runner_group_id: i32, body: PutActionsSetSelfHostedRunnersInGroupForOrg) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PutActionsSetSelfHostedRunnersInGroupForOrg>(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set self-hosted runners in a group for an organization
+    ///
+    /// Replaces the list of self-hosted runners that are part of an organization runner group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_self_hosted_runners_in_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#set-self-hosted-runners-in-a-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_self_hosted_runners_in_group_for_org(&self, org: &str, runner_group_id: i32, body: PutActionsSetSelfHostedRunnersInGroupForOrg) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PutActionsSetSelfHostedRunnersInGroupForOrg>(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -14193,19 +16142,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for set_workflow_access_to_repository](https://docs.github.com/rest/actions/permissions#set-the-level-of-access-for-workflows-outside-of-the-repository)
     ///
     /// ---
-    pub async fn set_workflow_access_to_repository_async(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
+    pub async fn set_workflow_access_to_repository_async(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(ActionsWorkflowAccessToRepository::from_json(body)?),
+            body: Some(C::from_json::<ActionsWorkflowAccessToRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14217,7 +16166,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }),
+                code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -14236,19 +16185,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_workflow_access_to_repository(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), ActionsSetWorkflowAccessToRepositoryError> {
+    pub fn set_workflow_access_to_repository(&self, owner: &str, repo: &str, body: ActionsWorkflowAccessToRepository) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/permissions/access", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(ActionsWorkflowAccessToRepository::from_json(body)?),
+            body: Some(C::from_json::<ActionsWorkflowAccessToRepository>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14260,7 +16209,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }),
+                code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -14278,19 +16227,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for update_environment_variable](https://docs.github.com/rest/actions/variables#update-an-environment-variable)
     ///
     /// ---
-    pub async fn update_environment_variable_async(&self, owner: &str, repo: &str, name: &str, environment_name: &str, body: PatchActionsUpdateEnvironmentVariable) -> Result<(), ActionsUpdateEnvironmentVariableError> {
+    pub async fn update_environment_variable_async(&self, owner: &str, repo: &str, name: &str, environment_name: &str, body: PatchActionsUpdateEnvironmentVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateEnvironmentVariable::from_json(body)?),
+            body: Some(C::from_json::<PatchActionsUpdateEnvironmentVariable>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14302,7 +16251,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -14321,19 +16270,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_environment_variable(&self, owner: &str, repo: &str, name: &str, environment_name: &str, body: PatchActionsUpdateEnvironmentVariable) -> Result<(), ActionsUpdateEnvironmentVariableError> {
+    pub fn update_environment_variable(&self, owner: &str, repo: &str, name: &str, environment_name: &str, body: PatchActionsUpdateEnvironmentVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateEnvironmentVariable::from_json(body)?),
+            body: Some(C::from_json::<PatchActionsUpdateEnvironmentVariable>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14345,7 +16294,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }),
+                code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }.into()),
             }
         }
     }
@@ -14363,19 +16312,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for update_org_variable](https://docs.github.com/rest/actions/variables#update-an-organization-variable)
     ///
     /// ---
-    pub async fn update_org_variable_async(&self, org: &str, name: &str, body: PatchActionsUpdateOrgVariable) -> Result<(), ActionsUpdateOrgVariableError> {
+    pub async fn update_org_variable_async(&self, org: &str, name: &str, body: PatchActionsUpdateOrgVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateOrgVariable::from_json(body)?),
+            body: Some(C::from_json::<PatchActionsUpdateOrgVariable>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14387,7 +16336,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateOrgVariableError::Generic { code }),
+                code => Err(ActionsUpdateOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -14406,19 +16355,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_org_variable(&self, org: &str, name: &str, body: PatchActionsUpdateOrgVariable) -> Result<(), ActionsUpdateOrgVariableError> {
+    pub fn update_org_variable(&self, org: &str, name: &str, body: PatchActionsUpdateOrgVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, org, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateOrgVariable::from_json(body)?),
+            body: Some(C::from_json::<PatchActionsUpdateOrgVariable>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14430,7 +16379,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateOrgVariableError::Generic { code }),
+                code => Err(ActionsUpdateOrgVariableError::Generic { code }.into()),
             }
         }
     }
@@ -14448,19 +16397,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     /// [GitHub API docs for update_repo_variable](https://docs.github.com/rest/actions/variables#update-a-repository-variable)
     ///
     /// ---
-    pub async fn update_repo_variable_async(&self, owner: &str, repo: &str, name: &str, body: PatchActionsUpdateRepoVariable) -> Result<(), ActionsUpdateRepoVariableError> {
+    pub async fn update_repo_variable_async(&self, owner: &str, repo: &str, name: &str, body: PatchActionsUpdateRepoVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateRepoVariable::from_json(body)?),
+            body: Some(C::from_json::<PatchActionsUpdateRepoVariable>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14472,7 +16421,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateRepoVariableError::Generic { code }),
+                code => Err(ActionsUpdateRepoVariableError::Generic { code }.into()),
             }
         }
     }
@@ -14491,19 +16440,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_repo_variable(&self, owner: &str, repo: &str, name: &str, body: PatchActionsUpdateRepoVariable) -> Result<(), ActionsUpdateRepoVariableError> {
+    pub fn update_repo_variable(&self, owner: &str, repo: &str, name: &str, body: PatchActionsUpdateRepoVariable) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/actions/variables/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchActionsUpdateRepoVariable::from_json(body)?),
+            body: Some(C::from_json::<PatchActionsUpdateRepoVariable>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14515,7 +16464,88 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Actions<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActionsUpdateRepoVariableError::Generic { code }),
+                code => Err(ActionsUpdateRepoVariableError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a self-hosted runner group for an organization
+    ///
+    /// Updates the `name` and `visibility` of a self-hosted runner group in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_self_hosted_runner_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#update-a-self-hosted-runner-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn update_self_hosted_runner_group_for_org_async(&self, org: &str, runner_group_id: i32, body: PatchActionsUpdateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchActionsUpdateSelfHostedRunnerGroupForOrg>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateSelfHostedRunnerGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a self-hosted runner group for an organization
+    ///
+    /// Updates the `name` and `visibility` of a self-hosted runner group in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_self_hosted_runner_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#update-a-self-hosted-runner-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_self_hosted_runner_group_for_org(&self, org: &str, runner_group_id: i32, body: PatchActionsUpdateSelfHostedRunnerGroupForOrg) -> Result<RunnerGroupsOrg, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/runner-groups/{}", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchActionsUpdateSelfHostedRunnerGroupForOrg>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateSelfHostedRunnerGroupForOrgError::Generic { code }.into()),
             }
         }
     }

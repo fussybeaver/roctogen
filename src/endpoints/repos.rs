@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Repos<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Repos<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Repos<C> {
+pub fn new<C: Client>(client: &C) -> Repos<C> where AdapterError: From<<C as Client>::Err> {
     Repos { client }
 }
 
 /// Errors for the [Accept a repository invitation](Repos::accept_invitation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposAcceptInvitationForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Conflict")]
@@ -55,38 +45,51 @@ pub enum ReposAcceptInvitationForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ReposAcceptInvitationForAuthenticatedUserError> for AdapterError {
+    fn from(err: ReposAcceptInvitationForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ReposAcceptInvitationForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposAcceptInvitationForAuthenticatedUserError::Status409(_) => (String::from("Conflict"), 409),
+            ReposAcceptInvitationForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposAcceptInvitationForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ReposAcceptInvitationForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add app access restrictions](Repos::add_app_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposAddAppAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposAddAppAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposAddAppAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposAddAppAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposAddAppAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add a repository collaborator](Repos::add_collaborator_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposAddCollaboratorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when: - an existing collaborator is added as a collaborator - an organization member is added as an individual collaborator - an existing team member (whose team is also a repository collaborator) is added as an individual collaborator")]
     Status204,
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -97,19 +100,26 @@ pub enum ReposAddCollaboratorError {
     Generic { code: u16 },
 }
 
+impl From<ReposAddCollaboratorError> for AdapterError {
+    fn from(err: ReposAddCollaboratorError) -> Self {
+        let (description, status_code) = match err {
+            ReposAddCollaboratorError::Status204 => (String::from("Response when: - an existing collaborator is added as a collaborator - an organization member is added as an individual collaborator - an existing team member (whose team is also a repository collaborator) is added as an individual collaborator"), 204),
+            ReposAddCollaboratorError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposAddCollaboratorError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposAddCollaboratorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add status check contexts](Repos::add_status_check_contexts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposAddStatusCheckContextsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
@@ -120,171 +130,218 @@ pub enum ReposAddStatusCheckContextsError {
     Generic { code: u16 },
 }
 
+impl From<ReposAddStatusCheckContextsError> for AdapterError {
+    fn from(err: ReposAddStatusCheckContextsError) -> Self {
+        let (description, status_code) = match err {
+            ReposAddStatusCheckContextsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposAddStatusCheckContextsError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposAddStatusCheckContextsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposAddStatusCheckContextsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add team access restrictions](Repos::add_team_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposAddTeamAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposAddTeamAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposAddTeamAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposAddTeamAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposAddTeamAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Add user access restrictions](Repos::add_user_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposAddUserAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposAddUserAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposAddUserAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposAddUserAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposAddUserAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Cancel a GitHub Pages deployment](Repos::cancel_pages_deployment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCancelPagesDeploymentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCancelPagesDeploymentError> for AdapterError {
+    fn from(err: ReposCancelPagesDeploymentError) -> Self {
+        let (description, status_code) = match err {
+            ReposCancelPagesDeploymentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCancelPagesDeploymentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if automated security fixes are enabled for a repository](Repos::check_automated_security_fixes_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCheckAutomatedSecurityFixesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if Dependabot is not enabled for the repository")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCheckAutomatedSecurityFixesError> for AdapterError {
+    fn from(err: ReposCheckAutomatedSecurityFixesError) -> Self {
+        let (description, status_code) = match err {
+            ReposCheckAutomatedSecurityFixesError::Status404 => (String::from("Not Found if Dependabot is not enabled for the repository"), 404),
+            ReposCheckAutomatedSecurityFixesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a user is a repository collaborator](Repos::check_collaborator_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCheckCollaboratorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if user is not a collaborator")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCheckCollaboratorError> for AdapterError {
+    fn from(err: ReposCheckCollaboratorError) -> Self {
+        let (description, status_code) = match err {
+            ReposCheckCollaboratorError::Status404 => (String::from("Not Found if user is not a collaborator"), 404),
+            ReposCheckCollaboratorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if private vulnerability reporting is enabled for a repository](Repos::check_private_vulnerability_reporting_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCheckPrivateVulnerabilityReportingError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status422(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCheckPrivateVulnerabilityReportingError> for AdapterError {
+    fn from(err: ReposCheckPrivateVulnerabilityReportingError) -> Self {
+        let (description, status_code) = match err {
+            ReposCheckPrivateVulnerabilityReportingError::Status422(_) => (String::from("Bad Request"), 422),
+            ReposCheckPrivateVulnerabilityReportingError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if vulnerability alerts are enabled for a repository](Repos::check_vulnerability_alerts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCheckVulnerabilityAlertsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if repository is not enabled with vulnerability alerts")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCheckVulnerabilityAlertsError> for AdapterError {
+    fn from(err: ReposCheckVulnerabilityAlertsError) -> Self {
+        let (description, status_code) = match err {
+            ReposCheckVulnerabilityAlertsError::Status404 => (String::from("Not Found if repository is not enabled with vulnerability alerts"), 404),
+            ReposCheckVulnerabilityAlertsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List CODEOWNERS errors](Repos::codeowners_errors_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCodeownersErrorsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCodeownersErrorsError> for AdapterError {
+    fn from(err: ReposCodeownersErrorsError) -> Self {
+        let (description, status_code) = match err {
+            ReposCodeownersErrorsError::Status404 => (String::from("Resource not found"), 404),
+            ReposCodeownersErrorsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Compare two commits](Repos::compare_commits_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCompareCommitsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -295,59 +352,77 @@ pub enum ReposCompareCommitsError {
     Generic { code: u16 },
 }
 
+impl From<ReposCompareCommitsError> for AdapterError {
+    fn from(err: ReposCompareCommitsError) -> Self {
+        let (description, status_code) = match err {
+            ReposCompareCommitsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCompareCommitsError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposCompareCommitsError::Status503(_) => (String::from("Service unavailable"), 503),
+            ReposCompareCommitsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an attestation](Repos::create_attestation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateAttestationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposCreateAttestationError> for AdapterError {
+    fn from(err: ReposCreateAttestationError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateAttestationError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateAttestationError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateAttestationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create an autolink reference for a repository](Repos::create_autolink_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateAutolinkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCreateAutolinkError> for AdapterError {
+    fn from(err: ReposCreateAutolinkError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateAutolinkError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateAutolinkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a commit comment](Repos::create_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateCommitCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -356,74 +431,94 @@ pub enum ReposCreateCommitCommentError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateCommitCommentError> for AdapterError {
+    fn from(err: ReposCreateCommitCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateCommitCommentError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateCommitCommentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateCommitCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create commit signature protection](Repos::create_commit_signature_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateCommitSignatureProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCreateCommitSignatureProtectionError> for AdapterError {
+    fn from(err: ReposCreateCommitSignatureProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateCommitSignatureProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateCommitSignatureProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a commit status](Repos::create_commit_status_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateCommitStatusError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposCreateCommitStatusError> for AdapterError {
+    fn from(err: ReposCreateCommitStatusError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateCommitStatusError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a deploy key](Repos::create_deploy_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateDeployKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCreateDeployKeyError> for AdapterError {
+    fn from(err: ReposCreateDeployKeyError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateDeployKeyError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateDeployKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a deployment](Repos::create_deployment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateDeploymentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Merged branch response")]
     Status202(PostReposCreateDeploymentResponse202),
     #[error("Conflict when there is a merge conflict or the commit's status checks failed")]
@@ -434,19 +529,26 @@ pub enum ReposCreateDeploymentError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateDeploymentError> for AdapterError {
+    fn from(err: ReposCreateDeploymentError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateDeploymentError::Status202(_) => (String::from("Merged branch response"), 202),
+            ReposCreateDeploymentError::Status409 => (String::from("Conflict when there is a merge conflict or the commit's status checks failed"), 409),
+            ReposCreateDeploymentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateDeploymentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a deployment branch policy](Repos::create_deployment_branch_policy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateDeploymentBranchPolicyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found or `deployment_branch_policy.custom_branch_policies` property for the environment is set to false")]
     Status404,
     #[error("Response if the same branch name pattern already exists")]
@@ -455,55 +557,70 @@ pub enum ReposCreateDeploymentBranchPolicyError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateDeploymentBranchPolicyError> for AdapterError {
+    fn from(err: ReposCreateDeploymentBranchPolicyError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateDeploymentBranchPolicyError::Status404 => (String::from("Not Found or `deployment_branch_policy.custom_branch_policies` property for the environment is set to false"), 404),
+            ReposCreateDeploymentBranchPolicyError::Status303 => (String::from("Response if the same branch name pattern already exists"), 303),
+            ReposCreateDeploymentBranchPolicyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a custom deployment protection rule on an environment](Repos::create_deployment_protection_rule_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateDeploymentProtectionRuleError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposCreateDeploymentProtectionRuleError> for AdapterError {
+    fn from(err: ReposCreateDeploymentProtectionRuleError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateDeploymentProtectionRuleError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a deployment status](Repos::create_deployment_status_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateDeploymentStatusError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCreateDeploymentStatusError> for AdapterError {
+    fn from(err: ReposCreateDeploymentStatusError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateDeploymentStatusError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateDeploymentStatusError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a repository dispatch event](Repos::create_dispatch_event_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateDispatchEventError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -512,19 +629,25 @@ pub enum ReposCreateDispatchEventError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateDispatchEventError> for AdapterError {
+    fn from(err: ReposCreateDispatchEventError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateDispatchEventError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateDispatchEventError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateDispatchEventError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a repository for the authenticated user](Repos::create_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Not modified")]
@@ -541,19 +664,29 @@ pub enum ReposCreateForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateForAuthenticatedUserError> for AdapterError {
+    fn from(err: ReposCreateForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ReposCreateForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ReposCreateForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateForAuthenticatedUserError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposCreateForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a fork](Repos::create_fork_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateForkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -566,19 +699,27 @@ pub enum ReposCreateForkError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateForkError> for AdapterError {
+    fn from(err: ReposCreateForkError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateForkError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposCreateForkError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateForkError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateForkError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateForkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an organization repository](Repos::create_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -587,19 +728,25 @@ pub enum ReposCreateInOrgError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateInOrgError> for AdapterError {
+    fn from(err: ReposCreateInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateInOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateInOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update custom property values for a repository](Repos::create_or_update_custom_properties_values_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateOrUpdateCustomPropertiesValuesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -610,38 +757,50 @@ pub enum ReposCreateOrUpdateCustomPropertiesValuesError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateOrUpdateCustomPropertiesValuesError> for AdapterError {
+    fn from(err: ReposCreateOrUpdateCustomPropertiesValuesError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateOrUpdateCustomPropertiesValuesError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateOrUpdateCustomPropertiesValuesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateOrUpdateCustomPropertiesValuesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateOrUpdateCustomPropertiesValuesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update an environment](Repos::create_or_update_environment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateOrUpdateEnvironmentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation error when the environment name is invalid or when `protected_branches` and `custom_branch_policies` in `deployment_branch_policy` are set to the same value")]
     Status422(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposCreateOrUpdateEnvironmentError> for AdapterError {
+    fn from(err: ReposCreateOrUpdateEnvironmentError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateOrUpdateEnvironmentError::Status422(_) => (String::from("Validation error when the environment name is invalid or when `protected_branches` and `custom_branch_policies` in `deployment_branch_policy` are set to the same value"), 422),
+            ReposCreateOrUpdateEnvironmentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update file contents](Repos::create_or_update_file_contents_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateOrUpdateFileContentsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status201(FileCommit),
     #[error("Resource not found")]
@@ -654,19 +813,27 @@ pub enum ReposCreateOrUpdateFileContentsError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateOrUpdateFileContentsError> for AdapterError {
+    fn from(err: ReposCreateOrUpdateFileContentsError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateOrUpdateFileContentsError::Status201(_) => (String::from("Response"), 201),
+            ReposCreateOrUpdateFileContentsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateOrUpdateFileContentsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateOrUpdateFileContentsError::Status409(_) => (String::from("Conflict"), 409),
+            ReposCreateOrUpdateFileContentsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an organization repository ruleset](Repos::create_org_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateOrgRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -675,19 +842,25 @@ pub enum ReposCreateOrgRulesetError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateOrgRulesetError> for AdapterError {
+    fn from(err: ReposCreateOrgRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateOrgRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateOrgRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposCreateOrgRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a GitHub Pages deployment](Repos::create_pages_deployment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreatePagesDeploymentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -698,19 +871,26 @@ pub enum ReposCreatePagesDeploymentError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreatePagesDeploymentError> for AdapterError {
+    fn from(err: ReposCreatePagesDeploymentError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreatePagesDeploymentError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposCreatePagesDeploymentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreatePagesDeploymentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreatePagesDeploymentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a GitHub Pages site](Repos::create_pages_site_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreatePagesSiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Conflict")]
@@ -719,19 +899,25 @@ pub enum ReposCreatePagesSiteError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreatePagesSiteError> for AdapterError {
+    fn from(err: ReposCreatePagesSiteError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreatePagesSiteError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreatePagesSiteError::Status409(_) => (String::from("Conflict"), 409),
+            ReposCreatePagesSiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a release](Repos::create_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if the discussion category name is invalid")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -740,19 +926,25 @@ pub enum ReposCreateReleaseError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateReleaseError> for AdapterError {
+    fn from(err: ReposCreateReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateReleaseError::Status404(_) => (String::from("Not Found if the discussion category name is invalid"), 404),
+            ReposCreateReleaseError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a repository ruleset](Repos::create_repo_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateRepoRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -761,19 +953,25 @@ pub enum ReposCreateRepoRulesetError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateRepoRulesetError> for AdapterError {
+    fn from(err: ReposCreateRepoRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateRepoRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateRepoRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposCreateRepoRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Deprecated - Create a tag protection state for a repository](Repos::create_tag_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateTagProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -782,36 +980,46 @@ pub enum ReposCreateTagProtectionError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateTagProtectionError> for AdapterError {
+    fn from(err: ReposCreateTagProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateTagProtectionError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateTagProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateTagProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a repository using a template](Repos::create_using_template_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateUsingTemplateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposCreateUsingTemplateError> for AdapterError {
+    fn from(err: ReposCreateUsingTemplateError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateUsingTemplateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a repository webhook](Repos::create_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -822,19 +1030,26 @@ pub enum ReposCreateWebhookError {
     Generic { code: u16 },
 }
 
+impl From<ReposCreateWebhookError> for AdapterError {
+    fn from(err: ReposCreateWebhookError) -> Self {
+        let (description, status_code) = match err {
+            ReposCreateWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposCreateWebhookError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposCreateWebhookError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposCreateWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Decline a repository invitation](Repos::decline_invitation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeclineInvitationForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Not modified")]
@@ -847,19 +1062,27 @@ pub enum ReposDeclineInvitationForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ReposDeclineInvitationForAuthenticatedUserError> for AdapterError {
+    fn from(err: ReposDeclineInvitationForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeclineInvitationForAuthenticatedUserError::Status409(_) => (String::from("Conflict"), 409),
+            ReposDeclineInvitationForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ReposDeclineInvitationForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeclineInvitationForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposDeclineInvitationForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a repository](Repos::delete_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("If an organization owner has configured the organization to prevent members from deleting organization-owned repositories, a member will get this response:")]
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Temporary Redirect")]
@@ -870,165 +1093,209 @@ pub enum ReposDeleteError {
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteError> for AdapterError {
+    fn from(err: ReposDeleteError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteError::Status403(_) => (String::from("If an organization owner has configured the organization to prevent members from deleting organization-owned repositories, a member will get this response:"), 403),
+            ReposDeleteError::Status307(_) => (String::from("Temporary Redirect"), 307),
+            ReposDeleteError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete access restrictions](Repos::delete_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposDeleteAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete admin branch protection](Repos::delete_admin_branch_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteAdminBranchProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteAdminBranchProtectionError> for AdapterError {
+    fn from(err: ReposDeleteAdminBranchProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteAdminBranchProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteAdminBranchProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an environment](Repos::delete_an_environment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteAnEnvironmentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteAnEnvironmentError> for AdapterError {
+    fn from(err: ReposDeleteAnEnvironmentError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteAnEnvironmentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an autolink reference from a repository](Repos::delete_autolink_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteAutolinkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteAutolinkError> for AdapterError {
+    fn from(err: ReposDeleteAutolinkError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteAutolinkError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteAutolinkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete branch protection](Repos::delete_branch_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteBranchProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteBranchProtectionError> for AdapterError {
+    fn from(err: ReposDeleteBranchProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteBranchProtectionError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposDeleteBranchProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a commit comment](Repos::delete_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteCommitCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteCommitCommentError> for AdapterError {
+    fn from(err: ReposDeleteCommitCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteCommitCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteCommitCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete commit signature protection](Repos::delete_commit_signature_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteCommitSignatureProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteCommitSignatureProtectionError> for AdapterError {
+    fn from(err: ReposDeleteCommitSignatureProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteCommitSignatureProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteCommitSignatureProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a deploy key](Repos::delete_deploy_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteDeployKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteDeployKeyError> for AdapterError {
+    fn from(err: ReposDeleteDeployKeyError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteDeployKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a deployment](Repos::delete_deployment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteDeploymentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -1037,36 +1304,46 @@ pub enum ReposDeleteDeploymentError {
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteDeploymentError> for AdapterError {
+    fn from(err: ReposDeleteDeploymentError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteDeploymentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteDeploymentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposDeleteDeploymentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a deployment branch policy](Repos::delete_deployment_branch_policy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteDeploymentBranchPolicyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteDeploymentBranchPolicyError> for AdapterError {
+    fn from(err: ReposDeleteDeploymentBranchPolicyError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteDeploymentBranchPolicyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a file](Repos::delete_file_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteFileError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -1079,36 +1356,48 @@ pub enum ReposDeleteFileError {
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteFileError> for AdapterError {
+    fn from(err: ReposDeleteFileError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteFileError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposDeleteFileError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteFileError::Status409(_) => (String::from("Conflict"), 409),
+            ReposDeleteFileError::Status503(_) => (String::from("Service unavailable"), 503),
+            ReposDeleteFileError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a repository invitation](Repos::delete_invitation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteInvitationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteInvitationError> for AdapterError {
+    fn from(err: ReposDeleteInvitationError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteInvitationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an organization repository ruleset](Repos::delete_org_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteOrgRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -1117,19 +1406,25 @@ pub enum ReposDeleteOrgRulesetError {
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteOrgRulesetError> for AdapterError {
+    fn from(err: ReposDeleteOrgRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteOrgRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteOrgRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposDeleteOrgRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a GitHub Pages site](Repos::delete_pages_site_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeletePagesSiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -1140,72 +1435,92 @@ pub enum ReposDeletePagesSiteError {
     Generic { code: u16 },
 }
 
+impl From<ReposDeletePagesSiteError> for AdapterError {
+    fn from(err: ReposDeletePagesSiteError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeletePagesSiteError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposDeletePagesSiteError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeletePagesSiteError::Status409(_) => (String::from("Conflict"), 409),
+            ReposDeletePagesSiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete pull request review protection](Repos::delete_pull_request_review_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeletePullRequestReviewProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposDeletePullRequestReviewProtectionError> for AdapterError {
+    fn from(err: ReposDeletePullRequestReviewProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeletePullRequestReviewProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeletePullRequestReviewProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a release](Repos::delete_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteReleaseError> for AdapterError {
+    fn from(err: ReposDeleteReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a release asset](Repos::delete_release_asset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteReleaseAssetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteReleaseAssetError> for AdapterError {
+    fn from(err: ReposDeleteReleaseAssetError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteReleaseAssetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a repository ruleset](Repos::delete_repo_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteRepoRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -1214,239 +1529,301 @@ pub enum ReposDeleteRepoRulesetError {
     Generic { code: u16 },
 }
 
+impl From<ReposDeleteRepoRulesetError> for AdapterError {
+    fn from(err: ReposDeleteRepoRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteRepoRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteRepoRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposDeleteRepoRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Deprecated - Delete a tag protection state for a repository](Repos::delete_tag_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteTagProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteTagProtectionError> for AdapterError {
+    fn from(err: ReposDeleteTagProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteTagProtectionError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposDeleteTagProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteTagProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a repository webhook](Repos::delete_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDeleteWebhookError> for AdapterError {
+    fn from(err: ReposDeleteWebhookError) -> Self {
+        let (description, status_code) = match err {
+            ReposDeleteWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposDeleteWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Disable automated security fixes](Repos::disable_automated_security_fixes_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDisableAutomatedSecurityFixesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDisableAutomatedSecurityFixesError> for AdapterError {
+    fn from(err: ReposDisableAutomatedSecurityFixesError) -> Self {
+        let (description, status_code) = match err {
+            ReposDisableAutomatedSecurityFixesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Disable a custom protection rule for an environment](Repos::disable_deployment_protection_rule_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDisableDeploymentProtectionRuleError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDisableDeploymentProtectionRuleError> for AdapterError {
+    fn from(err: ReposDisableDeploymentProtectionRuleError) -> Self {
+        let (description, status_code) = match err {
+            ReposDisableDeploymentProtectionRuleError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Disable private vulnerability reporting for a repository](Repos::disable_private_vulnerability_reporting_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDisablePrivateVulnerabilityReportingError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status422(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDisablePrivateVulnerabilityReportingError> for AdapterError {
+    fn from(err: ReposDisablePrivateVulnerabilityReportingError) -> Self {
+        let (description, status_code) = match err {
+            ReposDisablePrivateVulnerabilityReportingError::Status422(_) => (String::from("Bad Request"), 422),
+            ReposDisablePrivateVulnerabilityReportingError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Disable vulnerability alerts](Repos::disable_vulnerability_alerts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDisableVulnerabilityAlertsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDisableVulnerabilityAlertsError> for AdapterError {
+    fn from(err: ReposDisableVulnerabilityAlertsError) -> Self {
+        let (description, status_code) = match err {
+            ReposDisableVulnerabilityAlertsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Download a repository archive (tar)](Repos::download_tarball_archive_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDownloadTarballArchiveError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposDownloadTarballArchiveError> for AdapterError {
+    fn from(err: ReposDownloadTarballArchiveError) -> Self {
+        let (description, status_code) = match err {
+            ReposDownloadTarballArchiveError::Status302 => (String::from("Response"), 302),
+            ReposDownloadTarballArchiveError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Download a repository archive (zip)](Repos::download_zipball_archive_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDownloadZipballArchiveError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposDownloadZipballArchiveError> for AdapterError {
+    fn from(err: ReposDownloadZipballArchiveError) -> Self {
+        let (description, status_code) = match err {
+            ReposDownloadZipballArchiveError::Status302 => (String::from("Response"), 302),
+            ReposDownloadZipballArchiveError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Enable automated security fixes](Repos::enable_automated_security_fixes_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposEnableAutomatedSecurityFixesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposEnableAutomatedSecurityFixesError> for AdapterError {
+    fn from(err: ReposEnableAutomatedSecurityFixesError) -> Self {
+        let (description, status_code) = match err {
+            ReposEnableAutomatedSecurityFixesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Enable private vulnerability reporting for a repository](Repos::enable_private_vulnerability_reporting_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposEnablePrivateVulnerabilityReportingError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status422(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposEnablePrivateVulnerabilityReportingError> for AdapterError {
+    fn from(err: ReposEnablePrivateVulnerabilityReportingError) -> Self {
+        let (description, status_code) = match err {
+            ReposEnablePrivateVulnerabilityReportingError::Status422(_) => (String::from("Bad Request"), 422),
+            ReposEnablePrivateVulnerabilityReportingError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Enable vulnerability alerts](Repos::enable_vulnerability_alerts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposEnableVulnerabilityAlertsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposEnableVulnerabilityAlertsError> for AdapterError {
+    fn from(err: ReposEnableVulnerabilityAlertsError) -> Self {
+        let (description, status_code) = match err {
+            ReposEnableVulnerabilityAlertsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Generate release notes content for a release](Repos::generate_release_notes_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGenerateReleaseNotesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGenerateReleaseNotesError> for AdapterError {
+    fn from(err: ReposGenerateReleaseNotesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGenerateReleaseNotesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGenerateReleaseNotesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository](Repos::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -1455,167 +1832,211 @@ pub enum ReposGetError {
     Status301(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetError> for AdapterError {
+    fn from(err: ReposGetError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposGetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetError::Status301(_) => (String::from("Moved permanently"), 301),
+            ReposGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get access restrictions](Repos::get_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposGetAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAccessRestrictionsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get admin branch protection](Repos::get_admin_branch_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAdminBranchProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetAdminBranchProtectionError> for AdapterError {
+    fn from(err: ReposGetAdminBranchProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAdminBranchProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all deployment protection rules for an environment](Repos::get_all_deployment_protection_rules_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAllDeploymentProtectionRulesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetAllDeploymentProtectionRulesError> for AdapterError {
+    fn from(err: ReposGetAllDeploymentProtectionRulesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAllDeploymentProtectionRulesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List environments](Repos::get_all_environments_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAllEnvironmentsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetAllEnvironmentsError> for AdapterError {
+    fn from(err: ReposGetAllEnvironmentsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAllEnvironmentsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all status check contexts](Repos::get_all_status_check_contexts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAllStatusCheckContextsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetAllStatusCheckContextsError> for AdapterError {
+    fn from(err: ReposGetAllStatusCheckContextsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAllStatusCheckContextsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetAllStatusCheckContextsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all repository topics](Repos::get_all_topics_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAllTopicsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetAllTopicsError> for AdapterError {
+    fn from(err: ReposGetAllTopicsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAllTopicsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetAllTopicsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get apps with access to the protected branch](Repos::get_apps_with_access_to_protected_branch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAppsWithAccessToProtectedBranchError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetAppsWithAccessToProtectedBranchError> for AdapterError {
+    fn from(err: ReposGetAppsWithAccessToProtectedBranchError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAppsWithAccessToProtectedBranchError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetAppsWithAccessToProtectedBranchError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an autolink reference of a repository](Repos::get_autolink_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetAutolinkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetAutolinkError> for AdapterError {
+    fn from(err: ReposGetAutolinkError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetAutolinkError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetAutolinkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a branch](Repos::get_branch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetBranchError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -1624,74 +2045,94 @@ pub enum ReposGetBranchError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetBranchError> for AdapterError {
+    fn from(err: ReposGetBranchError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetBranchError::Status301(_) => (String::from("Moved permanently"), 301),
+            ReposGetBranchError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetBranchError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get branch protection](Repos::get_branch_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetBranchProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetBranchProtectionError> for AdapterError {
+    fn from(err: ReposGetBranchProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetBranchProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetBranchProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get rules for a branch](Repos::get_branch_rules_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetBranchRulesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetBranchRulesError> for AdapterError {
+    fn from(err: ReposGetBranchRulesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetBranchRulesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get repository clones](Repos::get_clones_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetClonesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetClonesError> for AdapterError {
+    fn from(err: ReposGetClonesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetClonesError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposGetClonesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get the weekly commit activity](Repos::get_code_frequency_stats_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCodeFrequencyStatsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Accepted")]
     Status202(HashMap<String, Value>),
     #[error("A header with no content is returned.")]
@@ -1702,57 +2143,74 @@ pub enum ReposGetCodeFrequencyStatsError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetCodeFrequencyStatsError> for AdapterError {
+    fn from(err: ReposGetCodeFrequencyStatsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCodeFrequencyStatsError::Status202(_) => (String::from("Accepted"), 202),
+            ReposGetCodeFrequencyStatsError::Status204 => (String::from("A header with no content is returned."), 204),
+            ReposGetCodeFrequencyStatsError::Status422 => (String::from("Repository contains more than 10,000 commits"), 422),
+            ReposGetCodeFrequencyStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get repository permissions for a user](Repos::get_collaborator_permission_level_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCollaboratorPermissionLevelError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetCollaboratorPermissionLevelError> for AdapterError {
+    fn from(err: ReposGetCollaboratorPermissionLevelError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCollaboratorPermissionLevelError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetCollaboratorPermissionLevelError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the combined status for a specific reference](Repos::get_combined_status_for_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCombinedStatusForRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetCombinedStatusForRefError> for AdapterError {
+    fn from(err: ReposGetCombinedStatusForRefError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCombinedStatusForRefError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetCombinedStatusForRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a commit](Repos::get_commit_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCommitError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -1767,19 +2225,28 @@ pub enum ReposGetCommitError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetCommitError> for AdapterError {
+    fn from(err: ReposGetCommitError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCommitError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposGetCommitError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetCommitError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetCommitError::Status503(_) => (String::from("Service unavailable"), 503),
+            ReposGetCommitError::Status409(_) => (String::from("Conflict"), 409),
+            ReposGetCommitError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get the last year of commit activity](Repos::get_commit_activity_stats_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCommitActivityStatsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Accepted")]
     Status202(HashMap<String, Value>),
     #[error("A header with no content is returned.")]
@@ -1788,74 +2255,94 @@ pub enum ReposGetCommitActivityStatsError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetCommitActivityStatsError> for AdapterError {
+    fn from(err: ReposGetCommitActivityStatsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCommitActivityStatsError::Status202(_) => (String::from("Accepted"), 202),
+            ReposGetCommitActivityStatsError::Status204 => (String::from("A header with no content is returned."), 204),
+            ReposGetCommitActivityStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a commit comment](Repos::get_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCommitCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetCommitCommentError> for AdapterError {
+    fn from(err: ReposGetCommitCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCommitCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetCommitCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get commit signature protection](Repos::get_commit_signature_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCommitSignatureProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetCommitSignatureProtectionError> for AdapterError {
+    fn from(err: ReposGetCommitSignatureProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCommitSignatureProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetCommitSignatureProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get community profile metrics](Repos::get_community_profile_metrics_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCommunityProfileMetricsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetCommunityProfileMetricsError> for AdapterError {
+    fn from(err: ReposGetCommunityProfileMetricsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCommunityProfileMetricsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get repository content](Repos::get_content_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetContentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -1868,19 +2355,27 @@ pub enum ReposGetContentError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetContentError> for AdapterError {
+    fn from(err: ReposGetContentError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetContentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetContentError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposGetContentError::Status302 => (String::from("Found"), 302),
+            ReposGetContentError::Status304 => (String::from("Not modified"), 304),
+            ReposGetContentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get all contributor commit activity](Repos::get_contributors_stats_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetContributorsStatsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Accepted")]
     Status202(HashMap<String, Value>),
     #[error("A header with no content is returned.")]
@@ -1889,36 +2384,46 @@ pub enum ReposGetContributorsStatsError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetContributorsStatsError> for AdapterError {
+    fn from(err: ReposGetContributorsStatsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetContributorsStatsError::Status202(_) => (String::from("Accepted"), 202),
+            ReposGetContributorsStatsError::Status204 => (String::from("A header with no content is returned."), 204),
+            ReposGetContributorsStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a custom deployment protection rule](Repos::get_custom_deployment_protection_rule_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCustomDeploymentProtectionRuleError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetCustomDeploymentProtectionRuleError> for AdapterError {
+    fn from(err: ReposGetCustomDeploymentProtectionRuleError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCustomDeploymentProtectionRuleError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all custom property values for a repository](Repos::get_custom_properties_values_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetCustomPropertiesValuesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -1927,207 +2432,262 @@ pub enum ReposGetCustomPropertiesValuesError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetCustomPropertiesValuesError> for AdapterError {
+    fn from(err: ReposGetCustomPropertiesValuesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetCustomPropertiesValuesError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposGetCustomPropertiesValuesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetCustomPropertiesValuesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a deploy key](Repos::get_deploy_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetDeployKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetDeployKeyError> for AdapterError {
+    fn from(err: ReposGetDeployKeyError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetDeployKeyError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetDeployKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a deployment](Repos::get_deployment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetDeploymentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetDeploymentError> for AdapterError {
+    fn from(err: ReposGetDeploymentError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetDeploymentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetDeploymentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a deployment branch policy](Repos::get_deployment_branch_policy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetDeploymentBranchPolicyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetDeploymentBranchPolicyError> for AdapterError {
+    fn from(err: ReposGetDeploymentBranchPolicyError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetDeploymentBranchPolicyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a deployment status](Repos::get_deployment_status_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetDeploymentStatusError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetDeploymentStatusError> for AdapterError {
+    fn from(err: ReposGetDeploymentStatusError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetDeploymentStatusError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetDeploymentStatusError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an environment](Repos::get_environment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetEnvironmentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetEnvironmentError> for AdapterError {
+    fn from(err: ReposGetEnvironmentError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetEnvironmentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get latest Pages build](Repos::get_latest_pages_build_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetLatestPagesBuildError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetLatestPagesBuildError> for AdapterError {
+    fn from(err: ReposGetLatestPagesBuildError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetLatestPagesBuildError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the latest release](Repos::get_latest_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetLatestReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetLatestReleaseError> for AdapterError {
+    fn from(err: ReposGetLatestReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetLatestReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization rule suite](Repos::get_org_rule_suite_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetOrgRuleSuiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetOrgRuleSuiteError> for AdapterError {
+    fn from(err: ReposGetOrgRuleSuiteError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetOrgRuleSuiteError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetOrgRuleSuiteError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetOrgRuleSuiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organization rule suites](Repos::get_org_rule_suites_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetOrgRuleSuitesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetOrgRuleSuitesError> for AdapterError {
+    fn from(err: ReposGetOrgRuleSuitesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetOrgRuleSuitesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetOrgRuleSuitesError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetOrgRuleSuitesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization repository ruleset](Repos::get_org_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetOrgRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetOrgRulesetError> for AdapterError {
+    fn from(err: ReposGetOrgRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetOrgRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetOrgRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetOrgRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all organization repository rulesets](Repos::get_org_rulesets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetOrgRulesetsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -2136,74 +2696,94 @@ pub enum ReposGetOrgRulesetsError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetOrgRulesetsError> for AdapterError {
+    fn from(err: ReposGetOrgRulesetsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetOrgRulesetsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetOrgRulesetsError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetOrgRulesetsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a GitHub Pages site](Repos::get_pages_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetPagesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetPagesError> for AdapterError {
+    fn from(err: ReposGetPagesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetPagesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetPagesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get GitHub Pages build](Repos::get_pages_build_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetPagesBuildError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetPagesBuildError> for AdapterError {
+    fn from(err: ReposGetPagesBuildError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetPagesBuildError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the status of a GitHub Pages deployment](Repos::get_pages_deployment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetPagesDeploymentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetPagesDeploymentError> for AdapterError {
+    fn from(err: ReposGetPagesDeploymentError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetPagesDeploymentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetPagesDeploymentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a DNS health check for GitHub Pages](Repos::get_pages_health_check_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetPagesHealthCheckError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Empty response")]
     Status202(EmptyObject),
     #[error("Custom domains are not available for GitHub Pages")]
@@ -2216,74 +2796,96 @@ pub enum ReposGetPagesHealthCheckError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetPagesHealthCheckError> for AdapterError {
+    fn from(err: ReposGetPagesHealthCheckError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetPagesHealthCheckError::Status202(_) => (String::from("Empty response"), 202),
+            ReposGetPagesHealthCheckError::Status400 => (String::from("Custom domains are not available for GitHub Pages"), 400),
+            ReposGetPagesHealthCheckError::Status422 => (String::from("There isn't a CNAME for this page"), 422),
+            ReposGetPagesHealthCheckError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetPagesHealthCheckError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get the weekly commit count](Repos::get_participation_stats_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetParticipationStatsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetParticipationStatsError> for AdapterError {
+    fn from(err: ReposGetParticipationStatsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetParticipationStatsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetParticipationStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get pull request review protection](Repos::get_pull_request_review_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetPullRequestReviewProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetPullRequestReviewProtectionError> for AdapterError {
+    fn from(err: ReposGetPullRequestReviewProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetPullRequestReviewProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get the hourly commit count for each day](Repos::get_punch_card_stats_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetPunchCardStatsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("A header with no content is returned.")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetPunchCardStatsError> for AdapterError {
+    fn from(err: ReposGetPunchCardStatsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetPunchCardStatsError::Status204 => (String::from("A header with no content is returned."), 204),
+            ReposGetPunchCardStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a repository README](Repos::get_readme_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetReadmeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -2294,19 +2896,26 @@ pub enum ReposGetReadmeError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetReadmeError> for AdapterError {
+    fn from(err: ReposGetReadmeError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetReadmeError::Status304 => (String::from("Not modified"), 304),
+            ReposGetReadmeError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetReadmeError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposGetReadmeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a repository README for a directory](Repos::get_readme_in_directory_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetReadmeInDirectoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -2315,38 +2924,49 @@ pub enum ReposGetReadmeInDirectoryError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetReadmeInDirectoryError> for AdapterError {
+    fn from(err: ReposGetReadmeInDirectoryError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetReadmeInDirectoryError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetReadmeInDirectoryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposGetReadmeInDirectoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a release](Repos::get_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Unauthorized")]
     Status401,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetReleaseError> for AdapterError {
+    fn from(err: ReposGetReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetReleaseError::Status401 => (String::from("Unauthorized"), 401),
+            ReposGetReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a release asset](Repos::get_release_asset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetReleaseAssetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Found")]
@@ -2355,101 +2975,130 @@ pub enum ReposGetReleaseAssetError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetReleaseAssetError> for AdapterError {
+    fn from(err: ReposGetReleaseAssetError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetReleaseAssetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetReleaseAssetError::Status302 => (String::from("Found"), 302),
+            ReposGetReleaseAssetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a release by tag name](Repos::get_release_by_tag_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetReleaseByTagError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetReleaseByTagError> for AdapterError {
+    fn from(err: ReposGetReleaseByTagError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetReleaseByTagError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetReleaseByTagError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository rule suite](Repos::get_repo_rule_suite_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetRepoRuleSuiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetRepoRuleSuiteError> for AdapterError {
+    fn from(err: ReposGetRepoRuleSuiteError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetRepoRuleSuiteError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetRepoRuleSuiteError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetRepoRuleSuiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository rule suites](Repos::get_repo_rule_suites_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetRepoRuleSuitesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetRepoRuleSuitesError> for AdapterError {
+    fn from(err: ReposGetRepoRuleSuitesError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetRepoRuleSuitesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetRepoRuleSuitesError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetRepoRuleSuitesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository ruleset](Repos::get_repo_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetRepoRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetRepoRulesetError> for AdapterError {
+    fn from(err: ReposGetRepoRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetRepoRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetRepoRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetRepoRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all repository rulesets](Repos::get_repo_rulesets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetRepoRulesetsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -2458,169 +3107,214 @@ pub enum ReposGetRepoRulesetsError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetRepoRulesetsError> for AdapterError {
+    fn from(err: ReposGetRepoRulesetsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetRepoRulesetsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetRepoRulesetsError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposGetRepoRulesetsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get status checks protection](Repos::get_status_checks_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetStatusChecksProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetStatusChecksProtectionError> for AdapterError {
+    fn from(err: ReposGetStatusChecksProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetStatusChecksProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetStatusChecksProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get teams with access to the protected branch](Repos::get_teams_with_access_to_protected_branch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetTeamsWithAccessToProtectedBranchError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetTeamsWithAccessToProtectedBranchError> for AdapterError {
+    fn from(err: ReposGetTeamsWithAccessToProtectedBranchError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetTeamsWithAccessToProtectedBranchError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetTeamsWithAccessToProtectedBranchError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get top referral paths](Repos::get_top_paths_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetTopPathsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetTopPathsError> for AdapterError {
+    fn from(err: ReposGetTopPathsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetTopPathsError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposGetTopPathsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get top referral sources](Repos::get_top_referrers_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetTopReferrersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetTopReferrersError> for AdapterError {
+    fn from(err: ReposGetTopReferrersError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetTopReferrersError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposGetTopReferrersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get users with access to the protected branch](Repos::get_users_with_access_to_protected_branch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetUsersWithAccessToProtectedBranchError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetUsersWithAccessToProtectedBranchError> for AdapterError {
+    fn from(err: ReposGetUsersWithAccessToProtectedBranchError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetUsersWithAccessToProtectedBranchError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetUsersWithAccessToProtectedBranchError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get page views](Repos::get_views_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetViewsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetViewsError> for AdapterError {
+    fn from(err: ReposGetViewsError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetViewsError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposGetViewsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a repository webhook](Repos::get_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposGetWebhookError> for AdapterError {
+    fn from(err: ReposGetWebhookError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposGetWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a webhook configuration for a repository](Repos::get_webhook_config_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetWebhookConfigForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposGetWebhookConfigForRepoError> for AdapterError {
+    fn from(err: ReposGetWebhookConfigForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetWebhookConfigForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a delivery for a repository webhook](Repos::get_webhook_delivery_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposGetWebhookDeliveryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -2629,91 +3323,115 @@ pub enum ReposGetWebhookDeliveryError {
     Generic { code: u16 },
 }
 
+impl From<ReposGetWebhookDeliveryError> for AdapterError {
+    fn from(err: ReposGetWebhookDeliveryError) -> Self {
+        let (description, status_code) = match err {
+            ReposGetWebhookDeliveryError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposGetWebhookDeliveryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposGetWebhookDeliveryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository activities](Repos::list_activities_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListActivitiesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListActivitiesError> for AdapterError {
+    fn from(err: ReposListActivitiesError) -> Self {
+        let (description, status_code) = match err {
+            ReposListActivitiesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposListActivitiesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List attestations](Repos::list_attestations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListAttestationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListAttestationsError> for AdapterError {
+    fn from(err: ReposListAttestationsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListAttestationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all autolinks of a repository](Repos::list_autolinks_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListAutolinksError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListAutolinksError> for AdapterError {
+    fn from(err: ReposListAutolinksError) -> Self {
+        let (description, status_code) = match err {
+            ReposListAutolinksError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List branches](Repos::list_branches_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListBranchesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListBranchesError> for AdapterError {
+    fn from(err: ReposListBranchesError) -> Self {
+        let (description, status_code) = match err {
+            ReposListBranchesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListBranchesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List branches for HEAD commit](Repos::list_branches_for_head_commit_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListBranchesForHeadCommitError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Conflict")]
@@ -2722,91 +3440,115 @@ pub enum ReposListBranchesForHeadCommitError {
     Generic { code: u16 },
 }
 
+impl From<ReposListBranchesForHeadCommitError> for AdapterError {
+    fn from(err: ReposListBranchesForHeadCommitError) -> Self {
+        let (description, status_code) = match err {
+            ReposListBranchesForHeadCommitError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposListBranchesForHeadCommitError::Status409(_) => (String::from("Conflict"), 409),
+            ReposListBranchesForHeadCommitError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository collaborators](Repos::list_collaborators_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListCollaboratorsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListCollaboratorsError> for AdapterError {
+    fn from(err: ReposListCollaboratorsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListCollaboratorsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListCollaboratorsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List commit comments](Repos::list_comments_for_commit_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListCommentsForCommitError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListCommentsForCommitError> for AdapterError {
+    fn from(err: ReposListCommentsForCommitError) -> Self {
+        let (description, status_code) = match err {
+            ReposListCommentsForCommitError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List commit comments for a repository](Repos::list_commit_comments_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListCommitCommentsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListCommitCommentsForRepoError> for AdapterError {
+    fn from(err: ReposListCommitCommentsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ReposListCommitCommentsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List commit statuses for a reference](Repos::list_commit_statuses_for_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListCommitStatusesForRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListCommitStatusesForRefError> for AdapterError {
+    fn from(err: ReposListCommitStatusesForRefError) -> Self {
+        let (description, status_code) = match err {
+            ReposListCommitStatusesForRefError::Status301(_) => (String::from("Moved permanently"), 301),
+            ReposListCommitStatusesForRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List commits](Repos::list_commits_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListCommitsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Bad Request")]
@@ -2819,19 +3561,27 @@ pub enum ReposListCommitsError {
     Generic { code: u16 },
 }
 
+impl From<ReposListCommitsError> for AdapterError {
+    fn from(err: ReposListCommitsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListCommitsError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposListCommitsError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposListCommitsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListCommitsError::Status409(_) => (String::from("Conflict"), 409),
+            ReposListCommitsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository contributors](Repos::list_contributors_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListContributorsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if repository is empty")]
     Status204,
     #[error("Forbidden")]
@@ -2842,106 +3592,134 @@ pub enum ReposListContributorsError {
     Generic { code: u16 },
 }
 
+impl From<ReposListContributorsError> for AdapterError {
+    fn from(err: ReposListContributorsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListContributorsError::Status204 => (String::from("Response if repository is empty"), 204),
+            ReposListContributorsError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposListContributorsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListContributorsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List custom deployment rule integrations available for an environment](Repos::list_custom_deployment_rule_integrations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListCustomDeploymentRuleIntegrationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListCustomDeploymentRuleIntegrationsError> for AdapterError {
+    fn from(err: ReposListCustomDeploymentRuleIntegrationsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListCustomDeploymentRuleIntegrationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List deploy keys](Repos::list_deploy_keys_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListDeployKeysError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListDeployKeysError> for AdapterError {
+    fn from(err: ReposListDeployKeysError) -> Self {
+        let (description, status_code) = match err {
+            ReposListDeployKeysError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List deployment branch policies](Repos::list_deployment_branch_policies_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListDeploymentBranchPoliciesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListDeploymentBranchPoliciesError> for AdapterError {
+    fn from(err: ReposListDeploymentBranchPoliciesError) -> Self {
+        let (description, status_code) = match err {
+            ReposListDeploymentBranchPoliciesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List deployment statuses](Repos::list_deployment_statuses_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListDeploymentStatusesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListDeploymentStatusesError> for AdapterError {
+    fn from(err: ReposListDeploymentStatusesError) -> Self {
+        let (description, status_code) = match err {
+            ReposListDeploymentStatusesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListDeploymentStatusesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List deployments](Repos::list_deployments_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListDeploymentsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListDeploymentsError> for AdapterError {
+    fn from(err: ReposListDeploymentsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListDeploymentsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories for the authenticated user](Repos::list_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -2954,89 +3732,114 @@ pub enum ReposListForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ReposListForAuthenticatedUserError> for AdapterError {
+    fn from(err: ReposListForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ReposListForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposListForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ReposListForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposListForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ReposListForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization repositories](Repos::list_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListForOrgError> for AdapterError {
+    fn from(err: ReposListForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ReposListForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories for a user](Repos::list_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListForUserError> for AdapterError {
+    fn from(err: ReposListForUserError) -> Self {
+        let (description, status_code) = match err {
+            ReposListForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List forks](Repos::list_forks_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListForksError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListForksError> for AdapterError {
+    fn from(err: ReposListForksError) -> Self {
+        let (description, status_code) = match err {
+            ReposListForksError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposListForksError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository invitations](Repos::list_invitations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListInvitationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListInvitationsError> for AdapterError {
+    fn from(err: ReposListInvitationsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListInvitationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository invitations for the authenticated user](Repos::list_invitations_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListInvitationsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -3049,53 +3852,69 @@ pub enum ReposListInvitationsForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ReposListInvitationsForAuthenticatedUserError> for AdapterError {
+    fn from(err: ReposListInvitationsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ReposListInvitationsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ReposListInvitationsForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListInvitationsForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposListInvitationsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ReposListInvitationsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository languages](Repos::list_languages_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListLanguagesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListLanguagesError> for AdapterError {
+    fn from(err: ReposListLanguagesError) -> Self {
+        let (description, status_code) = match err {
+            ReposListLanguagesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List GitHub Pages builds](Repos::list_pages_builds_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListPagesBuildsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListPagesBuildsError> for AdapterError {
+    fn from(err: ReposListPagesBuildsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListPagesBuildsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public repositories](Repos::list_public_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListPublicError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -3104,74 +3923,94 @@ pub enum ReposListPublicError {
     Generic { code: u16 },
 }
 
+impl From<ReposListPublicError> for AdapterError {
+    fn from(err: ReposListPublicError) -> Self {
+        let (description, status_code) = match err {
+            ReposListPublicError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposListPublicError::Status304 => (String::from("Not modified"), 304),
+            ReposListPublicError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List pull requests associated with a commit](Repos::list_pull_requests_associated_with_commit_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListPullRequestsAssociatedWithCommitError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListPullRequestsAssociatedWithCommitError> for AdapterError {
+    fn from(err: ReposListPullRequestsAssociatedWithCommitError) -> Self {
+        let (description, status_code) = match err {
+            ReposListPullRequestsAssociatedWithCommitError::Status409(_) => (String::from("Conflict"), 409),
+            ReposListPullRequestsAssociatedWithCommitError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List release assets](Repos::list_release_assets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListReleaseAssetsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListReleaseAssetsError> for AdapterError {
+    fn from(err: ReposListReleaseAssetsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListReleaseAssetsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List releases](Repos::list_releases_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListReleasesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListReleasesError> for AdapterError {
+    fn from(err: ReposListReleasesError) -> Self {
+        let (description, status_code) = match err {
+            ReposListReleasesError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListReleasesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Deprecated - List tag protection states for a repository](Repos::list_tag_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListTagProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -3180,55 +4019,70 @@ pub enum ReposListTagProtectionError {
     Generic { code: u16 },
 }
 
+impl From<ReposListTagProtectionError> for AdapterError {
+    fn from(err: ReposListTagProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposListTagProtectionError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposListTagProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListTagProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository tags](Repos::list_tags_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListTagsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposListTagsError> for AdapterError {
+    fn from(err: ReposListTagsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListTagsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository teams](Repos::list_teams_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListTeamsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListTeamsError> for AdapterError {
+    fn from(err: ReposListTeamsError) -> Self {
+        let (description, status_code) = match err {
+            ReposListTeamsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListTeamsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List deliveries for a repository webhook](Repos::list_webhook_deliveries_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListWebhookDeliveriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -3237,38 +4091,49 @@ pub enum ReposListWebhookDeliveriesError {
     Generic { code: u16 },
 }
 
+impl From<ReposListWebhookDeliveriesError> for AdapterError {
+    fn from(err: ReposListWebhookDeliveriesError) -> Self {
+        let (description, status_code) = match err {
+            ReposListWebhookDeliveriesError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposListWebhookDeliveriesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposListWebhookDeliveriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository webhooks](Repos::list_webhooks_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListWebhooksError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposListWebhooksError> for AdapterError {
+    fn from(err: ReposListWebhooksError) -> Self {
+        let (description, status_code) = match err {
+            ReposListWebhooksError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposListWebhooksError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Merge a branch](Repos::merge_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposMergeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when already merged")]
     Status204,
     #[error("Not Found when the base or head does not exist")]
@@ -3283,19 +4148,28 @@ pub enum ReposMergeError {
     Generic { code: u16 },
 }
 
+impl From<ReposMergeError> for AdapterError {
+    fn from(err: ReposMergeError) -> Self {
+        let (description, status_code) = match err {
+            ReposMergeError::Status204 => (String::from("Response when already merged"), 204),
+            ReposMergeError::Status404 => (String::from("Not Found when the base or head does not exist"), 404),
+            ReposMergeError::Status409 => (String::from("Conflict when there is a merge conflict"), 409),
+            ReposMergeError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposMergeError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposMergeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Sync a fork branch with the upstream repository](Repos::merge_upstream_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposMergeUpstreamError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("The branch could not be synced because of a merge conflict")]
     Status409,
     #[error("The branch could not be synced for some other reason")]
@@ -3304,38 +4178,49 @@ pub enum ReposMergeUpstreamError {
     Generic { code: u16 },
 }
 
+impl From<ReposMergeUpstreamError> for AdapterError {
+    fn from(err: ReposMergeUpstreamError) -> Self {
+        let (description, status_code) = match err {
+            ReposMergeUpstreamError::Status409 => (String::from("The branch could not be synced because of a merge conflict"), 409),
+            ReposMergeUpstreamError::Status422 => (String::from("The branch could not be synced for some other reason"), 422),
+            ReposMergeUpstreamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Ping a repository webhook](Repos::ping_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposPingWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposPingWebhookError> for AdapterError {
+    fn from(err: ReposPingWebhookError) -> Self {
+        let (description, status_code) = match err {
+            ReposPingWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposPingWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Redeliver a delivery for a repository webhook](Repos::redeliver_webhook_delivery_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRedeliverWebhookDeliveryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -3344,59 +4229,76 @@ pub enum ReposRedeliverWebhookDeliveryError {
     Generic { code: u16 },
 }
 
+impl From<ReposRedeliverWebhookDeliveryError> for AdapterError {
+    fn from(err: ReposRedeliverWebhookDeliveryError) -> Self {
+        let (description, status_code) = match err {
+            ReposRedeliverWebhookDeliveryError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposRedeliverWebhookDeliveryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposRedeliverWebhookDeliveryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove app access restrictions](Repos::remove_app_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRemoveAppAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposRemoveAppAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposRemoveAppAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposRemoveAppAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposRemoveAppAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a repository collaborator](Repos::remove_collaborator_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRemoveCollaboratorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposRemoveCollaboratorError> for AdapterError {
+    fn from(err: ReposRemoveCollaboratorError) -> Self {
+        let (description, status_code) = match err {
+            ReposRemoveCollaboratorError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposRemoveCollaboratorError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposRemoveCollaboratorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove status check contexts](Repos::remove_status_check_contexts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRemoveStatusCheckContextsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -3405,74 +4307,94 @@ pub enum ReposRemoveStatusCheckContextsError {
     Generic { code: u16 },
 }
 
+impl From<ReposRemoveStatusCheckContextsError> for AdapterError {
+    fn from(err: ReposRemoveStatusCheckContextsError) -> Self {
+        let (description, status_code) = match err {
+            ReposRemoveStatusCheckContextsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposRemoveStatusCheckContextsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposRemoveStatusCheckContextsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove status check protection](Repos::remove_status_check_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRemoveStatusCheckProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposRemoveStatusCheckProtectionError> for AdapterError {
+    fn from(err: ReposRemoveStatusCheckProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposRemoveStatusCheckProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove team access restrictions](Repos::remove_team_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRemoveTeamAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposRemoveTeamAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposRemoveTeamAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposRemoveTeamAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposRemoveTeamAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove user access restrictions](Repos::remove_user_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRemoveUserAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposRemoveUserAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposRemoveUserAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposRemoveUserAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposRemoveUserAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Rename a branch](Repos::rename_branch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRenameBranchError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -3483,19 +4405,26 @@ pub enum ReposRenameBranchError {
     Generic { code: u16 },
 }
 
+impl From<ReposRenameBranchError> for AdapterError {
+    fn from(err: ReposRenameBranchError) -> Self {
+        let (description, status_code) = match err {
+            ReposRenameBranchError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposRenameBranchError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposRenameBranchError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposRenameBranchError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Replace all repository topics](Repos::replace_all_topics_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposReplaceAllTopicsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -3504,167 +4433,211 @@ pub enum ReposReplaceAllTopicsError {
     Generic { code: u16 },
 }
 
+impl From<ReposReplaceAllTopicsError> for AdapterError {
+    fn from(err: ReposReplaceAllTopicsError) -> Self {
+        let (description, status_code) = match err {
+            ReposReplaceAllTopicsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposReplaceAllTopicsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposReplaceAllTopicsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Request a GitHub Pages build](Repos::request_pages_build_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposRequestPagesBuildError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposRequestPagesBuildError> for AdapterError {
+    fn from(err: ReposRequestPagesBuildError) -> Self {
+        let (description, status_code) = match err {
+            ReposRequestPagesBuildError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set admin branch protection](Repos::set_admin_branch_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposSetAdminBranchProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposSetAdminBranchProtectionError> for AdapterError {
+    fn from(err: ReposSetAdminBranchProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposSetAdminBranchProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set app access restrictions](Repos::set_app_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposSetAppAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposSetAppAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposSetAppAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposSetAppAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposSetAppAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set status check contexts](Repos::set_status_check_contexts_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposSetStatusCheckContextsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposSetStatusCheckContextsError> for AdapterError {
+    fn from(err: ReposSetStatusCheckContextsError) -> Self {
+        let (description, status_code) = match err {
+            ReposSetStatusCheckContextsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposSetStatusCheckContextsError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposSetStatusCheckContextsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set team access restrictions](Repos::set_team_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposSetTeamAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposSetTeamAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposSetTeamAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposSetTeamAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposSetTeamAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set user access restrictions](Repos::set_user_access_restrictions_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposSetUserAccessRestrictionsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposSetUserAccessRestrictionsError> for AdapterError {
+    fn from(err: ReposSetUserAccessRestrictionsError) -> Self {
+        let (description, status_code) = match err {
+            ReposSetUserAccessRestrictionsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposSetUserAccessRestrictionsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Test the push repository webhook](Repos::test_push_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposTestPushWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposTestPushWebhookError> for AdapterError {
+    fn from(err: ReposTestPushWebhookError) -> Self {
+        let (description, status_code) = match err {
+            ReposTestPushWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposTestPushWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Transfer a repository](Repos::transfer_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposTransferError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposTransferError> for AdapterError {
+    fn from(err: ReposTransferError) -> Self {
+        let (description, status_code) = match err {
+            ReposTransferError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a repository](Repos::update_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Temporary Redirect")]
     Status307(BasicError),
     #[error("Forbidden")]
@@ -3677,19 +4650,27 @@ pub enum ReposUpdateError {
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateError> for AdapterError {
+    fn from(err: ReposUpdateError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateError::Status307(_) => (String::from("Temporary Redirect"), 307),
+            ReposUpdateError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposUpdateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposUpdateError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposUpdateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update branch protection](Repos::update_branch_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateBranchProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -3700,55 +4681,71 @@ pub enum ReposUpdateBranchProtectionError {
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateBranchProtectionError> for AdapterError {
+    fn from(err: ReposUpdateBranchProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateBranchProtectionError::Status403(_) => (String::from("Forbidden"), 403),
+            ReposUpdateBranchProtectionError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposUpdateBranchProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposUpdateBranchProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a commit comment](Repos::update_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateCommitCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateCommitCommentError> for AdapterError {
+    fn from(err: ReposUpdateCommitCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateCommitCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposUpdateCommitCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a deployment branch policy](Repos::update_deployment_branch_policy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateDeploymentBranchPolicyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposUpdateDeploymentBranchPolicyError> for AdapterError {
+    fn from(err: ReposUpdateDeploymentBranchPolicyError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateDeploymentBranchPolicyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update information about a GitHub Pages site](Repos::update_information_about_pages_site_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateInformationAboutPagesSiteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Bad Request")]
@@ -3759,36 +4756,47 @@ pub enum ReposUpdateInformationAboutPagesSiteError {
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateInformationAboutPagesSiteError> for AdapterError {
+    fn from(err: ReposUpdateInformationAboutPagesSiteError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateInformationAboutPagesSiteError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposUpdateInformationAboutPagesSiteError::Status400(_) => (String::from("Bad Request"), 400),
+            ReposUpdateInformationAboutPagesSiteError::Status409(_) => (String::from("Conflict"), 409),
+            ReposUpdateInformationAboutPagesSiteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a repository invitation](Repos::update_invitation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateInvitationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposUpdateInvitationError> for AdapterError {
+    fn from(err: ReposUpdateInvitationError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateInvitationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update an organization repository ruleset](Repos::update_org_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateOrgRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -3797,74 +4805,94 @@ pub enum ReposUpdateOrgRulesetError {
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateOrgRulesetError> for AdapterError {
+    fn from(err: ReposUpdateOrgRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateOrgRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposUpdateOrgRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposUpdateOrgRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update pull request review protection](Repos::update_pull_request_review_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdatePullRequestReviewProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposUpdatePullRequestReviewProtectionError> for AdapterError {
+    fn from(err: ReposUpdatePullRequestReviewProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdatePullRequestReviewProtectionError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposUpdatePullRequestReviewProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a release](Repos::update_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if the discussion category name is invalid")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateReleaseError> for AdapterError {
+    fn from(err: ReposUpdateReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateReleaseError::Status404(_) => (String::from("Not Found if the discussion category name is invalid"), 404),
+            ReposUpdateReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a release asset](Repos::update_release_asset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateReleaseAssetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposUpdateReleaseAssetError> for AdapterError {
+    fn from(err: ReposUpdateReleaseAssetError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateReleaseAssetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a repository ruleset](Repos::update_repo_ruleset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateRepoRulesetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Internal Error")]
@@ -3873,40 +4901,52 @@ pub enum ReposUpdateRepoRulesetError {
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateRepoRulesetError> for AdapterError {
+    fn from(err: ReposUpdateRepoRulesetError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateRepoRulesetError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposUpdateRepoRulesetError::Status500(_) => (String::from("Internal Error"), 500),
+            ReposUpdateRepoRulesetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update status check protection](Repos::update_status_check_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateStatusCheckProtectionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposUpdateStatusCheckProtectionError> for AdapterError {
+    fn from(err: ReposUpdateStatusCheckProtectionError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateStatusCheckProtectionError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposUpdateStatusCheckProtectionError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposUpdateStatusCheckProtectionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a repository webhook](Repos::update_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -3915,40 +4955,65 @@ pub enum ReposUpdateWebhookError {
     Generic { code: u16 },
 }
 
+impl From<ReposUpdateWebhookError> for AdapterError {
+    fn from(err: ReposUpdateWebhookError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateWebhookError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReposUpdateWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            ReposUpdateWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a webhook configuration for a repository](Repos::update_webhook_config_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUpdateWebhookConfigForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposUpdateWebhookConfigForRepoError> for AdapterError {
+    fn from(err: ReposUpdateWebhookConfigForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ReposUpdateWebhookConfigForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Upload a release asset](Repos::upload_release_asset_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposUploadReleaseAssetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if you upload an asset with the same filename as another uploaded asset")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReposUploadReleaseAssetError> for AdapterError {
+    fn from(err: ReposUploadReleaseAssetError) -> Self {
+        let (description, status_code) = match err {
+            ReposUploadReleaseAssetError::Status422 => (String::from("Response if you upload an asset with the same filename as another uploaded asset"), 422),
+            ReposUploadReleaseAssetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -6423,7 +7488,7 @@ impl<'req> ReposUploadReleaseAssetParams<'req> {
 }
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
+impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Accept a repository invitation
@@ -6431,19 +7496,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for accept_invitation_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#accept-a-repository-invitation)
     ///
     /// ---
-    pub async fn accept_invitation_for_authenticated_user_async(&self, invitation_id: i32) -> Result<(), ReposAcceptInvitationForAuthenticatedUserError> {
+    pub async fn accept_invitation_for_authenticated_user_async(&self, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6455,11 +7520,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                409 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status409(github_response.to_json_async().await?)),
-                404 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                304 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status304),
-                code => Err(ReposAcceptInvitationForAuthenticatedUserError::Generic { code }),
+                403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                409 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status409(github_response.to_json_async().await?).into()),
+                404 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status304.into()),
+                code => Err(ReposAcceptInvitationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -6472,7 +7537,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn accept_invitation_for_authenticated_user(&self, invitation_id: i32) -> Result<(), ReposAcceptInvitationForAuthenticatedUserError> {
+    pub fn accept_invitation_for_authenticated_user(&self, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
@@ -6484,7 +7549,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6496,11 +7561,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                409 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status409(github_response.to_json()?)),
-                404 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                304 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status304),
-                code => Err(ReposAcceptInvitationForAuthenticatedUserError::Generic { code }),
+                403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                409 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status409(github_response.to_json()?).into()),
+                404 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                304 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status304.into()),
+                code => Err(ReposAcceptInvitationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -6516,19 +7581,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for add_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-app-access-restrictions)
     ///
     /// ---
-    pub async fn add_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddAppAccessRestrictions) -> Result<Vec<Integration>, ReposAddAppAccessRestrictionsError> {
+    pub async fn add_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddAppAccessRestrictions) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddAppAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddAppAccessRestrictions>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6540,8 +7605,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddAppAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposAddAppAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposAddAppAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposAddAppAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -6558,19 +7623,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_app_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddAppAccessRestrictions) -> Result<Vec<Integration>, ReposAddAppAccessRestrictionsError> {
+    pub fn add_app_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddAppAccessRestrictions) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddAppAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddAppAccessRestrictions>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6582,8 +7647,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddAppAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposAddAppAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposAddAppAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposAddAppAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -6617,19 +7682,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/collaborators/collaborators#add-a-repository-collaborator)
     ///
     /// ---
-    pub async fn add_collaborator_async(&self, owner: &str, repo: &str, username: &str, body: PutReposAddCollaborator) -> Result<RepositoryInvitation, ReposAddCollaboratorError> {
+    pub async fn add_collaborator_async(&self, owner: &str, repo: &str, username: &str, body: PutReposAddCollaborator) -> Result<RepositoryInvitation, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}", super::GITHUB_BASE_API_URL, owner, repo, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposAddCollaborator::from_json(body)?),
+            body: Some(C::from_json::<PutReposAddCollaborator>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6641,10 +7706,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposAddCollaboratorError::Status204),
-                422 => Err(ReposAddCollaboratorError::Status422(github_response.to_json_async().await?)),
-                403 => Err(ReposAddCollaboratorError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposAddCollaboratorError::Generic { code }),
+                204 => Err(ReposAddCollaboratorError::Status204.into()),
+                422 => Err(ReposAddCollaboratorError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(ReposAddCollaboratorError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposAddCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -6679,19 +7744,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_collaborator(&self, owner: &str, repo: &str, username: &str, body: PutReposAddCollaborator) -> Result<RepositoryInvitation, ReposAddCollaboratorError> {
+    pub fn add_collaborator(&self, owner: &str, repo: &str, username: &str, body: PutReposAddCollaborator) -> Result<RepositoryInvitation, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}", super::GITHUB_BASE_API_URL, owner, repo, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposAddCollaborator::from_json(body)?),
+            body: Some(C::from_json::<PutReposAddCollaborator>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6703,10 +7768,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposAddCollaboratorError::Status204),
-                422 => Err(ReposAddCollaboratorError::Status422(github_response.to_json()?)),
-                403 => Err(ReposAddCollaboratorError::Status403(github_response.to_json()?)),
-                code => Err(ReposAddCollaboratorError::Generic { code }),
+                204 => Err(ReposAddCollaboratorError::Status204.into()),
+                422 => Err(ReposAddCollaboratorError::Status422(github_response.to_json()?).into()),
+                403 => Err(ReposAddCollaboratorError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposAddCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -6720,19 +7785,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for add_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#add-status-check-contexts)
     ///
     /// ---
-    pub async fn add_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddStatusCheckContexts) -> Result<Vec<String>, ReposAddStatusCheckContextsError> {
+    pub async fn add_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddStatusCheckContexts) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddStatusCheckContexts::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddStatusCheckContexts>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6744,10 +7809,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddStatusCheckContextsError::Status422(github_response.to_json_async().await?)),
-                403 => Err(ReposAddStatusCheckContextsError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposAddStatusCheckContextsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposAddStatusCheckContextsError::Generic { code }),
+                422 => Err(ReposAddStatusCheckContextsError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(ReposAddStatusCheckContextsError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposAddStatusCheckContextsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposAddStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -6762,19 +7827,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_status_check_contexts(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddStatusCheckContexts) -> Result<Vec<String>, ReposAddStatusCheckContextsError> {
+    pub fn add_status_check_contexts(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddStatusCheckContexts) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddStatusCheckContexts::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddStatusCheckContexts>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6786,10 +7851,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddStatusCheckContextsError::Status422(github_response.to_json()?)),
-                403 => Err(ReposAddStatusCheckContextsError::Status403(github_response.to_json()?)),
-                404 => Err(ReposAddStatusCheckContextsError::Status404(github_response.to_json()?)),
-                code => Err(ReposAddStatusCheckContextsError::Generic { code }),
+                422 => Err(ReposAddStatusCheckContextsError::Status422(github_response.to_json()?).into()),
+                403 => Err(ReposAddStatusCheckContextsError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposAddStatusCheckContextsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposAddStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -6805,19 +7870,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for add_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-team-access-restrictions)
     ///
     /// ---
-    pub async fn add_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddTeamAccessRestrictions) -> Result<Vec<Team>, ReposAddTeamAccessRestrictionsError> {
+    pub async fn add_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddTeamAccessRestrictions) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddTeamAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddTeamAccessRestrictions>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6829,8 +7894,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposAddTeamAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposAddTeamAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -6847,19 +7912,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_team_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddTeamAccessRestrictions) -> Result<Vec<Team>, ReposAddTeamAccessRestrictionsError> {
+    pub fn add_team_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddTeamAccessRestrictions) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddTeamAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddTeamAccessRestrictions>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6871,8 +7936,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposAddTeamAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposAddTeamAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposAddTeamAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -6892,19 +7957,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for add_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#add-user-access-restrictions)
     ///
     /// ---
-    pub async fn add_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposAddUserAccessRestrictionsError> {
+    pub async fn add_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddUserAccessRestrictions) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddUserAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddUserAccessRestrictions>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6916,8 +7981,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddUserAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposAddUserAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposAddUserAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposAddUserAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -6938,19 +8003,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_user_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposAddUserAccessRestrictionsError> {
+    pub fn add_user_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PostReposAddUserAccessRestrictions) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposAddUserAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PostReposAddUserAccessRestrictions>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6962,8 +8027,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposAddUserAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposAddUserAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposAddUserAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposAddUserAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -6979,19 +8044,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for cancel_pages_deployment](https://docs.github.com/rest/pages/pages#cancel-a-github-pages-deployment)
     ///
     /// ---
-    pub async fn cancel_pages_deployment_async(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<(), ReposCancelPagesDeploymentError> {
+    pub async fn cancel_pages_deployment_async(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/deployments/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, pages_deployment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7003,8 +8068,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCancelPagesDeploymentError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposCancelPagesDeploymentError::Generic { code }),
+                404 => Err(ReposCancelPagesDeploymentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposCancelPagesDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -7021,7 +8086,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_pages_deployment(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<(), ReposCancelPagesDeploymentError> {
+    pub fn cancel_pages_deployment(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/deployments/{}/cancel", super::GITHUB_BASE_API_URL, owner, repo, pages_deployment_id);
 
@@ -7033,7 +8098,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7045,8 +8110,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCancelPagesDeploymentError::Status404(github_response.to_json()?)),
-                code => Err(ReposCancelPagesDeploymentError::Generic { code }),
+                404 => Err(ReposCancelPagesDeploymentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposCancelPagesDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -7060,19 +8125,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for check_automated_security_fixes](https://docs.github.com/rest/repos/repos#check-if-automated-security-fixes-are-enabled-for-a-repository)
     ///
     /// ---
-    pub async fn check_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<CheckAutomatedSecurityFixes, ReposCheckAutomatedSecurityFixesError> {
+    pub async fn check_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<CheckAutomatedSecurityFixes, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7084,8 +8149,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCheckAutomatedSecurityFixesError::Status404),
-                code => Err(ReposCheckAutomatedSecurityFixesError::Generic { code }),
+                404 => Err(ReposCheckAutomatedSecurityFixesError::Status404.into()),
+                code => Err(ReposCheckAutomatedSecurityFixesError::Generic { code }.into()),
             }
         }
     }
@@ -7100,7 +8165,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<CheckAutomatedSecurityFixes, ReposCheckAutomatedSecurityFixesError> {
+    pub fn check_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<CheckAutomatedSecurityFixes, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7112,7 +8177,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7124,8 +8189,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCheckAutomatedSecurityFixesError::Status404),
-                code => Err(ReposCheckAutomatedSecurityFixesError::Generic { code }),
+                404 => Err(ReposCheckAutomatedSecurityFixesError::Status404.into()),
+                code => Err(ReposCheckAutomatedSecurityFixesError::Generic { code }.into()),
             }
         }
     }
@@ -7145,19 +8210,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for check_collaborator](https://docs.github.com/rest/collaborators/collaborators#check-if-a-user-is-a-repository-collaborator)
     ///
     /// ---
-    pub async fn check_collaborator_async(&self, owner: &str, repo: &str, username: &str) -> Result<(), ReposCheckCollaboratorError> {
+    pub async fn check_collaborator_async(&self, owner: &str, repo: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}", super::GITHUB_BASE_API_URL, owner, repo, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7169,8 +8234,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCheckCollaboratorError::Status404),
-                code => Err(ReposCheckCollaboratorError::Generic { code }),
+                404 => Err(ReposCheckCollaboratorError::Status404.into()),
+                code => Err(ReposCheckCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -7191,7 +8256,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_collaborator(&self, owner: &str, repo: &str, username: &str) -> Result<(), ReposCheckCollaboratorError> {
+    pub fn check_collaborator(&self, owner: &str, repo: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}", super::GITHUB_BASE_API_URL, owner, repo, username);
 
@@ -7203,7 +8268,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7215,8 +8280,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCheckCollaboratorError::Status404),
-                code => Err(ReposCheckCollaboratorError::Generic { code }),
+                404 => Err(ReposCheckCollaboratorError::Status404.into()),
+                code => Err(ReposCheckCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -7230,19 +8295,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for check_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#check-if-private-vulnerability-reporting-is-enabled-for-a-repository)
     ///
     /// ---
-    pub async fn check_private_vulnerability_reporting_async(&self, owner: &str, repo: &str) -> Result<GetReposCheckPrivateVulnerabilityReportingResponse200, ReposCheckPrivateVulnerabilityReportingError> {
+    pub async fn check_private_vulnerability_reporting_async(&self, owner: &str, repo: &str) -> Result<GetReposCheckPrivateVulnerabilityReportingResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/private-vulnerability-reporting", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7254,8 +8319,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCheckPrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCheckPrivateVulnerabilityReportingError::Generic { code }),
+                422 => Err(ReposCheckPrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCheckPrivateVulnerabilityReportingError::Generic { code }.into()),
             }
         }
     }
@@ -7270,7 +8335,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_private_vulnerability_reporting(&self, owner: &str, repo: &str) -> Result<GetReposCheckPrivateVulnerabilityReportingResponse200, ReposCheckPrivateVulnerabilityReportingError> {
+    pub fn check_private_vulnerability_reporting(&self, owner: &str, repo: &str) -> Result<GetReposCheckPrivateVulnerabilityReportingResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/private-vulnerability-reporting", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7282,7 +8347,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7294,8 +8359,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCheckPrivateVulnerabilityReportingError::Status422(github_response.to_json()?)),
-                code => Err(ReposCheckPrivateVulnerabilityReportingError::Generic { code }),
+                422 => Err(ReposCheckPrivateVulnerabilityReportingError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCheckPrivateVulnerabilityReportingError::Generic { code }.into()),
             }
         }
     }
@@ -7309,19 +8374,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for check_vulnerability_alerts](https://docs.github.com/rest/repos/repos#check-if-vulnerability-alerts-are-enabled-for-a-repository)
     ///
     /// ---
-    pub async fn check_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), ReposCheckVulnerabilityAlertsError> {
+    pub async fn check_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7333,8 +8398,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCheckVulnerabilityAlertsError::Status404),
-                code => Err(ReposCheckVulnerabilityAlertsError::Generic { code }),
+                404 => Err(ReposCheckVulnerabilityAlertsError::Status404.into()),
+                code => Err(ReposCheckVulnerabilityAlertsError::Generic { code }.into()),
             }
         }
     }
@@ -7349,7 +8414,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), ReposCheckVulnerabilityAlertsError> {
+    pub fn check_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7361,7 +8426,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7373,8 +8438,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCheckVulnerabilityAlertsError::Status404),
-                code => Err(ReposCheckVulnerabilityAlertsError::Generic { code }),
+                404 => Err(ReposCheckVulnerabilityAlertsError::Status404.into()),
+                code => Err(ReposCheckVulnerabilityAlertsError::Generic { code }.into()),
             }
         }
     }
@@ -7392,7 +8457,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for codeowners_errors](https://docs.github.com/rest/repos/repos#list-codeowners-errors)
     ///
     /// ---
-    pub async fn codeowners_errors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposCodeownersErrorsParams<'api>>>) -> Result<CodeownersErrors, ReposCodeownersErrorsError> {
+    pub async fn codeowners_errors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposCodeownersErrorsParams<'api>>>) -> Result<CodeownersErrors, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codeowners/errors", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7403,12 +8468,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7420,8 +8485,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCodeownersErrorsError::Status404),
-                code => Err(ReposCodeownersErrorsError::Generic { code }),
+                404 => Err(ReposCodeownersErrorsError::Status404.into()),
+                code => Err(ReposCodeownersErrorsError::Generic { code }.into()),
             }
         }
     }
@@ -7440,7 +8505,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn codeowners_errors(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposCodeownersErrorsParams<'api>>>) -> Result<CodeownersErrors, ReposCodeownersErrorsError> {
+    pub fn codeowners_errors(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposCodeownersErrorsParams<'api>>>) -> Result<CodeownersErrors, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codeowners/errors", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -7457,7 +8522,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7469,8 +8534,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCodeownersErrorsError::Status404),
-                code => Err(ReposCodeownersErrorsError::Generic { code }),
+                404 => Err(ReposCodeownersErrorsError::Status404.into()),
+                code => Err(ReposCodeownersErrorsError::Generic { code }.into()),
             }
         }
     }
@@ -7533,7 +8598,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for compare_commits](https://docs.github.com/rest/commits/commits#compare-two-commits)
     ///
     /// ---
-    pub async fn compare_commits_async(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<ReposCompareCommitsParams>>) -> Result<CommitComparison, ReposCompareCommitsError> {
+    pub async fn compare_commits_async(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<ReposCompareCommitsParams>>) -> Result<CommitComparison, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/compare/{}", super::GITHUB_BASE_API_URL, owner, repo, basehead);
 
@@ -7544,12 +8609,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7561,10 +8626,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCompareCommitsError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposCompareCommitsError::Status500(github_response.to_json_async().await?)),
-                503 => Err(ReposCompareCommitsError::Status503(github_response.to_json_async().await?)),
-                code => Err(ReposCompareCommitsError::Generic { code }),
+                404 => Err(ReposCompareCommitsError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposCompareCommitsError::Status500(github_response.to_json_async().await?).into()),
+                503 => Err(ReposCompareCommitsError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(ReposCompareCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -7628,7 +8693,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn compare_commits(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<ReposCompareCommitsParams>>) -> Result<CommitComparison, ReposCompareCommitsError> {
+    pub fn compare_commits(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<ReposCompareCommitsParams>>) -> Result<CommitComparison, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/compare/{}", super::GITHUB_BASE_API_URL, owner, repo, basehead);
 
@@ -7645,7 +8710,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7657,10 +8722,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCompareCommitsError::Status404(github_response.to_json()?)),
-                500 => Err(ReposCompareCommitsError::Status500(github_response.to_json()?)),
-                503 => Err(ReposCompareCommitsError::Status503(github_response.to_json()?)),
-                code => Err(ReposCompareCommitsError::Generic { code }),
+                404 => Err(ReposCompareCommitsError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposCompareCommitsError::Status500(github_response.to_json()?).into()),
+                503 => Err(ReposCompareCommitsError::Status503(github_response.to_json()?).into()),
+                code => Err(ReposCompareCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -7678,19 +8743,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_attestation](https://docs.github.com/rest/repos/repos#create-an-attestation)
     ///
     /// ---
-    pub async fn create_attestation_async(&self, owner: &str, repo: &str, body: PostReposCreateAttestation) -> Result<PostReposCreateAttestationResponse201, ReposCreateAttestationError> {
+    pub async fn create_attestation_async(&self, owner: &str, repo: &str, body: PostReposCreateAttestation) -> Result<PostReposCreateAttestationResponse201, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/attestations", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateAttestation::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateAttestation>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7702,9 +8767,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateAttestationError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateAttestationError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateAttestationError::Generic { code }),
+                403 => Err(ReposCreateAttestationError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateAttestationError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateAttestationError::Generic { code }.into()),
             }
         }
     }
@@ -7723,19 +8788,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_attestation(&self, owner: &str, repo: &str, body: PostReposCreateAttestation) -> Result<PostReposCreateAttestationResponse201, ReposCreateAttestationError> {
+    pub fn create_attestation(&self, owner: &str, repo: &str, body: PostReposCreateAttestation) -> Result<PostReposCreateAttestationResponse201, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/attestations", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateAttestation::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateAttestation>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7747,9 +8812,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateAttestationError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateAttestationError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateAttestationError::Generic { code }),
+                403 => Err(ReposCreateAttestationError::Status403(github_response.to_json()?).into()),
+                422 => Err(ReposCreateAttestationError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateAttestationError::Generic { code }.into()),
             }
         }
     }
@@ -7763,19 +8828,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_autolink](https://docs.github.com/rest/repos/autolinks#create-an-autolink-reference-for-a-repository)
     ///
     /// ---
-    pub async fn create_autolink_async(&self, owner: &str, repo: &str, body: PostReposCreateAutolink) -> Result<Autolink, ReposCreateAutolinkError> {
+    pub async fn create_autolink_async(&self, owner: &str, repo: &str, body: PostReposCreateAutolink) -> Result<Autolink, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateAutolink::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateAutolink>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7787,8 +8852,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateAutolinkError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateAutolinkError::Generic { code }),
+                422 => Err(ReposCreateAutolinkError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateAutolinkError::Generic { code }.into()),
             }
         }
     }
@@ -7803,19 +8868,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_autolink(&self, owner: &str, repo: &str, body: PostReposCreateAutolink) -> Result<Autolink, ReposCreateAutolinkError> {
+    pub fn create_autolink(&self, owner: &str, repo: &str, body: PostReposCreateAutolink) -> Result<Autolink, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateAutolink::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateAutolink>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7827,8 +8892,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateAutolinkError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateAutolinkError::Generic { code }),
+                422 => Err(ReposCreateAutolinkError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateAutolinkError::Generic { code }.into()),
             }
         }
     }
@@ -7851,19 +8916,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_commit_comment](https://docs.github.com/rest/commits/comments#create-a-commit-comment)
     ///
     /// ---
-    pub async fn create_commit_comment_async(&self, owner: &str, repo: &str, commit_sha: &str, body: PostReposCreateCommitComment) -> Result<CommitComment, ReposCreateCommitCommentError> {
+    pub async fn create_commit_comment_async(&self, owner: &str, repo: &str, commit_sha: &str, body: PostReposCreateCommitComment) -> Result<CommitComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/commits/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateCommitComment::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateCommitComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7875,9 +8940,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateCommitCommentError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateCommitCommentError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateCommitCommentError::Generic { code }),
+                403 => Err(ReposCreateCommitCommentError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateCommitCommentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -7901,19 +8966,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_commit_comment(&self, owner: &str, repo: &str, commit_sha: &str, body: PostReposCreateCommitComment) -> Result<CommitComment, ReposCreateCommitCommentError> {
+    pub fn create_commit_comment(&self, owner: &str, repo: &str, commit_sha: &str, body: PostReposCreateCommitComment) -> Result<CommitComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/commits/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateCommitComment::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateCommitComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7925,9 +8990,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateCommitCommentError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateCommitCommentError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateCommitCommentError::Generic { code }),
+                403 => Err(ReposCreateCommitCommentError::Status403(github_response.to_json()?).into()),
+                422 => Err(ReposCreateCommitCommentError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -7943,19 +9008,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#create-commit-signature-protection)
     ///
     /// ---
-    pub async fn create_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposCreateCommitSignatureProtectionError> {
+    pub async fn create_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -7967,8 +9032,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposCreateCommitSignatureProtectionError::Generic { code }),
+                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateCommitSignatureProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -7985,7 +9050,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposCreateCommitSignatureProtectionError> {
+    pub fn create_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -7997,7 +9062,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8009,8 +9074,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposCreateCommitSignatureProtectionError::Generic { code }),
+                404 => Err(ReposCreateCommitSignatureProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposCreateCommitSignatureProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -8026,19 +9091,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_commit_status](https://docs.github.com/rest/commits/statuses#create-a-commit-status)
     ///
     /// ---
-    pub async fn create_commit_status_async(&self, owner: &str, repo: &str, sha: &str, body: PostReposCreateCommitStatus) -> Result<Status, ReposCreateCommitStatusError> {
+    pub async fn create_commit_status_async(&self, owner: &str, repo: &str, sha: &str, body: PostReposCreateCommitStatus) -> Result<Status, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/statuses/{}", super::GITHUB_BASE_API_URL, owner, repo, sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateCommitStatus::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateCommitStatus>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8050,7 +9115,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposCreateCommitStatusError::Generic { code }),
+                code => Err(ReposCreateCommitStatusError::Generic { code }.into()),
             }
         }
     }
@@ -8067,19 +9132,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_commit_status(&self, owner: &str, repo: &str, sha: &str, body: PostReposCreateCommitStatus) -> Result<Status, ReposCreateCommitStatusError> {
+    pub fn create_commit_status(&self, owner: &str, repo: &str, sha: &str, body: PostReposCreateCommitStatus) -> Result<Status, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/statuses/{}", super::GITHUB_BASE_API_URL, owner, repo, sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateCommitStatus::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateCommitStatus>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8091,7 +9156,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposCreateCommitStatusError::Generic { code }),
+                code => Err(ReposCreateCommitStatusError::Generic { code }.into()),
             }
         }
     }
@@ -8105,19 +9170,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#create-a-deploy-key)
     ///
     /// ---
-    pub async fn create_deploy_key_async(&self, owner: &str, repo: &str, body: PostReposCreateDeployKey) -> Result<DeployKey, ReposCreateDeployKeyError> {
+    pub async fn create_deploy_key_async(&self, owner: &str, repo: &str, body: PostReposCreateDeployKey) -> Result<DeployKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/keys", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeployKey::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeployKey>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8129,8 +9194,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeployKeyError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateDeployKeyError::Generic { code }),
+                422 => Err(ReposCreateDeployKeyError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateDeployKeyError::Generic { code }.into()),
             }
         }
     }
@@ -8145,19 +9210,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_deploy_key(&self, owner: &str, repo: &str, body: PostReposCreateDeployKey) -> Result<DeployKey, ReposCreateDeployKeyError> {
+    pub fn create_deploy_key(&self, owner: &str, repo: &str, body: PostReposCreateDeployKey) -> Result<DeployKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/keys", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeployKey::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeployKey>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8169,8 +9234,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeployKeyError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateDeployKeyError::Generic { code }),
+                422 => Err(ReposCreateDeployKeyError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateDeployKeyError::Generic { code }.into()),
             }
         }
     }
@@ -8231,19 +9296,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_deployment](https://docs.github.com/rest/deployments/deployments#create-a-deployment)
     ///
     /// ---
-    pub async fn create_deployment_async(&self, owner: &str, repo: &str, body: PostReposCreateDeployment) -> Result<Deployment, ReposCreateDeploymentError> {
+    pub async fn create_deployment_async(&self, owner: &str, repo: &str, body: PostReposCreateDeployment) -> Result<Deployment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeployment::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeployment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8255,10 +9320,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposCreateDeploymentError::Status202(github_response.to_json_async().await?)),
-                409 => Err(ReposCreateDeploymentError::Status409),
-                422 => Err(ReposCreateDeploymentError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateDeploymentError::Generic { code }),
+                202 => Err(ReposCreateDeploymentError::Status202(github_response.to_json_async().await?).into()),
+                409 => Err(ReposCreateDeploymentError::Status409.into()),
+                422 => Err(ReposCreateDeploymentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -8320,19 +9385,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_deployment(&self, owner: &str, repo: &str, body: PostReposCreateDeployment) -> Result<Deployment, ReposCreateDeploymentError> {
+    pub fn create_deployment(&self, owner: &str, repo: &str, body: PostReposCreateDeployment) -> Result<Deployment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeployment::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeployment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8344,10 +9409,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposCreateDeploymentError::Status202(github_response.to_json()?)),
-                409 => Err(ReposCreateDeploymentError::Status409),
-                422 => Err(ReposCreateDeploymentError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateDeploymentError::Generic { code }),
+                202 => Err(ReposCreateDeploymentError::Status202(github_response.to_json()?).into()),
+                409 => Err(ReposCreateDeploymentError::Status409.into()),
+                422 => Err(ReposCreateDeploymentError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -8363,19 +9428,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#create-a-deployment-branch-policy)
     ///
     /// ---
-    pub async fn create_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, body: PostReposCreateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, ReposCreateDeploymentBranchPolicyError> {
+    pub async fn create_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, body: PostReposCreateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeploymentBranchPolicy::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeploymentBranchPolicy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8387,9 +9452,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateDeploymentBranchPolicyError::Status404),
-                303 => Err(ReposCreateDeploymentBranchPolicyError::Status303),
-                code => Err(ReposCreateDeploymentBranchPolicyError::Generic { code }),
+                404 => Err(ReposCreateDeploymentBranchPolicyError::Status404.into()),
+                303 => Err(ReposCreateDeploymentBranchPolicyError::Status303.into()),
+                code => Err(ReposCreateDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -8406,19 +9471,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, body: PostReposCreateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, ReposCreateDeploymentBranchPolicyError> {
+    pub fn create_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, body: PostReposCreateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeploymentBranchPolicy::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeploymentBranchPolicy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8430,9 +9495,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateDeploymentBranchPolicyError::Status404),
-                303 => Err(ReposCreateDeploymentBranchPolicyError::Status303),
-                code => Err(ReposCreateDeploymentBranchPolicyError::Generic { code }),
+                404 => Err(ReposCreateDeploymentBranchPolicyError::Status404.into()),
+                303 => Err(ReposCreateDeploymentBranchPolicyError::Status303.into()),
+                code => Err(ReposCreateDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -8452,19 +9517,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#create-a-custom-deployment-protection-rule-on-an-environment)
     ///
     /// ---
-    pub async fn create_deployment_protection_rule_async(&self, environment_name: &str, repo: &str, owner: &str, body: PostReposCreateDeploymentProtectionRule) -> Result<DeploymentProtectionRule, ReposCreateDeploymentProtectionRuleError> {
+    pub async fn create_deployment_protection_rule_async(&self, environment_name: &str, repo: &str, owner: &str, body: PostReposCreateDeploymentProtectionRule) -> Result<DeploymentProtectionRule, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules", super::GITHUB_BASE_API_URL, environment_name, repo, owner);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeploymentProtectionRule::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeploymentProtectionRule>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8476,7 +9541,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposCreateDeploymentProtectionRuleError::Generic { code }),
+                code => Err(ReposCreateDeploymentProtectionRuleError::Generic { code }.into()),
             }
         }
     }
@@ -8497,19 +9562,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_deployment_protection_rule(&self, environment_name: &str, repo: &str, owner: &str, body: PostReposCreateDeploymentProtectionRule) -> Result<DeploymentProtectionRule, ReposCreateDeploymentProtectionRuleError> {
+    pub fn create_deployment_protection_rule(&self, environment_name: &str, repo: &str, owner: &str, body: PostReposCreateDeploymentProtectionRule) -> Result<DeploymentProtectionRule, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules", super::GITHUB_BASE_API_URL, environment_name, repo, owner);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeploymentProtectionRule::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeploymentProtectionRule>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8521,7 +9586,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposCreateDeploymentProtectionRuleError::Generic { code }),
+                code => Err(ReposCreateDeploymentProtectionRuleError::Generic { code }.into()),
             }
         }
     }
@@ -8537,19 +9602,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_deployment_status](https://docs.github.com/rest/deployments/statuses#create-a-deployment-status)
     ///
     /// ---
-    pub async fn create_deployment_status_async(&self, owner: &str, repo: &str, deployment_id: i32, body: PostReposCreateDeploymentStatus) -> Result<DeploymentStatus, ReposCreateDeploymentStatusError> {
+    pub async fn create_deployment_status_async(&self, owner: &str, repo: &str, deployment_id: i32, body: PostReposCreateDeploymentStatus) -> Result<DeploymentStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeploymentStatus::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeploymentStatus>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8561,8 +9626,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeploymentStatusError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateDeploymentStatusError::Generic { code }),
+                422 => Err(ReposCreateDeploymentStatusError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateDeploymentStatusError::Generic { code }.into()),
             }
         }
     }
@@ -8579,19 +9644,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_deployment_status(&self, owner: &str, repo: &str, deployment_id: i32, body: PostReposCreateDeploymentStatus) -> Result<DeploymentStatus, ReposCreateDeploymentStatusError> {
+    pub fn create_deployment_status(&self, owner: &str, repo: &str, deployment_id: i32, body: PostReposCreateDeploymentStatus) -> Result<DeploymentStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDeploymentStatus::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDeploymentStatus>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8603,8 +9668,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateDeploymentStatusError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateDeploymentStatusError::Generic { code }),
+                422 => Err(ReposCreateDeploymentStatusError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateDeploymentStatusError::Generic { code }.into()),
             }
         }
     }
@@ -8624,19 +9689,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_dispatch_event](https://docs.github.com/rest/repos/repos#create-a-repository-dispatch-event)
     ///
     /// ---
-    pub async fn create_dispatch_event_async(&self, owner: &str, repo: &str, body: PostReposCreateDispatchEvent) -> Result<(), ReposCreateDispatchEventError> {
+    pub async fn create_dispatch_event_async(&self, owner: &str, repo: &str, body: PostReposCreateDispatchEvent) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dispatches", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDispatchEvent::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDispatchEvent>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8648,9 +9713,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateDispatchEventError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateDispatchEventError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateDispatchEventError::Generic { code }),
+                404 => Err(ReposCreateDispatchEventError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateDispatchEventError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateDispatchEventError::Generic { code }.into()),
             }
         }
     }
@@ -8671,19 +9736,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_dispatch_event(&self, owner: &str, repo: &str, body: PostReposCreateDispatchEvent) -> Result<(), ReposCreateDispatchEventError> {
+    pub fn create_dispatch_event(&self, owner: &str, repo: &str, body: PostReposCreateDispatchEvent) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dispatches", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateDispatchEvent::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateDispatchEvent>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8695,9 +9760,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateDispatchEventError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateDispatchEventError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateDispatchEventError::Generic { code }),
+                404 => Err(ReposCreateDispatchEventError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposCreateDispatchEventError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateDispatchEventError::Generic { code }.into()),
             }
         }
     }
@@ -8713,19 +9778,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_for_authenticated_user_async(&self, body: PostReposCreateForAuthenticatedUser) -> Result<FullRepository, ReposCreateForAuthenticatedUserError> {
+    pub async fn create_for_authenticated_user_async(&self, body: PostReposCreateForAuthenticatedUser) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/user/repos", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8737,13 +9802,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(ReposCreateForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                304 => Err(ReposCreateForAuthenticatedUserError::Status304),
-                404 => Err(ReposCreateForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(ReposCreateForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                400 => Err(ReposCreateForAuthenticatedUserError::Status400(github_response.to_json_async().await?)),
-                code => Err(ReposCreateForAuthenticatedUserError::Generic { code }),
+                401 => Err(ReposCreateForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                304 => Err(ReposCreateForAuthenticatedUserError::Status304.into()),
+                404 => Err(ReposCreateForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(ReposCreateForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                400 => Err(ReposCreateForAuthenticatedUserError::Status400(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -8760,19 +9825,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_authenticated_user(&self, body: PostReposCreateForAuthenticatedUser) -> Result<FullRepository, ReposCreateForAuthenticatedUserError> {
+    pub fn create_for_authenticated_user(&self, body: PostReposCreateForAuthenticatedUser) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/user/repos", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8784,13 +9849,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(ReposCreateForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                304 => Err(ReposCreateForAuthenticatedUserError::Status304),
-                404 => Err(ReposCreateForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ReposCreateForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                400 => Err(ReposCreateForAuthenticatedUserError::Status400(github_response.to_json()?)),
-                code => Err(ReposCreateForAuthenticatedUserError::Generic { code }),
+                401 => Err(ReposCreateForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                304 => Err(ReposCreateForAuthenticatedUserError::Status304.into()),
+                404 => Err(ReposCreateForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(ReposCreateForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                422 => Err(ReposCreateForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                400 => Err(ReposCreateForAuthenticatedUserError::Status400(github_response.to_json()?).into()),
+                code => Err(ReposCreateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -8810,19 +9875,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/repos/forks#create-a-fork)
     ///
     /// ---
-    pub async fn create_fork_async(&self, owner: &str, repo: &str, body: PostReposCreateFork) -> Result<FullRepository, ReposCreateForkError> {
+    pub async fn create_fork_async(&self, owner: &str, repo: &str, body: PostReposCreateFork) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateFork::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateFork>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8834,11 +9899,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposCreateForkError::Status400(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateForkError::Status422(github_response.to_json_async().await?)),
-                403 => Err(ReposCreateForkError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposCreateForkError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposCreateForkError::Generic { code }),
+                400 => Err(ReposCreateForkError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateForkError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(ReposCreateForkError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposCreateForkError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateForkError::Generic { code }.into()),
             }
         }
     }
@@ -8859,19 +9924,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_fork(&self, owner: &str, repo: &str, body: PostReposCreateFork) -> Result<FullRepository, ReposCreateForkError> {
+    pub fn create_fork(&self, owner: &str, repo: &str, body: PostReposCreateFork) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateFork::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateFork>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8883,11 +9948,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposCreateForkError::Status400(github_response.to_json()?)),
-                422 => Err(ReposCreateForkError::Status422(github_response.to_json()?)),
-                403 => Err(ReposCreateForkError::Status403(github_response.to_json()?)),
-                404 => Err(ReposCreateForkError::Status404(github_response.to_json()?)),
-                code => Err(ReposCreateForkError::Generic { code }),
+                400 => Err(ReposCreateForkError::Status400(github_response.to_json()?).into()),
+                422 => Err(ReposCreateForkError::Status422(github_response.to_json()?).into()),
+                403 => Err(ReposCreateForkError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposCreateForkError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposCreateForkError::Generic { code }.into()),
             }
         }
     }
@@ -8903,19 +9968,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_in_org](https://docs.github.com/rest/repos/repos#create-an-organization-repository)
     ///
     /// ---
-    pub async fn create_in_org_async(&self, org: &str, body: PostReposCreateInOrg) -> Result<FullRepository, ReposCreateInOrgError> {
+    pub async fn create_in_org_async(&self, org: &str, body: PostReposCreateInOrg) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8927,9 +9992,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateInOrgError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateInOrgError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateInOrgError::Generic { code }),
+                403 => Err(ReposCreateInOrgError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateInOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -8946,19 +10011,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_in_org(&self, org: &str, body: PostReposCreateInOrg) -> Result<FullRepository, ReposCreateInOrgError> {
+    pub fn create_in_org(&self, org: &str, body: PostReposCreateInOrg) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -8970,9 +10035,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateInOrgError::Status403(github_response.to_json()?)),
-                422 => Err(ReposCreateInOrgError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateInOrgError::Generic { code }),
+                403 => Err(ReposCreateInOrgError::Status403(github_response.to_json()?).into()),
+                422 => Err(ReposCreateInOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -8989,19 +10054,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_or_update_custom_properties_values](https://docs.github.com/rest/repos/custom-properties#create-or-update-custom-property-values-for-a-repository)
     ///
     /// ---
-    pub async fn create_or_update_custom_properties_values_async(&self, owner: &str, repo: &str, body: PatchReposCreateOrUpdateCustomPropertiesValues) -> Result<(), ReposCreateOrUpdateCustomPropertiesValuesError> {
+    pub async fn create_or_update_custom_properties_values_async(&self, owner: &str, repo: &str, body: PatchReposCreateOrUpdateCustomPropertiesValues) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/properties/values", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposCreateOrUpdateCustomPropertiesValues::from_json(body)?),
+            body: Some(C::from_json::<PatchReposCreateOrUpdateCustomPropertiesValues>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9013,10 +10078,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Generic { code }),
+                403 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Generic { code }.into()),
             }
         }
     }
@@ -9034,19 +10099,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_custom_properties_values(&self, owner: &str, repo: &str, body: PatchReposCreateOrUpdateCustomPropertiesValues) -> Result<(), ReposCreateOrUpdateCustomPropertiesValuesError> {
+    pub fn create_or_update_custom_properties_values(&self, owner: &str, repo: &str, body: PatchReposCreateOrUpdateCustomPropertiesValues) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/properties/values", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposCreateOrUpdateCustomPropertiesValues::from_json(body)?),
+            body: Some(C::from_json::<PatchReposCreateOrUpdateCustomPropertiesValues>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9058,10 +10123,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status403(github_response.to_json()?)),
-                404 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Generic { code }),
+                403 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Generic { code }.into()),
             }
         }
     }
@@ -9083,19 +10148,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_or_update_environment](https://docs.github.com/rest/deployments/environments#create-or-update-an-environment)
     ///
     /// ---
-    pub async fn create_or_update_environment_async(&self, owner: &str, repo: &str, environment_name: &str, body: PutReposCreateOrUpdateEnvironment) -> Result<Environment, ReposCreateOrUpdateEnvironmentError> {
+    pub async fn create_or_update_environment_async(&self, owner: &str, repo: &str, environment_name: &str, body: PutReposCreateOrUpdateEnvironment) -> Result<Environment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposCreateOrUpdateEnvironment::from_json(body)?),
+            body: Some(C::from_json::<PutReposCreateOrUpdateEnvironment>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9107,8 +10172,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateOrUpdateEnvironmentError::Generic { code }),
+                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateOrUpdateEnvironmentError::Generic { code }.into()),
             }
         }
     }
@@ -9131,19 +10196,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_environment(&self, owner: &str, repo: &str, environment_name: &str, body: PutReposCreateOrUpdateEnvironment) -> Result<Environment, ReposCreateOrUpdateEnvironmentError> {
+    pub fn create_or_update_environment(&self, owner: &str, repo: &str, environment_name: &str, body: PutReposCreateOrUpdateEnvironment) -> Result<Environment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposCreateOrUpdateEnvironment::from_json(body)?),
+            body: Some(C::from_json::<PutReposCreateOrUpdateEnvironment>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9155,8 +10220,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateOrUpdateEnvironmentError::Generic { code }),
+                422 => Err(ReposCreateOrUpdateEnvironmentError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateOrUpdateEnvironmentError::Generic { code }.into()),
             }
         }
     }
@@ -9175,19 +10240,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_or_update_file_contents](https://docs.github.com/rest/repos/contents#create-or-update-file-contents)
     ///
     /// ---
-    pub async fn create_or_update_file_contents_async(&self, owner: &str, repo: &str, path: &str, body: PutReposCreateOrUpdateFileContents) -> Result<FileCommit, ReposCreateOrUpdateFileContentsError> {
+    pub async fn create_or_update_file_contents_async(&self, owner: &str, repo: &str, path: &str, body: PutReposCreateOrUpdateFileContents) -> Result<FileCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/contents/{}", super::GITHUB_BASE_API_URL, owner, repo, path);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposCreateOrUpdateFileContents::from_json(body)?),
+            body: Some(C::from_json::<PutReposCreateOrUpdateFileContents>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9199,11 +10264,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(github_response.to_json_async().await?)),
-                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(github_response.to_json_async().await?)),
-                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposCreateOrUpdateFileContentsError::Generic { code }),
+                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(github_response.to_json_async().await?).into()),
+                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateOrUpdateFileContentsError::Generic { code }.into()),
             }
         }
     }
@@ -9223,19 +10288,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_file_contents(&self, owner: &str, repo: &str, path: &str, body: PutReposCreateOrUpdateFileContents) -> Result<FileCommit, ReposCreateOrUpdateFileContentsError> {
+    pub fn create_or_update_file_contents(&self, owner: &str, repo: &str, path: &str, body: PutReposCreateOrUpdateFileContents) -> Result<FileCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/contents/{}", super::GITHUB_BASE_API_URL, owner, repo, path);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposCreateOrUpdateFileContents::from_json(body)?),
+            body: Some(C::from_json::<PutReposCreateOrUpdateFileContents>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9247,11 +10312,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(github_response.to_json()?)),
-                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(github_response.to_json()?)),
-                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(github_response.to_json()?)),
-                code => Err(ReposCreateOrUpdateFileContentsError::Generic { code }),
+                201 => Err(ReposCreateOrUpdateFileContentsError::Status201(github_response.to_json()?).into()),
+                404 => Err(ReposCreateOrUpdateFileContentsError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposCreateOrUpdateFileContentsError::Status422(github_response.to_json()?).into()),
+                409 => Err(ReposCreateOrUpdateFileContentsError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposCreateOrUpdateFileContentsError::Generic { code }.into()),
             }
         }
     }
@@ -9265,19 +10330,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_org_ruleset](https://docs.github.com/rest/orgs/rules#create-an-organization-repository-ruleset)
     ///
     /// ---
-    pub async fn create_org_ruleset_async(&self, org: &str, body: PostReposCreateOrgRuleset) -> Result<RepositoryRuleset, ReposCreateOrgRulesetError> {
+    pub async fn create_org_ruleset_async(&self, org: &str, body: PostReposCreateOrgRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateOrgRuleset::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateOrgRuleset>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9289,9 +10354,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateOrgRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposCreateOrgRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposCreateOrgRulesetError::Generic { code }),
+                404 => Err(ReposCreateOrgRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposCreateOrgRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -9306,19 +10371,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_org_ruleset(&self, org: &str, body: PostReposCreateOrgRuleset) -> Result<RepositoryRuleset, ReposCreateOrgRulesetError> {
+    pub fn create_org_ruleset(&self, org: &str, body: PostReposCreateOrgRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateOrgRuleset::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateOrgRuleset>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9330,9 +10395,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateOrgRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposCreateOrgRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposCreateOrgRulesetError::Generic { code }),
+                404 => Err(ReposCreateOrgRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposCreateOrgRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposCreateOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -9348,19 +10413,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_pages_deployment](https://docs.github.com/rest/pages/pages#create-a-github-pages-deployment)
     ///
     /// ---
-    pub async fn create_pages_deployment_async(&self, owner: &str, repo: &str, body: PostReposCreatePagesDeployment) -> Result<PageDeployment, ReposCreatePagesDeploymentError> {
+    pub async fn create_pages_deployment_async(&self, owner: &str, repo: &str, body: PostReposCreatePagesDeployment) -> Result<PageDeployment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/deployments", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreatePagesDeployment::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreatePagesDeployment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9372,10 +10437,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposCreatePagesDeploymentError::Status400(github_response.to_json_async().await?)),
-                422 => Err(ReposCreatePagesDeploymentError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposCreatePagesDeploymentError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposCreatePagesDeploymentError::Generic { code }),
+                400 => Err(ReposCreatePagesDeploymentError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreatePagesDeploymentError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposCreatePagesDeploymentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreatePagesDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -9392,19 +10457,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_pages_deployment(&self, owner: &str, repo: &str, body: PostReposCreatePagesDeployment) -> Result<PageDeployment, ReposCreatePagesDeploymentError> {
+    pub fn create_pages_deployment(&self, owner: &str, repo: &str, body: PostReposCreatePagesDeployment) -> Result<PageDeployment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/deployments", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreatePagesDeployment::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreatePagesDeployment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9416,10 +10481,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposCreatePagesDeploymentError::Status400(github_response.to_json()?)),
-                422 => Err(ReposCreatePagesDeploymentError::Status422(github_response.to_json()?)),
-                404 => Err(ReposCreatePagesDeploymentError::Status404(github_response.to_json()?)),
-                code => Err(ReposCreatePagesDeploymentError::Generic { code }),
+                400 => Err(ReposCreatePagesDeploymentError::Status400(github_response.to_json()?).into()),
+                422 => Err(ReposCreatePagesDeploymentError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposCreatePagesDeploymentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposCreatePagesDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -9437,19 +10502,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_pages_site](https://docs.github.com/rest/pages/pages#create-a-apiname-pages-site)
     ///
     /// ---
-    pub async fn create_pages_site_async(&self, owner: &str, repo: &str, body: PostReposCreatePagesSite) -> Result<Page, ReposCreatePagesSiteError> {
+    pub async fn create_pages_site_async(&self, owner: &str, repo: &str, body: PostReposCreatePagesSite) -> Result<Page, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreatePagesSite::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreatePagesSite>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9461,9 +10526,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreatePagesSiteError::Status422(github_response.to_json_async().await?)),
-                409 => Err(ReposCreatePagesSiteError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposCreatePagesSiteError::Generic { code }),
+                422 => Err(ReposCreatePagesSiteError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(ReposCreatePagesSiteError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreatePagesSiteError::Generic { code }.into()),
             }
         }
     }
@@ -9482,19 +10547,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_pages_site(&self, owner: &str, repo: &str, body: PostReposCreatePagesSite) -> Result<Page, ReposCreatePagesSiteError> {
+    pub fn create_pages_site(&self, owner: &str, repo: &str, body: PostReposCreatePagesSite) -> Result<Page, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreatePagesSite::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreatePagesSite>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9506,9 +10571,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposCreatePagesSiteError::Status422(github_response.to_json()?)),
-                409 => Err(ReposCreatePagesSiteError::Status409(github_response.to_json()?)),
-                code => Err(ReposCreatePagesSiteError::Generic { code }),
+                422 => Err(ReposCreatePagesSiteError::Status422(github_response.to_json()?).into()),
+                409 => Err(ReposCreatePagesSiteError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposCreatePagesSiteError::Generic { code }.into()),
             }
         }
     }
@@ -9524,19 +10589,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_release](https://docs.github.com/rest/releases/releases#create-a-release)
     ///
     /// ---
-    pub async fn create_release_async(&self, owner: &str, repo: &str, body: PostReposCreateRelease) -> Result<Release, ReposCreateReleaseError> {
+    pub async fn create_release_async(&self, owner: &str, repo: &str, body: PostReposCreateRelease) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateRelease::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateRelease>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9548,9 +10613,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateReleaseError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateReleaseError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposCreateReleaseError::Generic { code }),
+                404 => Err(ReposCreateReleaseError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateReleaseError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -9567,19 +10632,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_release(&self, owner: &str, repo: &str, body: PostReposCreateRelease) -> Result<Release, ReposCreateReleaseError> {
+    pub fn create_release(&self, owner: &str, repo: &str, body: PostReposCreateRelease) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateRelease::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateRelease>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9591,9 +10656,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateReleaseError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateReleaseError::Status422(github_response.to_json()?)),
-                code => Err(ReposCreateReleaseError::Generic { code }),
+                404 => Err(ReposCreateReleaseError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposCreateReleaseError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposCreateReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -9607,19 +10672,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_repo_ruleset](https://docs.github.com/rest/repos/rules#create-a-repository-ruleset)
     ///
     /// ---
-    pub async fn create_repo_ruleset_async(&self, owner: &str, repo: &str, body: PostReposCreateRepoRuleset) -> Result<RepositoryRuleset, ReposCreateRepoRulesetError> {
+    pub async fn create_repo_ruleset_async(&self, owner: &str, repo: &str, body: PostReposCreateRepoRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateRepoRuleset::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateRepoRuleset>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9631,9 +10696,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateRepoRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposCreateRepoRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposCreateRepoRulesetError::Generic { code }),
+                404 => Err(ReposCreateRepoRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposCreateRepoRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -9648,19 +10713,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_repo_ruleset(&self, owner: &str, repo: &str, body: PostReposCreateRepoRuleset) -> Result<RepositoryRuleset, ReposCreateRepoRulesetError> {
+    pub fn create_repo_ruleset(&self, owner: &str, repo: &str, body: PostReposCreateRepoRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateRepoRuleset::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateRepoRuleset>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9672,9 +10737,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateRepoRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposCreateRepoRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposCreateRepoRulesetError::Generic { code }),
+                404 => Err(ReposCreateRepoRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposCreateRepoRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposCreateRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -9692,19 +10757,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---create-a-tag-protection-state-for-a-repository)
     ///
     /// ---
-    pub async fn create_tag_protection_async(&self, owner: &str, repo: &str, body: PostReposCreateTagProtection) -> Result<TagProtection, ReposCreateTagProtectionError> {
+    pub async fn create_tag_protection_async(&self, owner: &str, repo: &str, body: PostReposCreateTagProtection) -> Result<TagProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tags/protection", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateTagProtection::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateTagProtection>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9716,9 +10781,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateTagProtectionError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposCreateTagProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposCreateTagProtectionError::Generic { code }),
+                403 => Err(ReposCreateTagProtectionError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposCreateTagProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateTagProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -9737,19 +10802,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_tag_protection(&self, owner: &str, repo: &str, body: PostReposCreateTagProtection) -> Result<TagProtection, ReposCreateTagProtectionError> {
+    pub fn create_tag_protection(&self, owner: &str, repo: &str, body: PostReposCreateTagProtection) -> Result<TagProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tags/protection", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateTagProtection::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateTagProtection>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9761,9 +10826,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposCreateTagProtectionError::Status403(github_response.to_json()?)),
-                404 => Err(ReposCreateTagProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposCreateTagProtectionError::Generic { code }),
+                403 => Err(ReposCreateTagProtectionError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposCreateTagProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposCreateTagProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -9779,19 +10844,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_using_template](https://docs.github.com/rest/repos/repos#create-a-repository-using-a-template)
     ///
     /// ---
-    pub async fn create_using_template_async(&self, template_owner: &str, template_repo: &str, body: PostReposCreateUsingTemplate) -> Result<FullRepository, ReposCreateUsingTemplateError> {
+    pub async fn create_using_template_async(&self, template_owner: &str, template_repo: &str, body: PostReposCreateUsingTemplate) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/generate", super::GITHUB_BASE_API_URL, template_owner, template_repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateUsingTemplate::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateUsingTemplate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9803,7 +10868,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposCreateUsingTemplateError::Generic { code }),
+                code => Err(ReposCreateUsingTemplateError::Generic { code }.into()),
             }
         }
     }
@@ -9820,19 +10885,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_using_template(&self, template_owner: &str, template_repo: &str, body: PostReposCreateUsingTemplate) -> Result<FullRepository, ReposCreateUsingTemplateError> {
+    pub fn create_using_template(&self, template_owner: &str, template_repo: &str, body: PostReposCreateUsingTemplate) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/generate", super::GITHUB_BASE_API_URL, template_owner, template_repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateUsingTemplate::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateUsingTemplate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9844,7 +10909,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposCreateUsingTemplateError::Generic { code }),
+                code => Err(ReposCreateUsingTemplateError::Generic { code }.into()),
             }
         }
     }
@@ -9859,19 +10924,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/repos/webhooks#create-a-repository-webhook)
     ///
     /// ---
-    pub async fn create_webhook_async(&self, owner: &str, repo: &str, body: PostReposCreateWebhook) -> Result<Hook, ReposCreateWebhookError> {
+    pub async fn create_webhook_async(&self, owner: &str, repo: &str, body: PostReposCreateWebhook) -> Result<Hook, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateWebhook>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9883,10 +10948,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateWebhookError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposCreateWebhookError::Status422(github_response.to_json_async().await?)),
-                403 => Err(ReposCreateWebhookError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposCreateWebhookError::Generic { code }),
+                404 => Err(ReposCreateWebhookError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposCreateWebhookError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(ReposCreateWebhookError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposCreateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -9902,19 +10967,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_webhook(&self, owner: &str, repo: &str, body: PostReposCreateWebhook) -> Result<Hook, ReposCreateWebhookError> {
+    pub fn create_webhook(&self, owner: &str, repo: &str, body: PostReposCreateWebhook) -> Result<Hook, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposCreateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PostReposCreateWebhook>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9926,10 +10991,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposCreateWebhookError::Status404(github_response.to_json()?)),
-                422 => Err(ReposCreateWebhookError::Status422(github_response.to_json()?)),
-                403 => Err(ReposCreateWebhookError::Status403(github_response.to_json()?)),
-                code => Err(ReposCreateWebhookError::Generic { code }),
+                404 => Err(ReposCreateWebhookError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposCreateWebhookError::Status422(github_response.to_json()?).into()),
+                403 => Err(ReposCreateWebhookError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposCreateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -9941,19 +11006,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for decline_invitation_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#decline-a-repository-invitation)
     ///
     /// ---
-    pub async fn decline_invitation_for_authenticated_user_async(&self, invitation_id: i32) -> Result<(), ReposDeclineInvitationForAuthenticatedUserError> {
+    pub async fn decline_invitation_for_authenticated_user_async(&self, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -9965,11 +11030,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(github_response.to_json_async().await?)),
-                304 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status304),
-                404 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposDeclineInvitationForAuthenticatedUserError::Generic { code }),
+                409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(github_response.to_json_async().await?).into()),
+                304 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status304.into()),
+                404 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeclineInvitationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -9982,7 +11047,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn decline_invitation_for_authenticated_user(&self, invitation_id: i32) -> Result<(), ReposDeclineInvitationForAuthenticatedUserError> {
+    pub fn decline_invitation_for_authenticated_user(&self, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/repository_invitations/{}", super::GITHUB_BASE_API_URL, invitation_id);
 
@@ -9994,7 +11059,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10006,11 +11071,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(github_response.to_json()?)),
-                304 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status304),
-                404 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                code => Err(ReposDeclineInvitationForAuthenticatedUserError::Generic { code }),
+                409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(github_response.to_json()?).into()),
+                304 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status304.into()),
+                404 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposDeclineInvitationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -10029,19 +11094,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete](https://docs.github.com/rest/repos/repos#delete-a-repository)
     ///
     /// ---
-    pub async fn delete_async(&self, owner: &str, repo: &str) -> Result<(), ReposDeleteError> {
+    pub async fn delete_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10053,10 +11118,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteError::Status403(github_response.to_json_async().await?)),
-                307 => Err(ReposDeleteError::Status307(github_response.to_json_async().await?)),
-                404 => Err(ReposDeleteError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteError::Generic { code }),
+                403 => Err(ReposDeleteError::Status403(github_response.to_json_async().await?).into()),
+                307 => Err(ReposDeleteError::Status307(github_response.to_json_async().await?).into()),
+                404 => Err(ReposDeleteError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -10076,7 +11141,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete(&self, owner: &str, repo: &str) -> Result<(), ReposDeleteError> {
+    pub fn delete(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -10088,7 +11153,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10100,10 +11165,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteError::Status403(github_response.to_json()?)),
-                307 => Err(ReposDeleteError::Status307(github_response.to_json()?)),
-                404 => Err(ReposDeleteError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeleteError::Generic { code }),
+                403 => Err(ReposDeleteError::Status403(github_response.to_json()?).into()),
+                307 => Err(ReposDeleteError::Status307(github_response.to_json()?).into()),
+                404 => Err(ReposDeleteError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -10119,19 +11184,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_access_restrictions](https://docs.github.com/rest/branches/branch-protection#delete-access-restrictions)
     ///
     /// ---
-    pub async fn delete_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteAccessRestrictionsError> {
+    pub async fn delete_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10143,7 +11208,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteAccessRestrictionsError::Generic { code }),
+                code => Err(ReposDeleteAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -10160,7 +11225,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_access_restrictions(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteAccessRestrictionsError> {
+    pub fn delete_access_restrictions(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -10172,7 +11237,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10184,7 +11249,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteAccessRestrictionsError::Generic { code }),
+                code => Err(ReposDeleteAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -10200,19 +11265,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#delete-admin-branch-protection)
     ///
     /// ---
-    pub async fn delete_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteAdminBranchProtectionError> {
+    pub async fn delete_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/enforce_admins", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10224,8 +11289,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteAdminBranchProtectionError::Generic { code }),
+                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteAdminBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -10242,7 +11307,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_admin_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteAdminBranchProtectionError> {
+    pub fn delete_admin_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/enforce_admins", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -10254,7 +11319,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10266,8 +11331,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeleteAdminBranchProtectionError::Generic { code }),
+                404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeleteAdminBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -10281,19 +11346,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_an_environment](https://docs.github.com/rest/deployments/environments#delete-an-environment)
     ///
     /// ---
-    pub async fn delete_an_environment_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<(), ReposDeleteAnEnvironmentError> {
+    pub async fn delete_an_environment_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10305,7 +11370,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteAnEnvironmentError::Generic { code }),
+                code => Err(ReposDeleteAnEnvironmentError::Generic { code }.into()),
             }
         }
     }
@@ -10320,7 +11385,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_an_environment(&self, owner: &str, repo: &str, environment_name: &str) -> Result<(), ReposDeleteAnEnvironmentError> {
+    pub fn delete_an_environment(&self, owner: &str, repo: &str, environment_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -10332,7 +11397,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10344,7 +11409,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteAnEnvironmentError::Generic { code }),
+                code => Err(ReposDeleteAnEnvironmentError::Generic { code }.into()),
             }
         }
     }
@@ -10360,19 +11425,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_autolink](https://docs.github.com/rest/repos/autolinks#delete-an-autolink-reference-from-a-repository)
     ///
     /// ---
-    pub async fn delete_autolink_async(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<(), ReposDeleteAutolinkError> {
+    pub async fn delete_autolink_async(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10384,8 +11449,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteAutolinkError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteAutolinkError::Generic { code }),
+                404 => Err(ReposDeleteAutolinkError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteAutolinkError::Generic { code }.into()),
             }
         }
     }
@@ -10402,7 +11467,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_autolink(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<(), ReposDeleteAutolinkError> {
+    pub fn delete_autolink(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
 
@@ -10414,7 +11479,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10426,8 +11491,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteAutolinkError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeleteAutolinkError::Generic { code }),
+                404 => Err(ReposDeleteAutolinkError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeleteAutolinkError::Generic { code }.into()),
             }
         }
     }
@@ -10441,19 +11506,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_branch_protection](https://docs.github.com/rest/branches/branch-protection#delete-branch-protection)
     ///
     /// ---
-    pub async fn delete_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteBranchProtectionError> {
+    pub async fn delete_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10465,8 +11530,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteBranchProtectionError::Generic { code }),
+                403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -10481,7 +11546,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteBranchProtectionError> {
+    pub fn delete_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -10493,7 +11558,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10505,8 +11570,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json()?)),
-                code => Err(ReposDeleteBranchProtectionError::Generic { code }),
+                403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposDeleteBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -10518,19 +11583,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_commit_comment](https://docs.github.com/rest/commits/comments#delete-a-commit-comment)
     ///
     /// ---
-    pub async fn delete_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), ReposDeleteCommitCommentError> {
+    pub async fn delete_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10542,8 +11607,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteCommitCommentError::Generic { code }),
+                404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -10556,7 +11621,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_commit_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), ReposDeleteCommitCommentError> {
+    pub fn delete_commit_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -10568,7 +11633,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10580,8 +11645,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeleteCommitCommentError::Generic { code }),
+                404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeleteCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -10597,19 +11662,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#delete-commit-signature-protection)
     ///
     /// ---
-    pub async fn delete_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteCommitSignatureProtectionError> {
+    pub async fn delete_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10621,8 +11686,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteCommitSignatureProtectionError::Generic { code }),
+                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteCommitSignatureProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -10639,7 +11704,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeleteCommitSignatureProtectionError> {
+    pub fn delete_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -10651,7 +11716,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10663,8 +11728,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeleteCommitSignatureProtectionError::Generic { code }),
+                404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeleteCommitSignatureProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -10678,19 +11743,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#delete-a-deploy-key)
     ///
     /// ---
-    pub async fn delete_deploy_key_async(&self, owner: &str, repo: &str, key_id: i32) -> Result<(), ReposDeleteDeployKeyError> {
+    pub async fn delete_deploy_key_async(&self, owner: &str, repo: &str, key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/keys/{}", super::GITHUB_BASE_API_URL, owner, repo, key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10702,7 +11767,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteDeployKeyError::Generic { code }),
+                code => Err(ReposDeleteDeployKeyError::Generic { code }.into()),
             }
         }
     }
@@ -10717,7 +11782,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_deploy_key(&self, owner: &str, repo: &str, key_id: i32) -> Result<(), ReposDeleteDeployKeyError> {
+    pub fn delete_deploy_key(&self, owner: &str, repo: &str, key_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/keys/{}", super::GITHUB_BASE_API_URL, owner, repo, key_id);
 
@@ -10729,7 +11794,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10741,7 +11806,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteDeployKeyError::Generic { code }),
+                code => Err(ReposDeleteDeployKeyError::Generic { code }.into()),
             }
         }
     }
@@ -10764,19 +11829,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_deployment](https://docs.github.com/rest/deployments/deployments#delete-a-deployment)
     ///
     /// ---
-    pub async fn delete_deployment_async(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<(), ReposDeleteDeploymentError> {
+    pub async fn delete_deployment_async(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10788,9 +11853,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposDeleteDeploymentError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteDeploymentError::Generic { code }),
+                404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposDeleteDeploymentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -10814,7 +11879,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_deployment(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<(), ReposDeleteDeploymentError> {
+    pub fn delete_deployment(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
@@ -10826,7 +11891,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10838,9 +11903,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json()?)),
-                422 => Err(ReposDeleteDeploymentError::Status422(github_response.to_json()?)),
-                code => Err(ReposDeleteDeploymentError::Generic { code }),
+                404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposDeleteDeploymentError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposDeleteDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -10856,19 +11921,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#delete-a-deployment-branch-policy)
     ///
     /// ---
-    pub async fn delete_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<(), ReposDeleteDeploymentBranchPolicyError> {
+    pub async fn delete_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, branch_policy_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10880,7 +11945,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteDeploymentBranchPolicyError::Generic { code }),
+                code => Err(ReposDeleteDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -10897,7 +11962,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<(), ReposDeleteDeploymentBranchPolicyError> {
+    pub fn delete_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, branch_policy_id);
 
@@ -10909,7 +11974,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10921,7 +11986,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteDeploymentBranchPolicyError::Generic { code }),
+                code => Err(ReposDeleteDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -10944,19 +12009,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_file](https://docs.github.com/rest/repos/contents#delete-a-file)
     ///
     /// ---
-    pub async fn delete_file_async(&self, owner: &str, repo: &str, path: &str, body: DeleteReposDeleteFile) -> Result<FileCommit, ReposDeleteFileError> {
+    pub async fn delete_file_async(&self, owner: &str, repo: &str, path: &str, body: DeleteReposDeleteFile) -> Result<FileCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/contents/{}", super::GITHUB_BASE_API_URL, owner, repo, path);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposDeleteFile::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposDeleteFile>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -10968,11 +12033,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeleteFileError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposDeleteFileError::Status404(github_response.to_json_async().await?)),
-                409 => Err(ReposDeleteFileError::Status409(github_response.to_json_async().await?)),
-                503 => Err(ReposDeleteFileError::Status503(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteFileError::Generic { code }),
+                422 => Err(ReposDeleteFileError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposDeleteFileError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(ReposDeleteFileError::Status409(github_response.to_json_async().await?).into()),
+                503 => Err(ReposDeleteFileError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteFileError::Generic { code }.into()),
             }
         }
     }
@@ -10996,19 +12061,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_file(&self, owner: &str, repo: &str, path: &str, body: DeleteReposDeleteFile) -> Result<FileCommit, ReposDeleteFileError> {
+    pub fn delete_file(&self, owner: &str, repo: &str, path: &str, body: DeleteReposDeleteFile) -> Result<FileCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/contents/{}", super::GITHUB_BASE_API_URL, owner, repo, path);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposDeleteFile::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposDeleteFile>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11020,11 +12085,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeleteFileError::Status422(github_response.to_json()?)),
-                404 => Err(ReposDeleteFileError::Status404(github_response.to_json()?)),
-                409 => Err(ReposDeleteFileError::Status409(github_response.to_json()?)),
-                503 => Err(ReposDeleteFileError::Status503(github_response.to_json()?)),
-                code => Err(ReposDeleteFileError::Generic { code }),
+                422 => Err(ReposDeleteFileError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposDeleteFileError::Status404(github_response.to_json()?).into()),
+                409 => Err(ReposDeleteFileError::Status409(github_response.to_json()?).into()),
+                503 => Err(ReposDeleteFileError::Status503(github_response.to_json()?).into()),
+                code => Err(ReposDeleteFileError::Generic { code }.into()),
             }
         }
     }
@@ -11036,19 +12101,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_invitation](https://docs.github.com/rest/collaborators/invitations#delete-a-repository-invitation)
     ///
     /// ---
-    pub async fn delete_invitation_async(&self, owner: &str, repo: &str, invitation_id: i32) -> Result<(), ReposDeleteInvitationError> {
+    pub async fn delete_invitation_async(&self, owner: &str, repo: &str, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/invitations/{}", super::GITHUB_BASE_API_URL, owner, repo, invitation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11060,7 +12125,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteInvitationError::Generic { code }),
+                code => Err(ReposDeleteInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -11073,7 +12138,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_invitation(&self, owner: &str, repo: &str, invitation_id: i32) -> Result<(), ReposDeleteInvitationError> {
+    pub fn delete_invitation(&self, owner: &str, repo: &str, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/invitations/{}", super::GITHUB_BASE_API_URL, owner, repo, invitation_id);
 
@@ -11085,7 +12150,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11097,7 +12162,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteInvitationError::Generic { code }),
+                code => Err(ReposDeleteInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -11111,19 +12176,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_org_ruleset](https://docs.github.com/rest/orgs/rules#delete-an-organization-repository-ruleset)
     ///
     /// ---
-    pub async fn delete_org_ruleset_async(&self, org: &str, ruleset_id: i32) -> Result<(), ReposDeleteOrgRulesetError> {
+    pub async fn delete_org_ruleset_async(&self, org: &str, ruleset_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/{}", super::GITHUB_BASE_API_URL, org, ruleset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11135,9 +12200,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteOrgRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposDeleteOrgRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteOrgRulesetError::Generic { code }),
+                404 => Err(ReposDeleteOrgRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposDeleteOrgRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -11152,7 +12217,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_org_ruleset(&self, org: &str, ruleset_id: i32) -> Result<(), ReposDeleteOrgRulesetError> {
+    pub fn delete_org_ruleset(&self, org: &str, ruleset_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/{}", super::GITHUB_BASE_API_URL, org, ruleset_id);
 
@@ -11164,7 +12229,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11176,9 +12241,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteOrgRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposDeleteOrgRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposDeleteOrgRulesetError::Generic { code }),
+                404 => Err(ReposDeleteOrgRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposDeleteOrgRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposDeleteOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -11196,19 +12261,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_pages_site](https://docs.github.com/rest/pages/pages#delete-a-apiname-pages-site)
     ///
     /// ---
-    pub async fn delete_pages_site_async(&self, owner: &str, repo: &str) -> Result<(), ReposDeletePagesSiteError> {
+    pub async fn delete_pages_site_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11220,10 +12285,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposDeletePagesSiteError::Status404(github_response.to_json_async().await?)),
-                409 => Err(ReposDeletePagesSiteError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposDeletePagesSiteError::Generic { code }),
+                422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposDeletePagesSiteError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(ReposDeletePagesSiteError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeletePagesSiteError::Generic { code }.into()),
             }
         }
     }
@@ -11242,7 +12307,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_pages_site(&self, owner: &str, repo: &str) -> Result<(), ReposDeletePagesSiteError> {
+    pub fn delete_pages_site(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11254,7 +12319,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11266,10 +12331,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json()?)),
-                404 => Err(ReposDeletePagesSiteError::Status404(github_response.to_json()?)),
-                409 => Err(ReposDeletePagesSiteError::Status409(github_response.to_json()?)),
-                code => Err(ReposDeletePagesSiteError::Generic { code }),
+                422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposDeletePagesSiteError::Status404(github_response.to_json()?).into()),
+                409 => Err(ReposDeletePagesSiteError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposDeletePagesSiteError::Generic { code }.into()),
             }
         }
     }
@@ -11283,19 +12348,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#delete-pull-request-review-protection)
     ///
     /// ---
-    pub async fn delete_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeletePullRequestReviewProtectionError> {
+    pub async fn delete_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11307,8 +12372,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeletePullRequestReviewProtectionError::Generic { code }),
+                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeletePullRequestReviewProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -11323,7 +12388,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposDeletePullRequestReviewProtectionError> {
+    pub fn delete_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -11335,7 +12400,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11347,8 +12412,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeletePullRequestReviewProtectionError::Generic { code }),
+                404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeletePullRequestReviewProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -11362,19 +12427,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_release](https://docs.github.com/rest/releases/releases#delete-a-release)
     ///
     /// ---
-    pub async fn delete_release_async(&self, owner: &str, repo: &str, release_id: i32) -> Result<(), ReposDeleteReleaseError> {
+    pub async fn delete_release_async(&self, owner: &str, repo: &str, release_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11386,7 +12451,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteReleaseError::Generic { code }),
+                code => Err(ReposDeleteReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -11401,7 +12466,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_release(&self, owner: &str, repo: &str, release_id: i32) -> Result<(), ReposDeleteReleaseError> {
+    pub fn delete_release(&self, owner: &str, repo: &str, release_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -11413,7 +12478,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11425,7 +12490,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteReleaseError::Generic { code }),
+                code => Err(ReposDeleteReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -11437,19 +12502,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_release_asset](https://docs.github.com/rest/releases/assets#delete-a-release-asset)
     ///
     /// ---
-    pub async fn delete_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32) -> Result<(), ReposDeleteReleaseAssetError> {
+    pub async fn delete_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/assets/{}", super::GITHUB_BASE_API_URL, owner, repo, asset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11461,7 +12526,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteReleaseAssetError::Generic { code }),
+                code => Err(ReposDeleteReleaseAssetError::Generic { code }.into()),
             }
         }
     }
@@ -11474,7 +12539,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_release_asset(&self, owner: &str, repo: &str, asset_id: i32) -> Result<(), ReposDeleteReleaseAssetError> {
+    pub fn delete_release_asset(&self, owner: &str, repo: &str, asset_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/assets/{}", super::GITHUB_BASE_API_URL, owner, repo, asset_id);
 
@@ -11486,7 +12551,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11498,7 +12563,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDeleteReleaseAssetError::Generic { code }),
+                code => Err(ReposDeleteReleaseAssetError::Generic { code }.into()),
             }
         }
     }
@@ -11512,19 +12577,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_repo_ruleset](https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset)
     ///
     /// ---
-    pub async fn delete_repo_ruleset_async(&self, owner: &str, repo: &str, ruleset_id: i32) -> Result<(), ReposDeleteRepoRulesetError> {
+    pub async fn delete_repo_ruleset_async(&self, owner: &str, repo: &str, ruleset_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets/{}", super::GITHUB_BASE_API_URL, owner, repo, ruleset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11536,9 +12601,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteRepoRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposDeleteRepoRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteRepoRulesetError::Generic { code }),
+                404 => Err(ReposDeleteRepoRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposDeleteRepoRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -11553,7 +12618,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_repo_ruleset(&self, owner: &str, repo: &str, ruleset_id: i32) -> Result<(), ReposDeleteRepoRulesetError> {
+    pub fn delete_repo_ruleset(&self, owner: &str, repo: &str, ruleset_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets/{}", super::GITHUB_BASE_API_URL, owner, repo, ruleset_id);
 
@@ -11565,7 +12630,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11577,9 +12642,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteRepoRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposDeleteRepoRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposDeleteRepoRulesetError::Generic { code }),
+                404 => Err(ReposDeleteRepoRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposDeleteRepoRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposDeleteRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -11597,19 +12662,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---delete-a-tag-protection-state-for-a-repository)
     ///
     /// ---
-    pub async fn delete_tag_protection_async(&self, owner: &str, repo: &str, tag_protection_id: i32) -> Result<(), ReposDeleteTagProtectionError> {
+    pub async fn delete_tag_protection_async(&self, owner: &str, repo: &str, tag_protection_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tags/protection/{}", super::GITHUB_BASE_API_URL, owner, repo, tag_protection_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11621,9 +12686,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteTagProtectionError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposDeleteTagProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteTagProtectionError::Generic { code }),
+                403 => Err(ReposDeleteTagProtectionError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposDeleteTagProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteTagProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -11642,7 +12707,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_tag_protection(&self, owner: &str, repo: &str, tag_protection_id: i32) -> Result<(), ReposDeleteTagProtectionError> {
+    pub fn delete_tag_protection(&self, owner: &str, repo: &str, tag_protection_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tags/protection/{}", super::GITHUB_BASE_API_URL, owner, repo, tag_protection_id);
 
@@ -11654,7 +12719,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11666,9 +12731,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposDeleteTagProtectionError::Status403(github_response.to_json()?)),
-                404 => Err(ReposDeleteTagProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeleteTagProtectionError::Generic { code }),
+                403 => Err(ReposDeleteTagProtectionError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposDeleteTagProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeleteTagProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -11680,19 +12745,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/repos/webhooks#delete-a-repository-webhook)
     ///
     /// ---
-    pub async fn delete_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposDeleteWebhookError> {
+    pub async fn delete_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11704,8 +12769,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposDeleteWebhookError::Generic { code }),
+                404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposDeleteWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -11718,7 +12783,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposDeleteWebhookError> {
+    pub fn delete_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
@@ -11730,7 +12795,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11742,8 +12807,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json()?)),
-                code => Err(ReposDeleteWebhookError::Generic { code }),
+                404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposDeleteWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -11757,19 +12822,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/repos/repos#disable-automated-security-fixes)
     ///
     /// ---
-    pub async fn disable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), ReposDisableAutomatedSecurityFixesError> {
+    pub async fn disable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11781,7 +12846,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }),
+                code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }.into()),
             }
         }
     }
@@ -11796,7 +12861,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn disable_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<(), ReposDisableAutomatedSecurityFixesError> {
+    pub fn disable_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11808,7 +12873,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11820,7 +12885,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }),
+                code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }.into()),
             }
         }
     }
@@ -11838,19 +12903,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for disable_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#disable-a-custom-protection-rule-for-an-environment)
     ///
     /// ---
-    pub async fn disable_deployment_protection_rule_async(&self, environment_name: &str, repo: &str, owner: &str, protection_rule_id: i32) -> Result<(), ReposDisableDeploymentProtectionRuleError> {
+    pub async fn disable_deployment_protection_rule_async(&self, environment_name: &str, repo: &str, owner: &str, protection_rule_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules/{}", super::GITHUB_BASE_API_URL, environment_name, repo, owner, protection_rule_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11862,7 +12927,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDisableDeploymentProtectionRuleError::Generic { code }),
+                code => Err(ReposDisableDeploymentProtectionRuleError::Generic { code }.into()),
             }
         }
     }
@@ -11881,7 +12946,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn disable_deployment_protection_rule(&self, environment_name: &str, repo: &str, owner: &str, protection_rule_id: i32) -> Result<(), ReposDisableDeploymentProtectionRuleError> {
+    pub fn disable_deployment_protection_rule(&self, environment_name: &str, repo: &str, owner: &str, protection_rule_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules/{}", super::GITHUB_BASE_API_URL, environment_name, repo, owner, protection_rule_id);
 
@@ -11893,7 +12958,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11905,7 +12970,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDisableDeploymentProtectionRuleError::Generic { code }),
+                code => Err(ReposDisableDeploymentProtectionRuleError::Generic { code }.into()),
             }
         }
     }
@@ -11919,19 +12984,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for disable_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#disable-private-vulnerability-reporting-for-a-repository)
     ///
     /// ---
-    pub async fn disable_private_vulnerability_reporting_async(&self, owner: &str, repo: &str) -> Result<(), ReposDisablePrivateVulnerabilityReportingError> {
+    pub async fn disable_private_vulnerability_reporting_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/private-vulnerability-reporting", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11943,8 +13008,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDisablePrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposDisablePrivateVulnerabilityReportingError::Generic { code }),
+                422 => Err(ReposDisablePrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposDisablePrivateVulnerabilityReportingError::Generic { code }.into()),
             }
         }
     }
@@ -11959,7 +13024,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn disable_private_vulnerability_reporting(&self, owner: &str, repo: &str) -> Result<(), ReposDisablePrivateVulnerabilityReportingError> {
+    pub fn disable_private_vulnerability_reporting(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/private-vulnerability-reporting", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -11971,7 +13036,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -11983,8 +13048,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposDisablePrivateVulnerabilityReportingError::Status422(github_response.to_json()?)),
-                code => Err(ReposDisablePrivateVulnerabilityReportingError::Generic { code }),
+                422 => Err(ReposDisablePrivateVulnerabilityReportingError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposDisablePrivateVulnerabilityReportingError::Generic { code }.into()),
             }
         }
     }
@@ -12000,19 +13065,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for disable_vulnerability_alerts](https://docs.github.com/rest/repos/repos#disable-vulnerability-alerts)
     ///
     /// ---
-    pub async fn disable_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), ReposDisableVulnerabilityAlertsError> {
+    pub async fn disable_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12024,7 +13089,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }),
+                code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }.into()),
             }
         }
     }
@@ -12041,7 +13106,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn disable_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), ReposDisableVulnerabilityAlertsError> {
+    pub fn disable_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12053,7 +13118,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12065,7 +13130,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }),
+                code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }.into()),
             }
         }
     }
@@ -12084,19 +13149,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for download_tarball_archive](https://docs.github.com/rest/repos/contents#download-a-repository-archive-tar)
     ///
     /// ---
-    pub async fn download_tarball_archive_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), ReposDownloadTarballArchiveError> {
+    pub async fn download_tarball_archive_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tarball/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12108,8 +13173,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(ReposDownloadTarballArchiveError::Status302),
-                code => Err(ReposDownloadTarballArchiveError::Generic { code }),
+                302 => Err(ReposDownloadTarballArchiveError::Status302.into()),
+                code => Err(ReposDownloadTarballArchiveError::Generic { code }.into()),
             }
         }
     }
@@ -12129,7 +13194,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn download_tarball_archive(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), ReposDownloadTarballArchiveError> {
+    pub fn download_tarball_archive(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tarball/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -12141,7 +13206,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12153,8 +13218,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(ReposDownloadTarballArchiveError::Status302),
-                code => Err(ReposDownloadTarballArchiveError::Generic { code }),
+                302 => Err(ReposDownloadTarballArchiveError::Status302.into()),
+                code => Err(ReposDownloadTarballArchiveError::Generic { code }.into()),
             }
         }
     }
@@ -12173,19 +13238,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for download_zipball_archive](https://docs.github.com/rest/repos/contents#download-a-repository-archive-zip)
     ///
     /// ---
-    pub async fn download_zipball_archive_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), ReposDownloadZipballArchiveError> {
+    pub async fn download_zipball_archive_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/zipball/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12197,8 +13262,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(ReposDownloadZipballArchiveError::Status302),
-                code => Err(ReposDownloadZipballArchiveError::Generic { code }),
+                302 => Err(ReposDownloadZipballArchiveError::Status302.into()),
+                code => Err(ReposDownloadZipballArchiveError::Generic { code }.into()),
             }
         }
     }
@@ -12218,7 +13283,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn download_zipball_archive(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), ReposDownloadZipballArchiveError> {
+    pub fn download_zipball_archive(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/zipball/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -12230,7 +13295,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12242,8 +13307,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(ReposDownloadZipballArchiveError::Status302),
-                code => Err(ReposDownloadZipballArchiveError::Generic { code }),
+                302 => Err(ReposDownloadZipballArchiveError::Status302.into()),
+                code => Err(ReposDownloadZipballArchiveError::Generic { code }.into()),
             }
         }
     }
@@ -12257,19 +13322,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/repos/repos#enable-automated-security-fixes)
     ///
     /// ---
-    pub async fn enable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), ReposEnableAutomatedSecurityFixesError> {
+    pub async fn enable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12281,7 +13346,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }),
+                code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }.into()),
             }
         }
     }
@@ -12296,7 +13361,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn enable_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<(), ReposEnableAutomatedSecurityFixesError> {
+    pub fn enable_automated_security_fixes(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/automated-security-fixes", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12308,7 +13373,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12320,7 +13385,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }),
+                code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }.into()),
             }
         }
     }
@@ -12334,19 +13399,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for enable_private_vulnerability_reporting](https://docs.github.com/rest/repos/repos#enable-private-vulnerability-reporting-for-a-repository)
     ///
     /// ---
-    pub async fn enable_private_vulnerability_reporting_async(&self, owner: &str, repo: &str) -> Result<(), ReposEnablePrivateVulnerabilityReportingError> {
+    pub async fn enable_private_vulnerability_reporting_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/private-vulnerability-reporting", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12358,8 +13423,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposEnablePrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposEnablePrivateVulnerabilityReportingError::Generic { code }),
+                422 => Err(ReposEnablePrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposEnablePrivateVulnerabilityReportingError::Generic { code }.into()),
             }
         }
     }
@@ -12374,7 +13439,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn enable_private_vulnerability_reporting(&self, owner: &str, repo: &str) -> Result<(), ReposEnablePrivateVulnerabilityReportingError> {
+    pub fn enable_private_vulnerability_reporting(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/private-vulnerability-reporting", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12386,7 +13451,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12398,8 +13463,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposEnablePrivateVulnerabilityReportingError::Status422(github_response.to_json()?)),
-                code => Err(ReposEnablePrivateVulnerabilityReportingError::Generic { code }),
+                422 => Err(ReposEnablePrivateVulnerabilityReportingError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposEnablePrivateVulnerabilityReportingError::Generic { code }.into()),
             }
         }
     }
@@ -12413,19 +13478,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for enable_vulnerability_alerts](https://docs.github.com/rest/repos/repos#enable-vulnerability-alerts)
     ///
     /// ---
-    pub async fn enable_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), ReposEnableVulnerabilityAlertsError> {
+    pub async fn enable_vulnerability_alerts_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12437,7 +13502,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }),
+                code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }.into()),
             }
         }
     }
@@ -12452,7 +13517,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn enable_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), ReposEnableVulnerabilityAlertsError> {
+    pub fn enable_vulnerability_alerts(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/vulnerability-alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12464,7 +13529,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12476,7 +13541,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }),
+                code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }.into()),
             }
         }
     }
@@ -12490,19 +13555,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for generate_release_notes](https://docs.github.com/rest/releases/releases#generate-release-notes-content-for-a-release)
     ///
     /// ---
-    pub async fn generate_release_notes_async(&self, owner: &str, repo: &str, body: PostReposGenerateReleaseNotes) -> Result<ReleaseNotesContent, ReposGenerateReleaseNotesError> {
+    pub async fn generate_release_notes_async(&self, owner: &str, repo: &str, body: PostReposGenerateReleaseNotes) -> Result<ReleaseNotesContent, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/generate-notes", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposGenerateReleaseNotes::from_json(body)?),
+            body: Some(C::from_json::<PostReposGenerateReleaseNotes>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12514,8 +13579,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGenerateReleaseNotesError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGenerateReleaseNotesError::Generic { code }),
+                404 => Err(ReposGenerateReleaseNotesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGenerateReleaseNotesError::Generic { code }.into()),
             }
         }
     }
@@ -12530,19 +13595,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn generate_release_notes(&self, owner: &str, repo: &str, body: PostReposGenerateReleaseNotes) -> Result<ReleaseNotesContent, ReposGenerateReleaseNotesError> {
+    pub fn generate_release_notes(&self, owner: &str, repo: &str, body: PostReposGenerateReleaseNotes) -> Result<ReleaseNotesContent, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/generate-notes", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposGenerateReleaseNotes::from_json(body)?),
+            body: Some(C::from_json::<PostReposGenerateReleaseNotes>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12554,8 +13619,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGenerateReleaseNotesError::Status404(github_response.to_json()?)),
-                code => Err(ReposGenerateReleaseNotesError::Generic { code }),
+                404 => Err(ReposGenerateReleaseNotesError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGenerateReleaseNotesError::Generic { code }.into()),
             }
         }
     }
@@ -12572,19 +13637,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get](https://docs.github.com/rest/repos/repos#get-a-repository)
     ///
     /// ---
-    pub async fn get_async(&self, owner: &str, repo: &str) -> Result<FullRepository, ReposGetError> {
+    pub async fn get_async(&self, owner: &str, repo: &str) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12596,10 +13661,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposGetError::Status404(github_response.to_json_async().await?)),
-                301 => Err(ReposGetError::Status301(github_response.to_json_async().await?)),
-                code => Err(ReposGetError::Generic { code }),
+                403 => Err(ReposGetError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposGetError::Status404(github_response.to_json_async().await?).into()),
+                301 => Err(ReposGetError::Status301(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetError::Generic { code }.into()),
             }
         }
     }
@@ -12617,7 +13682,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, owner: &str, repo: &str) -> Result<FullRepository, ReposGetError> {
+    pub fn get(&self, owner: &str, repo: &str) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12629,7 +13694,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12641,10 +13706,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetError::Status403(github_response.to_json()?)),
-                404 => Err(ReposGetError::Status404(github_response.to_json()?)),
-                301 => Err(ReposGetError::Status301(github_response.to_json()?)),
-                code => Err(ReposGetError::Generic { code }),
+                403 => Err(ReposGetError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposGetError::Status404(github_response.to_json()?).into()),
+                301 => Err(ReposGetError::Status301(github_response.to_json()?).into()),
+                code => Err(ReposGetError::Generic { code }.into()),
             }
         }
     }
@@ -12663,19 +13728,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_access_restrictions](https://docs.github.com/rest/branches/branch-protection#get-access-restrictions)
     ///
     /// ---
-    pub async fn get_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchRestrictionPolicy, ReposGetAccessRestrictionsError> {
+    pub async fn get_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchRestrictionPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12687,8 +13752,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAccessRestrictionsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetAccessRestrictionsError::Generic { code }),
+                404 => Err(ReposGetAccessRestrictionsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -12708,7 +13773,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_access_restrictions(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchRestrictionPolicy, ReposGetAccessRestrictionsError> {
+    pub fn get_access_restrictions(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchRestrictionPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -12720,7 +13785,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12732,8 +13797,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAccessRestrictionsError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetAccessRestrictionsError::Generic { code }),
+                404 => Err(ReposGetAccessRestrictionsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -12747,19 +13812,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#get-admin-branch-protection)
     ///
     /// ---
-    pub async fn get_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposGetAdminBranchProtectionError> {
+    pub async fn get_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/enforce_admins", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12771,7 +13836,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetAdminBranchProtectionError::Generic { code }),
+                code => Err(ReposGetAdminBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -12786,7 +13851,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_admin_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposGetAdminBranchProtectionError> {
+    pub fn get_admin_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/enforce_admins", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -12798,7 +13863,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12810,7 +13875,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetAdminBranchProtectionError::Generic { code }),
+                code => Err(ReposGetAdminBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -12828,19 +13893,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_all_deployment_protection_rules](https://docs.github.com/rest/deployments/protection-rules#get-all-deployment-protection-rules-for-an-environment)
     ///
     /// ---
-    pub async fn get_all_deployment_protection_rules_async(&self, environment_name: &str, repo: &str, owner: &str) -> Result<GetReposGetAllDeploymentProtectionRulesResponse200, ReposGetAllDeploymentProtectionRulesError> {
+    pub async fn get_all_deployment_protection_rules_async(&self, environment_name: &str, repo: &str, owner: &str) -> Result<GetReposGetAllDeploymentProtectionRulesResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules", super::GITHUB_BASE_API_URL, environment_name, repo, owner);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12852,7 +13917,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetAllDeploymentProtectionRulesError::Generic { code }),
+                code => Err(ReposGetAllDeploymentProtectionRulesError::Generic { code }.into()),
             }
         }
     }
@@ -12871,7 +13936,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_deployment_protection_rules(&self, environment_name: &str, repo: &str, owner: &str) -> Result<GetReposGetAllDeploymentProtectionRulesResponse200, ReposGetAllDeploymentProtectionRulesError> {
+    pub fn get_all_deployment_protection_rules(&self, environment_name: &str, repo: &str, owner: &str) -> Result<GetReposGetAllDeploymentProtectionRulesResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules", super::GITHUB_BASE_API_URL, environment_name, repo, owner);
 
@@ -12883,7 +13948,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12895,7 +13960,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetAllDeploymentProtectionRulesError::Generic { code }),
+                code => Err(ReposGetAllDeploymentProtectionRulesError::Generic { code }.into()),
             }
         }
     }
@@ -12913,7 +13978,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_all_environments](https://docs.github.com/rest/deployments/environments#list-environments)
     ///
     /// ---
-    pub async fn get_all_environments_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllEnvironmentsParams>>) -> Result<GetReposGetAllEnvironmentsResponse200, ReposGetAllEnvironmentsError> {
+    pub async fn get_all_environments_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllEnvironmentsParams>>) -> Result<GetReposGetAllEnvironmentsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12924,12 +13989,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12941,7 +14006,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetAllEnvironmentsError::Generic { code }),
+                code => Err(ReposGetAllEnvironmentsError::Generic { code }.into()),
             }
         }
     }
@@ -12960,7 +14025,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_environments(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllEnvironmentsParams>>) -> Result<GetReposGetAllEnvironmentsResponse200, ReposGetAllEnvironmentsError> {
+    pub fn get_all_environments(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllEnvironmentsParams>>) -> Result<GetReposGetAllEnvironmentsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -12977,7 +14042,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -12989,7 +14054,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetAllEnvironmentsError::Generic { code }),
+                code => Err(ReposGetAllEnvironmentsError::Generic { code }.into()),
             }
         }
     }
@@ -13003,19 +14068,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_all_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#get-all-status-check-contexts)
     ///
     /// ---
-    pub async fn get_all_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<String>, ReposGetAllStatusCheckContextsError> {
+    pub async fn get_all_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13027,8 +14092,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAllStatusCheckContextsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetAllStatusCheckContextsError::Generic { code }),
+                404 => Err(ReposGetAllStatusCheckContextsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetAllStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -13043,7 +14108,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_status_check_contexts(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<String>, ReposGetAllStatusCheckContextsError> {
+    pub fn get_all_status_check_contexts(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -13055,7 +14120,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13067,8 +14132,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAllStatusCheckContextsError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetAllStatusCheckContextsError::Generic { code }),
+                404 => Err(ReposGetAllStatusCheckContextsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetAllStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -13080,7 +14145,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_all_topics](https://docs.github.com/rest/repos/repos#get-all-repository-topics)
     ///
     /// ---
-    pub async fn get_all_topics_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllTopicsParams>>) -> Result<Topic, ReposGetAllTopicsError> {
+    pub async fn get_all_topics_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllTopicsParams>>) -> Result<Topic, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -13091,12 +14156,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13108,8 +14173,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAllTopicsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetAllTopicsError::Generic { code }),
+                404 => Err(ReposGetAllTopicsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetAllTopicsError::Generic { code }.into()),
             }
         }
     }
@@ -13122,7 +14187,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_topics(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllTopicsParams>>) -> Result<Topic, ReposGetAllTopicsError> {
+    pub fn get_all_topics(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetAllTopicsParams>>) -> Result<Topic, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -13139,7 +14204,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13151,8 +14216,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAllTopicsError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetAllTopicsError::Generic { code }),
+                404 => Err(ReposGetAllTopicsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetAllTopicsError::Generic { code }.into()),
             }
         }
     }
@@ -13168,19 +14233,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_apps_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-apps-with-access-to-the-protected-branch)
     ///
     /// ---
-    pub async fn get_apps_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Integration>, ReposGetAppsWithAccessToProtectedBranchError> {
+    pub async fn get_apps_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13192,8 +14257,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetAppsWithAccessToProtectedBranchError::Generic { code }),
+                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetAppsWithAccessToProtectedBranchError::Generic { code }.into()),
             }
         }
     }
@@ -13210,7 +14275,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_apps_with_access_to_protected_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Integration>, ReposGetAppsWithAccessToProtectedBranchError> {
+    pub fn get_apps_with_access_to_protected_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -13222,7 +14287,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13234,8 +14299,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetAppsWithAccessToProtectedBranchError::Generic { code }),
+                404 => Err(ReposGetAppsWithAccessToProtectedBranchError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetAppsWithAccessToProtectedBranchError::Generic { code }.into()),
             }
         }
     }
@@ -13251,19 +14316,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_autolink](https://docs.github.com/rest/repos/autolinks#get-an-autolink-reference-of-a-repository)
     ///
     /// ---
-    pub async fn get_autolink_async(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<Autolink, ReposGetAutolinkError> {
+    pub async fn get_autolink_async(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<Autolink, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13275,8 +14340,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAutolinkError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetAutolinkError::Generic { code }),
+                404 => Err(ReposGetAutolinkError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetAutolinkError::Generic { code }.into()),
             }
         }
     }
@@ -13293,7 +14358,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_autolink(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<Autolink, ReposGetAutolinkError> {
+    pub fn get_autolink(&self, owner: &str, repo: &str, autolink_id: i32) -> Result<Autolink, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks/{}", super::GITHUB_BASE_API_URL, owner, repo, autolink_id);
 
@@ -13305,7 +14370,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13317,8 +14382,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetAutolinkError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetAutolinkError::Generic { code }),
+                404 => Err(ReposGetAutolinkError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetAutolinkError::Generic { code }.into()),
             }
         }
     }
@@ -13330,19 +14395,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_branch](https://docs.github.com/rest/branches/branches#get-a-branch)
     ///
     /// ---
-    pub async fn get_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchWithProtection, ReposGetBranchError> {
+    pub async fn get_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchWithProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13354,9 +14419,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(ReposGetBranchError::Status301(github_response.to_json_async().await?)),
-                404 => Err(ReposGetBranchError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetBranchError::Generic { code }),
+                301 => Err(ReposGetBranchError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(ReposGetBranchError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetBranchError::Generic { code }.into()),
             }
         }
     }
@@ -13369,7 +14434,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchWithProtection, ReposGetBranchError> {
+    pub fn get_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchWithProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -13381,7 +14446,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13393,9 +14458,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(ReposGetBranchError::Status301(github_response.to_json()?)),
-                404 => Err(ReposGetBranchError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetBranchError::Generic { code }),
+                301 => Err(ReposGetBranchError::Status301(github_response.to_json()?).into()),
+                404 => Err(ReposGetBranchError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetBranchError::Generic { code }.into()),
             }
         }
     }
@@ -13409,19 +14474,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_branch_protection](https://docs.github.com/rest/branches/branch-protection#get-branch-protection)
     ///
     /// ---
-    pub async fn get_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchProtection, ReposGetBranchProtectionError> {
+    pub async fn get_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13433,8 +14498,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetBranchProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetBranchProtectionError::Generic { code }),
+                404 => Err(ReposGetBranchProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -13449,7 +14514,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchProtection, ReposGetBranchProtectionError> {
+    pub fn get_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<BranchProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -13461,7 +14526,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13473,8 +14538,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetBranchProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetBranchProtectionError::Generic { code }),
+                404 => Err(ReposGetBranchProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -13491,7 +14556,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_branch_rules](https://docs.github.com/rest/repos/rules#get-rules-for-a-branch)
     ///
     /// ---
-    pub async fn get_branch_rules_async(&self, owner: &str, repo: &str, branch: &str, query_params: Option<impl Into<ReposGetBranchRulesParams>>) -> Result<Vec<RepositoryRuleDetailed>, ReposGetBranchRulesError> {
+    pub async fn get_branch_rules_async(&self, owner: &str, repo: &str, branch: &str, query_params: Option<impl Into<ReposGetBranchRulesParams>>) -> Result<Vec<RepositoryRuleDetailed>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rules/branches/{}", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -13502,12 +14567,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13519,7 +14584,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetBranchRulesError::Generic { code }),
+                code => Err(ReposGetBranchRulesError::Generic { code }.into()),
             }
         }
     }
@@ -13537,7 +14602,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_branch_rules(&self, owner: &str, repo: &str, branch: &str, query_params: Option<impl Into<ReposGetBranchRulesParams>>) -> Result<Vec<RepositoryRuleDetailed>, ReposGetBranchRulesError> {
+    pub fn get_branch_rules(&self, owner: &str, repo: &str, branch: &str, query_params: Option<impl Into<ReposGetBranchRulesParams>>) -> Result<Vec<RepositoryRuleDetailed>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rules/branches/{}", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -13554,7 +14619,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13566,7 +14631,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetBranchRulesError::Generic { code }),
+                code => Err(ReposGetBranchRulesError::Generic { code }.into()),
             }
         }
     }
@@ -13580,7 +14645,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_clones](https://docs.github.com/rest/metrics/traffic#get-repository-clones)
     ///
     /// ---
-    pub async fn get_clones_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetClonesParams<'api>>>) -> Result<CloneTraffic, ReposGetClonesError> {
+    pub async fn get_clones_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetClonesParams<'api>>>) -> Result<CloneTraffic, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/traffic/clones", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -13591,12 +14656,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13608,8 +14673,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetClonesError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposGetClonesError::Generic { code }),
+                403 => Err(ReposGetClonesError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetClonesError::Generic { code }.into()),
             }
         }
     }
@@ -13624,7 +14689,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_clones(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetClonesParams<'api>>>) -> Result<CloneTraffic, ReposGetClonesError> {
+    pub fn get_clones(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetClonesParams<'api>>>) -> Result<CloneTraffic, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/traffic/clones", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -13641,7 +14706,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13653,8 +14718,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetClonesError::Status403(github_response.to_json()?)),
-                code => Err(ReposGetClonesError::Generic { code }),
+                403 => Err(ReposGetClonesError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposGetClonesError::Generic { code }.into()),
             }
         }
     }
@@ -13671,19 +14736,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_code_frequency_stats](https://docs.github.com/rest/metrics/statistics#get-the-weekly-commit-activity)
     ///
     /// ---
-    pub async fn get_code_frequency_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, ReposGetCodeFrequencyStatsError> {
+    pub async fn get_code_frequency_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/code_frequency", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13695,10 +14760,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetCodeFrequencyStatsError::Status202(github_response.to_json_async().await?)),
-                204 => Err(ReposGetCodeFrequencyStatsError::Status204),
-                422 => Err(ReposGetCodeFrequencyStatsError::Status422),
-                code => Err(ReposGetCodeFrequencyStatsError::Generic { code }),
+                202 => Err(ReposGetCodeFrequencyStatsError::Status202(github_response.to_json_async().await?).into()),
+                204 => Err(ReposGetCodeFrequencyStatsError::Status204.into()),
+                422 => Err(ReposGetCodeFrequencyStatsError::Status422.into()),
+                code => Err(ReposGetCodeFrequencyStatsError::Generic { code }.into()),
             }
         }
     }
@@ -13716,7 +14781,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_code_frequency_stats(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, ReposGetCodeFrequencyStatsError> {
+    pub fn get_code_frequency_stats(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/code_frequency", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -13728,7 +14793,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13740,10 +14805,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetCodeFrequencyStatsError::Status202(github_response.to_json()?)),
-                204 => Err(ReposGetCodeFrequencyStatsError::Status204),
-                422 => Err(ReposGetCodeFrequencyStatsError::Status422),
-                code => Err(ReposGetCodeFrequencyStatsError::Generic { code }),
+                202 => Err(ReposGetCodeFrequencyStatsError::Status202(github_response.to_json()?).into()),
+                204 => Err(ReposGetCodeFrequencyStatsError::Status204.into()),
+                422 => Err(ReposGetCodeFrequencyStatsError::Status422.into()),
+                code => Err(ReposGetCodeFrequencyStatsError::Generic { code }.into()),
             }
         }
     }
@@ -13763,19 +14828,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_collaborator_permission_level](https://docs.github.com/rest/collaborators/collaborators#get-repository-permissions-for-a-user)
     ///
     /// ---
-    pub async fn get_collaborator_permission_level_async(&self, owner: &str, repo: &str, username: &str) -> Result<RepositoryCollaboratorPermission, ReposGetCollaboratorPermissionLevelError> {
+    pub async fn get_collaborator_permission_level_async(&self, owner: &str, repo: &str, username: &str) -> Result<RepositoryCollaboratorPermission, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}/permission", super::GITHUB_BASE_API_URL, owner, repo, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13787,8 +14852,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetCollaboratorPermissionLevelError::Generic { code }),
+                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetCollaboratorPermissionLevelError::Generic { code }.into()),
             }
         }
     }
@@ -13809,7 +14874,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_collaborator_permission_level(&self, owner: &str, repo: &str, username: &str) -> Result<RepositoryCollaboratorPermission, ReposGetCollaboratorPermissionLevelError> {
+    pub fn get_collaborator_permission_level(&self, owner: &str, repo: &str, username: &str) -> Result<RepositoryCollaboratorPermission, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}/permission", super::GITHUB_BASE_API_URL, owner, repo, username);
 
@@ -13821,7 +14886,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13833,8 +14898,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetCollaboratorPermissionLevelError::Generic { code }),
+                404 => Err(ReposGetCollaboratorPermissionLevelError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetCollaboratorPermissionLevelError::Generic { code }.into()),
             }
         }
     }
@@ -13855,7 +14920,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_combined_status_for_ref](https://docs.github.com/rest/commits/statuses#get-the-combined-status-for-a-specific-reference)
     ///
     /// ---
-    pub async fn get_combined_status_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCombinedStatusForRefParams>>) -> Result<CombinedCommitStatus, ReposGetCombinedStatusForRefError> {
+    pub async fn get_combined_status_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCombinedStatusForRefParams>>) -> Result<CombinedCommitStatus, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/status", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -13866,12 +14931,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13883,8 +14948,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCombinedStatusForRefError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetCombinedStatusForRefError::Generic { code }),
+                404 => Err(ReposGetCombinedStatusForRefError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetCombinedStatusForRefError::Generic { code }.into()),
             }
         }
     }
@@ -13906,7 +14971,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_combined_status_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCombinedStatusForRefParams>>) -> Result<CombinedCommitStatus, ReposGetCombinedStatusForRefError> {
+    pub fn get_combined_status_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCombinedStatusForRefParams>>) -> Result<CombinedCommitStatus, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/status", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -13923,7 +14988,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -13935,8 +15000,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCombinedStatusForRefError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetCombinedStatusForRefError::Generic { code }),
+                404 => Err(ReposGetCombinedStatusForRefError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetCombinedStatusForRefError::Generic { code }.into()),
             }
         }
     }
@@ -13988,7 +15053,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/commits/commits#get-a-commit)
     ///
     /// ---
-    pub async fn get_commit_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCommitParams>>) -> Result<Commit, ReposGetCommitError> {
+    pub async fn get_commit_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCommitParams>>) -> Result<Commit, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -13999,12 +15064,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14016,12 +15081,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposGetCommitError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposGetCommitError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetCommitError::Status500(github_response.to_json_async().await?)),
-                503 => Err(ReposGetCommitError::Status503(github_response.to_json_async().await?)),
-                409 => Err(ReposGetCommitError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposGetCommitError::Generic { code }),
+                422 => Err(ReposGetCommitError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposGetCommitError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetCommitError::Status500(github_response.to_json_async().await?).into()),
+                503 => Err(ReposGetCommitError::Status503(github_response.to_json_async().await?).into()),
+                409 => Err(ReposGetCommitError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetCommitError::Generic { code }.into()),
             }
         }
     }
@@ -14074,7 +15139,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_commit(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCommitParams>>) -> Result<Commit, ReposGetCommitError> {
+    pub fn get_commit(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposGetCommitParams>>) -> Result<Commit, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -14091,7 +15156,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14103,12 +15168,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposGetCommitError::Status422(github_response.to_json()?)),
-                404 => Err(ReposGetCommitError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetCommitError::Status500(github_response.to_json()?)),
-                503 => Err(ReposGetCommitError::Status503(github_response.to_json()?)),
-                409 => Err(ReposGetCommitError::Status409(github_response.to_json()?)),
-                code => Err(ReposGetCommitError::Generic { code }),
+                422 => Err(ReposGetCommitError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposGetCommitError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetCommitError::Status500(github_response.to_json()?).into()),
+                503 => Err(ReposGetCommitError::Status503(github_response.to_json()?).into()),
+                409 => Err(ReposGetCommitError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposGetCommitError::Generic { code }.into()),
             }
         }
     }
@@ -14122,19 +15187,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_commit_activity_stats](https://docs.github.com/rest/metrics/statistics#get-the-last-year-of-commit-activity)
     ///
     /// ---
-    pub async fn get_commit_activity_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CommitActivity>, ReposGetCommitActivityStatsError> {
+    pub async fn get_commit_activity_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CommitActivity>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/commit_activity", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14146,9 +15211,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetCommitActivityStatsError::Status202(github_response.to_json_async().await?)),
-                204 => Err(ReposGetCommitActivityStatsError::Status204),
-                code => Err(ReposGetCommitActivityStatsError::Generic { code }),
+                202 => Err(ReposGetCommitActivityStatsError::Status202(github_response.to_json_async().await?).into()),
+                204 => Err(ReposGetCommitActivityStatsError::Status204.into()),
+                code => Err(ReposGetCommitActivityStatsError::Generic { code }.into()),
             }
         }
     }
@@ -14163,7 +15228,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_commit_activity_stats(&self, owner: &str, repo: &str) -> Result<Vec<CommitActivity>, ReposGetCommitActivityStatsError> {
+    pub fn get_commit_activity_stats(&self, owner: &str, repo: &str) -> Result<Vec<CommitActivity>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/commit_activity", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -14175,7 +15240,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14187,9 +15252,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetCommitActivityStatsError::Status202(github_response.to_json()?)),
-                204 => Err(ReposGetCommitActivityStatsError::Status204),
-                code => Err(ReposGetCommitActivityStatsError::Generic { code }),
+                202 => Err(ReposGetCommitActivityStatsError::Status202(github_response.to_json()?).into()),
+                204 => Err(ReposGetCommitActivityStatsError::Status204.into()),
+                code => Err(ReposGetCommitActivityStatsError::Generic { code }.into()),
             }
         }
     }
@@ -14210,19 +15275,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_commit_comment](https://docs.github.com/rest/commits/comments#get-a-commit-comment)
     ///
     /// ---
-    pub async fn get_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<CommitComment, ReposGetCommitCommentError> {
+    pub async fn get_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<CommitComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14234,8 +15299,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitCommentError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetCommitCommentError::Generic { code }),
+                404 => Err(ReposGetCommitCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -14257,7 +15322,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_commit_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<CommitComment, ReposGetCommitCommentError> {
+    pub fn get_commit_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<CommitComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -14269,7 +15334,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14281,8 +15346,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitCommentError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetCommitCommentError::Generic { code }),
+                404 => Err(ReposGetCommitCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -14301,19 +15366,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_commit_signature_protection](https://docs.github.com/rest/branches/branch-protection#get-commit-signature-protection)
     ///
     /// ---
-    pub async fn get_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposGetCommitSignatureProtectionError> {
+    pub async fn get_commit_signature_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14325,8 +15390,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitSignatureProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetCommitSignatureProtectionError::Generic { code }),
+                404 => Err(ReposGetCommitSignatureProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetCommitSignatureProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -14346,7 +15411,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposGetCommitSignatureProtectionError> {
+    pub fn get_commit_signature_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_signatures", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -14358,7 +15423,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14370,8 +15435,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetCommitSignatureProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetCommitSignatureProtectionError::Generic { code }),
+                404 => Err(ReposGetCommitSignatureProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetCommitSignatureProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -14395,19 +15460,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_community_profile_metrics](https://docs.github.com/rest/metrics/community#get-community-profile-metrics)
     ///
     /// ---
-    pub async fn get_community_profile_metrics_async(&self, owner: &str, repo: &str) -> Result<CommunityProfile, ReposGetCommunityProfileMetricsError> {
+    pub async fn get_community_profile_metrics_async(&self, owner: &str, repo: &str) -> Result<CommunityProfile, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/community/profile", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14419,7 +15484,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetCommunityProfileMetricsError::Generic { code }),
+                code => Err(ReposGetCommunityProfileMetricsError::Generic { code }.into()),
             }
         }
     }
@@ -14444,7 +15509,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_community_profile_metrics(&self, owner: &str, repo: &str) -> Result<CommunityProfile, ReposGetCommunityProfileMetricsError> {
+    pub fn get_community_profile_metrics(&self, owner: &str, repo: &str) -> Result<CommunityProfile, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/community/profile", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -14456,7 +15521,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14468,7 +15533,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetCommunityProfileMetricsError::Generic { code }),
+                code => Err(ReposGetCommunityProfileMetricsError::Generic { code }.into()),
             }
         }
     }
@@ -14506,7 +15571,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_content](https://docs.github.com/rest/repos/contents#get-repository-content)
     ///
     /// ---
-    pub async fn get_content_async(&self, owner: &str, repo: &str, path: &str, query_params: Option<impl Into<ReposGetContentParams<'api>>>) -> Result<ContentTree, ReposGetContentError> {
+    pub async fn get_content_async(&self, owner: &str, repo: &str, path: &str, query_params: Option<impl Into<ReposGetContentParams<'api>>>) -> Result<ContentTree, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/contents/{}", super::GITHUB_BASE_API_URL, owner, repo, path);
 
@@ -14517,12 +15582,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14534,11 +15599,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetContentError::Status404(github_response.to_json_async().await?)),
-                403 => Err(ReposGetContentError::Status403(github_response.to_json_async().await?)),
-                302 => Err(ReposGetContentError::Status302),
-                304 => Err(ReposGetContentError::Status304),
-                code => Err(ReposGetContentError::Generic { code }),
+                404 => Err(ReposGetContentError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(ReposGetContentError::Status403(github_response.to_json_async().await?).into()),
+                302 => Err(ReposGetContentError::Status302.into()),
+                304 => Err(ReposGetContentError::Status304.into()),
+                code => Err(ReposGetContentError::Generic { code }.into()),
             }
         }
     }
@@ -14577,7 +15642,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_content(&self, owner: &str, repo: &str, path: &str, query_params: Option<impl Into<ReposGetContentParams<'api>>>) -> Result<ContentTree, ReposGetContentError> {
+    pub fn get_content(&self, owner: &str, repo: &str, path: &str, query_params: Option<impl Into<ReposGetContentParams<'api>>>) -> Result<ContentTree, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/contents/{}", super::GITHUB_BASE_API_URL, owner, repo, path);
 
@@ -14594,7 +15659,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14606,11 +15671,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetContentError::Status404(github_response.to_json()?)),
-                403 => Err(ReposGetContentError::Status403(github_response.to_json()?)),
-                302 => Err(ReposGetContentError::Status302),
-                304 => Err(ReposGetContentError::Status304),
-                code => Err(ReposGetContentError::Generic { code }),
+                404 => Err(ReposGetContentError::Status404(github_response.to_json()?).into()),
+                403 => Err(ReposGetContentError::Status403(github_response.to_json()?).into()),
+                302 => Err(ReposGetContentError::Status302.into()),
+                304 => Err(ReposGetContentError::Status304.into()),
+                code => Err(ReposGetContentError::Generic { code }.into()),
             }
         }
     }
@@ -14633,19 +15698,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_contributors_stats](https://docs.github.com/rest/metrics/statistics#get-all-contributor-commit-activity)
     ///
     /// ---
-    pub async fn get_contributors_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<ContributorActivity>, ReposGetContributorsStatsError> {
+    pub async fn get_contributors_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<ContributorActivity>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/contributors", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14657,9 +15722,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetContributorsStatsError::Status202(github_response.to_json_async().await?)),
-                204 => Err(ReposGetContributorsStatsError::Status204),
-                code => Err(ReposGetContributorsStatsError::Generic { code }),
+                202 => Err(ReposGetContributorsStatsError::Status202(github_response.to_json_async().await?).into()),
+                204 => Err(ReposGetContributorsStatsError::Status204.into()),
+                code => Err(ReposGetContributorsStatsError::Generic { code }.into()),
             }
         }
     }
@@ -14683,7 +15748,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_contributors_stats(&self, owner: &str, repo: &str) -> Result<Vec<ContributorActivity>, ReposGetContributorsStatsError> {
+    pub fn get_contributors_stats(&self, owner: &str, repo: &str) -> Result<Vec<ContributorActivity>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/contributors", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -14695,7 +15760,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14707,9 +15772,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetContributorsStatsError::Status202(github_response.to_json()?)),
-                204 => Err(ReposGetContributorsStatsError::Status204),
-                code => Err(ReposGetContributorsStatsError::Generic { code }),
+                202 => Err(ReposGetContributorsStatsError::Status202(github_response.to_json()?).into()),
+                204 => Err(ReposGetContributorsStatsError::Status204.into()),
+                code => Err(ReposGetContributorsStatsError::Generic { code }.into()),
             }
         }
     }
@@ -14727,19 +15792,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_custom_deployment_protection_rule](https://docs.github.com/rest/deployments/protection-rules#get-a-custom-deployment-protection-rule)
     ///
     /// ---
-    pub async fn get_custom_deployment_protection_rule_async(&self, owner: &str, repo: &str, environment_name: &str, protection_rule_id: i32) -> Result<DeploymentProtectionRule, ReposGetCustomDeploymentProtectionRuleError> {
+    pub async fn get_custom_deployment_protection_rule_async(&self, owner: &str, repo: &str, environment_name: &str, protection_rule_id: i32) -> Result<DeploymentProtectionRule, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, protection_rule_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14751,7 +15816,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetCustomDeploymentProtectionRuleError::Generic { code }),
+                code => Err(ReposGetCustomDeploymentProtectionRuleError::Generic { code }.into()),
             }
         }
     }
@@ -14770,7 +15835,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_custom_deployment_protection_rule(&self, owner: &str, repo: &str, environment_name: &str, protection_rule_id: i32) -> Result<DeploymentProtectionRule, ReposGetCustomDeploymentProtectionRuleError> {
+    pub fn get_custom_deployment_protection_rule(&self, owner: &str, repo: &str, environment_name: &str, protection_rule_id: i32) -> Result<DeploymentProtectionRule, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, protection_rule_id);
 
@@ -14782,7 +15847,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14794,7 +15859,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetCustomDeploymentProtectionRuleError::Generic { code }),
+                code => Err(ReposGetCustomDeploymentProtectionRuleError::Generic { code }.into()),
             }
         }
     }
@@ -14809,19 +15874,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_custom_properties_values](https://docs.github.com/rest/repos/custom-properties#get-all-custom-property-values-for-a-repository)
     ///
     /// ---
-    pub async fn get_custom_properties_values_async(&self, owner: &str, repo: &str) -> Result<Vec<CustomPropertyValue>, ReposGetCustomPropertiesValuesError> {
+    pub async fn get_custom_properties_values_async(&self, owner: &str, repo: &str) -> Result<Vec<CustomPropertyValue>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/properties/values", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14833,9 +15898,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetCustomPropertiesValuesError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposGetCustomPropertiesValuesError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetCustomPropertiesValuesError::Generic { code }),
+                403 => Err(ReposGetCustomPropertiesValuesError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposGetCustomPropertiesValuesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetCustomPropertiesValuesError::Generic { code }.into()),
             }
         }
     }
@@ -14851,7 +15916,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_custom_properties_values(&self, owner: &str, repo: &str) -> Result<Vec<CustomPropertyValue>, ReposGetCustomPropertiesValuesError> {
+    pub fn get_custom_properties_values(&self, owner: &str, repo: &str) -> Result<Vec<CustomPropertyValue>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/properties/values", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -14863,7 +15928,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14875,9 +15940,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetCustomPropertiesValuesError::Status403(github_response.to_json()?)),
-                404 => Err(ReposGetCustomPropertiesValuesError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetCustomPropertiesValuesError::Generic { code }),
+                403 => Err(ReposGetCustomPropertiesValuesError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposGetCustomPropertiesValuesError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetCustomPropertiesValuesError::Generic { code }.into()),
             }
         }
     }
@@ -14889,19 +15954,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_deploy_key](https://docs.github.com/rest/deploy-keys/deploy-keys#get-a-deploy-key)
     ///
     /// ---
-    pub async fn get_deploy_key_async(&self, owner: &str, repo: &str, key_id: i32) -> Result<DeployKey, ReposGetDeployKeyError> {
+    pub async fn get_deploy_key_async(&self, owner: &str, repo: &str, key_id: i32) -> Result<DeployKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/keys/{}", super::GITHUB_BASE_API_URL, owner, repo, key_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14913,8 +15978,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeployKeyError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetDeployKeyError::Generic { code }),
+                404 => Err(ReposGetDeployKeyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetDeployKeyError::Generic { code }.into()),
             }
         }
     }
@@ -14927,7 +15992,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_deploy_key(&self, owner: &str, repo: &str, key_id: i32) -> Result<DeployKey, ReposGetDeployKeyError> {
+    pub fn get_deploy_key(&self, owner: &str, repo: &str, key_id: i32) -> Result<DeployKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/keys/{}", super::GITHUB_BASE_API_URL, owner, repo, key_id);
 
@@ -14939,7 +16004,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14951,8 +16016,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeployKeyError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetDeployKeyError::Generic { code }),
+                404 => Err(ReposGetDeployKeyError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetDeployKeyError::Generic { code }.into()),
             }
         }
     }
@@ -14964,19 +16029,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_deployment](https://docs.github.com/rest/deployments/deployments#get-a-deployment)
     ///
     /// ---
-    pub async fn get_deployment_async(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<Deployment, ReposGetDeploymentError> {
+    pub async fn get_deployment_async(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<Deployment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -14988,8 +16053,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetDeploymentError::Generic { code }),
+                404 => Err(ReposGetDeploymentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -15002,7 +16067,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_deployment(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<Deployment, ReposGetDeploymentError> {
+    pub fn get_deployment(&self, owner: &str, repo: &str, deployment_id: i32) -> Result<Deployment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
@@ -15014,7 +16079,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15026,8 +16091,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetDeploymentError::Generic { code }),
+                404 => Err(ReposGetDeploymentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -15045,19 +16110,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#get-a-deployment-branch-policy)
     ///
     /// ---
-    pub async fn get_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<DeploymentBranchPolicy, ReposGetDeploymentBranchPolicyError> {
+    pub async fn get_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<DeploymentBranchPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, branch_policy_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15069,7 +16134,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetDeploymentBranchPolicyError::Generic { code }),
+                code => Err(ReposGetDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -15088,7 +16153,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<DeploymentBranchPolicy, ReposGetDeploymentBranchPolicyError> {
+    pub fn get_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32) -> Result<DeploymentBranchPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, branch_policy_id);
 
@@ -15100,7 +16165,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15112,7 +16177,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetDeploymentBranchPolicyError::Generic { code }),
+                code => Err(ReposGetDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -15126,19 +16191,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_deployment_status](https://docs.github.com/rest/deployments/statuses#get-a-deployment-status)
     ///
     /// ---
-    pub async fn get_deployment_status_async(&self, owner: &str, repo: &str, deployment_id: i32, status_id: i32) -> Result<DeploymentStatus, ReposGetDeploymentStatusError> {
+    pub async fn get_deployment_status_async(&self, owner: &str, repo: &str, deployment_id: i32, status_id: i32) -> Result<DeploymentStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id, status_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15150,8 +16215,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentStatusError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetDeploymentStatusError::Generic { code }),
+                404 => Err(ReposGetDeploymentStatusError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetDeploymentStatusError::Generic { code }.into()),
             }
         }
     }
@@ -15166,7 +16231,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_deployment_status(&self, owner: &str, repo: &str, deployment_id: i32, status_id: i32) -> Result<DeploymentStatus, ReposGetDeploymentStatusError> {
+    pub fn get_deployment_status(&self, owner: &str, repo: &str, deployment_id: i32, status_id: i32) -> Result<DeploymentStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses/{}", super::GITHUB_BASE_API_URL, owner, repo, deployment_id, status_id);
 
@@ -15178,7 +16243,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15190,8 +16255,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetDeploymentStatusError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetDeploymentStatusError::Generic { code }),
+                404 => Err(ReposGetDeploymentStatusError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetDeploymentStatusError::Generic { code }.into()),
             }
         }
     }
@@ -15210,19 +16275,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_environment](https://docs.github.com/rest/deployments/environments#get-an-environment)
     ///
     /// ---
-    pub async fn get_environment_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<Environment, ReposGetEnvironmentError> {
+    pub async fn get_environment_async(&self, owner: &str, repo: &str, environment_name: &str) -> Result<Environment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15234,7 +16299,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetEnvironmentError::Generic { code }),
+                code => Err(ReposGetEnvironmentError::Generic { code }.into()),
             }
         }
     }
@@ -15254,7 +16319,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_environment(&self, owner: &str, repo: &str, environment_name: &str) -> Result<Environment, ReposGetEnvironmentError> {
+    pub fn get_environment(&self, owner: &str, repo: &str, environment_name: &str) -> Result<Environment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -15266,7 +16331,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15278,7 +16343,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetEnvironmentError::Generic { code }),
+                code => Err(ReposGetEnvironmentError::Generic { code }.into()),
             }
         }
     }
@@ -15294,19 +16359,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_latest_pages_build](https://docs.github.com/rest/pages/pages#get-latest-pages-build)
     ///
     /// ---
-    pub async fn get_latest_pages_build_async(&self, owner: &str, repo: &str) -> Result<PageBuild, ReposGetLatestPagesBuildError> {
+    pub async fn get_latest_pages_build_async(&self, owner: &str, repo: &str) -> Result<PageBuild, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/builds/latest", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15318,7 +16383,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetLatestPagesBuildError::Generic { code }),
+                code => Err(ReposGetLatestPagesBuildError::Generic { code }.into()),
             }
         }
     }
@@ -15335,7 +16400,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_latest_pages_build(&self, owner: &str, repo: &str) -> Result<PageBuild, ReposGetLatestPagesBuildError> {
+    pub fn get_latest_pages_build(&self, owner: &str, repo: &str) -> Result<PageBuild, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/builds/latest", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -15347,7 +16412,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15359,7 +16424,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetLatestPagesBuildError::Generic { code }),
+                code => Err(ReposGetLatestPagesBuildError::Generic { code }.into()),
             }
         }
     }
@@ -15375,19 +16440,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_latest_release](https://docs.github.com/rest/releases/releases#get-the-latest-release)
     ///
     /// ---
-    pub async fn get_latest_release_async(&self, owner: &str, repo: &str) -> Result<Release, ReposGetLatestReleaseError> {
+    pub async fn get_latest_release_async(&self, owner: &str, repo: &str) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/latest", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15399,7 +16464,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetLatestReleaseError::Generic { code }),
+                code => Err(ReposGetLatestReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -15416,7 +16481,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_latest_release(&self, owner: &str, repo: &str) -> Result<Release, ReposGetLatestReleaseError> {
+    pub fn get_latest_release(&self, owner: &str, repo: &str) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/latest", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -15428,7 +16493,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15440,7 +16505,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetLatestReleaseError::Generic { code }),
+                code => Err(ReposGetLatestReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -15455,19 +16520,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_org_rule_suite](https://docs.github.com/rest/orgs/rule-suites#get-an-organization-rule-suite)
     ///
     /// ---
-    pub async fn get_org_rule_suite_async(&self, org: &str, rule_suite_id: i32) -> Result<RuleSuite, ReposGetOrgRuleSuiteError> {
+    pub async fn get_org_rule_suite_async(&self, org: &str, rule_suite_id: i32) -> Result<RuleSuite, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/rule-suites/{}", super::GITHUB_BASE_API_URL, org, rule_suite_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15479,9 +16544,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRuleSuiteError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetOrgRuleSuiteError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetOrgRuleSuiteError::Generic { code }),
+                404 => Err(ReposGetOrgRuleSuiteError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetOrgRuleSuiteError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetOrgRuleSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -15497,7 +16562,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_rule_suite(&self, org: &str, rule_suite_id: i32) -> Result<RuleSuite, ReposGetOrgRuleSuiteError> {
+    pub fn get_org_rule_suite(&self, org: &str, rule_suite_id: i32) -> Result<RuleSuite, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/rule-suites/{}", super::GITHUB_BASE_API_URL, org, rule_suite_id);
 
@@ -15509,7 +16574,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15521,9 +16586,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRuleSuiteError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetOrgRuleSuiteError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetOrgRuleSuiteError::Generic { code }),
+                404 => Err(ReposGetOrgRuleSuiteError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetOrgRuleSuiteError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetOrgRuleSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -15538,7 +16603,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_org_rule_suites](https://docs.github.com/rest/orgs/rule-suites#list-organization-rule-suites)
     ///
     /// ---
-    pub async fn get_org_rule_suites_async(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRuleSuitesParams<'api>>>) -> Result<RuleSuites, ReposGetOrgRuleSuitesError> {
+    pub async fn get_org_rule_suites_async(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRuleSuitesParams<'api>>>) -> Result<RuleSuites, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/rulesets/rule-suites", super::GITHUB_BASE_API_URL, org);
 
@@ -15549,12 +16614,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15566,9 +16631,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRuleSuitesError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetOrgRuleSuitesError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetOrgRuleSuitesError::Generic { code }),
+                404 => Err(ReposGetOrgRuleSuitesError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetOrgRuleSuitesError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetOrgRuleSuitesError::Generic { code }.into()),
             }
         }
     }
@@ -15584,7 +16649,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_rule_suites(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRuleSuitesParams<'api>>>) -> Result<RuleSuites, ReposGetOrgRuleSuitesError> {
+    pub fn get_org_rule_suites(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRuleSuitesParams<'api>>>) -> Result<RuleSuites, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/rulesets/rule-suites", super::GITHUB_BASE_API_URL, org);
 
@@ -15601,7 +16666,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15613,9 +16678,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRuleSuitesError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetOrgRuleSuitesError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetOrgRuleSuitesError::Generic { code }),
+                404 => Err(ReposGetOrgRuleSuitesError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetOrgRuleSuitesError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetOrgRuleSuitesError::Generic { code }.into()),
             }
         }
     }
@@ -15632,19 +16697,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_org_ruleset](https://docs.github.com/rest/orgs/rules#get-an-organization-repository-ruleset)
     ///
     /// ---
-    pub async fn get_org_ruleset_async(&self, org: &str, ruleset_id: i32) -> Result<RepositoryRuleset, ReposGetOrgRulesetError> {
+    pub async fn get_org_ruleset_async(&self, org: &str, ruleset_id: i32) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/{}", super::GITHUB_BASE_API_URL, org, ruleset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15656,9 +16721,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetOrgRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetOrgRulesetError::Generic { code }),
+                404 => Err(ReposGetOrgRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetOrgRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -15676,7 +16741,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_ruleset(&self, org: &str, ruleset_id: i32) -> Result<RepositoryRuleset, ReposGetOrgRulesetError> {
+    pub fn get_org_ruleset(&self, org: &str, ruleset_id: i32) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/{}", super::GITHUB_BASE_API_URL, org, ruleset_id);
 
@@ -15688,7 +16753,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15700,9 +16765,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetOrgRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetOrgRulesetError::Generic { code }),
+                404 => Err(ReposGetOrgRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetOrgRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -15716,7 +16781,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_org_rulesets](https://docs.github.com/rest/orgs/rules#get-all-organization-repository-rulesets)
     ///
     /// ---
-    pub async fn get_org_rulesets_async(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetOrgRulesetsError> {
+    pub async fn get_org_rulesets_async(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/rulesets", super::GITHUB_BASE_API_URL, org);
 
@@ -15727,12 +16792,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15744,9 +16809,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRulesetsError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetOrgRulesetsError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetOrgRulesetsError::Generic { code }),
+                404 => Err(ReposGetOrgRulesetsError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetOrgRulesetsError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetOrgRulesetsError::Generic { code }.into()),
             }
         }
     }
@@ -15761,7 +16826,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_rulesets(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetOrgRulesetsError> {
+    pub fn get_org_rulesets(&self, org: &str, query_params: Option<impl Into<ReposGetOrgRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/rulesets", super::GITHUB_BASE_API_URL, org);
 
@@ -15778,7 +16843,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15790,9 +16855,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetOrgRulesetsError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetOrgRulesetsError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetOrgRulesetsError::Generic { code }),
+                404 => Err(ReposGetOrgRulesetsError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetOrgRulesetsError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetOrgRulesetsError::Generic { code }.into()),
             }
         }
     }
@@ -15808,19 +16873,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_pages](https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site)
     ///
     /// ---
-    pub async fn get_pages_async(&self, owner: &str, repo: &str) -> Result<Page, ReposGetPagesError> {
+    pub async fn get_pages_async(&self, owner: &str, repo: &str) -> Result<Page, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15832,8 +16897,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetPagesError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetPagesError::Generic { code }),
+                404 => Err(ReposGetPagesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetPagesError::Generic { code }.into()),
             }
         }
     }
@@ -15850,7 +16915,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_pages(&self, owner: &str, repo: &str) -> Result<Page, ReposGetPagesError> {
+    pub fn get_pages(&self, owner: &str, repo: &str) -> Result<Page, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -15862,7 +16927,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15874,8 +16939,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetPagesError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetPagesError::Generic { code }),
+                404 => Err(ReposGetPagesError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetPagesError::Generic { code }.into()),
             }
         }
     }
@@ -15891,19 +16956,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_pages_build](https://docs.github.com/rest/pages/pages#get-apiname-pages-build)
     ///
     /// ---
-    pub async fn get_pages_build_async(&self, owner: &str, repo: &str, build_id: i32) -> Result<PageBuild, ReposGetPagesBuildError> {
+    pub async fn get_pages_build_async(&self, owner: &str, repo: &str, build_id: i32) -> Result<PageBuild, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/builds/{}", super::GITHUB_BASE_API_URL, owner, repo, build_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15915,7 +16980,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetPagesBuildError::Generic { code }),
+                code => Err(ReposGetPagesBuildError::Generic { code }.into()),
             }
         }
     }
@@ -15932,7 +16997,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_pages_build(&self, owner: &str, repo: &str, build_id: i32) -> Result<PageBuild, ReposGetPagesBuildError> {
+    pub fn get_pages_build(&self, owner: &str, repo: &str, build_id: i32) -> Result<PageBuild, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/builds/{}", super::GITHUB_BASE_API_URL, owner, repo, build_id);
 
@@ -15944,7 +17009,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15956,7 +17021,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetPagesBuildError::Generic { code }),
+                code => Err(ReposGetPagesBuildError::Generic { code }.into()),
             }
         }
     }
@@ -15972,19 +17037,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_pages_deployment](https://docs.github.com/rest/pages/pages#get-the-status-of-a-github-pages-deployment)
     ///
     /// ---
-    pub async fn get_pages_deployment_async(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<PagesDeploymentStatus, ReposGetPagesDeploymentError> {
+    pub async fn get_pages_deployment_async(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<PagesDeploymentStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, pages_deployment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -15996,8 +17061,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetPagesDeploymentError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetPagesDeploymentError::Generic { code }),
+                404 => Err(ReposGetPagesDeploymentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetPagesDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -16014,7 +17079,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_pages_deployment(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<PagesDeploymentStatus, ReposGetPagesDeploymentError> {
+    pub fn get_pages_deployment(&self, owner: &str, repo: &str, pages_deployment_id: PagesDeploymentId) -> Result<PagesDeploymentStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/deployments/{}", super::GITHUB_BASE_API_URL, owner, repo, pages_deployment_id);
 
@@ -16026,7 +17091,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16038,8 +17103,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetPagesDeploymentError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetPagesDeploymentError::Generic { code }),
+                404 => Err(ReposGetPagesDeploymentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetPagesDeploymentError::Generic { code }.into()),
             }
         }
     }
@@ -16059,19 +17124,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_pages_health_check](https://docs.github.com/rest/pages/pages#get-a-dns-health-check-for-github-pages)
     ///
     /// ---
-    pub async fn get_pages_health_check_async(&self, owner: &str, repo: &str) -> Result<PagesHealthCheck, ReposGetPagesHealthCheckError> {
+    pub async fn get_pages_health_check_async(&self, owner: &str, repo: &str) -> Result<PagesHealthCheck, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/health", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16083,11 +17148,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetPagesHealthCheckError::Status202(github_response.to_json_async().await?)),
-                400 => Err(ReposGetPagesHealthCheckError::Status400),
-                422 => Err(ReposGetPagesHealthCheckError::Status422),
-                404 => Err(ReposGetPagesHealthCheckError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetPagesHealthCheckError::Generic { code }),
+                202 => Err(ReposGetPagesHealthCheckError::Status202(github_response.to_json_async().await?).into()),
+                400 => Err(ReposGetPagesHealthCheckError::Status400.into()),
+                422 => Err(ReposGetPagesHealthCheckError::Status422.into()),
+                404 => Err(ReposGetPagesHealthCheckError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetPagesHealthCheckError::Generic { code }.into()),
             }
         }
     }
@@ -16108,7 +17173,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_pages_health_check(&self, owner: &str, repo: &str) -> Result<PagesHealthCheck, ReposGetPagesHealthCheckError> {
+    pub fn get_pages_health_check(&self, owner: &str, repo: &str) -> Result<PagesHealthCheck, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/health", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16120,7 +17185,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16132,11 +17197,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(ReposGetPagesHealthCheckError::Status202(github_response.to_json()?)),
-                400 => Err(ReposGetPagesHealthCheckError::Status400),
-                422 => Err(ReposGetPagesHealthCheckError::Status422),
-                404 => Err(ReposGetPagesHealthCheckError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetPagesHealthCheckError::Generic { code }),
+                202 => Err(ReposGetPagesHealthCheckError::Status202(github_response.to_json()?).into()),
+                400 => Err(ReposGetPagesHealthCheckError::Status400.into()),
+                422 => Err(ReposGetPagesHealthCheckError::Status422.into()),
+                404 => Err(ReposGetPagesHealthCheckError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetPagesHealthCheckError::Generic { code }.into()),
             }
         }
     }
@@ -16154,19 +17219,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_participation_stats](https://docs.github.com/rest/metrics/statistics#get-the-weekly-commit-count)
     ///
     /// ---
-    pub async fn get_participation_stats_async(&self, owner: &str, repo: &str) -> Result<ParticipationStats, ReposGetParticipationStatsError> {
+    pub async fn get_participation_stats_async(&self, owner: &str, repo: &str) -> Result<ParticipationStats, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/participation", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16178,8 +17243,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetParticipationStatsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetParticipationStatsError::Generic { code }),
+                404 => Err(ReposGetParticipationStatsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetParticipationStatsError::Generic { code }.into()),
             }
         }
     }
@@ -16198,7 +17263,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_participation_stats(&self, owner: &str, repo: &str) -> Result<ParticipationStats, ReposGetParticipationStatsError> {
+    pub fn get_participation_stats(&self, owner: &str, repo: &str) -> Result<ParticipationStats, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/participation", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16210,7 +17275,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16222,8 +17287,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetParticipationStatsError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetParticipationStatsError::Generic { code }),
+                404 => Err(ReposGetParticipationStatsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetParticipationStatsError::Generic { code }.into()),
             }
         }
     }
@@ -16237,19 +17302,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#get-pull-request-review-protection)
     ///
     /// ---
-    pub async fn get_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchPullRequestReview, ReposGetPullRequestReviewProtectionError> {
+    pub async fn get_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchPullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16261,7 +17326,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetPullRequestReviewProtectionError::Generic { code }),
+                code => Err(ReposGetPullRequestReviewProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -16276,7 +17341,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchPullRequestReview, ReposGetPullRequestReviewProtectionError> {
+    pub fn get_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchPullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -16288,7 +17353,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16300,7 +17365,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetPullRequestReviewProtectionError::Generic { code }),
+                code => Err(ReposGetPullRequestReviewProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -16320,19 +17385,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_punch_card_stats](https://docs.github.com/rest/metrics/statistics#get-the-hourly-commit-count-for-each-day)
     ///
     /// ---
-    pub async fn get_punch_card_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, ReposGetPunchCardStatsError> {
+    pub async fn get_punch_card_stats_async(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/punch_card", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16344,8 +17409,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposGetPunchCardStatsError::Status204),
-                code => Err(ReposGetPunchCardStatsError::Generic { code }),
+                204 => Err(ReposGetPunchCardStatsError::Status204.into()),
+                code => Err(ReposGetPunchCardStatsError::Generic { code }.into()),
             }
         }
     }
@@ -16366,7 +17431,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_punch_card_stats(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, ReposGetPunchCardStatsError> {
+    pub fn get_punch_card_stats(&self, owner: &str, repo: &str) -> Result<Vec<CodeFrequencyStat>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/stats/punch_card", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16378,7 +17443,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16390,8 +17455,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposGetPunchCardStatsError::Status204),
-                code => Err(ReposGetPunchCardStatsError::Generic { code }),
+                204 => Err(ReposGetPunchCardStatsError::Status204.into()),
+                code => Err(ReposGetPunchCardStatsError::Generic { code }.into()),
             }
         }
     }
@@ -16410,7 +17475,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_readme](https://docs.github.com/rest/repos/contents#get-a-repository-readme)
     ///
     /// ---
-    pub async fn get_readme_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetReadmeParams<'api>>>) -> Result<ContentFile, ReposGetReadmeError> {
+    pub async fn get_readme_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetReadmeParams<'api>>>) -> Result<ContentFile, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/readme", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16421,12 +17486,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16438,10 +17503,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ReposGetReadmeError::Status304),
-                404 => Err(ReposGetReadmeError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposGetReadmeError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposGetReadmeError::Generic { code }),
+                304 => Err(ReposGetReadmeError::Status304.into()),
+                404 => Err(ReposGetReadmeError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposGetReadmeError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetReadmeError::Generic { code }.into()),
             }
         }
     }
@@ -16461,7 +17526,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_readme(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetReadmeParams<'api>>>) -> Result<ContentFile, ReposGetReadmeError> {
+    pub fn get_readme(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetReadmeParams<'api>>>) -> Result<ContentFile, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/readme", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16478,7 +17543,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16490,10 +17555,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ReposGetReadmeError::Status304),
-                404 => Err(ReposGetReadmeError::Status404(github_response.to_json()?)),
-                422 => Err(ReposGetReadmeError::Status422(github_response.to_json()?)),
-                code => Err(ReposGetReadmeError::Generic { code }),
+                304 => Err(ReposGetReadmeError::Status304.into()),
+                404 => Err(ReposGetReadmeError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposGetReadmeError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposGetReadmeError::Generic { code }.into()),
             }
         }
     }
@@ -16512,7 +17577,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_readme_in_directory](https://docs.github.com/rest/repos/contents#get-a-repository-readme-for-a-directory)
     ///
     /// ---
-    pub async fn get_readme_in_directory_async(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeInDirectoryParams<'api>>>) -> Result<ContentFile, ReposGetReadmeInDirectoryError> {
+    pub async fn get_readme_in_directory_async(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeInDirectoryParams<'api>>>) -> Result<ContentFile, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/readme/{}", super::GITHUB_BASE_API_URL, owner, repo, dir);
 
@@ -16523,12 +17588,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16540,9 +17605,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeInDirectoryError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposGetReadmeInDirectoryError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposGetReadmeInDirectoryError::Generic { code }),
+                404 => Err(ReposGetReadmeInDirectoryError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposGetReadmeInDirectoryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetReadmeInDirectoryError::Generic { code }.into()),
             }
         }
     }
@@ -16562,7 +17627,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_readme_in_directory(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeInDirectoryParams<'api>>>) -> Result<ContentFile, ReposGetReadmeInDirectoryError> {
+    pub fn get_readme_in_directory(&self, owner: &str, repo: &str, dir: &str, query_params: Option<impl Into<ReposGetReadmeInDirectoryParams<'api>>>) -> Result<ContentFile, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/readme/{}", super::GITHUB_BASE_API_URL, owner, repo, dir);
 
@@ -16579,7 +17644,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16591,9 +17656,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReadmeInDirectoryError::Status404(github_response.to_json()?)),
-                422 => Err(ReposGetReadmeInDirectoryError::Status422(github_response.to_json()?)),
-                code => Err(ReposGetReadmeInDirectoryError::Generic { code }),
+                404 => Err(ReposGetReadmeInDirectoryError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposGetReadmeInDirectoryError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposGetReadmeInDirectoryError::Generic { code }.into()),
             }
         }
     }
@@ -16610,19 +17675,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_release](https://docs.github.com/rest/releases/releases#get-a-release)
     ///
     /// ---
-    pub async fn get_release_async(&self, owner: &str, repo: &str, release_id: i32) -> Result<Release, ReposGetReleaseError> {
+    pub async fn get_release_async(&self, owner: &str, repo: &str, release_id: i32) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16634,8 +17699,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(ReposGetReleaseError::Status401),
-                code => Err(ReposGetReleaseError::Generic { code }),
+                401 => Err(ReposGetReleaseError::Status401.into()),
+                code => Err(ReposGetReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -16653,7 +17718,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_release(&self, owner: &str, repo: &str, release_id: i32) -> Result<Release, ReposGetReleaseError> {
+    pub fn get_release(&self, owner: &str, repo: &str, release_id: i32) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -16665,7 +17730,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16677,8 +17742,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(ReposGetReleaseError::Status401),
-                code => Err(ReposGetReleaseError::Generic { code }),
+                401 => Err(ReposGetReleaseError::Status401.into()),
+                code => Err(ReposGetReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -16692,19 +17757,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_release_asset](https://docs.github.com/rest/releases/assets#get-a-release-asset)
     ///
     /// ---
-    pub async fn get_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32) -> Result<ReleaseAsset, ReposGetReleaseAssetError> {
+    pub async fn get_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32) -> Result<ReleaseAsset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/assets/{}", super::GITHUB_BASE_API_URL, owner, repo, asset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16716,9 +17781,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseAssetError::Status404(github_response.to_json_async().await?)),
-                302 => Err(ReposGetReleaseAssetError::Status302),
-                code => Err(ReposGetReleaseAssetError::Generic { code }),
+                404 => Err(ReposGetReleaseAssetError::Status404(github_response.to_json_async().await?).into()),
+                302 => Err(ReposGetReleaseAssetError::Status302.into()),
+                code => Err(ReposGetReleaseAssetError::Generic { code }.into()),
             }
         }
     }
@@ -16733,7 +17798,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_release_asset(&self, owner: &str, repo: &str, asset_id: i32) -> Result<ReleaseAsset, ReposGetReleaseAssetError> {
+    pub fn get_release_asset(&self, owner: &str, repo: &str, asset_id: i32) -> Result<ReleaseAsset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/assets/{}", super::GITHUB_BASE_API_URL, owner, repo, asset_id);
 
@@ -16745,7 +17810,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16757,9 +17822,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseAssetError::Status404(github_response.to_json()?)),
-                302 => Err(ReposGetReleaseAssetError::Status302),
-                code => Err(ReposGetReleaseAssetError::Generic { code }),
+                404 => Err(ReposGetReleaseAssetError::Status404(github_response.to_json()?).into()),
+                302 => Err(ReposGetReleaseAssetError::Status302.into()),
+                code => Err(ReposGetReleaseAssetError::Generic { code }.into()),
             }
         }
     }
@@ -16773,19 +17838,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_release_by_tag](https://docs.github.com/rest/releases/releases#get-a-release-by-tag-name)
     ///
     /// ---
-    pub async fn get_release_by_tag_async(&self, owner: &str, repo: &str, tag: &str) -> Result<Release, ReposGetReleaseByTagError> {
+    pub async fn get_release_by_tag_async(&self, owner: &str, repo: &str, tag: &str) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/tags/{}", super::GITHUB_BASE_API_URL, owner, repo, tag);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16797,8 +17862,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseByTagError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetReleaseByTagError::Generic { code }),
+                404 => Err(ReposGetReleaseByTagError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetReleaseByTagError::Generic { code }.into()),
             }
         }
     }
@@ -16813,7 +17878,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_release_by_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<Release, ReposGetReleaseByTagError> {
+    pub fn get_release_by_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/tags/{}", super::GITHUB_BASE_API_URL, owner, repo, tag);
 
@@ -16825,7 +17890,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16837,8 +17902,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetReleaseByTagError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetReleaseByTagError::Generic { code }),
+                404 => Err(ReposGetReleaseByTagError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetReleaseByTagError::Generic { code }.into()),
             }
         }
     }
@@ -16853,19 +17918,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_repo_rule_suite](https://docs.github.com/rest/repos/rule-suites#get-a-repository-rule-suite)
     ///
     /// ---
-    pub async fn get_repo_rule_suite_async(&self, owner: &str, repo: &str, rule_suite_id: i32) -> Result<RuleSuite, ReposGetRepoRuleSuiteError> {
+    pub async fn get_repo_rule_suite_async(&self, owner: &str, repo: &str, rule_suite_id: i32) -> Result<RuleSuite, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets/rule-suites/{}", super::GITHUB_BASE_API_URL, owner, repo, rule_suite_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16877,9 +17942,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRuleSuiteError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetRepoRuleSuiteError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetRepoRuleSuiteError::Generic { code }),
+                404 => Err(ReposGetRepoRuleSuiteError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetRepoRuleSuiteError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetRepoRuleSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -16895,7 +17960,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_rule_suite(&self, owner: &str, repo: &str, rule_suite_id: i32) -> Result<RuleSuite, ReposGetRepoRuleSuiteError> {
+    pub fn get_repo_rule_suite(&self, owner: &str, repo: &str, rule_suite_id: i32) -> Result<RuleSuite, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets/rule-suites/{}", super::GITHUB_BASE_API_URL, owner, repo, rule_suite_id);
 
@@ -16907,7 +17972,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16919,9 +17984,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRuleSuiteError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetRepoRuleSuiteError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetRepoRuleSuiteError::Generic { code }),
+                404 => Err(ReposGetRepoRuleSuiteError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetRepoRuleSuiteError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetRepoRuleSuiteError::Generic { code }.into()),
             }
         }
     }
@@ -16936,7 +18001,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_repo_rule_suites](https://docs.github.com/rest/repos/rule-suites#list-repository-rule-suites)
     ///
     /// ---
-    pub async fn get_repo_rule_suites_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRuleSuitesParams<'api>>>) -> Result<RuleSuites, ReposGetRepoRuleSuitesError> {
+    pub async fn get_repo_rule_suites_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRuleSuitesParams<'api>>>) -> Result<RuleSuites, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets/rule-suites", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16947,12 +18012,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -16964,9 +18029,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRuleSuitesError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetRepoRuleSuitesError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetRepoRuleSuitesError::Generic { code }),
+                404 => Err(ReposGetRepoRuleSuitesError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetRepoRuleSuitesError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetRepoRuleSuitesError::Generic { code }.into()),
             }
         }
     }
@@ -16982,7 +18047,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_rule_suites(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRuleSuitesParams<'api>>>) -> Result<RuleSuites, ReposGetRepoRuleSuitesError> {
+    pub fn get_repo_rule_suites(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRuleSuitesParams<'api>>>) -> Result<RuleSuites, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets/rule-suites", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -16999,7 +18064,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17011,9 +18076,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRuleSuitesError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetRepoRuleSuitesError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetRepoRuleSuitesError::Generic { code }),
+                404 => Err(ReposGetRepoRuleSuitesError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetRepoRuleSuitesError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetRepoRuleSuitesError::Generic { code }.into()),
             }
         }
     }
@@ -17030,7 +18095,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_repo_ruleset](https://docs.github.com/rest/repos/rules#get-a-repository-ruleset)
     ///
     /// ---
-    pub async fn get_repo_ruleset_async(&self, owner: &str, repo: &str, ruleset_id: i32, query_params: Option<impl Into<ReposGetRepoRulesetParams>>) -> Result<RepositoryRuleset, ReposGetRepoRulesetError> {
+    pub async fn get_repo_ruleset_async(&self, owner: &str, repo: &str, ruleset_id: i32, query_params: Option<impl Into<ReposGetRepoRulesetParams>>) -> Result<RepositoryRuleset, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets/{}", super::GITHUB_BASE_API_URL, owner, repo, ruleset_id);
 
@@ -17041,12 +18106,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17058,9 +18123,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetRepoRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetRepoRulesetError::Generic { code }),
+                404 => Err(ReposGetRepoRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetRepoRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -17078,7 +18143,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_ruleset(&self, owner: &str, repo: &str, ruleset_id: i32, query_params: Option<impl Into<ReposGetRepoRulesetParams>>) -> Result<RepositoryRuleset, ReposGetRepoRulesetError> {
+    pub fn get_repo_ruleset(&self, owner: &str, repo: &str, ruleset_id: i32, query_params: Option<impl Into<ReposGetRepoRulesetParams>>) -> Result<RepositoryRuleset, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets/{}", super::GITHUB_BASE_API_URL, owner, repo, ruleset_id);
 
@@ -17095,7 +18160,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17107,9 +18172,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetRepoRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetRepoRulesetError::Generic { code }),
+                404 => Err(ReposGetRepoRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetRepoRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -17123,7 +18188,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_repo_rulesets](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets)
     ///
     /// ---
-    pub async fn get_repo_rulesets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetRepoRulesetsError> {
+    pub async fn get_repo_rulesets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17134,12 +18199,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17151,9 +18216,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRulesetsError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposGetRepoRulesetsError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposGetRepoRulesetsError::Generic { code }),
+                404 => Err(ReposGetRepoRulesetsError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposGetRepoRulesetsError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetRepoRulesetsError::Generic { code }.into()),
             }
         }
     }
@@ -17168,7 +18233,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_rulesets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, ReposGetRepoRulesetsError> {
+    pub fn get_repo_rulesets(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetRepoRulesetsParams<'api>>>) -> Result<Vec<RepositoryRuleset>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/rulesets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17185,7 +18250,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17197,9 +18262,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetRepoRulesetsError::Status404(github_response.to_json()?)),
-                500 => Err(ReposGetRepoRulesetsError::Status500(github_response.to_json()?)),
-                code => Err(ReposGetRepoRulesetsError::Generic { code }),
+                404 => Err(ReposGetRepoRulesetsError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposGetRepoRulesetsError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposGetRepoRulesetsError::Generic { code }.into()),
             }
         }
     }
@@ -17213,19 +18278,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_status_checks_protection](https://docs.github.com/rest/branches/branch-protection#get-status-checks-protection)
     ///
     /// ---
-    pub async fn get_status_checks_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<StatusCheckPolicy, ReposGetStatusChecksProtectionError> {
+    pub async fn get_status_checks_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<StatusCheckPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17237,8 +18302,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetStatusChecksProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetStatusChecksProtectionError::Generic { code }),
+                404 => Err(ReposGetStatusChecksProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetStatusChecksProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -17253,7 +18318,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_status_checks_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<StatusCheckPolicy, ReposGetStatusChecksProtectionError> {
+    pub fn get_status_checks_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<StatusCheckPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -17265,7 +18330,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17277,8 +18342,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetStatusChecksProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetStatusChecksProtectionError::Generic { code }),
+                404 => Err(ReposGetStatusChecksProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetStatusChecksProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -17294,19 +18359,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_teams_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-teams-with-access-to-the-protected-branch)
     ///
     /// ---
-    pub async fn get_teams_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Team>, ReposGetTeamsWithAccessToProtectedBranchError> {
+    pub async fn get_teams_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17318,8 +18383,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetTeamsWithAccessToProtectedBranchError::Generic { code }),
+                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetTeamsWithAccessToProtectedBranchError::Generic { code }.into()),
             }
         }
     }
@@ -17336,7 +18401,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_teams_with_access_to_protected_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Team>, ReposGetTeamsWithAccessToProtectedBranchError> {
+    pub fn get_teams_with_access_to_protected_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -17348,7 +18413,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17360,8 +18425,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetTeamsWithAccessToProtectedBranchError::Generic { code }),
+                404 => Err(ReposGetTeamsWithAccessToProtectedBranchError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetTeamsWithAccessToProtectedBranchError::Generic { code }.into()),
             }
         }
     }
@@ -17375,19 +18440,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_top_paths](https://docs.github.com/rest/metrics/traffic#get-top-referral-paths)
     ///
     /// ---
-    pub async fn get_top_paths_async(&self, owner: &str, repo: &str) -> Result<Vec<ContentTraffic>, ReposGetTopPathsError> {
+    pub async fn get_top_paths_async(&self, owner: &str, repo: &str) -> Result<Vec<ContentTraffic>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/traffic/popular/paths", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17399,8 +18464,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopPathsError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposGetTopPathsError::Generic { code }),
+                403 => Err(ReposGetTopPathsError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetTopPathsError::Generic { code }.into()),
             }
         }
     }
@@ -17415,7 +18480,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_top_paths(&self, owner: &str, repo: &str) -> Result<Vec<ContentTraffic>, ReposGetTopPathsError> {
+    pub fn get_top_paths(&self, owner: &str, repo: &str) -> Result<Vec<ContentTraffic>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/traffic/popular/paths", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17427,7 +18492,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17439,8 +18504,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopPathsError::Status403(github_response.to_json()?)),
-                code => Err(ReposGetTopPathsError::Generic { code }),
+                403 => Err(ReposGetTopPathsError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposGetTopPathsError::Generic { code }.into()),
             }
         }
     }
@@ -17454,19 +18519,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_top_referrers](https://docs.github.com/rest/metrics/traffic#get-top-referral-sources)
     ///
     /// ---
-    pub async fn get_top_referrers_async(&self, owner: &str, repo: &str) -> Result<Vec<ReferrerTraffic>, ReposGetTopReferrersError> {
+    pub async fn get_top_referrers_async(&self, owner: &str, repo: &str) -> Result<Vec<ReferrerTraffic>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/traffic/popular/referrers", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17478,8 +18543,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopReferrersError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposGetTopReferrersError::Generic { code }),
+                403 => Err(ReposGetTopReferrersError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetTopReferrersError::Generic { code }.into()),
             }
         }
     }
@@ -17494,7 +18559,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_top_referrers(&self, owner: &str, repo: &str) -> Result<Vec<ReferrerTraffic>, ReposGetTopReferrersError> {
+    pub fn get_top_referrers(&self, owner: &str, repo: &str) -> Result<Vec<ReferrerTraffic>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/traffic/popular/referrers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17506,7 +18571,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17518,8 +18583,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetTopReferrersError::Status403(github_response.to_json()?)),
-                code => Err(ReposGetTopReferrersError::Generic { code }),
+                403 => Err(ReposGetTopReferrersError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposGetTopReferrersError::Generic { code }.into()),
             }
         }
     }
@@ -17535,19 +18600,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_users_with_access_to_protected_branch](https://docs.github.com/rest/branches/branch-protection#get-users-with-access-to-the-protected-branch)
     ///
     /// ---
-    pub async fn get_users_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<SimpleUser>, ReposGetUsersWithAccessToProtectedBranchError> {
+    pub async fn get_users_with_access_to_protected_branch_async(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17559,8 +18624,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetUsersWithAccessToProtectedBranchError::Generic { code }),
+                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetUsersWithAccessToProtectedBranchError::Generic { code }.into()),
             }
         }
     }
@@ -17577,7 +18642,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_users_with_access_to_protected_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<SimpleUser>, ReposGetUsersWithAccessToProtectedBranchError> {
+    pub fn get_users_with_access_to_protected_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -17589,7 +18654,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17601,8 +18666,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetUsersWithAccessToProtectedBranchError::Generic { code }),
+                404 => Err(ReposGetUsersWithAccessToProtectedBranchError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetUsersWithAccessToProtectedBranchError::Generic { code }.into()),
             }
         }
     }
@@ -17616,7 +18681,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_views](https://docs.github.com/rest/metrics/traffic#get-page-views)
     ///
     /// ---
-    pub async fn get_views_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetViewsParams<'api>>>) -> Result<ViewTraffic, ReposGetViewsError> {
+    pub async fn get_views_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetViewsParams<'api>>>) -> Result<ViewTraffic, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/traffic/views", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17627,12 +18692,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17644,8 +18709,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetViewsError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposGetViewsError::Generic { code }),
+                403 => Err(ReposGetViewsError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetViewsError::Generic { code }.into()),
             }
         }
     }
@@ -17660,7 +18725,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_views(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetViewsParams<'api>>>) -> Result<ViewTraffic, ReposGetViewsError> {
+    pub fn get_views(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposGetViewsParams<'api>>>) -> Result<ViewTraffic, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/traffic/views", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17677,7 +18742,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17689,8 +18754,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposGetViewsError::Status403(github_response.to_json()?)),
-                code => Err(ReposGetViewsError::Generic { code }),
+                403 => Err(ReposGetViewsError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposGetViewsError::Generic { code }.into()),
             }
         }
     }
@@ -17704,19 +18769,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/repos/webhooks#get-a-repository-webhook)
     ///
     /// ---
-    pub async fn get_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<Hook, ReposGetWebhookError> {
+    pub async fn get_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<Hook, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17728,8 +18793,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetWebhookError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposGetWebhookError::Generic { code }),
+                404 => Err(ReposGetWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -17744,7 +18809,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<Hook, ReposGetWebhookError> {
+    pub fn get_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<Hook, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
@@ -17756,7 +18821,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17768,8 +18833,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposGetWebhookError::Status404(github_response.to_json()?)),
-                code => Err(ReposGetWebhookError::Generic { code }),
+                404 => Err(ReposGetWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposGetWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -17785,19 +18850,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_webhook_config_for_repo](https://docs.github.com/rest/repos/webhooks#get-a-webhook-configuration-for-a-repository)
     ///
     /// ---
-    pub async fn get_webhook_config_for_repo_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<WebhookConfig, ReposGetWebhookConfigForRepoError> {
+    pub async fn get_webhook_config_for_repo_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17809,7 +18874,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetWebhookConfigForRepoError::Generic { code }),
+                code => Err(ReposGetWebhookConfigForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -17826,7 +18891,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook_config_for_repo(&self, owner: &str, repo: &str, hook_id: i32) -> Result<WebhookConfig, ReposGetWebhookConfigForRepoError> {
+    pub fn get_webhook_config_for_repo(&self, owner: &str, repo: &str, hook_id: i32) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
@@ -17838,7 +18903,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17850,7 +18915,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposGetWebhookConfigForRepoError::Generic { code }),
+                code => Err(ReposGetWebhookConfigForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -17864,19 +18929,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/repos/webhooks#get-a-delivery-for-a-repository-webhook)
     ///
     /// ---
-    pub async fn get_webhook_delivery_async(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, ReposGetWebhookDeliveryError> {
+    pub async fn get_webhook_delivery_async(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17888,9 +18953,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposGetWebhookDeliveryError::Status400(github_response.to_json_async().await?)),
-                422 => Err(ReposGetWebhookDeliveryError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposGetWebhookDeliveryError::Generic { code }),
+                400 => Err(ReposGetWebhookDeliveryError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(ReposGetWebhookDeliveryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposGetWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -17905,7 +18970,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook_delivery(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, ReposGetWebhookDeliveryError> {
+    pub fn get_webhook_delivery(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
 
@@ -17917,7 +18982,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17929,9 +18994,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposGetWebhookDeliveryError::Status400(github_response.to_json()?)),
-                422 => Err(ReposGetWebhookDeliveryError::Status422(github_response.to_json()?)),
-                code => Err(ReposGetWebhookDeliveryError::Generic { code }),
+                400 => Err(ReposGetWebhookDeliveryError::Status400(github_response.to_json()?).into()),
+                422 => Err(ReposGetWebhookDeliveryError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposGetWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -17948,7 +19013,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_activities](https://docs.github.com/rest/repos/repos#list-repository-activities)
     ///
     /// ---
-    pub async fn list_activities_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListActivitiesParams<'api>>>) -> Result<Vec<Activity>, ReposListActivitiesError> {
+    pub async fn list_activities_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListActivitiesParams<'api>>>) -> Result<Vec<Activity>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/activity", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -17959,12 +19024,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -17976,8 +19041,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListActivitiesError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposListActivitiesError::Generic { code }),
+                422 => Err(ReposListActivitiesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposListActivitiesError::Generic { code }.into()),
             }
         }
     }
@@ -17995,7 +19060,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_activities(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListActivitiesParams<'api>>>) -> Result<Vec<Activity>, ReposListActivitiesError> {
+    pub fn list_activities(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListActivitiesParams<'api>>>) -> Result<Vec<Activity>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/activity", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18012,7 +19077,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18024,8 +19089,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListActivitiesError::Status422(github_response.to_json()?)),
-                code => Err(ReposListActivitiesError::Generic { code }),
+                422 => Err(ReposListActivitiesError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposListActivitiesError::Generic { code }.into()),
             }
         }
     }
@@ -18043,7 +19108,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/repos/repos#list-attestations)
     ///
     /// ---
-    pub async fn list_attestations_async(&self, owner: &str, repo: &str, subject_digest: &str, query_params: Option<impl Into<ReposListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, ReposListAttestationsError> {
+    pub async fn list_attestations_async(&self, owner: &str, repo: &str, subject_digest: &str, query_params: Option<impl Into<ReposListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/attestations/{}", super::GITHUB_BASE_API_URL, owner, repo, subject_digest);
 
@@ -18054,12 +19119,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18071,7 +19136,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListAttestationsError::Generic { code }),
+                code => Err(ReposListAttestationsError::Generic { code }.into()),
             }
         }
     }
@@ -18090,7 +19155,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_attestations(&self, owner: &str, repo: &str, subject_digest: &str, query_params: Option<impl Into<ReposListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, ReposListAttestationsError> {
+    pub fn list_attestations(&self, owner: &str, repo: &str, subject_digest: &str, query_params: Option<impl Into<ReposListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/attestations/{}", super::GITHUB_BASE_API_URL, owner, repo, subject_digest);
 
@@ -18107,7 +19172,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18119,7 +19184,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListAttestationsError::Generic { code }),
+                code => Err(ReposListAttestationsError::Generic { code }.into()),
             }
         }
     }
@@ -18135,19 +19200,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_autolinks](https://docs.github.com/rest/repos/autolinks#get-all-autolinks-of-a-repository)
     ///
     /// ---
-    pub async fn list_autolinks_async(&self, owner: &str, repo: &str) -> Result<Vec<Autolink>, ReposListAutolinksError> {
+    pub async fn list_autolinks_async(&self, owner: &str, repo: &str) -> Result<Vec<Autolink>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18159,7 +19224,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListAutolinksError::Generic { code }),
+                code => Err(ReposListAutolinksError::Generic { code }.into()),
             }
         }
     }
@@ -18176,7 +19241,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_autolinks(&self, owner: &str, repo: &str) -> Result<Vec<Autolink>, ReposListAutolinksError> {
+    pub fn list_autolinks(&self, owner: &str, repo: &str) -> Result<Vec<Autolink>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/autolinks", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18188,7 +19253,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18200,7 +19265,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListAutolinksError::Generic { code }),
+                code => Err(ReposListAutolinksError::Generic { code }.into()),
             }
         }
     }
@@ -18212,7 +19277,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_branches](https://docs.github.com/rest/branches/branches#list-branches)
     ///
     /// ---
-    pub async fn list_branches_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListBranchesParams>>) -> Result<Vec<ShortBranch>, ReposListBranchesError> {
+    pub async fn list_branches_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListBranchesParams>>) -> Result<Vec<ShortBranch>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/branches", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18223,12 +19288,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18240,8 +19305,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListBranchesError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListBranchesError::Generic { code }),
+                404 => Err(ReposListBranchesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListBranchesError::Generic { code }.into()),
             }
         }
     }
@@ -18254,7 +19319,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_branches(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListBranchesParams>>) -> Result<Vec<ShortBranch>, ReposListBranchesError> {
+    pub fn list_branches(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListBranchesParams>>) -> Result<Vec<ShortBranch>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/branches", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18271,7 +19336,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18283,8 +19348,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListBranchesError::Status404(github_response.to_json()?)),
-                code => Err(ReposListBranchesError::Generic { code }),
+                404 => Err(ReposListBranchesError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListBranchesError::Generic { code }.into()),
             }
         }
     }
@@ -18300,19 +19365,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_branches_for_head_commit](https://docs.github.com/rest/commits/commits#list-branches-for-head-commit)
     ///
     /// ---
-    pub async fn list_branches_for_head_commit_async(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<Vec<BranchShort>, ReposListBranchesForHeadCommitError> {
+    pub async fn list_branches_for_head_commit_async(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<Vec<BranchShort>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/commits/{}/branches-where-head", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18324,9 +19389,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListBranchesForHeadCommitError::Status422(github_response.to_json_async().await?)),
-                409 => Err(ReposListBranchesForHeadCommitError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposListBranchesForHeadCommitError::Generic { code }),
+                422 => Err(ReposListBranchesForHeadCommitError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(ReposListBranchesForHeadCommitError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposListBranchesForHeadCommitError::Generic { code }.into()),
             }
         }
     }
@@ -18343,7 +19408,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_branches_for_head_commit(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<Vec<BranchShort>, ReposListBranchesForHeadCommitError> {
+    pub fn list_branches_for_head_commit(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<Vec<BranchShort>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/commits/{}/branches-where-head", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
@@ -18355,7 +19420,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18367,9 +19432,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListBranchesForHeadCommitError::Status422(github_response.to_json()?)),
-                409 => Err(ReposListBranchesForHeadCommitError::Status409(github_response.to_json()?)),
-                code => Err(ReposListBranchesForHeadCommitError::Generic { code }),
+                422 => Err(ReposListBranchesForHeadCommitError::Status422(github_response.to_json()?).into()),
+                409 => Err(ReposListBranchesForHeadCommitError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposListBranchesForHeadCommitError::Generic { code }.into()),
             }
         }
     }
@@ -18390,7 +19455,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/collaborators/collaborators#list-repository-collaborators)
     ///
     /// ---
-    pub async fn list_collaborators_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCollaboratorsParams<'api>>>) -> Result<Vec<Collaborator>, ReposListCollaboratorsError> {
+    pub async fn list_collaborators_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCollaboratorsParams<'api>>>) -> Result<Vec<Collaborator>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/collaborators", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18401,12 +19466,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18418,8 +19483,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListCollaboratorsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListCollaboratorsError::Generic { code }),
+                404 => Err(ReposListCollaboratorsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListCollaboratorsError::Generic { code }.into()),
             }
         }
     }
@@ -18441,7 +19506,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_collaborators(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCollaboratorsParams<'api>>>) -> Result<Vec<Collaborator>, ReposListCollaboratorsError> {
+    pub fn list_collaborators(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCollaboratorsParams<'api>>>) -> Result<Vec<Collaborator>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/collaborators", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18458,7 +19523,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18470,8 +19535,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListCollaboratorsError::Status404(github_response.to_json()?)),
-                code => Err(ReposListCollaboratorsError::Generic { code }),
+                404 => Err(ReposListCollaboratorsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListCollaboratorsError::Generic { code }.into()),
             }
         }
     }
@@ -18492,7 +19557,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_comments_for_commit](https://docs.github.com/rest/commits/comments#list-commit-comments)
     ///
     /// ---
-    pub async fn list_comments_for_commit_async(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListCommentsForCommitParams>>) -> Result<Vec<CommitComment>, ReposListCommentsForCommitError> {
+    pub async fn list_comments_for_commit_async(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListCommentsForCommitParams>>) -> Result<Vec<CommitComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
@@ -18503,12 +19568,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18520,7 +19585,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListCommentsForCommitError::Generic { code }),
+                code => Err(ReposListCommentsForCommitError::Generic { code }.into()),
             }
         }
     }
@@ -18542,7 +19607,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_comments_for_commit(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListCommentsForCommitParams>>) -> Result<Vec<CommitComment>, ReposListCommentsForCommitError> {
+    pub fn list_comments_for_commit(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListCommentsForCommitParams>>) -> Result<Vec<CommitComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
@@ -18559,7 +19624,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18571,7 +19636,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListCommentsForCommitError::Generic { code }),
+                code => Err(ReposListCommentsForCommitError::Generic { code }.into()),
             }
         }
     }
@@ -18592,7 +19657,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_commit_comments_for_repo](https://docs.github.com/rest/commits/comments#list-commit-comments-for-a-repository)
     ///
     /// ---
-    pub async fn list_commit_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitCommentsForRepoParams>>) -> Result<Vec<CommitComment>, ReposListCommitCommentsForRepoError> {
+    pub async fn list_commit_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitCommentsForRepoParams>>) -> Result<Vec<CommitComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18603,12 +19668,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18620,7 +19685,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListCommitCommentsForRepoError::Generic { code }),
+                code => Err(ReposListCommitCommentsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -18642,7 +19707,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_commit_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitCommentsForRepoParams>>) -> Result<Vec<CommitComment>, ReposListCommitCommentsForRepoError> {
+    pub fn list_commit_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitCommentsForRepoParams>>) -> Result<Vec<CommitComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18659,7 +19724,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18671,7 +19736,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListCommitCommentsForRepoError::Generic { code }),
+                code => Err(ReposListCommitCommentsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -18687,7 +19752,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_commit_statuses_for_ref](https://docs.github.com/rest/commits/statuses#list-commit-statuses-for-a-reference)
     ///
     /// ---
-    pub async fn list_commit_statuses_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposListCommitStatusesForRefParams>>) -> Result<Vec<Status>, ReposListCommitStatusesForRefError> {
+    pub async fn list_commit_statuses_for_ref_async(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposListCommitStatusesForRefParams>>) -> Result<Vec<Status>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -18698,12 +19763,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18715,8 +19780,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(ReposListCommitStatusesForRefError::Status301(github_response.to_json_async().await?)),
-                code => Err(ReposListCommitStatusesForRefError::Generic { code }),
+                301 => Err(ReposListCommitStatusesForRefError::Status301(github_response.to_json_async().await?).into()),
+                code => Err(ReposListCommitStatusesForRefError::Generic { code }.into()),
             }
         }
     }
@@ -18733,7 +19798,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_commit_statuses_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposListCommitStatusesForRefParams>>) -> Result<Vec<Status>, ReposListCommitStatusesForRefError> {
+    pub fn list_commit_statuses_for_ref(&self, owner: &str, repo: &str, git_ref: &str, query_params: Option<impl Into<ReposListCommitStatusesForRefParams>>) -> Result<Vec<Status>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -18750,7 +19815,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18762,8 +19827,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(ReposListCommitStatusesForRefError::Status301(github_response.to_json()?)),
-                code => Err(ReposListCommitStatusesForRefError::Generic { code }),
+                301 => Err(ReposListCommitStatusesForRefError::Status301(github_response.to_json()?).into()),
+                code => Err(ReposListCommitStatusesForRefError::Generic { code }.into()),
             }
         }
     }
@@ -18804,7 +19869,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/commits/commits#list-commits)
     ///
     /// ---
-    pub async fn list_commits_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitsParams<'api>>>) -> Result<Vec<Commit>, ReposListCommitsError> {
+    pub async fn list_commits_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitsParams<'api>>>) -> Result<Vec<Commit>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18815,12 +19880,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18832,11 +19897,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(ReposListCommitsError::Status500(github_response.to_json_async().await?)),
-                400 => Err(ReposListCommitsError::Status400(github_response.to_json_async().await?)),
-                404 => Err(ReposListCommitsError::Status404(github_response.to_json_async().await?)),
-                409 => Err(ReposListCommitsError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposListCommitsError::Generic { code }),
+                500 => Err(ReposListCommitsError::Status500(github_response.to_json_async().await?).into()),
+                400 => Err(ReposListCommitsError::Status400(github_response.to_json_async().await?).into()),
+                404 => Err(ReposListCommitsError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(ReposListCommitsError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposListCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -18878,7 +19943,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_commits(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitsParams<'api>>>) -> Result<Vec<Commit>, ReposListCommitsError> {
+    pub fn list_commits(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListCommitsParams<'api>>>) -> Result<Vec<Commit>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18895,7 +19960,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18907,11 +19972,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(ReposListCommitsError::Status500(github_response.to_json()?)),
-                400 => Err(ReposListCommitsError::Status400(github_response.to_json()?)),
-                404 => Err(ReposListCommitsError::Status404(github_response.to_json()?)),
-                409 => Err(ReposListCommitsError::Status409(github_response.to_json()?)),
-                code => Err(ReposListCommitsError::Generic { code }),
+                500 => Err(ReposListCommitsError::Status500(github_response.to_json()?).into()),
+                400 => Err(ReposListCommitsError::Status400(github_response.to_json()?).into()),
+                404 => Err(ReposListCommitsError::Status404(github_response.to_json()?).into()),
+                409 => Err(ReposListCommitsError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposListCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -18927,7 +19992,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_contributors](https://docs.github.com/rest/repos/repos#list-repository-contributors)
     ///
     /// ---
-    pub async fn list_contributors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListContributorsParams<'api>>>) -> Result<Vec<Contributor>, ReposListContributorsError> {
+    pub async fn list_contributors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListContributorsParams<'api>>>) -> Result<Vec<Contributor>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/contributors", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18938,12 +20003,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -18955,10 +20020,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposListContributorsError::Status204),
-                403 => Err(ReposListContributorsError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposListContributorsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListContributorsError::Generic { code }),
+                204 => Err(ReposListContributorsError::Status204.into()),
+                403 => Err(ReposListContributorsError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposListContributorsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListContributorsError::Generic { code }.into()),
             }
         }
     }
@@ -18975,7 +20040,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_contributors(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListContributorsParams<'api>>>) -> Result<Vec<Contributor>, ReposListContributorsError> {
+    pub fn list_contributors(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListContributorsParams<'api>>>) -> Result<Vec<Contributor>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/contributors", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -18992,7 +20057,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19004,10 +20069,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposListContributorsError::Status204),
-                403 => Err(ReposListContributorsError::Status403(github_response.to_json()?)),
-                404 => Err(ReposListContributorsError::Status404(github_response.to_json()?)),
-                code => Err(ReposListContributorsError::Generic { code }),
+                204 => Err(ReposListContributorsError::Status204.into()),
+                403 => Err(ReposListContributorsError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposListContributorsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListContributorsError::Generic { code }.into()),
             }
         }
     }
@@ -19029,7 +20094,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_custom_deployment_rule_integrations](https://docs.github.com/rest/deployments/protection-rules#list-custom-deployment-rule-integrations-available-for-an-environment)
     ///
     /// ---
-    pub async fn list_custom_deployment_rule_integrations_async(&self, environment_name: &str, repo: &str, owner: &str, query_params: Option<impl Into<ReposListCustomDeploymentRuleIntegrationsParams>>) -> Result<GetReposListCustomDeploymentRuleIntegrationsResponse200, ReposListCustomDeploymentRuleIntegrationsError> {
+    pub async fn list_custom_deployment_rule_integrations_async(&self, environment_name: &str, repo: &str, owner: &str, query_params: Option<impl Into<ReposListCustomDeploymentRuleIntegrationsParams>>) -> Result<GetReposListCustomDeploymentRuleIntegrationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules/apps", super::GITHUB_BASE_API_URL, environment_name, repo, owner);
 
@@ -19040,12 +20105,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19057,7 +20122,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListCustomDeploymentRuleIntegrationsError::Generic { code }),
+                code => Err(ReposListCustomDeploymentRuleIntegrationsError::Generic { code }.into()),
             }
         }
     }
@@ -19080,7 +20145,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_custom_deployment_rule_integrations(&self, environment_name: &str, repo: &str, owner: &str, query_params: Option<impl Into<ReposListCustomDeploymentRuleIntegrationsParams>>) -> Result<GetReposListCustomDeploymentRuleIntegrationsResponse200, ReposListCustomDeploymentRuleIntegrationsError> {
+    pub fn list_custom_deployment_rule_integrations(&self, environment_name: &str, repo: &str, owner: &str, query_params: Option<impl Into<ReposListCustomDeploymentRuleIntegrationsParams>>) -> Result<GetReposListCustomDeploymentRuleIntegrationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/deployment_protection_rules/apps", super::GITHUB_BASE_API_URL, environment_name, repo, owner);
 
@@ -19097,7 +20162,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19109,7 +20174,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListCustomDeploymentRuleIntegrationsError::Generic { code }),
+                code => Err(ReposListCustomDeploymentRuleIntegrationsError::Generic { code }.into()),
             }
         }
     }
@@ -19121,7 +20186,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_deploy_keys](https://docs.github.com/rest/deploy-keys/deploy-keys#list-deploy-keys)
     ///
     /// ---
-    pub async fn list_deploy_keys_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeployKeysParams>>) -> Result<Vec<DeployKey>, ReposListDeployKeysError> {
+    pub async fn list_deploy_keys_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeployKeysParams>>) -> Result<Vec<DeployKey>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/keys", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19132,12 +20197,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19149,7 +20214,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListDeployKeysError::Generic { code }),
+                code => Err(ReposListDeployKeysError::Generic { code }.into()),
             }
         }
     }
@@ -19162,7 +20227,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_deploy_keys(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeployKeysParams>>) -> Result<Vec<DeployKey>, ReposListDeployKeysError> {
+    pub fn list_deploy_keys(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeployKeysParams>>) -> Result<Vec<DeployKey>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/keys", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19179,7 +20244,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19191,7 +20256,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListDeployKeysError::Generic { code }),
+                code => Err(ReposListDeployKeysError::Generic { code }.into()),
             }
         }
     }
@@ -19209,7 +20274,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_deployment_branch_policies](https://docs.github.com/rest/deployments/branch-policies#list-deployment-branch-policies)
     ///
     /// ---
-    pub async fn list_deployment_branch_policies_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ReposListDeploymentBranchPoliciesParams>>) -> Result<GetReposListDeploymentBranchPoliciesResponse200, ReposListDeploymentBranchPoliciesError> {
+    pub async fn list_deployment_branch_policies_async(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ReposListDeploymentBranchPoliciesParams>>) -> Result<GetReposListDeploymentBranchPoliciesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -19220,12 +20285,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19237,7 +20302,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListDeploymentBranchPoliciesError::Generic { code }),
+                code => Err(ReposListDeploymentBranchPoliciesError::Generic { code }.into()),
             }
         }
     }
@@ -19256,7 +20321,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_deployment_branch_policies(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ReposListDeploymentBranchPoliciesParams>>) -> Result<GetReposListDeploymentBranchPoliciesResponse200, ReposListDeploymentBranchPoliciesError> {
+    pub fn list_deployment_branch_policies(&self, owner: &str, repo: &str, environment_name: &str, query_params: Option<impl Into<ReposListDeploymentBranchPoliciesParams>>) -> Result<GetReposListDeploymentBranchPoliciesResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies", super::GITHUB_BASE_API_URL, owner, repo, environment_name);
 
@@ -19273,7 +20338,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19285,7 +20350,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListDeploymentBranchPoliciesError::Generic { code }),
+                code => Err(ReposListDeploymentBranchPoliciesError::Generic { code }.into()),
             }
         }
     }
@@ -19299,7 +20364,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_deployment_statuses](https://docs.github.com/rest/deployments/statuses#list-deployment-statuses)
     ///
     /// ---
-    pub async fn list_deployment_statuses_async(&self, owner: &str, repo: &str, deployment_id: i32, query_params: Option<impl Into<ReposListDeploymentStatusesParams>>) -> Result<Vec<DeploymentStatus>, ReposListDeploymentStatusesError> {
+    pub async fn list_deployment_statuses_async(&self, owner: &str, repo: &str, deployment_id: i32, query_params: Option<impl Into<ReposListDeploymentStatusesParams>>) -> Result<Vec<DeploymentStatus>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
@@ -19310,12 +20375,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19327,8 +20392,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListDeploymentStatusesError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListDeploymentStatusesError::Generic { code }),
+                404 => Err(ReposListDeploymentStatusesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListDeploymentStatusesError::Generic { code }.into()),
             }
         }
     }
@@ -19343,7 +20408,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_deployment_statuses(&self, owner: &str, repo: &str, deployment_id: i32, query_params: Option<impl Into<ReposListDeploymentStatusesParams>>) -> Result<Vec<DeploymentStatus>, ReposListDeploymentStatusesError> {
+    pub fn list_deployment_statuses(&self, owner: &str, repo: &str, deployment_id: i32, query_params: Option<impl Into<ReposListDeploymentStatusesParams>>) -> Result<Vec<DeploymentStatus>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments/{}/statuses", super::GITHUB_BASE_API_URL, owner, repo, deployment_id);
 
@@ -19360,7 +20425,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19372,8 +20437,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListDeploymentStatusesError::Status404(github_response.to_json()?)),
-                code => Err(ReposListDeploymentStatusesError::Generic { code }),
+                404 => Err(ReposListDeploymentStatusesError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListDeploymentStatusesError::Generic { code }.into()),
             }
         }
     }
@@ -19387,7 +20452,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_deployments](https://docs.github.com/rest/deployments/deployments#list-deployments)
     ///
     /// ---
-    pub async fn list_deployments_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeploymentsParams<'api>>>) -> Result<Vec<Deployment>, ReposListDeploymentsError> {
+    pub async fn list_deployments_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeploymentsParams<'api>>>) -> Result<Vec<Deployment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19398,12 +20463,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19415,7 +20480,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListDeploymentsError::Generic { code }),
+                code => Err(ReposListDeploymentsError::Generic { code }.into()),
             }
         }
     }
@@ -19430,7 +20495,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_deployments(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeploymentsParams<'api>>>) -> Result<Vec<Deployment>, ReposListDeploymentsError> {
+    pub fn list_deployments(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListDeploymentsParams<'api>>>) -> Result<Vec<Deployment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/deployments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19447,7 +20512,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19459,7 +20524,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListDeploymentsError::Generic { code }),
+                code => Err(ReposListDeploymentsError::Generic { code }.into()),
             }
         }
     }
@@ -19475,7 +20540,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/repos/repos#list-repositories-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<ReposListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ReposListForAuthenticatedUserError> {
+    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<ReposListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/repos", super::GITHUB_BASE_API_URL);
 
@@ -19486,12 +20551,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19503,11 +20568,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                304 => Err(ReposListForAuthenticatedUserError::Status304),
-                403 => Err(ReposListForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ReposListForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(ReposListForAuthenticatedUserError::Generic { code }),
+                422 => Err(ReposListForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(ReposListForAuthenticatedUserError::Status304.into()),
+                403 => Err(ReposListForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ReposListForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ReposListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -19524,7 +20589,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<ReposListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ReposListForAuthenticatedUserError> {
+    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<ReposListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/repos", super::GITHUB_BASE_API_URL);
 
@@ -19541,7 +20606,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19553,11 +20618,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                304 => Err(ReposListForAuthenticatedUserError::Status304),
-                403 => Err(ReposListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ReposListForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(ReposListForAuthenticatedUserError::Generic { code }),
+                422 => Err(ReposListForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(ReposListForAuthenticatedUserError::Status304.into()),
+                403 => Err(ReposListForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ReposListForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(ReposListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -19574,7 +20639,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/repos/repos#list-organization-repositories)
     ///
     /// ---
-    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ReposListForOrgParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForOrgError> {
+    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<ReposListForOrgParams<'api>>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
 
@@ -19585,12 +20650,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19602,7 +20667,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListForOrgError::Generic { code }),
+                code => Err(ReposListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -19620,7 +20685,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<ReposListForOrgParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForOrgError> {
+    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<ReposListForOrgParams<'api>>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/repos", super::GITHUB_BASE_API_URL, org);
 
@@ -19637,7 +20702,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19649,7 +20714,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListForOrgError::Generic { code }),
+                code => Err(ReposListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -19663,7 +20728,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/repos/repos#list-repositories-for-a-user)
     ///
     /// ---
-    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ReposListForUserParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForUserError> {
+    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<ReposListForUserParams<'api>>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/repos", super::GITHUB_BASE_API_URL, username);
 
@@ -19674,12 +20739,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19691,7 +20756,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListForUserError::Generic { code }),
+                code => Err(ReposListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -19706,7 +20771,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<ReposListForUserParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForUserError> {
+    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<ReposListForUserParams<'api>>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/repos", super::GITHUB_BASE_API_URL, username);
 
@@ -19723,7 +20788,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19735,7 +20800,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListForUserError::Generic { code }),
+                code => Err(ReposListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -19747,7 +20812,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_forks](https://docs.github.com/rest/repos/forks#list-forks)
     ///
     /// ---
-    pub async fn list_forks_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListForksParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForksError> {
+    pub async fn list_forks_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListForksParams<'api>>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19758,12 +20823,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19775,8 +20840,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposListForksError::Status400(github_response.to_json_async().await?)),
-                code => Err(ReposListForksError::Generic { code }),
+                400 => Err(ReposListForksError::Status400(github_response.to_json_async().await?).into()),
+                code => Err(ReposListForksError::Generic { code }.into()),
             }
         }
     }
@@ -19789,7 +20854,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_forks(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListForksParams<'api>>>) -> Result<Vec<MinimalRepository>, ReposListForksError> {
+    pub fn list_forks(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListForksParams<'api>>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/forks", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19806,7 +20871,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19818,8 +20883,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposListForksError::Status400(github_response.to_json()?)),
-                code => Err(ReposListForksError::Generic { code }),
+                400 => Err(ReposListForksError::Status400(github_response.to_json()?).into()),
+                code => Err(ReposListForksError::Generic { code }.into()),
             }
         }
     }
@@ -19833,7 +20898,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_invitations](https://docs.github.com/rest/collaborators/invitations#list-repository-invitations)
     ///
     /// ---
-    pub async fn list_invitations_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListInvitationsParams>>) -> Result<Vec<RepositoryInvitation>, ReposListInvitationsError> {
+    pub async fn list_invitations_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListInvitationsParams>>) -> Result<Vec<RepositoryInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/invitations", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19844,12 +20909,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19861,7 +20926,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListInvitationsError::Generic { code }),
+                code => Err(ReposListInvitationsError::Generic { code }.into()),
             }
         }
     }
@@ -19876,7 +20941,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_invitations(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListInvitationsParams>>) -> Result<Vec<RepositoryInvitation>, ReposListInvitationsError> {
+    pub fn list_invitations(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListInvitationsParams>>) -> Result<Vec<RepositoryInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/invitations", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -19893,7 +20958,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19905,7 +20970,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListInvitationsError::Generic { code }),
+                code => Err(ReposListInvitationsError::Generic { code }.into()),
             }
         }
     }
@@ -19919,7 +20984,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_invitations_for_authenticated_user](https://docs.github.com/rest/collaborators/invitations#list-repository-invitations-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_invitations_for_authenticated_user_async(&self, query_params: Option<impl Into<ReposListInvitationsForAuthenticatedUserParams>>) -> Result<Vec<RepositoryInvitation>, ReposListInvitationsForAuthenticatedUserError> {
+    pub async fn list_invitations_for_authenticated_user_async(&self, query_params: Option<impl Into<ReposListInvitationsForAuthenticatedUserParams>>) -> Result<Vec<RepositoryInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/user/repository_invitations", super::GITHUB_BASE_API_URL);
 
@@ -19930,12 +20995,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19947,11 +21012,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ReposListInvitationsForAuthenticatedUserError::Status304),
-                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(ReposListInvitationsForAuthenticatedUserError::Generic { code }),
+                304 => Err(ReposListInvitationsForAuthenticatedUserError::Status304.into()),
+                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ReposListInvitationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -19966,7 +21031,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_invitations_for_authenticated_user(&self, query_params: Option<impl Into<ReposListInvitationsForAuthenticatedUserParams>>) -> Result<Vec<RepositoryInvitation>, ReposListInvitationsForAuthenticatedUserError> {
+    pub fn list_invitations_for_authenticated_user(&self, query_params: Option<impl Into<ReposListInvitationsForAuthenticatedUserParams>>) -> Result<Vec<RepositoryInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/user/repository_invitations", super::GITHUB_BASE_API_URL);
 
@@ -19983,7 +21048,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -19995,11 +21060,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ReposListInvitationsForAuthenticatedUserError::Status304),
-                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(ReposListInvitationsForAuthenticatedUserError::Generic { code }),
+                304 => Err(ReposListInvitationsForAuthenticatedUserError::Status304.into()),
+                404 => Err(ReposListInvitationsForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(ReposListInvitationsForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ReposListInvitationsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(ReposListInvitationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -20013,19 +21078,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_languages](https://docs.github.com/rest/repos/repos#list-repository-languages)
     ///
     /// ---
-    pub async fn list_languages_async(&self, owner: &str, repo: &str) -> Result<Language, ReposListLanguagesError> {
+    pub async fn list_languages_async(&self, owner: &str, repo: &str) -> Result<Language, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/languages", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20037,7 +21102,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListLanguagesError::Generic { code }),
+                code => Err(ReposListLanguagesError::Generic { code }.into()),
             }
         }
     }
@@ -20052,7 +21117,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_languages(&self, owner: &str, repo: &str) -> Result<Language, ReposListLanguagesError> {
+    pub fn list_languages(&self, owner: &str, repo: &str) -> Result<Language, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/languages", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20064,7 +21129,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20076,7 +21141,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListLanguagesError::Generic { code }),
+                code => Err(ReposListLanguagesError::Generic { code }.into()),
             }
         }
     }
@@ -20092,7 +21157,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_pages_builds](https://docs.github.com/rest/pages/pages#list-apiname-pages-builds)
     ///
     /// ---
-    pub async fn list_pages_builds_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListPagesBuildsParams>>) -> Result<Vec<PageBuild>, ReposListPagesBuildsError> {
+    pub async fn list_pages_builds_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListPagesBuildsParams>>) -> Result<Vec<PageBuild>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pages/builds", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20103,12 +21168,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20120,7 +21185,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListPagesBuildsError::Generic { code }),
+                code => Err(ReposListPagesBuildsError::Generic { code }.into()),
             }
         }
     }
@@ -20137,7 +21202,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pages_builds(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListPagesBuildsParams>>) -> Result<Vec<PageBuild>, ReposListPagesBuildsError> {
+    pub fn list_pages_builds(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListPagesBuildsParams>>) -> Result<Vec<PageBuild>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pages/builds", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20154,7 +21219,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20166,7 +21231,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListPagesBuildsError::Generic { code }),
+                code => Err(ReposListPagesBuildsError::Generic { code }.into()),
             }
         }
     }
@@ -20184,7 +21249,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_public](https://docs.github.com/rest/repos/repos#list-public-repositories)
     ///
     /// ---
-    pub async fn list_public_async(&self, query_params: Option<impl Into<ReposListPublicParams>>) -> Result<Vec<MinimalRepository>, ReposListPublicError> {
+    pub async fn list_public_async(&self, query_params: Option<impl Into<ReposListPublicParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/repositories", super::GITHUB_BASE_API_URL);
 
@@ -20195,12 +21260,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20212,9 +21277,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListPublicError::Status422(github_response.to_json_async().await?)),
-                304 => Err(ReposListPublicError::Status304),
-                code => Err(ReposListPublicError::Generic { code }),
+                422 => Err(ReposListPublicError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(ReposListPublicError::Status304.into()),
+                code => Err(ReposListPublicError::Generic { code }.into()),
             }
         }
     }
@@ -20233,7 +21298,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public(&self, query_params: Option<impl Into<ReposListPublicParams>>) -> Result<Vec<MinimalRepository>, ReposListPublicError> {
+    pub fn list_public(&self, query_params: Option<impl Into<ReposListPublicParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/repositories", super::GITHUB_BASE_API_URL);
 
@@ -20250,7 +21315,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20262,9 +21327,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposListPublicError::Status422(github_response.to_json()?)),
-                304 => Err(ReposListPublicError::Status304),
-                code => Err(ReposListPublicError::Generic { code }),
+                422 => Err(ReposListPublicError::Status422(github_response.to_json()?).into()),
+                304 => Err(ReposListPublicError::Status304.into()),
+                code => Err(ReposListPublicError::Generic { code }.into()),
             }
         }
     }
@@ -20280,7 +21345,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_pull_requests_associated_with_commit](https://docs.github.com/rest/commits/commits#list-pull-requests-associated-with-a-commit)
     ///
     /// ---
-    pub async fn list_pull_requests_associated_with_commit_async(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListPullRequestsAssociatedWithCommitParams>>) -> Result<Vec<PullRequestSimple>, ReposListPullRequestsAssociatedWithCommitError> {
+    pub async fn list_pull_requests_associated_with_commit_async(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListPullRequestsAssociatedWithCommitParams>>) -> Result<Vec<PullRequestSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
@@ -20291,12 +21356,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20308,8 +21373,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposListPullRequestsAssociatedWithCommitError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }),
+                409 => Err(ReposListPullRequestsAssociatedWithCommitError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }.into()),
             }
         }
     }
@@ -20326,7 +21391,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pull_requests_associated_with_commit(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListPullRequestsAssociatedWithCommitParams>>) -> Result<Vec<PullRequestSimple>, ReposListPullRequestsAssociatedWithCommitError> {
+    pub fn list_pull_requests_associated_with_commit(&self, owner: &str, repo: &str, commit_sha: &str, query_params: Option<impl Into<ReposListPullRequestsAssociatedWithCommitParams>>) -> Result<Vec<PullRequestSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/commits/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
@@ -20343,7 +21408,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20355,8 +21420,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposListPullRequestsAssociatedWithCommitError::Status409(github_response.to_json()?)),
-                code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }),
+                409 => Err(ReposListPullRequestsAssociatedWithCommitError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposListPullRequestsAssociatedWithCommitError::Generic { code }.into()),
             }
         }
     }
@@ -20368,7 +21433,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_release_assets](https://docs.github.com/rest/releases/assets#list-release-assets)
     ///
     /// ---
-    pub async fn list_release_assets_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposListReleaseAssetsParams>>) -> Result<Vec<ReleaseAsset>, ReposListReleaseAssetsError> {
+    pub async fn list_release_assets_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposListReleaseAssetsParams>>) -> Result<Vec<ReleaseAsset>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -20379,12 +21444,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20396,7 +21461,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListReleaseAssetsError::Generic { code }),
+                code => Err(ReposListReleaseAssetsError::Generic { code }.into()),
             }
         }
     }
@@ -20409,7 +21474,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_release_assets(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposListReleaseAssetsParams>>) -> Result<Vec<ReleaseAsset>, ReposListReleaseAssetsError> {
+    pub fn list_release_assets(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReposListReleaseAssetsParams>>) -> Result<Vec<ReleaseAsset>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -20426,7 +21491,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20438,7 +21503,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListReleaseAssetsError::Generic { code }),
+                code => Err(ReposListReleaseAssetsError::Generic { code }.into()),
             }
         }
     }
@@ -20454,7 +21519,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_releases](https://docs.github.com/rest/releases/releases#list-releases)
     ///
     /// ---
-    pub async fn list_releases_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListReleasesParams>>) -> Result<Vec<Release>, ReposListReleasesError> {
+    pub async fn list_releases_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListReleasesParams>>) -> Result<Vec<Release>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20465,12 +21530,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20482,8 +21547,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListReleasesError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListReleasesError::Generic { code }),
+                404 => Err(ReposListReleasesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListReleasesError::Generic { code }.into()),
             }
         }
     }
@@ -20500,7 +21565,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_releases(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListReleasesParams>>) -> Result<Vec<Release>, ReposListReleasesError> {
+    pub fn list_releases(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListReleasesParams>>) -> Result<Vec<Release>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20517,7 +21582,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20529,8 +21594,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListReleasesError::Status404(github_response.to_json()?)),
-                code => Err(ReposListReleasesError::Generic { code }),
+                404 => Err(ReposListReleasesError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListReleasesError::Generic { code }.into()),
             }
         }
     }
@@ -20549,19 +21614,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---list-tag-protection-states-for-a-repository)
     ///
     /// ---
-    pub async fn list_tag_protection_async(&self, owner: &str, repo: &str) -> Result<Vec<TagProtection>, ReposListTagProtectionError> {
+    pub async fn list_tag_protection_async(&self, owner: &str, repo: &str) -> Result<Vec<TagProtection>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tags/protection", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20573,9 +21638,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposListTagProtectionError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposListTagProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListTagProtectionError::Generic { code }),
+                403 => Err(ReposListTagProtectionError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposListTagProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListTagProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -20595,7 +21660,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_tag_protection(&self, owner: &str, repo: &str) -> Result<Vec<TagProtection>, ReposListTagProtectionError> {
+    pub fn list_tag_protection(&self, owner: &str, repo: &str) -> Result<Vec<TagProtection>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/tags/protection", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20607,7 +21672,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20619,9 +21684,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposListTagProtectionError::Status403(github_response.to_json()?)),
-                404 => Err(ReposListTagProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposListTagProtectionError::Generic { code }),
+                403 => Err(ReposListTagProtectionError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposListTagProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListTagProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -20633,7 +21698,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_tags](https://docs.github.com/rest/repos/repos#list-repository-tags)
     ///
     /// ---
-    pub async fn list_tags_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTagsParams>>) -> Result<Vec<Tag>, ReposListTagsError> {
+    pub async fn list_tags_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTagsParams>>) -> Result<Vec<Tag>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/tags", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20644,12 +21709,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20661,7 +21726,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListTagsError::Generic { code }),
+                code => Err(ReposListTagsError::Generic { code }.into()),
             }
         }
     }
@@ -20674,7 +21739,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_tags(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTagsParams>>) -> Result<Vec<Tag>, ReposListTagsError> {
+    pub fn list_tags(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTagsParams>>) -> Result<Vec<Tag>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/tags", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20691,7 +21756,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20703,7 +21768,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposListTagsError::Generic { code }),
+                code => Err(ReposListTagsError::Generic { code }.into()),
             }
         }
     }
@@ -20721,7 +21786,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_teams](https://docs.github.com/rest/repos/repos#list-repository-teams)
     ///
     /// ---
-    pub async fn list_teams_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTeamsParams>>) -> Result<Vec<Team>, ReposListTeamsError> {
+    pub async fn list_teams_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTeamsParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/teams", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20732,12 +21797,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20749,8 +21814,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListTeamsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListTeamsError::Generic { code }),
+                404 => Err(ReposListTeamsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -20769,7 +21834,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_teams(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTeamsParams>>) -> Result<Vec<Team>, ReposListTeamsError> {
+    pub fn list_teams(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListTeamsParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/teams", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20786,7 +21851,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20798,8 +21863,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListTeamsError::Status404(github_response.to_json()?)),
-                code => Err(ReposListTeamsError::Generic { code }),
+                404 => Err(ReposListTeamsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -20813,7 +21878,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/repos/webhooks#list-deliveries-for-a-repository-webhook)
     ///
     /// ---
-    pub async fn list_webhook_deliveries_async(&self, owner: &str, repo: &str, hook_id: i32, query_params: Option<impl Into<ReposListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, ReposListWebhookDeliveriesError> {
+    pub async fn list_webhook_deliveries_async(&self, owner: &str, repo: &str, hook_id: i32, query_params: Option<impl Into<ReposListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
@@ -20824,12 +21889,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20841,9 +21906,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposListWebhookDeliveriesError::Status400(github_response.to_json_async().await?)),
-                422 => Err(ReposListWebhookDeliveriesError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposListWebhookDeliveriesError::Generic { code }),
+                400 => Err(ReposListWebhookDeliveriesError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(ReposListWebhookDeliveriesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposListWebhookDeliveriesError::Generic { code }.into()),
             }
         }
     }
@@ -20858,7 +21923,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_webhook_deliveries(&self, owner: &str, repo: &str, hook_id: i32, query_params: Option<impl Into<ReposListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, ReposListWebhookDeliveriesError> {
+    pub fn list_webhook_deliveries(&self, owner: &str, repo: &str, hook_id: i32, query_params: Option<impl Into<ReposListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
@@ -20875,7 +21940,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20887,9 +21952,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposListWebhookDeliveriesError::Status400(github_response.to_json()?)),
-                422 => Err(ReposListWebhookDeliveriesError::Status422(github_response.to_json()?)),
-                code => Err(ReposListWebhookDeliveriesError::Generic { code }),
+                400 => Err(ReposListWebhookDeliveriesError::Status400(github_response.to_json()?).into()),
+                422 => Err(ReposListWebhookDeliveriesError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposListWebhookDeliveriesError::Generic { code }.into()),
             }
         }
     }
@@ -20903,7 +21968,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/repos/webhooks#list-repository-webhooks)
     ///
     /// ---
-    pub async fn list_webhooks_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListWebhooksParams>>) -> Result<Vec<Hook>, ReposListWebhooksError> {
+    pub async fn list_webhooks_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListWebhooksParams>>) -> Result<Vec<Hook>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/hooks", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20914,12 +21979,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20931,8 +21996,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListWebhooksError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposListWebhooksError::Generic { code }),
+                404 => Err(ReposListWebhooksError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposListWebhooksError::Generic { code }.into()),
             }
         }
     }
@@ -20947,7 +22012,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_webhooks(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListWebhooksParams>>) -> Result<Vec<Hook>, ReposListWebhooksError> {
+    pub fn list_webhooks(&self, owner: &str, repo: &str, query_params: Option<impl Into<ReposListWebhooksParams>>) -> Result<Vec<Hook>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/hooks", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -20964,7 +22029,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -20976,8 +22041,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposListWebhooksError::Status404(github_response.to_json()?)),
-                code => Err(ReposListWebhooksError::Generic { code }),
+                404 => Err(ReposListWebhooksError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposListWebhooksError::Generic { code }.into()),
             }
         }
     }
@@ -20989,19 +22054,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for merge](https://docs.github.com/rest/branches/branches#merge-a-branch)
     ///
     /// ---
-    pub async fn merge_async(&self, owner: &str, repo: &str, body: PostReposMerge) -> Result<Commit, ReposMergeError> {
+    pub async fn merge_async(&self, owner: &str, repo: &str, body: PostReposMerge) -> Result<Commit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/merges", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposMerge::from_json(body)?),
+            body: Some(C::from_json::<PostReposMerge>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21013,12 +22078,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposMergeError::Status204),
-                404 => Err(ReposMergeError::Status404),
-                409 => Err(ReposMergeError::Status409),
-                403 => Err(ReposMergeError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ReposMergeError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposMergeError::Generic { code }),
+                204 => Err(ReposMergeError::Status204.into()),
+                404 => Err(ReposMergeError::Status404.into()),
+                409 => Err(ReposMergeError::Status409.into()),
+                403 => Err(ReposMergeError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ReposMergeError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposMergeError::Generic { code }.into()),
             }
         }
     }
@@ -21031,19 +22096,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn merge(&self, owner: &str, repo: &str, body: PostReposMerge) -> Result<Commit, ReposMergeError> {
+    pub fn merge(&self, owner: &str, repo: &str, body: PostReposMerge) -> Result<Commit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/merges", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposMerge::from_json(body)?),
+            body: Some(C::from_json::<PostReposMerge>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21055,12 +22120,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(ReposMergeError::Status204),
-                404 => Err(ReposMergeError::Status404),
-                409 => Err(ReposMergeError::Status409),
-                403 => Err(ReposMergeError::Status403(github_response.to_json()?)),
-                422 => Err(ReposMergeError::Status422(github_response.to_json()?)),
-                code => Err(ReposMergeError::Generic { code }),
+                204 => Err(ReposMergeError::Status204.into()),
+                404 => Err(ReposMergeError::Status404.into()),
+                409 => Err(ReposMergeError::Status409.into()),
+                403 => Err(ReposMergeError::Status403(github_response.to_json()?).into()),
+                422 => Err(ReposMergeError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposMergeError::Generic { code }.into()),
             }
         }
     }
@@ -21074,19 +22139,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for merge_upstream](https://docs.github.com/rest/branches/branches#sync-a-fork-branch-with-the-upstream-repository)
     ///
     /// ---
-    pub async fn merge_upstream_async(&self, owner: &str, repo: &str, body: PostReposMergeUpstream) -> Result<MergedUpstream, ReposMergeUpstreamError> {
+    pub async fn merge_upstream_async(&self, owner: &str, repo: &str, body: PostReposMergeUpstream) -> Result<MergedUpstream, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/merge-upstream", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposMergeUpstream::from_json(body)?),
+            body: Some(C::from_json::<PostReposMergeUpstream>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21098,9 +22163,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposMergeUpstreamError::Status409),
-                422 => Err(ReposMergeUpstreamError::Status422),
-                code => Err(ReposMergeUpstreamError::Generic { code }),
+                409 => Err(ReposMergeUpstreamError::Status409.into()),
+                422 => Err(ReposMergeUpstreamError::Status422.into()),
+                code => Err(ReposMergeUpstreamError::Generic { code }.into()),
             }
         }
     }
@@ -21115,19 +22180,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn merge_upstream(&self, owner: &str, repo: &str, body: PostReposMergeUpstream) -> Result<MergedUpstream, ReposMergeUpstreamError> {
+    pub fn merge_upstream(&self, owner: &str, repo: &str, body: PostReposMergeUpstream) -> Result<MergedUpstream, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/merge-upstream", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposMergeUpstream::from_json(body)?),
+            body: Some(C::from_json::<PostReposMergeUpstream>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21139,9 +22204,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(ReposMergeUpstreamError::Status409),
-                422 => Err(ReposMergeUpstreamError::Status422),
-                code => Err(ReposMergeUpstreamError::Generic { code }),
+                409 => Err(ReposMergeUpstreamError::Status409.into()),
+                422 => Err(ReposMergeUpstreamError::Status422.into()),
+                code => Err(ReposMergeUpstreamError::Generic { code }.into()),
             }
         }
     }
@@ -21155,19 +22220,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/repos/webhooks#ping-a-repository-webhook)
     ///
     /// ---
-    pub async fn ping_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposPingWebhookError> {
+    pub async fn ping_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/pings", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21179,8 +22244,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposPingWebhookError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposPingWebhookError::Generic { code }),
+                404 => Err(ReposPingWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposPingWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -21195,7 +22260,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn ping_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposPingWebhookError> {
+    pub fn ping_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/pings", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
@@ -21207,7 +22272,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21219,8 +22284,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposPingWebhookError::Status404(github_response.to_json()?)),
-                code => Err(ReposPingWebhookError::Generic { code }),
+                404 => Err(ReposPingWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposPingWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -21234,19 +22299,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/repos/webhooks#redeliver-a-delivery-for-a-repository-webhook)
     ///
     /// ---
-    pub async fn redeliver_webhook_delivery_async(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, ReposRedeliverWebhookDeliveryError> {
+    pub async fn redeliver_webhook_delivery_async(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21258,9 +22323,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposRedeliverWebhookDeliveryError::Status400(github_response.to_json_async().await?)),
-                422 => Err(ReposRedeliverWebhookDeliveryError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposRedeliverWebhookDeliveryError::Generic { code }),
+                400 => Err(ReposRedeliverWebhookDeliveryError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(ReposRedeliverWebhookDeliveryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposRedeliverWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -21275,7 +22340,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn redeliver_webhook_delivery(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, ReposRedeliverWebhookDeliveryError> {
+    pub fn redeliver_webhook_delivery(&self, owner: &str, repo: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, owner, repo, hook_id, delivery_id);
 
@@ -21287,7 +22352,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21299,9 +22364,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(ReposRedeliverWebhookDeliveryError::Status400(github_response.to_json()?)),
-                422 => Err(ReposRedeliverWebhookDeliveryError::Status422(github_response.to_json()?)),
-                code => Err(ReposRedeliverWebhookDeliveryError::Generic { code }),
+                400 => Err(ReposRedeliverWebhookDeliveryError::Status400(github_response.to_json()?).into()),
+                422 => Err(ReposRedeliverWebhookDeliveryError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposRedeliverWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -21317,19 +22382,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for remove_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-app-access-restrictions)
     ///
     /// ---
-    pub async fn remove_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveAppAccessRestrictions) -> Result<Vec<Integration>, ReposRemoveAppAccessRestrictionsError> {
+    pub async fn remove_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveAppAccessRestrictions) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveAppAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveAppAccessRestrictions>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21341,8 +22406,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposRemoveAppAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposRemoveAppAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -21359,19 +22424,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_app_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveAppAccessRestrictions) -> Result<Vec<Integration>, ReposRemoveAppAccessRestrictionsError> {
+    pub fn remove_app_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveAppAccessRestrictions) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveAppAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveAppAccessRestrictions>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21383,8 +22448,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposRemoveAppAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposRemoveAppAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposRemoveAppAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -21419,19 +22484,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/collaborators/collaborators#remove-a-repository-collaborator)
     ///
     /// ---
-    pub async fn remove_collaborator_async(&self, owner: &str, repo: &str, username: &str) -> Result<(), ReposRemoveCollaboratorError> {
+    pub async fn remove_collaborator_async(&self, owner: &str, repo: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}", super::GITHUB_BASE_API_URL, owner, repo, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21443,9 +22508,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveCollaboratorError::Status422(github_response.to_json_async().await?)),
-                403 => Err(ReposRemoveCollaboratorError::Status403(github_response.to_json_async().await?)),
-                code => Err(ReposRemoveCollaboratorError::Generic { code }),
+                422 => Err(ReposRemoveCollaboratorError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(ReposRemoveCollaboratorError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ReposRemoveCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -21481,7 +22546,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_collaborator(&self, owner: &str, repo: &str, username: &str) -> Result<(), ReposRemoveCollaboratorError> {
+    pub fn remove_collaborator(&self, owner: &str, repo: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/collaborators/{}", super::GITHUB_BASE_API_URL, owner, repo, username);
 
@@ -21493,7 +22558,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21505,9 +22570,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveCollaboratorError::Status422(github_response.to_json()?)),
-                403 => Err(ReposRemoveCollaboratorError::Status403(github_response.to_json()?)),
-                code => Err(ReposRemoveCollaboratorError::Generic { code }),
+                422 => Err(ReposRemoveCollaboratorError::Status422(github_response.to_json()?).into()),
+                403 => Err(ReposRemoveCollaboratorError::Status403(github_response.to_json()?).into()),
+                code => Err(ReposRemoveCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -21521,19 +22586,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for remove_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#remove-status-check-contexts)
     ///
     /// ---
-    pub async fn remove_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveStatusCheckContexts) -> Result<Vec<String>, ReposRemoveStatusCheckContextsError> {
+    pub async fn remove_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveStatusCheckContexts) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveStatusCheckContexts::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveStatusCheckContexts>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21545,9 +22610,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposRemoveStatusCheckContextsError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposRemoveStatusCheckContextsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposRemoveStatusCheckContextsError::Generic { code }),
+                404 => Err(ReposRemoveStatusCheckContextsError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposRemoveStatusCheckContextsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposRemoveStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -21562,19 +22627,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_status_check_contexts(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveStatusCheckContexts) -> Result<Vec<String>, ReposRemoveStatusCheckContextsError> {
+    pub fn remove_status_check_contexts(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveStatusCheckContexts) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveStatusCheckContexts::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveStatusCheckContexts>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21586,9 +22651,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposRemoveStatusCheckContextsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposRemoveStatusCheckContextsError::Status422(github_response.to_json()?)),
-                code => Err(ReposRemoveStatusCheckContextsError::Generic { code }),
+                404 => Err(ReposRemoveStatusCheckContextsError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposRemoveStatusCheckContextsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposRemoveStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -21602,19 +22667,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for remove_status_check_protection](https://docs.github.com/rest/branches/branch-protection#remove-status-check-protection)
     ///
     /// ---
-    pub async fn remove_status_check_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposRemoveStatusCheckProtectionError> {
+    pub async fn remove_status_check_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21626,7 +22691,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }),
+                code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -21641,7 +22706,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_status_check_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), ReposRemoveStatusCheckProtectionError> {
+    pub fn remove_status_check_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -21653,7 +22718,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21665,7 +22730,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }),
+                code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -21681,19 +22746,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for remove_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-team-access-restrictions)
     ///
     /// ---
-    pub async fn remove_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveTeamAccessRestrictions) -> Result<Vec<Team>, ReposRemoveTeamAccessRestrictionsError> {
+    pub async fn remove_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveTeamAccessRestrictions) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveTeamAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveTeamAccessRestrictions>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21705,8 +22770,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposRemoveTeamAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposRemoveTeamAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -21723,19 +22788,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_team_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveTeamAccessRestrictions) -> Result<Vec<Team>, ReposRemoveTeamAccessRestrictionsError> {
+    pub fn remove_team_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveTeamAccessRestrictions) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveTeamAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveTeamAccessRestrictions>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21747,8 +22812,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposRemoveTeamAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposRemoveTeamAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposRemoveTeamAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -21768,19 +22833,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for remove_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#remove-user-access-restrictions)
     ///
     /// ---
-    pub async fn remove_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposRemoveUserAccessRestrictionsError> {
+    pub async fn remove_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveUserAccessRestrictions) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveUserAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveUserAccessRestrictions>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21792,8 +22857,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposRemoveUserAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposRemoveUserAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -21814,19 +22879,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_user_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposRemoveUserAccessRestrictionsError> {
+    pub fn remove_user_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: DeleteReposRemoveUserAccessRestrictions) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteReposRemoveUserAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<DeleteReposRemoveUserAccessRestrictions>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21838,8 +22903,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposRemoveUserAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposRemoveUserAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposRemoveUserAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -21860,19 +22925,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for rename_branch](https://docs.github.com/rest/branches/branches#rename-a-branch)
     ///
     /// ---
-    pub async fn rename_branch_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposRenameBranch) -> Result<BranchWithProtection, ReposRenameBranchError> {
+    pub async fn rename_branch_async(&self, owner: &str, repo: &str, branch: &str, body: PostReposRenameBranch) -> Result<BranchWithProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/rename", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposRenameBranch::from_json(body)?),
+            body: Some(C::from_json::<PostReposRenameBranch>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21884,10 +22949,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposRenameBranchError::Status403(github_response.to_json_async().await?)),
-                404 => Err(ReposRenameBranchError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposRenameBranchError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposRenameBranchError::Generic { code }),
+                403 => Err(ReposRenameBranchError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ReposRenameBranchError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposRenameBranchError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposRenameBranchError::Generic { code }.into()),
             }
         }
     }
@@ -21909,19 +22974,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn rename_branch(&self, owner: &str, repo: &str, branch: &str, body: PostReposRenameBranch) -> Result<BranchWithProtection, ReposRenameBranchError> {
+    pub fn rename_branch(&self, owner: &str, repo: &str, branch: &str, body: PostReposRenameBranch) -> Result<BranchWithProtection, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/rename", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposRenameBranch::from_json(body)?),
+            body: Some(C::from_json::<PostReposRenameBranch>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21933,10 +22998,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposRenameBranchError::Status403(github_response.to_json()?)),
-                404 => Err(ReposRenameBranchError::Status404(github_response.to_json()?)),
-                422 => Err(ReposRenameBranchError::Status422(github_response.to_json()?)),
-                code => Err(ReposRenameBranchError::Generic { code }),
+                403 => Err(ReposRenameBranchError::Status403(github_response.to_json()?).into()),
+                404 => Err(ReposRenameBranchError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposRenameBranchError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposRenameBranchError::Generic { code }.into()),
             }
         }
     }
@@ -21948,19 +23013,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for replace_all_topics](https://docs.github.com/rest/repos/repos#replace-all-repository-topics)
     ///
     /// ---
-    pub async fn replace_all_topics_async(&self, owner: &str, repo: &str, body: PutReposReplaceAllTopics) -> Result<Topic, ReposReplaceAllTopicsError> {
+    pub async fn replace_all_topics_async(&self, owner: &str, repo: &str, body: PutReposReplaceAllTopics) -> Result<Topic, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposReplaceAllTopics::from_json(body)?),
+            body: Some(C::from_json::<PutReposReplaceAllTopics>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -21972,9 +23037,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposReplaceAllTopicsError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposReplaceAllTopicsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposReplaceAllTopicsError::Generic { code }),
+                404 => Err(ReposReplaceAllTopicsError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposReplaceAllTopicsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposReplaceAllTopicsError::Generic { code }.into()),
             }
         }
     }
@@ -21987,19 +23052,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn replace_all_topics(&self, owner: &str, repo: &str, body: PutReposReplaceAllTopics) -> Result<Topic, ReposReplaceAllTopicsError> {
+    pub fn replace_all_topics(&self, owner: &str, repo: &str, body: PutReposReplaceAllTopics) -> Result<Topic, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/topics", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposReplaceAllTopics::from_json(body)?),
+            body: Some(C::from_json::<PutReposReplaceAllTopics>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22011,9 +23076,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposReplaceAllTopicsError::Status404(github_response.to_json()?)),
-                422 => Err(ReposReplaceAllTopicsError::Status422(github_response.to_json()?)),
-                code => Err(ReposReplaceAllTopicsError::Generic { code }),
+                404 => Err(ReposReplaceAllTopicsError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposReplaceAllTopicsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposReplaceAllTopicsError::Generic { code }.into()),
             }
         }
     }
@@ -22029,19 +23094,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for request_pages_build](https://docs.github.com/rest/pages/pages#request-a-apiname-pages-build)
     ///
     /// ---
-    pub async fn request_pages_build_async(&self, owner: &str, repo: &str) -> Result<PageBuildStatus, ReposRequestPagesBuildError> {
+    pub async fn request_pages_build_async(&self, owner: &str, repo: &str) -> Result<PageBuildStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/builds", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22053,7 +23118,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposRequestPagesBuildError::Generic { code }),
+                code => Err(ReposRequestPagesBuildError::Generic { code }.into()),
             }
         }
     }
@@ -22070,7 +23135,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn request_pages_build(&self, owner: &str, repo: &str) -> Result<PageBuildStatus, ReposRequestPagesBuildError> {
+    pub fn request_pages_build(&self, owner: &str, repo: &str) -> Result<PageBuildStatus, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages/builds", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -22082,7 +23147,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22094,7 +23159,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposRequestPagesBuildError::Generic { code }),
+                code => Err(ReposRequestPagesBuildError::Generic { code }.into()),
             }
         }
     }
@@ -22110,19 +23175,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for set_admin_branch_protection](https://docs.github.com/rest/branches/branch-protection#set-admin-branch-protection)
     ///
     /// ---
-    pub async fn set_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposSetAdminBranchProtectionError> {
+    pub async fn set_admin_branch_protection_async(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/enforce_admins", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22134,7 +23199,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposSetAdminBranchProtectionError::Generic { code }),
+                code => Err(ReposSetAdminBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -22151,7 +23216,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_admin_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, ReposSetAdminBranchProtectionError> {
+    pub fn set_admin_branch_protection(&self, owner: &str, repo: &str, branch: &str) -> Result<ProtectedBranchAdminEnforced, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/enforce_admins", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
@@ -22163,7 +23228,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22175,7 +23240,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposSetAdminBranchProtectionError::Generic { code }),
+                code => Err(ReposSetAdminBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -22191,19 +23256,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for set_app_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-app-access-restrictions)
     ///
     /// ---
-    pub async fn set_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetAppAccessRestrictions) -> Result<Vec<Integration>, ReposSetAppAccessRestrictionsError> {
+    pub async fn set_app_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetAppAccessRestrictions) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetAppAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetAppAccessRestrictions>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22215,8 +23280,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetAppAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposSetAppAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposSetAppAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposSetAppAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -22233,19 +23298,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_app_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetAppAccessRestrictions) -> Result<Vec<Integration>, ReposSetAppAccessRestrictionsError> {
+    pub fn set_app_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetAppAccessRestrictions) -> Result<Vec<Integration>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/apps", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetAppAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetAppAccessRestrictions>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22257,8 +23322,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetAppAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposSetAppAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposSetAppAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposSetAppAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -22272,19 +23337,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for set_status_check_contexts](https://docs.github.com/rest/branches/branch-protection#set-status-check-contexts)
     ///
     /// ---
-    pub async fn set_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetStatusCheckContexts) -> Result<Vec<String>, ReposSetStatusCheckContextsError> {
+    pub async fn set_status_check_contexts_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetStatusCheckContexts) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetStatusCheckContexts::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetStatusCheckContexts>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22296,9 +23361,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetStatusCheckContextsError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposSetStatusCheckContextsError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposSetStatusCheckContextsError::Generic { code }),
+                422 => Err(ReposSetStatusCheckContextsError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposSetStatusCheckContextsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposSetStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -22313,19 +23378,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_status_check_contexts(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetStatusCheckContexts) -> Result<Vec<String>, ReposSetStatusCheckContextsError> {
+    pub fn set_status_check_contexts(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetStatusCheckContexts) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks/contexts", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetStatusCheckContexts::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetStatusCheckContexts>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22337,9 +23402,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetStatusCheckContextsError::Status422(github_response.to_json()?)),
-                404 => Err(ReposSetStatusCheckContextsError::Status404(github_response.to_json()?)),
-                code => Err(ReposSetStatusCheckContextsError::Generic { code }),
+                422 => Err(ReposSetStatusCheckContextsError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposSetStatusCheckContextsError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposSetStatusCheckContextsError::Generic { code }.into()),
             }
         }
     }
@@ -22355,19 +23420,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for set_team_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-team-access-restrictions)
     ///
     /// ---
-    pub async fn set_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetTeamAccessRestrictions) -> Result<Vec<Team>, ReposSetTeamAccessRestrictionsError> {
+    pub async fn set_team_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetTeamAccessRestrictions) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetTeamAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetTeamAccessRestrictions>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22379,8 +23444,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposSetTeamAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposSetTeamAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -22397,19 +23462,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_team_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetTeamAccessRestrictions) -> Result<Vec<Team>, ReposSetTeamAccessRestrictionsError> {
+    pub fn set_team_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetTeamAccessRestrictions) -> Result<Vec<Team>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/teams", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetTeamAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetTeamAccessRestrictions>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22421,8 +23486,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposSetTeamAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposSetTeamAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposSetTeamAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -22442,19 +23507,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for set_user_access_restrictions](https://docs.github.com/rest/branches/branch-protection#set-user-access-restrictions)
     ///
     /// ---
-    pub async fn set_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposSetUserAccessRestrictionsError> {
+    pub async fn set_user_access_restrictions_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetUserAccessRestrictions) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetUserAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetUserAccessRestrictions>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22466,8 +23531,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetUserAccessRestrictionsError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposSetUserAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposSetUserAccessRestrictionsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposSetUserAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -22488,19 +23553,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_user_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetUserAccessRestrictions) -> Result<Vec<SimpleUser>, ReposSetUserAccessRestrictionsError> {
+    pub fn set_user_access_restrictions(&self, owner: &str, repo: &str, branch: &str, body: PutReposSetUserAccessRestrictions) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/restrictions/users", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposSetUserAccessRestrictions::from_json(body)?),
+            body: Some(C::from_json::<PutReposSetUserAccessRestrictions>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22512,8 +23577,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposSetUserAccessRestrictionsError::Status422(github_response.to_json()?)),
-                code => Err(ReposSetUserAccessRestrictionsError::Generic { code }),
+                422 => Err(ReposSetUserAccessRestrictionsError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposSetUserAccessRestrictionsError::Generic { code }.into()),
             }
         }
     }
@@ -22530,19 +23595,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for test_push_webhook](https://docs.github.com/rest/repos/webhooks#test-the-push-repository-webhook)
     ///
     /// ---
-    pub async fn test_push_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposTestPushWebhookError> {
+    pub async fn test_push_webhook_async(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/tests", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22554,8 +23619,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposTestPushWebhookError::Generic { code }),
+                404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposTestPushWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -22573,7 +23638,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn test_push_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), ReposTestPushWebhookError> {
+    pub fn test_push_webhook(&self, owner: &str, repo: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/tests", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
@@ -22585,7 +23650,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22597,8 +23662,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json()?)),
-                code => Err(ReposTestPushWebhookError::Generic { code }),
+                404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposTestPushWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -22612,19 +23677,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for transfer](https://docs.github.com/rest/repos/repos#transfer-a-repository)
     ///
     /// ---
-    pub async fn transfer_async(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<MinimalRepository, ReposTransferError> {
+    pub async fn transfer_async(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<MinimalRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/transfer", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposTransfer::from_json(body)?),
+            body: Some(C::from_json::<PostReposTransfer>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22636,7 +23701,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposTransferError::Generic { code }),
+                code => Err(ReposTransferError::Generic { code }.into()),
             }
         }
     }
@@ -22651,19 +23716,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn transfer(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<MinimalRepository, ReposTransferError> {
+    pub fn transfer(&self, owner: &str, repo: &str, body: PostReposTransfer) -> Result<MinimalRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/transfer", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReposTransfer::from_json(body)?),
+            body: Some(C::from_json::<PostReposTransfer>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22675,7 +23740,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposTransferError::Generic { code }),
+                code => Err(ReposTransferError::Generic { code }.into()),
             }
         }
     }
@@ -22689,19 +23754,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update](https://docs.github.com/rest/repos/repos#update-a-repository)
     ///
     /// ---
-    pub async fn update_async(&self, owner: &str, repo: &str, body: PatchReposUpdate) -> Result<FullRepository, ReposUpdateError> {
+    pub async fn update_async(&self, owner: &str, repo: &str, body: PatchReposUpdate) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22713,11 +23778,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                307 => Err(ReposUpdateError::Status307(github_response.to_json_async().await?)),
-                403 => Err(ReposUpdateError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ReposUpdateError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposUpdateError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateError::Generic { code }),
+                307 => Err(ReposUpdateError::Status307(github_response.to_json_async().await?).into()),
+                403 => Err(ReposUpdateError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ReposUpdateError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposUpdateError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -22732,19 +23797,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update(&self, owner: &str, repo: &str, body: PatchReposUpdate) -> Result<FullRepository, ReposUpdateError> {
+    pub fn update(&self, owner: &str, repo: &str, body: PatchReposUpdate) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22756,11 +23821,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                307 => Err(ReposUpdateError::Status307(github_response.to_json()?)),
-                403 => Err(ReposUpdateError::Status403(github_response.to_json()?)),
-                422 => Err(ReposUpdateError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateError::Status404(github_response.to_json()?)),
-                code => Err(ReposUpdateError::Generic { code }),
+                307 => Err(ReposUpdateError::Status307(github_response.to_json()?).into()),
+                403 => Err(ReposUpdateError::Status403(github_response.to_json()?).into()),
+                422 => Err(ReposUpdateError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposUpdateError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -22782,19 +23847,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_branch_protection](https://docs.github.com/rest/branches/branch-protection#update-branch-protection)
     ///
     /// ---
-    pub async fn update_branch_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposUpdateBranchProtection) -> Result<ProtectedBranch, ReposUpdateBranchProtectionError> {
+    pub async fn update_branch_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PutReposUpdateBranchProtection) -> Result<ProtectedBranch, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateBranchProtection::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateBranchProtection>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22806,10 +23871,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposUpdateBranchProtectionError::Status403(github_response.to_json_async().await?)),
-                422 => Err(ReposUpdateBranchProtectionError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposUpdateBranchProtectionError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateBranchProtectionError::Generic { code }),
+                403 => Err(ReposUpdateBranchProtectionError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(ReposUpdateBranchProtectionError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposUpdateBranchProtectionError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -22832,19 +23897,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_branch_protection(&self, owner: &str, repo: &str, branch: &str, body: PutReposUpdateBranchProtection) -> Result<ProtectedBranch, ReposUpdateBranchProtectionError> {
+    pub fn update_branch_protection(&self, owner: &str, repo: &str, branch: &str, body: PutReposUpdateBranchProtection) -> Result<ProtectedBranch, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateBranchProtection::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateBranchProtection>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22856,10 +23921,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ReposUpdateBranchProtectionError::Status403(github_response.to_json()?)),
-                422 => Err(ReposUpdateBranchProtectionError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateBranchProtectionError::Status404(github_response.to_json()?)),
-                code => Err(ReposUpdateBranchProtectionError::Generic { code }),
+                403 => Err(ReposUpdateBranchProtectionError::Status403(github_response.to_json()?).into()),
+                422 => Err(ReposUpdateBranchProtectionError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposUpdateBranchProtectionError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposUpdateBranchProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -22880,19 +23945,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_commit_comment](https://docs.github.com/rest/commits/comments#update-a-commit-comment)
     ///
     /// ---
-    pub async fn update_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchReposUpdateCommitComment) -> Result<CommitComment, ReposUpdateCommitCommentError> {
+    pub async fn update_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchReposUpdateCommitComment) -> Result<CommitComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateCommitComment::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateCommitComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22904,8 +23969,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateCommitCommentError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateCommitCommentError::Generic { code }),
+                404 => Err(ReposUpdateCommitCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -22927,19 +23992,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchReposUpdateCommitComment) -> Result<CommitComment, ReposUpdateCommitCommentError> {
+    pub fn update_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchReposUpdateCommitComment) -> Result<CommitComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateCommitComment::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateCommitComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22951,8 +24016,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateCommitCommentError::Status404(github_response.to_json()?)),
-                code => Err(ReposUpdateCommitCommentError::Generic { code }),
+                404 => Err(ReposUpdateCommitCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposUpdateCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -22968,19 +24033,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_deployment_branch_policy](https://docs.github.com/rest/deployments/branch-policies#update-a-deployment-branch-policy)
     ///
     /// ---
-    pub async fn update_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32, body: PutReposUpdateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, ReposUpdateDeploymentBranchPolicyError> {
+    pub async fn update_deployment_branch_policy_async(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32, body: PutReposUpdateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, branch_policy_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateDeploymentBranchPolicy::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateDeploymentBranchPolicy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -22992,7 +24057,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateDeploymentBranchPolicyError::Generic { code }),
+                code => Err(ReposUpdateDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -23009,19 +24074,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32, body: PutReposUpdateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, ReposUpdateDeploymentBranchPolicyError> {
+    pub fn update_deployment_branch_policy(&self, owner: &str, repo: &str, environment_name: &str, branch_policy_id: i32, body: PutReposUpdateDeploymentBranchPolicy) -> Result<DeploymentBranchPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/environments/{}/deployment-branch-policies/{}", super::GITHUB_BASE_API_URL, owner, repo, environment_name, branch_policy_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateDeploymentBranchPolicy::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateDeploymentBranchPolicy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23033,7 +24098,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateDeploymentBranchPolicyError::Generic { code }),
+                code => Err(ReposUpdateDeploymentBranchPolicyError::Generic { code }.into()),
             }
         }
     }
@@ -23051,19 +24116,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_information_about_pages_site](https://docs.github.com/rest/pages/pages#update-information-about-a-apiname-pages-site)
     ///
     /// ---
-    pub async fn update_information_about_pages_site_async(&self, owner: &str, repo: &str, body: PutReposUpdateInformationAboutPagesSite) -> Result<(), ReposUpdateInformationAboutPagesSiteError> {
+    pub async fn update_information_about_pages_site_async(&self, owner: &str, repo: &str, body: PutReposUpdateInformationAboutPagesSite) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateInformationAboutPagesSite::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateInformationAboutPagesSite>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23075,10 +24140,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json_async().await?)),
-                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(github_response.to_json_async().await?)),
-                409 => Err(ReposUpdateInformationAboutPagesSiteError::Status409(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateInformationAboutPagesSiteError::Generic { code }),
+                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json_async().await?).into()),
+                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(github_response.to_json_async().await?).into()),
+                409 => Err(ReposUpdateInformationAboutPagesSiteError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateInformationAboutPagesSiteError::Generic { code }.into()),
             }
         }
     }
@@ -23097,19 +24162,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_information_about_pages_site(&self, owner: &str, repo: &str, body: PutReposUpdateInformationAboutPagesSite) -> Result<(), ReposUpdateInformationAboutPagesSiteError> {
+    pub fn update_information_about_pages_site(&self, owner: &str, repo: &str, body: PutReposUpdateInformationAboutPagesSite) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pages", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateInformationAboutPagesSite::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateInformationAboutPagesSite>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23121,10 +24186,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json()?)),
-                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(github_response.to_json()?)),
-                409 => Err(ReposUpdateInformationAboutPagesSiteError::Status409(github_response.to_json()?)),
-                code => Err(ReposUpdateInformationAboutPagesSiteError::Generic { code }),
+                422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json()?).into()),
+                400 => Err(ReposUpdateInformationAboutPagesSiteError::Status400(github_response.to_json()?).into()),
+                409 => Err(ReposUpdateInformationAboutPagesSiteError::Status409(github_response.to_json()?).into()),
+                code => Err(ReposUpdateInformationAboutPagesSiteError::Generic { code }.into()),
             }
         }
     }
@@ -23136,19 +24201,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_invitation](https://docs.github.com/rest/collaborators/invitations#update-a-repository-invitation)
     ///
     /// ---
-    pub async fn update_invitation_async(&self, owner: &str, repo: &str, invitation_id: i32, body: PatchReposUpdateInvitation) -> Result<RepositoryInvitation, ReposUpdateInvitationError> {
+    pub async fn update_invitation_async(&self, owner: &str, repo: &str, invitation_id: i32, body: PatchReposUpdateInvitation) -> Result<RepositoryInvitation, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/invitations/{}", super::GITHUB_BASE_API_URL, owner, repo, invitation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateInvitation::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateInvitation>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23160,7 +24225,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateInvitationError::Generic { code }),
+                code => Err(ReposUpdateInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -23173,19 +24238,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_invitation(&self, owner: &str, repo: &str, invitation_id: i32, body: PatchReposUpdateInvitation) -> Result<RepositoryInvitation, ReposUpdateInvitationError> {
+    pub fn update_invitation(&self, owner: &str, repo: &str, invitation_id: i32, body: PatchReposUpdateInvitation) -> Result<RepositoryInvitation, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/invitations/{}", super::GITHUB_BASE_API_URL, owner, repo, invitation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateInvitation::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateInvitation>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23197,7 +24262,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateInvitationError::Generic { code }),
+                code => Err(ReposUpdateInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -23211,19 +24276,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_org_ruleset](https://docs.github.com/rest/orgs/rules#update-an-organization-repository-ruleset)
     ///
     /// ---
-    pub async fn update_org_ruleset_async(&self, org: &str, ruleset_id: i32, body: PutReposUpdateOrgRuleset) -> Result<RepositoryRuleset, ReposUpdateOrgRulesetError> {
+    pub async fn update_org_ruleset_async(&self, org: &str, ruleset_id: i32, body: PutReposUpdateOrgRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/{}", super::GITHUB_BASE_API_URL, org, ruleset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateOrgRuleset::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateOrgRuleset>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23235,9 +24300,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateOrgRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposUpdateOrgRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateOrgRulesetError::Generic { code }),
+                404 => Err(ReposUpdateOrgRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposUpdateOrgRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -23252,19 +24317,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_org_ruleset(&self, org: &str, ruleset_id: i32, body: PutReposUpdateOrgRuleset) -> Result<RepositoryRuleset, ReposUpdateOrgRulesetError> {
+    pub fn update_org_ruleset(&self, org: &str, ruleset_id: i32, body: PutReposUpdateOrgRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/rulesets/{}", super::GITHUB_BASE_API_URL, org, ruleset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateOrgRuleset::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateOrgRuleset>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23276,9 +24341,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateOrgRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposUpdateOrgRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposUpdateOrgRulesetError::Generic { code }),
+                404 => Err(ReposUpdateOrgRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposUpdateOrgRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposUpdateOrgRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -23297,19 +24362,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_pull_request_review_protection](https://docs.github.com/rest/branches/branch-protection#update-pull-request-review-protection)
     ///
     /// ---
-    pub async fn update_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdatePullRequestReviewProtection) -> Result<ProtectedBranchPullRequestReview, ReposUpdatePullRequestReviewProtectionError> {
+    pub async fn update_pull_request_review_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdatePullRequestReviewProtection) -> Result<ProtectedBranchPullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdatePullRequestReviewProtection::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdatePullRequestReviewProtection>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23321,8 +24386,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposUpdatePullRequestReviewProtectionError::Generic { code }),
+                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdatePullRequestReviewProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -23342,19 +24407,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdatePullRequestReviewProtection) -> Result<ProtectedBranchPullRequestReview, ReposUpdatePullRequestReviewProtectionError> {
+    pub fn update_pull_request_review_protection(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdatePullRequestReviewProtection) -> Result<ProtectedBranchPullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_pull_request_reviews", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdatePullRequestReviewProtection::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdatePullRequestReviewProtection>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23366,8 +24431,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(github_response.to_json()?)),
-                code => Err(ReposUpdatePullRequestReviewProtectionError::Generic { code }),
+                422 => Err(ReposUpdatePullRequestReviewProtectionError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposUpdatePullRequestReviewProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -23381,19 +24446,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_release](https://docs.github.com/rest/releases/releases#update-a-release)
     ///
     /// ---
-    pub async fn update_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PatchReposUpdateRelease) -> Result<Release, ReposUpdateReleaseError> {
+    pub async fn update_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PatchReposUpdateRelease) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateRelease::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateRelease>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23405,8 +24470,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateReleaseError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateReleaseError::Generic { code }),
+                404 => Err(ReposUpdateReleaseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -23421,19 +24486,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_release(&self, owner: &str, repo: &str, release_id: i32, body: PatchReposUpdateRelease) -> Result<Release, ReposUpdateReleaseError> {
+    pub fn update_release(&self, owner: &str, repo: &str, release_id: i32, body: PatchReposUpdateRelease) -> Result<Release, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateRelease::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateRelease>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23445,8 +24510,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateReleaseError::Status404(github_response.to_json()?)),
-                code => Err(ReposUpdateReleaseError::Generic { code }),
+                404 => Err(ReposUpdateReleaseError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposUpdateReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -23460,19 +24525,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_release_asset](https://docs.github.com/rest/releases/assets#update-a-release-asset)
     ///
     /// ---
-    pub async fn update_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32, body: PatchReposUpdateReleaseAsset) -> Result<ReleaseAsset, ReposUpdateReleaseAssetError> {
+    pub async fn update_release_asset_async(&self, owner: &str, repo: &str, asset_id: i32, body: PatchReposUpdateReleaseAsset) -> Result<ReleaseAsset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/assets/{}", super::GITHUB_BASE_API_URL, owner, repo, asset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateReleaseAsset::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateReleaseAsset>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23484,7 +24549,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateReleaseAssetError::Generic { code }),
+                code => Err(ReposUpdateReleaseAssetError::Generic { code }.into()),
             }
         }
     }
@@ -23499,19 +24564,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_release_asset(&self, owner: &str, repo: &str, asset_id: i32, body: PatchReposUpdateReleaseAsset) -> Result<ReleaseAsset, ReposUpdateReleaseAssetError> {
+    pub fn update_release_asset(&self, owner: &str, repo: &str, asset_id: i32, body: PatchReposUpdateReleaseAsset) -> Result<ReleaseAsset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/assets/{}", super::GITHUB_BASE_API_URL, owner, repo, asset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateReleaseAsset::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateReleaseAsset>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23523,7 +24588,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateReleaseAssetError::Generic { code }),
+                code => Err(ReposUpdateReleaseAssetError::Generic { code }.into()),
             }
         }
     }
@@ -23537,19 +24602,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_repo_ruleset](https://docs.github.com/rest/repos/rules#update-a-repository-ruleset)
     ///
     /// ---
-    pub async fn update_repo_ruleset_async(&self, owner: &str, repo: &str, ruleset_id: i32, body: PutReposUpdateRepoRuleset) -> Result<RepositoryRuleset, ReposUpdateRepoRulesetError> {
+    pub async fn update_repo_ruleset_async(&self, owner: &str, repo: &str, ruleset_id: i32, body: PutReposUpdateRepoRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets/{}", super::GITHUB_BASE_API_URL, owner, repo, ruleset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateRepoRuleset::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateRepoRuleset>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23561,9 +24626,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateRepoRulesetError::Status404(github_response.to_json_async().await?)),
-                500 => Err(ReposUpdateRepoRulesetError::Status500(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateRepoRulesetError::Generic { code }),
+                404 => Err(ReposUpdateRepoRulesetError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(ReposUpdateRepoRulesetError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -23578,19 +24643,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_repo_ruleset(&self, owner: &str, repo: &str, ruleset_id: i32, body: PutReposUpdateRepoRuleset) -> Result<RepositoryRuleset, ReposUpdateRepoRulesetError> {
+    pub fn update_repo_ruleset(&self, owner: &str, repo: &str, ruleset_id: i32, body: PutReposUpdateRepoRuleset) -> Result<RepositoryRuleset, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/rulesets/{}", super::GITHUB_BASE_API_URL, owner, repo, ruleset_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutReposUpdateRepoRuleset::from_json(body)?),
+            body: Some(C::from_json::<PutReposUpdateRepoRuleset>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23602,9 +24667,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateRepoRulesetError::Status404(github_response.to_json()?)),
-                500 => Err(ReposUpdateRepoRulesetError::Status500(github_response.to_json()?)),
-                code => Err(ReposUpdateRepoRulesetError::Generic { code }),
+                404 => Err(ReposUpdateRepoRulesetError::Status404(github_response.to_json()?).into()),
+                500 => Err(ReposUpdateRepoRulesetError::Status500(github_response.to_json()?).into()),
+                code => Err(ReposUpdateRepoRulesetError::Generic { code }.into()),
             }
         }
     }
@@ -23620,19 +24685,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_status_check_protection](https://docs.github.com/rest/branches/branch-protection#update-status-check-protection)
     ///
     /// ---
-    pub async fn update_status_check_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdateStatusCheckProtection) -> Result<StatusCheckPolicy, ReposUpdateStatusCheckProtectionError> {
+    pub async fn update_status_check_protection_async(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdateStatusCheckProtection) -> Result<StatusCheckPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateStatusCheckProtection::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateStatusCheckProtection>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23644,9 +24709,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(github_response.to_json_async().await?)),
-                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateStatusCheckProtectionError::Generic { code }),
+                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateStatusCheckProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -23663,19 +24728,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_status_check_protection(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdateStatusCheckProtection) -> Result<StatusCheckPolicy, ReposUpdateStatusCheckProtectionError> {
+    pub fn update_status_check_protection(&self, owner: &str, repo: &str, branch: &str, body: PatchReposUpdateStatusCheckProtection) -> Result<StatusCheckPolicy, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/branches/{}/protection/required_status_checks", super::GITHUB_BASE_API_URL, owner, repo, branch);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateStatusCheckProtection::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateStatusCheckProtection>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23687,9 +24752,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(github_response.to_json()?)),
-                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(github_response.to_json()?)),
-                code => Err(ReposUpdateStatusCheckProtectionError::Generic { code }),
+                404 => Err(ReposUpdateStatusCheckProtectionError::Status404(github_response.to_json()?).into()),
+                422 => Err(ReposUpdateStatusCheckProtectionError::Status422(github_response.to_json()?).into()),
+                code => Err(ReposUpdateStatusCheckProtectionError::Generic { code }.into()),
             }
         }
     }
@@ -23703,19 +24768,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/repos/webhooks#update-a-repository-webhook)
     ///
     /// ---
-    pub async fn update_webhook_async(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhook) -> Result<Hook, ReposUpdateWebhookError> {
+    pub async fn update_webhook_async(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhook) -> Result<Hook, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateWebhook>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23727,9 +24792,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateWebhookError::Status422(github_response.to_json_async().await?)),
-                404 => Err(ReposUpdateWebhookError::Status404(github_response.to_json_async().await?)),
-                code => Err(ReposUpdateWebhookError::Generic { code }),
+                422 => Err(ReposUpdateWebhookError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(ReposUpdateWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReposUpdateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -23744,19 +24809,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_webhook(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhook) -> Result<Hook, ReposUpdateWebhookError> {
+    pub fn update_webhook(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhook) -> Result<Hook, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateWebhook>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23768,9 +24833,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUpdateWebhookError::Status422(github_response.to_json()?)),
-                404 => Err(ReposUpdateWebhookError::Status404(github_response.to_json()?)),
-                code => Err(ReposUpdateWebhookError::Generic { code }),
+                422 => Err(ReposUpdateWebhookError::Status422(github_response.to_json()?).into()),
+                404 => Err(ReposUpdateWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(ReposUpdateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -23786,19 +24851,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for update_webhook_config_for_repo](https://docs.github.com/rest/repos/webhooks#update-a-webhook-configuration-for-a-repository)
     ///
     /// ---
-    pub async fn update_webhook_config_for_repo_async(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhookConfigForRepo) -> Result<WebhookConfig, ReposUpdateWebhookConfigForRepoError> {
+    pub async fn update_webhook_config_for_repo_async(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhookConfigForRepo) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateWebhookConfigForRepo::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateWebhookConfigForRepo>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23810,7 +24875,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateWebhookConfigForRepoError::Generic { code }),
+                code => Err(ReposUpdateWebhookConfigForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -23827,19 +24892,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_webhook_config_for_repo(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhookConfigForRepo) -> Result<WebhookConfig, ReposUpdateWebhookConfigForRepoError> {
+    pub fn update_webhook_config_for_repo(&self, owner: &str, repo: &str, hook_id: i32, body: PatchReposUpdateWebhookConfigForRepo) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, owner, repo, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchReposUpdateWebhookConfigForRepo::from_json(body)?),
+            body: Some(C::from_json::<PatchReposUpdateWebhookConfigForRepo>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23851,7 +24916,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReposUpdateWebhookConfigForRepoError::Generic { code }),
+                code => Err(ReposUpdateWebhookConfigForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -23883,7 +24948,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     /// [GitHub API docs for upload_release_asset](https://docs.github.com/rest/releases/assets#upload-a-release-asset)
     ///
     /// ---
-    pub async fn upload_release_asset_async(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: std::vec::Vec<u8>) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
+    pub async fn upload_release_asset_async(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: std::vec::Vec<u8>) -> Result<ReleaseAsset, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -23892,12 +24957,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(body.into()),
+            body: Some(C::from_json::<Vec<u8>>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23909,8 +24974,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUploadReleaseAssetError::Status422),
-                code => Err(ReposUploadReleaseAssetError::Generic { code }),
+                422 => Err(ReposUploadReleaseAssetError::Status422.into()),
+                code => Err(ReposUploadReleaseAssetError::Generic { code }.into()),
             }
         }
     }
@@ -23943,7 +25008,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn upload_release_asset(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: std::vec::Vec<u8>) -> Result<ReleaseAsset, ReposUploadReleaseAssetError> {
+    pub fn upload_release_asset(&self, owner: &str, repo: &str, release_id: i32, query_params: impl Into<ReposUploadReleaseAssetParams<'api>>, body: std::vec::Vec<u8>) -> Result<ReleaseAsset, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/assets", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -23953,12 +25018,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(body.into()),
+            body: Some(C::from_json::<Vec<u8>>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -23970,8 +25035,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Repos<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ReposUploadReleaseAssetError::Status422),
-                code => Err(ReposUploadReleaseAssetError::Generic { code }),
+                422 => Err(ReposUploadReleaseAssetError::Status422.into()),
+                code => Err(ReposUploadReleaseAssetError::Generic { code }.into()),
             }
         }
     }

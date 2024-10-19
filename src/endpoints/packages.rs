@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Packages<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Packages<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Packages<C> {
+pub fn new<C: Client>(client: &C) -> Packages<C> where AdapterError: From<<C as Client>::Err> {
     Packages { client }
 }
 
 /// Errors for the [Delete a package for the authenticated user](Packages::delete_package_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -51,21 +41,28 @@ pub enum PackagesDeletePackageForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesDeletePackageForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesDeletePackageForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesDeletePackageForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesDeletePackageForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesDeletePackageForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesDeletePackageForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a package for an organization](Packages::delete_package_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -74,21 +71,28 @@ pub enum PackagesDeletePackageForOrgError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesDeletePackageForOrgError> for AdapterError {
+    fn from(err: PackagesDeletePackageForOrgError) -> Self {
+        let (description, status_code) = match err {
+            PackagesDeletePackageForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesDeletePackageForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesDeletePackageForOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesDeletePackageForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a package for a user](Packages::delete_package_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -97,21 +101,28 @@ pub enum PackagesDeletePackageForUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesDeletePackageForUserError> for AdapterError {
+    fn from(err: PackagesDeletePackageForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesDeletePackageForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesDeletePackageForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesDeletePackageForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesDeletePackageForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a package version for the authenticated user](Packages::delete_package_version_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageVersionForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -120,21 +131,28 @@ pub enum PackagesDeletePackageVersionForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesDeletePackageVersionForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesDeletePackageVersionForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesDeletePackageVersionForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesDeletePackageVersionForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesDeletePackageVersionForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesDeletePackageVersionForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete package version for an organization](Packages::delete_package_version_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageVersionForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -143,21 +161,28 @@ pub enum PackagesDeletePackageVersionForOrgError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesDeletePackageVersionForOrgError> for AdapterError {
+    fn from(err: PackagesDeletePackageVersionForOrgError) -> Self {
+        let (description, status_code) = match err {
+            PackagesDeletePackageVersionForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesDeletePackageVersionForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesDeletePackageVersionForOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesDeletePackageVersionForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete package version for a user](Packages::delete_package_version_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesDeletePackageVersionForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -166,21 +191,28 @@ pub enum PackagesDeletePackageVersionForUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesDeletePackageVersionForUserError> for AdapterError {
+    fn from(err: PackagesDeletePackageVersionForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesDeletePackageVersionForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesDeletePackageVersionForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesDeletePackageVersionForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesDeletePackageVersionForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List package versions for a package owned by the authenticated user](Packages::get_all_package_versions_for_package_owned_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -189,21 +221,28 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List package versions for a package owned by an organization](Packages::get_all_package_versions_for_package_owned_by_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetAllPackageVersionsForPackageOwnedByOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -212,21 +251,28 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByOrgError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetAllPackageVersionsForPackageOwnedByOrgError> for AdapterError {
+    fn from(err: PackagesGetAllPackageVersionsForPackageOwnedByOrgError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List package versions for a package owned by a user](Packages::get_all_package_versions_for_package_owned_by_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetAllPackageVersionsForPackageOwnedByUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -235,201 +281,253 @@ pub enum PackagesGetAllPackageVersionsForPackageOwnedByUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetAllPackageVersionsForPackageOwnedByUserError> for AdapterError {
+    fn from(err: PackagesGetAllPackageVersionsForPackageOwnedByUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesGetAllPackageVersionsForPackageOwnedByUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a package for the authenticated user](Packages::get_package_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetPackageForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetPackageForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesGetPackageForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetPackageForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a package for an organization](Packages::get_package_for_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetPackageForOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetPackageForOrganizationError> for AdapterError {
+    fn from(err: PackagesGetPackageForOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetPackageForOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a package for a user](Packages::get_package_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetPackageForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetPackageForUserError> for AdapterError {
+    fn from(err: PackagesGetPackageForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetPackageForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a package version for the authenticated user](Packages::get_package_version_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetPackageVersionForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetPackageVersionForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesGetPackageVersionForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetPackageVersionForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a package version for an organization](Packages::get_package_version_for_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetPackageVersionForOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetPackageVersionForOrganizationError> for AdapterError {
+    fn from(err: PackagesGetPackageVersionForOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetPackageVersionForOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a package version for a user](Packages::get_package_version_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesGetPackageVersionForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesGetPackageVersionForUserError> for AdapterError {
+    fn from(err: PackagesGetPackageVersionForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesGetPackageVersionForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get list of conflicting packages during Docker migration for authenticated-user](Packages::list_docker_migration_conflicting_packages_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get list of conflicting packages during Docker migration for organization](Packages::list_docker_migration_conflicting_packages_for_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesListDockerMigrationConflictingPackagesForOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesListDockerMigrationConflictingPackagesForOrganizationError> for AdapterError {
+    fn from(err: PackagesListDockerMigrationConflictingPackagesForOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesListDockerMigrationConflictingPackagesForOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get list of conflicting packages during Docker migration for user](Packages::list_docker_migration_conflicting_packages_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesListDockerMigrationConflictingPackagesForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesListDockerMigrationConflictingPackagesForUserError> for AdapterError {
+    fn from(err: PackagesListDockerMigrationConflictingPackagesForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesListDockerMigrationConflictingPackagesForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesListDockerMigrationConflictingPackagesForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesListDockerMigrationConflictingPackagesForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List packages for the authenticated user&#x27;s namespace](Packages::list_packages_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesListPackagesForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("The value of `per_page` multiplied by `page` cannot be greater than 10000.")]
     Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesListPackagesForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesListPackagesForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesListPackagesForAuthenticatedUserError::Status400 => (String::from("The value of `per_page` multiplied by `page` cannot be greater than 10000."), 400),
+            PackagesListPackagesForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List packages for an organization](Packages::list_packages_for_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesListPackagesForOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Requires authentication")]
@@ -438,21 +536,28 @@ pub enum PackagesListPackagesForOrganizationError {
     Status400,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesListPackagesForOrganizationError> for AdapterError {
+    fn from(err: PackagesListPackagesForOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            PackagesListPackagesForOrganizationError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesListPackagesForOrganizationError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesListPackagesForOrganizationError::Status400 => (String::from("The value of `per_page` multiplied by `page` cannot be greater than 10000."), 400),
+            PackagesListPackagesForOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List packages for a user](Packages::list_packages_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesListPackagesForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Requires authentication")]
@@ -463,19 +568,26 @@ pub enum PackagesListPackagesForUserError {
     Generic { code: u16 },
 }
 
+impl From<PackagesListPackagesForUserError> for AdapterError {
+    fn from(err: PackagesListPackagesForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesListPackagesForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesListPackagesForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesListPackagesForUserError::Status400 => (String::from("The value of `per_page` multiplied by `page` cannot be greater than 10000."), 400),
+            PackagesListPackagesForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Restore a package for the authenticated user](Packages::restore_package_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -484,21 +596,28 @@ pub enum PackagesRestorePackageForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesRestorePackageForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesRestorePackageForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesRestorePackageForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesRestorePackageForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesRestorePackageForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesRestorePackageForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Restore a package for an organization](Packages::restore_package_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -507,21 +626,28 @@ pub enum PackagesRestorePackageForOrgError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesRestorePackageForOrgError> for AdapterError {
+    fn from(err: PackagesRestorePackageForOrgError) -> Self {
+        let (description, status_code) = match err {
+            PackagesRestorePackageForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesRestorePackageForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesRestorePackageForOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesRestorePackageForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Restore a package for a user](Packages::restore_package_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -530,21 +656,28 @@ pub enum PackagesRestorePackageForUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesRestorePackageForUserError> for AdapterError {
+    fn from(err: PackagesRestorePackageForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesRestorePackageForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesRestorePackageForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesRestorePackageForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesRestorePackageForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Restore a package version for the authenticated user](Packages::restore_package_version_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageVersionForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -553,21 +686,28 @@ pub enum PackagesRestorePackageVersionForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesRestorePackageVersionForAuthenticatedUserError> for AdapterError {
+    fn from(err: PackagesRestorePackageVersionForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesRestorePackageVersionForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesRestorePackageVersionForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesRestorePackageVersionForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesRestorePackageVersionForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Restore package version for an organization](Packages::restore_package_version_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageVersionForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -578,19 +718,26 @@ pub enum PackagesRestorePackageVersionForOrgError {
     Generic { code: u16 },
 }
 
+impl From<PackagesRestorePackageVersionForOrgError> for AdapterError {
+    fn from(err: PackagesRestorePackageVersionForOrgError) -> Self {
+        let (description, status_code) = match err {
+            PackagesRestorePackageVersionForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesRestorePackageVersionForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesRestorePackageVersionForOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesRestorePackageVersionForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Restore package version for a user](Packages::restore_package_version_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PackagesRestorePackageVersionForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -599,6 +746,23 @@ pub enum PackagesRestorePackageVersionForUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PackagesRestorePackageVersionForUserError> for AdapterError {
+    fn from(err: PackagesRestorePackageVersionForUserError) -> Self {
+        let (description, status_code) = match err {
+            PackagesRestorePackageVersionForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            PackagesRestorePackageVersionForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            PackagesRestorePackageVersionForUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            PackagesRestorePackageVersionForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -973,7 +1137,7 @@ impl<'req> PackagesRestorePackageForUserParams<'req> {
 }
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
+impl<'api, C: Client> Packages<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Delete a package for the authenticated user
@@ -985,19 +1149,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for delete_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<(), PackagesDeletePackageForAuthenticatedUserError> {
+    pub async fn delete_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1009,10 +1173,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesDeletePackageForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesDeletePackageForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1029,7 +1193,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_package_for_authenticated_user(&self, package_type: &str, package_name: &str) -> Result<(), PackagesDeletePackageForAuthenticatedUserError> {
+    pub fn delete_package_for_authenticated_user(&self, package_type: &str, package_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name);
 
@@ -1041,7 +1205,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1053,10 +1217,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesDeletePackageForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesDeletePackageForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesDeletePackageForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesDeletePackageForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1074,19 +1238,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for delete_package_for_org](https://docs.github.com/rest/packages/packages#delete-a-package-for-an-organization)
     ///
     /// ---
-    pub async fn delete_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<(), PackagesDeletePackageForOrgError> {
+    pub async fn delete_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1098,10 +1262,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForOrgError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesDeletePackageForOrgError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesDeletePackageForOrgError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesDeletePackageForOrgError::Generic { code }),
+                404 => Err(PackagesDeletePackageForOrgError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesDeletePackageForOrgError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesDeletePackageForOrgError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesDeletePackageForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1120,7 +1284,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_package_for_org(&self, package_type: &str, package_name: &str, org: &str) -> Result<(), PackagesDeletePackageForOrgError> {
+    pub fn delete_package_for_org(&self, package_type: &str, package_name: &str, org: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
@@ -1132,7 +1296,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1144,10 +1308,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageForOrgError::Status401(github_response.to_json()?)),
-                code => Err(PackagesDeletePackageForOrgError::Generic { code }),
+                404 => Err(PackagesDeletePackageForOrgError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesDeletePackageForOrgError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesDeletePackageForOrgError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesDeletePackageForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1165,19 +1329,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for delete_package_for_user](https://docs.github.com/rest/packages/packages#delete-a-package-for-a-user)
     ///
     /// ---
-    pub async fn delete_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<(), PackagesDeletePackageForUserError> {
+    pub async fn delete_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1189,10 +1353,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesDeletePackageForUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesDeletePackageForUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesDeletePackageForUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageForUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesDeletePackageForUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesDeletePackageForUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesDeletePackageForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1211,7 +1375,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_package_for_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<(), PackagesDeletePackageForUserError> {
+    pub fn delete_package_for_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
@@ -1223,7 +1387,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1235,10 +1399,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageForUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageForUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageForUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesDeletePackageForUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageForUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesDeletePackageForUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesDeletePackageForUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesDeletePackageForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1256,19 +1420,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for delete_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#delete-a-package-version-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForAuthenticatedUserError> {
+    pub async fn delete_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1280,10 +1444,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1302,7 +1466,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForAuthenticatedUserError> {
+    pub fn delete_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id);
 
@@ -1314,7 +1478,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1326,10 +1490,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesDeletePackageVersionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1347,19 +1511,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for delete_package_version_for_org](https://docs.github.com/rest/packages/packages#delete-package-version-for-an-organization)
     ///
     /// ---
-    pub async fn delete_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForOrgError> {
+    pub async fn delete_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1371,10 +1535,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesDeletePackageVersionForOrgError::Generic { code }),
+                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesDeletePackageVersionForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1393,7 +1557,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_package_version_for_org(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForOrgError> {
+    pub fn delete_package_version_for_org(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org, package_version_id);
 
@@ -1405,7 +1569,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1417,10 +1581,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(github_response.to_json()?)),
-                code => Err(PackagesDeletePackageVersionForOrgError::Generic { code }),
+                404 => Err(PackagesDeletePackageVersionForOrgError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesDeletePackageVersionForOrgError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesDeletePackageVersionForOrgError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesDeletePackageVersionForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1438,19 +1602,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for delete_package_version_for_user](https://docs.github.com/rest/packages/packages#delete-package-version-for-a-user)
     ///
     /// ---
-    pub async fn delete_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForUserError> {
+    pub async fn delete_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1462,10 +1626,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesDeletePackageVersionForUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesDeletePackageVersionForUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesDeletePackageVersionForUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageVersionForUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesDeletePackageVersionForUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesDeletePackageVersionForUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesDeletePackageVersionForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1484,7 +1648,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_package_version_for_user(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesDeletePackageVersionForUserError> {
+    pub fn delete_package_version_for_user(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
 
@@ -1496,7 +1660,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1508,10 +1672,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesDeletePackageVersionForUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesDeletePackageVersionForUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesDeletePackageVersionForUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesDeletePackageVersionForUserError::Generic { code }),
+                404 => Err(PackagesDeletePackageVersionForUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesDeletePackageVersionForUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesDeletePackageVersionForUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesDeletePackageVersionForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1527,7 +1691,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_authenticated_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_all_package_versions_for_package_owned_by_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError> {
+    pub async fn get_all_package_versions_for_package_owned_by_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'api>>>) -> Result<Vec<PackageVersion>, AdapterError> {
 
         let mut request_uri = format!("{}/user/packages/{}/{}/versions", super::GITHUB_BASE_API_URL, package_type, package_name);
 
@@ -1538,12 +1702,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1555,10 +1719,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1575,7 +1739,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_package_versions_for_package_owned_by_authenticated_user(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError> {
+    pub fn get_all_package_versions_for_package_owned_by_authenticated_user(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserParams<'api>>>) -> Result<Vec<PackageVersion>, AdapterError> {
 
         let mut request_uri = format!("{}/user/packages/{}/{}/versions", super::GITHUB_BASE_API_URL, package_type, package_name);
 
@@ -1592,7 +1756,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1604,10 +1768,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1623,7 +1787,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_org](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-an-organization)
     ///
     /// ---
-    pub async fn get_all_package_versions_for_package_owned_by_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByOrgError> {
+    pub async fn get_all_package_versions_for_package_owned_by_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/packages/{}/{}/versions", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
@@ -1634,12 +1798,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1651,10 +1815,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Generic { code }),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1671,7 +1835,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_package_versions_for_package_owned_by_org(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByOrgError> {
+    pub fn get_all_package_versions_for_package_owned_by_org(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesGetAllPackageVersionsForPackageOwnedByOrgParams<'api>>>) -> Result<Vec<PackageVersion>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/packages/{}/{}/versions", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
@@ -1688,7 +1852,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1700,10 +1864,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(github_response.to_json()?)),
-                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Generic { code }),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1719,19 +1883,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_all_package_versions_for_package_owned_by_user](https://docs.github.com/rest/packages/packages#list-package-versions-for-a-package-owned-by-a-user)
     ///
     /// ---
-    pub async fn get_all_package_versions_for_package_owned_by_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByUserError> {
+    pub async fn get_all_package_versions_for_package_owned_by_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Vec<PackageVersion>, AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1743,10 +1907,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Generic { code }),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Generic { code }.into()),
             }
         }
     }
@@ -1763,7 +1927,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_package_versions_for_package_owned_by_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<Vec<PackageVersion>, PackagesGetAllPackageVersionsForPackageOwnedByUserError> {
+    pub fn get_all_package_versions_for_package_owned_by_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<Vec<PackageVersion>, AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
@@ -1775,7 +1939,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1787,10 +1951,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Generic { code }),
+                404 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesGetAllPackageVersionsForPackageOwnedByUserError::Generic { code }.into()),
             }
         }
     }
@@ -1806,19 +1970,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<Package, PackagesGetPackageForAuthenticatedUserError> {
+    pub async fn get_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str) -> Result<Package, AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1830,7 +1994,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageForAuthenticatedUserError::Generic { code }),
+                code => Err(PackagesGetPackageForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1847,7 +2011,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_package_for_authenticated_user(&self, package_type: &str, package_name: &str) -> Result<Package, PackagesGetPackageForAuthenticatedUserError> {
+    pub fn get_package_for_authenticated_user(&self, package_type: &str, package_name: &str) -> Result<Package, AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name);
 
@@ -1859,7 +2023,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1871,7 +2035,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageForAuthenticatedUserError::Generic { code }),
+                code => Err(PackagesGetPackageForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1887,19 +2051,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_package_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-for-an-organization)
     ///
     /// ---
-    pub async fn get_package_for_organization_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<Package, PackagesGetPackageForOrganizationError> {
+    pub async fn get_package_for_organization_async(&self, package_type: &str, package_name: &str, org: &str) -> Result<Package, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1911,7 +2075,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageForOrganizationError::Generic { code }),
+                code => Err(PackagesGetPackageForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -1928,7 +2092,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_package_for_organization(&self, package_type: &str, package_name: &str, org: &str) -> Result<Package, PackagesGetPackageForOrganizationError> {
+    pub fn get_package_for_organization(&self, package_type: &str, package_name: &str, org: &str) -> Result<Package, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
@@ -1940,7 +2104,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1952,7 +2116,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageForOrganizationError::Generic { code }),
+                code => Err(PackagesGetPackageForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -1968,19 +2132,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_package_for_user](https://docs.github.com/rest/packages/packages#get-a-package-for-a-user)
     ///
     /// ---
-    pub async fn get_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Package, PackagesGetPackageForUserError> {
+    pub async fn get_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str) -> Result<Package, AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1992,7 +2156,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageForUserError::Generic { code }),
+                code => Err(PackagesGetPackageForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2009,7 +2173,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_package_for_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<Package, PackagesGetPackageForUserError> {
+    pub fn get_package_for_user(&self, package_type: &str, package_name: &str, username: &str) -> Result<Package, AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
@@ -2021,7 +2185,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2033,7 +2197,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageForUserError::Generic { code }),
+                code => Err(PackagesGetPackageForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2049,19 +2213,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForAuthenticatedUserError> {
+    pub async fn get_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<PackageVersion, AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2073,7 +2237,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageVersionForAuthenticatedUserError::Generic { code }),
+                code => Err(PackagesGetPackageVersionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2090,7 +2254,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForAuthenticatedUserError> {
+    pub fn get_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<PackageVersion, AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id);
 
@@ -2102,7 +2266,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2114,7 +2278,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageVersionForAuthenticatedUserError::Generic { code }),
+                code => Err(PackagesGetPackageVersionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2130,19 +2294,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_package_version_for_organization](https://docs.github.com/rest/packages/packages#get-a-package-version-for-an-organization)
     ///
     /// ---
-    pub async fn get_package_version_for_organization_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForOrganizationError> {
+    pub async fn get_package_version_for_organization_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<PackageVersion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2154,7 +2318,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageVersionForOrganizationError::Generic { code }),
+                code => Err(PackagesGetPackageVersionForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2171,7 +2335,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_package_version_for_organization(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<PackageVersion, PackagesGetPackageVersionForOrganizationError> {
+    pub fn get_package_version_for_organization(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<PackageVersion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, org, package_version_id);
 
@@ -2183,7 +2347,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2195,7 +2359,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageVersionForOrganizationError::Generic { code }),
+                code => Err(PackagesGetPackageVersionForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2211,19 +2375,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for get_package_version_for_user](https://docs.github.com/rest/packages/packages#get-a-package-version-for-a-user)
     ///
     /// ---
-    pub async fn get_package_version_for_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32, username: &str) -> Result<PackageVersion, PackagesGetPackageVersionForUserError> {
+    pub async fn get_package_version_for_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32, username: &str) -> Result<PackageVersion, AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2235,7 +2399,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageVersionForUserError::Generic { code }),
+                code => Err(PackagesGetPackageVersionForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2252,7 +2416,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_package_version_for_user(&self, package_type: &str, package_name: &str, package_version_id: i32, username: &str) -> Result<PackageVersion, PackagesGetPackageVersionForUserError> {
+    pub fn get_package_version_for_user(&self, package_type: &str, package_name: &str, package_version_id: i32, username: &str) -> Result<PackageVersion, AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id, username);
 
@@ -2264,7 +2428,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2276,7 +2440,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesGetPackageVersionForUserError::Generic { code }),
+                code => Err(PackagesGetPackageVersionForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2292,19 +2456,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-authenticated-user)
     ///
     /// ---
-    pub async fn list_docker_migration_conflicting_packages_for_authenticated_user_async(&self) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError> {
+    pub async fn list_docker_migration_conflicting_packages_for_authenticated_user_async(&self) -> Result<Vec<Package>, AdapterError> {
 
         let request_uri = format!("{}/user/docker/conflicts", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2316,7 +2480,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError::Generic { code }),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2333,7 +2497,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_docker_migration_conflicting_packages_for_authenticated_user(&self) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError> {
+    pub fn list_docker_migration_conflicting_packages_for_authenticated_user(&self) -> Result<Vec<Package>, AdapterError> {
 
         let request_uri = format!("{}/user/docker/conflicts", super::GITHUB_BASE_API_URL);
 
@@ -2345,7 +2509,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2357,7 +2521,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError::Generic { code }),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2373,19 +2537,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_organization](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-organization)
     ///
     /// ---
-    pub async fn list_docker_migration_conflicting_packages_for_organization_async(&self, org: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForOrganizationError> {
+    pub async fn list_docker_migration_conflicting_packages_for_organization_async(&self, org: &str) -> Result<Vec<Package>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/docker/conflicts", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2397,9 +2561,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Generic { code }),
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2416,7 +2580,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_docker_migration_conflicting_packages_for_organization(&self, org: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForOrganizationError> {
+    pub fn list_docker_migration_conflicting_packages_for_organization(&self, org: &str) -> Result<Vec<Package>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/docker/conflicts", super::GITHUB_BASE_API_URL, org);
 
@@ -2428,7 +2592,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2440,9 +2604,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status401(github_response.to_json()?)),
-                code => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Generic { code }),
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2458,19 +2622,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for list_docker_migration_conflicting_packages_for_user](https://docs.github.com/rest/packages/packages#get-list-of-conflicting-packages-during-docker-migration-for-user)
     ///
     /// ---
-    pub async fn list_docker_migration_conflicting_packages_for_user_async(&self, username: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForUserError> {
+    pub async fn list_docker_migration_conflicting_packages_for_user_async(&self, username: &str) -> Result<Vec<Package>, AdapterError> {
 
         let request_uri = format!("{}/users/{}/docker/conflicts", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2482,9 +2646,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Generic { code }),
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2501,7 +2665,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_docker_migration_conflicting_packages_for_user(&self, username: &str) -> Result<Vec<Package>, PackagesListDockerMigrationConflictingPackagesForUserError> {
+    pub fn list_docker_migration_conflicting_packages_for_user(&self, username: &str) -> Result<Vec<Package>, AdapterError> {
 
         let request_uri = format!("{}/users/{}/docker/conflicts", super::GITHUB_BASE_API_URL, username);
 
@@ -2513,7 +2677,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2525,9 +2689,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Generic { code }),
+                403 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesListDockerMigrationConflictingPackagesForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2543,7 +2707,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for list_packages_for_authenticated_user](https://docs.github.com/rest/packages/packages#list-packages-for-the-authenticated-users-namespace)
     ///
     /// ---
-    pub async fn list_packages_for_authenticated_user_async(&self, query_params: impl Into<PackagesListPackagesForAuthenticatedUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForAuthenticatedUserError> {
+    pub async fn list_packages_for_authenticated_user_async(&self, query_params: impl Into<PackagesListPackagesForAuthenticatedUserParams<'api>>) -> Result<Vec<Package>, AdapterError> {
 
         let mut request_uri = format!("{}/user/packages", super::GITHUB_BASE_API_URL);
 
@@ -2552,12 +2716,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2569,8 +2733,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(PackagesListPackagesForAuthenticatedUserError::Status400),
-                code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }),
+                400 => Err(PackagesListPackagesForAuthenticatedUserError::Status400.into()),
+                code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2587,7 +2751,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_packages_for_authenticated_user(&self, query_params: impl Into<PackagesListPackagesForAuthenticatedUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForAuthenticatedUserError> {
+    pub fn list_packages_for_authenticated_user(&self, query_params: impl Into<PackagesListPackagesForAuthenticatedUserParams<'api>>) -> Result<Vec<Package>, AdapterError> {
 
         let mut request_uri = format!("{}/user/packages", super::GITHUB_BASE_API_URL);
 
@@ -2602,7 +2766,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2614,8 +2778,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(PackagesListPackagesForAuthenticatedUserError::Status400),
-                code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }),
+                400 => Err(PackagesListPackagesForAuthenticatedUserError::Status400.into()),
+                code => Err(PackagesListPackagesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2631,7 +2795,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for list_packages_for_organization](https://docs.github.com/rest/packages/packages#list-packages-for-an-organization)
     ///
     /// ---
-    pub async fn list_packages_for_organization_async(&self, org: &str, query_params: impl Into<PackagesListPackagesForOrganizationParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForOrganizationError> {
+    pub async fn list_packages_for_organization_async(&self, org: &str, query_params: impl Into<PackagesListPackagesForOrganizationParams<'api>>) -> Result<Vec<Package>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/packages", super::GITHUB_BASE_API_URL, org);
 
@@ -2640,12 +2804,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2657,10 +2821,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListPackagesForOrganizationError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesListPackagesForOrganizationError::Status401(github_response.to_json_async().await?)),
-                400 => Err(PackagesListPackagesForOrganizationError::Status400),
-                code => Err(PackagesListPackagesForOrganizationError::Generic { code }),
+                403 => Err(PackagesListPackagesForOrganizationError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesListPackagesForOrganizationError::Status401(github_response.to_json_async().await?).into()),
+                400 => Err(PackagesListPackagesForOrganizationError::Status400.into()),
+                code => Err(PackagesListPackagesForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2677,7 +2841,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_packages_for_organization(&self, org: &str, query_params: impl Into<PackagesListPackagesForOrganizationParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForOrganizationError> {
+    pub fn list_packages_for_organization(&self, org: &str, query_params: impl Into<PackagesListPackagesForOrganizationParams<'api>>) -> Result<Vec<Package>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/packages", super::GITHUB_BASE_API_URL, org);
 
@@ -2692,7 +2856,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2704,10 +2868,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListPackagesForOrganizationError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesListPackagesForOrganizationError::Status401(github_response.to_json()?)),
-                400 => Err(PackagesListPackagesForOrganizationError::Status400),
-                code => Err(PackagesListPackagesForOrganizationError::Generic { code }),
+                403 => Err(PackagesListPackagesForOrganizationError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesListPackagesForOrganizationError::Status401(github_response.to_json()?).into()),
+                400 => Err(PackagesListPackagesForOrganizationError::Status400.into()),
+                code => Err(PackagesListPackagesForOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2723,7 +2887,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for list_packages_for_user](https://docs.github.com/rest/packages/packages#list-packages-for-a-user)
     ///
     /// ---
-    pub async fn list_packages_for_user_async(&self, username: &str, query_params: impl Into<PackagesListPackagesForUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForUserError> {
+    pub async fn list_packages_for_user_async(&self, username: &str, query_params: impl Into<PackagesListPackagesForUserParams<'api>>) -> Result<Vec<Package>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/packages", super::GITHUB_BASE_API_URL, username);
 
@@ -2732,12 +2896,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2749,10 +2913,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListPackagesForUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesListPackagesForUserError::Status401(github_response.to_json_async().await?)),
-                400 => Err(PackagesListPackagesForUserError::Status400),
-                code => Err(PackagesListPackagesForUserError::Generic { code }),
+                403 => Err(PackagesListPackagesForUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesListPackagesForUserError::Status401(github_response.to_json_async().await?).into()),
+                400 => Err(PackagesListPackagesForUserError::Status400.into()),
+                code => Err(PackagesListPackagesForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2769,7 +2933,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_packages_for_user(&self, username: &str, query_params: impl Into<PackagesListPackagesForUserParams<'api>>) -> Result<Vec<Package>, PackagesListPackagesForUserError> {
+    pub fn list_packages_for_user(&self, username: &str, query_params: impl Into<PackagesListPackagesForUserParams<'api>>) -> Result<Vec<Package>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/packages", super::GITHUB_BASE_API_URL, username);
 
@@ -2784,7 +2948,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2796,10 +2960,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(PackagesListPackagesForUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesListPackagesForUserError::Status401(github_response.to_json()?)),
-                400 => Err(PackagesListPackagesForUserError::Status400),
-                code => Err(PackagesListPackagesForUserError::Generic { code }),
+                403 => Err(PackagesListPackagesForUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesListPackagesForUserError::Status401(github_response.to_json()?).into()),
+                400 => Err(PackagesListPackagesForUserError::Status400.into()),
+                code => Err(PackagesListPackagesForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2819,7 +2983,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for restore_package_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn restore_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesRestorePackageForAuthenticatedUserParams<'api>>>) -> Result<(), PackagesRestorePackageForAuthenticatedUserError> {
+    pub async fn restore_package_for_authenticated_user_async(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesRestorePackageForAuthenticatedUserParams<'api>>>) -> Result<(), AdapterError> {
 
         let mut request_uri = format!("{}/user/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name);
 
@@ -2830,12 +2994,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2847,10 +3011,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesRestorePackageForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesRestorePackageForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2871,7 +3035,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn restore_package_for_authenticated_user(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesRestorePackageForAuthenticatedUserParams<'api>>>) -> Result<(), PackagesRestorePackageForAuthenticatedUserError> {
+    pub fn restore_package_for_authenticated_user(&self, package_type: &str, package_name: &str, query_params: Option<impl Into<PackagesRestorePackageForAuthenticatedUserParams<'api>>>) -> Result<(), AdapterError> {
 
         let mut request_uri = format!("{}/user/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name);
 
@@ -2888,7 +3052,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2900,10 +3064,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesRestorePackageForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesRestorePackageForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesRestorePackageForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesRestorePackageForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2925,7 +3089,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for restore_package_for_org](https://docs.github.com/rest/packages/packages#restore-a-package-for-an-organization)
     ///
     /// ---
-    pub async fn restore_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesRestorePackageForOrgParams<'api>>>) -> Result<(), PackagesRestorePackageForOrgError> {
+    pub async fn restore_package_for_org_async(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesRestorePackageForOrgParams<'api>>>) -> Result<(), AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
@@ -2936,12 +3100,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2953,10 +3117,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForOrgError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesRestorePackageForOrgError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesRestorePackageForOrgError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesRestorePackageForOrgError::Generic { code }),
+                404 => Err(PackagesRestorePackageForOrgError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesRestorePackageForOrgError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesRestorePackageForOrgError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesRestorePackageForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2979,7 +3143,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn restore_package_for_org(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesRestorePackageForOrgParams<'api>>>) -> Result<(), PackagesRestorePackageForOrgError> {
+    pub fn restore_package_for_org(&self, package_type: &str, package_name: &str, org: &str, query_params: Option<impl Into<PackagesRestorePackageForOrgParams<'api>>>) -> Result<(), AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, org);
 
@@ -2996,7 +3160,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3008,10 +3172,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageForOrgError::Status401(github_response.to_json()?)),
-                code => Err(PackagesRestorePackageForOrgError::Generic { code }),
+                404 => Err(PackagesRestorePackageForOrgError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesRestorePackageForOrgError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesRestorePackageForOrgError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesRestorePackageForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3033,7 +3197,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for restore_package_for_user](https://docs.github.com/rest/packages/packages#restore-a-package-for-a-user)
     ///
     /// ---
-    pub async fn restore_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str, query_params: Option<impl Into<PackagesRestorePackageForUserParams<'api>>>) -> Result<(), PackagesRestorePackageForUserError> {
+    pub async fn restore_package_for_user_async(&self, package_type: &str, package_name: &str, username: &str, query_params: Option<impl Into<PackagesRestorePackageForUserParams<'api>>>) -> Result<(), AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
@@ -3044,12 +3208,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3061,10 +3225,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesRestorePackageForUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesRestorePackageForUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesRestorePackageForUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageForUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesRestorePackageForUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesRestorePackageForUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesRestorePackageForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3087,7 +3251,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn restore_package_for_user(&self, package_type: &str, package_name: &str, username: &str, query_params: Option<impl Into<PackagesRestorePackageForUserParams<'api>>>) -> Result<(), PackagesRestorePackageForUserError> {
+    pub fn restore_package_for_user(&self, package_type: &str, package_name: &str, username: &str, query_params: Option<impl Into<PackagesRestorePackageForUserParams<'api>>>) -> Result<(), AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/packages/{}/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username);
 
@@ -3104,7 +3268,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3116,10 +3280,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageForUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageForUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageForUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesRestorePackageForUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageForUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesRestorePackageForUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesRestorePackageForUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesRestorePackageForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3139,19 +3303,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for restore_package_version_for_authenticated_user](https://docs.github.com/rest/packages/packages#restore-a-package-version-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn restore_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForAuthenticatedUserError> {
+    pub async fn restore_package_version_for_authenticated_user_async(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3163,10 +3327,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3187,7 +3351,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn restore_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForAuthenticatedUserError> {
+    pub fn restore_package_version_for_authenticated_user(&self, package_type: &str, package_name: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, package_version_id);
 
@@ -3199,7 +3363,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3211,10 +3375,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesRestorePackageVersionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3236,19 +3400,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for restore_package_version_for_org](https://docs.github.com/rest/packages/packages#restore-package-version-for-an-organization)
     ///
     /// ---
-    pub async fn restore_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForOrgError> {
+    pub async fn restore_package_version_for_org_async(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, org, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3260,10 +3424,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesRestorePackageVersionForOrgError::Generic { code }),
+                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesRestorePackageVersionForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3286,7 +3450,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn restore_package_version_for_org(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForOrgError> {
+    pub fn restore_package_version_for_org(&self, package_type: &str, package_name: &str, org: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, org, package_version_id);
 
@@ -3298,7 +3462,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3310,10 +3474,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(github_response.to_json()?)),
-                code => Err(PackagesRestorePackageVersionForOrgError::Generic { code }),
+                404 => Err(PackagesRestorePackageVersionForOrgError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesRestorePackageVersionForOrgError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesRestorePackageVersionForOrgError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesRestorePackageVersionForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3335,19 +3499,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     /// [GitHub API docs for restore_package_version_for_user](https://docs.github.com/rest/packages/packages#restore-package-version-for-a-user)
     ///
     /// ---
-    pub async fn restore_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForUserError> {
+    pub async fn restore_package_version_for_user_async(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3359,10 +3523,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(PackagesRestorePackageVersionForUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(PackagesRestorePackageVersionForUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(PackagesRestorePackageVersionForUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageVersionForUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(PackagesRestorePackageVersionForUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(PackagesRestorePackageVersionForUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(PackagesRestorePackageVersionForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3385,7 +3549,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn restore_package_version_for_user(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), PackagesRestorePackageVersionForUserError> {
+    pub fn restore_package_version_for_user(&self, package_type: &str, package_name: &str, username: &str, package_version_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/users/{}/packages/{}/{}/versions/{}/restore", super::GITHUB_BASE_API_URL, package_type, package_name, username, package_version_id);
 
@@ -3397,7 +3561,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3409,10 +3573,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Packages<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PackagesRestorePackageVersionForUserError::Status404(github_response.to_json()?)),
-                403 => Err(PackagesRestorePackageVersionForUserError::Status403(github_response.to_json()?)),
-                401 => Err(PackagesRestorePackageVersionForUserError::Status401(github_response.to_json()?)),
-                code => Err(PackagesRestorePackageVersionForUserError::Generic { code }),
+                404 => Err(PackagesRestorePackageVersionForUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(PackagesRestorePackageVersionForUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(PackagesRestorePackageVersionForUserError::Status401(github_response.to_json()?).into()),
+                code => Err(PackagesRestorePackageVersionForUserError::Generic { code }.into()),
             }
         }
     }

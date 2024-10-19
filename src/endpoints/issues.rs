@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,44 +22,38 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Issues<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Issues<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Issues<C> {
+pub fn new<C: Client>(client: &C) -> Issues<C> where AdapterError: From<<C as Client>::Err> {
     Issues { client }
 }
 
 /// Errors for the [Add assignees to an issue](Issues::add_assignees_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesAddAssigneesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesAddAssigneesError> for AdapterError {
+    fn from(err: IssuesAddAssigneesError) -> Self {
+        let (description, status_code) = match err {
+            IssuesAddAssigneesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Add labels to an issue](Issues::add_labels_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesAddLabelsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -72,57 +66,75 @@ pub enum IssuesAddLabelsError {
     Generic { code: u16 },
 }
 
+impl From<IssuesAddLabelsError> for AdapterError {
+    fn from(err: IssuesAddLabelsError) -> Self {
+        let (description, status_code) = match err {
+            IssuesAddLabelsError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesAddLabelsError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesAddLabelsError::Status410(_) => (String::from("Gone"), 410),
+            IssuesAddLabelsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesAddLabelsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a user can be assigned](Issues::check_user_can_be_assigned_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesCheckUserCanBeAssignedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Otherwise a `404` status code is returned.")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<IssuesCheckUserCanBeAssignedError> for AdapterError {
+    fn from(err: IssuesCheckUserCanBeAssignedError) -> Self {
+        let (description, status_code) = match err {
+            IssuesCheckUserCanBeAssignedError::Status404(_) => (String::from("Otherwise a `404` status code is returned."), 404),
+            IssuesCheckUserCanBeAssignedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a user can be assigned to a issue](Issues::check_user_can_be_assigned_to_issue_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesCheckUserCanBeAssignedToIssueError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if `assignee` can not be assigned to `issue_number`")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<IssuesCheckUserCanBeAssignedToIssueError> for AdapterError {
+    fn from(err: IssuesCheckUserCanBeAssignedToIssueError) -> Self {
+        let (description, status_code) = match err {
+            IssuesCheckUserCanBeAssignedToIssueError::Status404(_) => (String::from("Response if `assignee` can not be assigned to `issue_number`"), 404),
+            IssuesCheckUserCanBeAssignedToIssueError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an issue](Issues::create_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesCreateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Forbidden")]
@@ -139,19 +151,29 @@ pub enum IssuesCreateError {
     Generic { code: u16 },
 }
 
+impl From<IssuesCreateError> for AdapterError {
+    fn from(err: IssuesCreateError) -> Self {
+        let (description, status_code) = match err {
+            IssuesCreateError::Status400(_) => (String::from("Bad Request"), 400),
+            IssuesCreateError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesCreateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesCreateError::Status503(_) => (String::from("Service unavailable"), 503),
+            IssuesCreateError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesCreateError::Status410(_) => (String::from("Gone"), 410),
+            IssuesCreateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an issue comment](Issues::create_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesCreateCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Gone")]
@@ -162,116 +184,149 @@ pub enum IssuesCreateCommentError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesCreateCommentError> for AdapterError {
+    fn from(err: IssuesCreateCommentError) -> Self {
+        let (description, status_code) = match err {
+            IssuesCreateCommentError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesCreateCommentError::Status410(_) => (String::from("Gone"), 410),
+            IssuesCreateCommentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesCreateCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesCreateCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a label](Issues::create_label_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesCreateLabelError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesCreateLabelError> for AdapterError {
+    fn from(err: IssuesCreateLabelError) -> Self {
+        let (description, status_code) = match err {
+            IssuesCreateLabelError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesCreateLabelError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesCreateLabelError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a milestone](Issues::create_milestone_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesCreateMilestoneError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesCreateMilestoneError> for AdapterError {
+    fn from(err: IssuesCreateMilestoneError) -> Self {
+        let (description, status_code) = match err {
+            IssuesCreateMilestoneError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesCreateMilestoneError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesCreateMilestoneError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an issue comment](Issues::delete_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesDeleteCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesDeleteCommentError> for AdapterError {
+    fn from(err: IssuesDeleteCommentError) -> Self {
+        let (description, status_code) = match err {
+            IssuesDeleteCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a label](Issues::delete_label_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesDeleteLabelError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesDeleteLabelError> for AdapterError {
+    fn from(err: IssuesDeleteLabelError) -> Self {
+        let (description, status_code) = match err {
+            IssuesDeleteLabelError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a milestone](Issues::delete_milestone_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesDeleteMilestoneError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesDeleteMilestoneError> for AdapterError {
+    fn from(err: IssuesDeleteMilestoneError) -> Self {
+        let (description, status_code) = match err {
+            IssuesDeleteMilestoneError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesDeleteMilestoneError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an issue](Issues::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -282,40 +337,53 @@ pub enum IssuesGetError {
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesGetError> for AdapterError {
+    fn from(err: IssuesGetError) -> Self {
+        let (description, status_code) = match err {
+            IssuesGetError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesGetError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesGetError::Status410(_) => (String::from("Gone"), 410),
+            IssuesGetError::Status304 => (String::from("Not modified"), 304),
+            IssuesGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an issue comment](Issues::get_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesGetCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesGetCommentError> for AdapterError {
+    fn from(err: IssuesGetCommentError) -> Self {
+        let (description, status_code) = match err {
+            IssuesGetCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesGetCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an issue event](Issues::get_event_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesGetEventError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
@@ -324,59 +392,76 @@ pub enum IssuesGetEventError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesGetEventError> for AdapterError {
+    fn from(err: IssuesGetEventError) -> Self {
+        let (description, status_code) = match err {
+            IssuesGetEventError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesGetEventError::Status410(_) => (String::from("Gone"), 410),
+            IssuesGetEventError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesGetEventError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a label](Issues::get_label_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesGetLabelError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesGetLabelError> for AdapterError {
+    fn from(err: IssuesGetLabelError) -> Self {
+        let (description, status_code) = match err {
+            IssuesGetLabelError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesGetLabelError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a milestone](Issues::get_milestone_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesGetMilestoneError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesGetMilestoneError> for AdapterError {
+    fn from(err: IssuesGetMilestoneError) -> Self {
+        let (description, status_code) = match err {
+            IssuesGetMilestoneError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesGetMilestoneError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List issues assigned to the authenticated user](Issues::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -385,120 +470,154 @@ pub enum IssuesListError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListError> for AdapterError {
+    fn from(err: IssuesListError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesListError::Status304 => (String::from("Not modified"), 304),
+            IssuesListError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List assignees](Issues::list_assignees_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListAssigneesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListAssigneesError> for AdapterError {
+    fn from(err: IssuesListAssigneesError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListAssigneesError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListAssigneesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List issue comments](Issues::list_comments_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListCommentsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
     Status410(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListCommentsError> for AdapterError {
+    fn from(err: IssuesListCommentsError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListCommentsError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListCommentsError::Status410(_) => (String::from("Gone"), 410),
+            IssuesListCommentsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List issue comments for a repository](Issues::list_comments_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListCommentsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListCommentsForRepoError> for AdapterError {
+    fn from(err: IssuesListCommentsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListCommentsForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesListCommentsForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListCommentsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List issue events](Issues::list_events_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListEventsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Gone")]
     Status410(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<IssuesListEventsError> for AdapterError {
+    fn from(err: IssuesListEventsError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListEventsError::Status410(_) => (String::from("Gone"), 410),
+            IssuesListEventsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List issue events for a repository](Issues::list_events_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListEventsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<IssuesListEventsForRepoError> for AdapterError {
+    fn from(err: IssuesListEventsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListEventsForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesListEventsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List timeline events for an issue](Issues::list_events_for_timeline_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListEventsForTimelineError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
@@ -507,19 +626,25 @@ pub enum IssuesListEventsForTimelineError {
     Generic { code: u16 },
 }
 
+impl From<IssuesListEventsForTimelineError> for AdapterError {
+    fn from(err: IssuesListEventsForTimelineError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListEventsForTimelineError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListEventsForTimelineError::Status410(_) => (String::from("Gone"), 410),
+            IssuesListEventsForTimelineError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List user account issues assigned to the authenticated user](Issues::list_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -528,38 +653,49 @@ pub enum IssuesListForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<IssuesListForAuthenticatedUserError> for AdapterError {
+    fn from(err: IssuesListForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            IssuesListForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization issues assigned to the authenticated user](Issues::list_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListForOrgError> for AdapterError {
+    fn from(err: IssuesListForOrgError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository issues](Issues::list_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -568,57 +704,73 @@ pub enum IssuesListForRepoError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListForRepoError> for AdapterError {
+    fn from(err: IssuesListForRepoError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListForRepoError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesListForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesListForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List labels for issues in a milestone](Issues::list_labels_for_milestone_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListLabelsForMilestoneError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListLabelsForMilestoneError> for AdapterError {
+    fn from(err: IssuesListLabelsForMilestoneError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListLabelsForMilestoneError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List labels for a repository](Issues::list_labels_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListLabelsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListLabelsForRepoError> for AdapterError {
+    fn from(err: IssuesListLabelsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListLabelsForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListLabelsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List labels for an issue](Issues::list_labels_on_issue_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListLabelsOnIssueError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -627,40 +779,52 @@ pub enum IssuesListLabelsOnIssueError {
     Status410(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListLabelsOnIssueError> for AdapterError {
+    fn from(err: IssuesListLabelsOnIssueError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListLabelsOnIssueError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesListLabelsOnIssueError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListLabelsOnIssueError::Status410(_) => (String::from("Gone"), 410),
+            IssuesListLabelsOnIssueError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List milestones](Issues::list_milestones_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesListMilestonesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesListMilestonesError> for AdapterError {
+    fn from(err: IssuesListMilestonesError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListMilestonesError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListMilestonesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Lock an issue](Issues::lock_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesLockError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Gone")]
@@ -671,21 +835,29 @@ pub enum IssuesLockError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesLockError> for AdapterError {
+    fn from(err: IssuesLockError) -> Self {
+        let (description, status_code) = match err {
+            IssuesLockError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesLockError::Status410(_) => (String::from("Gone"), 410),
+            IssuesLockError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesLockError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesLockError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove all labels from an issue](Issues::remove_all_labels_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesRemoveAllLabelsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -694,38 +866,49 @@ pub enum IssuesRemoveAllLabelsError {
     Status410(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesRemoveAllLabelsError> for AdapterError {
+    fn from(err: IssuesRemoveAllLabelsError) -> Self {
+        let (description, status_code) = match err {
+            IssuesRemoveAllLabelsError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesRemoveAllLabelsError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesRemoveAllLabelsError::Status410(_) => (String::from("Gone"), 410),
+            IssuesRemoveAllLabelsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove assignees from an issue](Issues::remove_assignees_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesRemoveAssigneesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesRemoveAssigneesError> for AdapterError {
+    fn from(err: IssuesRemoveAssigneesError) -> Self {
+        let (description, status_code) = match err {
+            IssuesRemoveAssigneesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a label from an issue](Issues::remove_label_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesRemoveLabelError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -736,19 +919,26 @@ pub enum IssuesRemoveLabelError {
     Generic { code: u16 },
 }
 
+impl From<IssuesRemoveLabelError> for AdapterError {
+    fn from(err: IssuesRemoveLabelError) -> Self {
+        let (description, status_code) = match err {
+            IssuesRemoveLabelError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesRemoveLabelError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesRemoveLabelError::Status410(_) => (String::from("Gone"), 410),
+            IssuesRemoveLabelError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set labels for an issue](Issues::set_labels_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesSetLabelsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -761,19 +951,27 @@ pub enum IssuesSetLabelsError {
     Generic { code: u16 },
 }
 
+impl From<IssuesSetLabelsError> for AdapterError {
+    fn from(err: IssuesSetLabelsError) -> Self {
+        let (description, status_code) = match err {
+            IssuesSetLabelsError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesSetLabelsError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesSetLabelsError::Status410(_) => (String::from("Gone"), 410),
+            IssuesSetLabelsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesSetLabelsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Unlock an issue](Issues::unlock_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesUnlockError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -782,19 +980,25 @@ pub enum IssuesUnlockError {
     Generic { code: u16 },
 }
 
+impl From<IssuesUnlockError> for AdapterError {
+    fn from(err: IssuesUnlockError) -> Self {
+        let (description, status_code) = match err {
+            IssuesUnlockError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesUnlockError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesUnlockError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an issue](Issues::update_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesUpdateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Service unavailable")]
@@ -811,57 +1015,90 @@ pub enum IssuesUpdateError {
     Generic { code: u16 },
 }
 
+impl From<IssuesUpdateError> for AdapterError {
+    fn from(err: IssuesUpdateError) -> Self {
+        let (description, status_code) = match err {
+            IssuesUpdateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesUpdateError::Status503(_) => (String::from("Service unavailable"), 503),
+            IssuesUpdateError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesUpdateError::Status301(_) => (String::from("Moved permanently"), 301),
+            IssuesUpdateError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesUpdateError::Status410(_) => (String::from("Gone"), 410),
+            IssuesUpdateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an issue comment](Issues::update_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesUpdateCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<IssuesUpdateCommentError> for AdapterError {
+    fn from(err: IssuesUpdateCommentError) -> Self {
+        let (description, status_code) = match err {
+            IssuesUpdateCommentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesUpdateCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a label](Issues::update_label_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesUpdateLabelError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesUpdateLabelError> for AdapterError {
+    fn from(err: IssuesUpdateLabelError) -> Self {
+        let (description, status_code) = match err {
+            IssuesUpdateLabelError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a milestone](Issues::update_milestone_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesUpdateMilestoneError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<IssuesUpdateMilestoneError> for AdapterError {
+    fn from(err: IssuesUpdateMilestoneError) -> Self {
+        let (description, status_code) = match err {
+            IssuesUpdateMilestoneError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -2154,7 +2391,7 @@ impl<'enc> From<&'enc PerPage> for IssuesListMilestonesParams<'enc> {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
+impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add assignees to an issue
@@ -2164,19 +2401,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for add_assignees](https://docs.github.com/rest/issues/assignees#add-assignees-to-an-issue)
     ///
     /// ---
-    pub async fn add_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<Issue, IssuesAddAssigneesError> {
+    pub async fn add_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesAddAssignees::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesAddAssignees>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2188,7 +2425,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesAddAssigneesError::Generic { code }),
+                code => Err(IssuesAddAssigneesError::Generic { code }.into()),
             }
         }
     }
@@ -2203,19 +2440,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<Issue, IssuesAddAssigneesError> {
+    pub fn add_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddAssignees) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesAddAssignees::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesAddAssignees>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2227,7 +2464,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesAddAssigneesError::Generic { code }),
+                code => Err(IssuesAddAssigneesError::Generic { code }.into()),
             }
         }
     }
@@ -2241,19 +2478,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for add_labels](https://docs.github.com/rest/issues/labels#add-labels-to-an-issue)
     ///
     /// ---
-    pub async fn add_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddLabels) -> Result<Vec<Label>, IssuesAddLabelsError> {
+    pub async fn add_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddLabels) -> Result<Vec<Label>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesAddLabels::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesAddLabels>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2265,11 +2502,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesAddLabelsError::Status301(github_response.to_json_async().await?)),
-                404 => Err(IssuesAddLabelsError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesAddLabelsError::Status410(github_response.to_json_async().await?)),
-                422 => Err(IssuesAddLabelsError::Status422(github_response.to_json_async().await?)),
-                code => Err(IssuesAddLabelsError::Generic { code }),
+                301 => Err(IssuesAddLabelsError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesAddLabelsError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesAddLabelsError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesAddLabelsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(IssuesAddLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -2284,19 +2521,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_labels(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddLabels) -> Result<Vec<Label>, IssuesAddLabelsError> {
+    pub fn add_labels(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddLabels) -> Result<Vec<Label>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesAddLabels::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesAddLabels>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2308,11 +2545,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesAddLabelsError::Status301(github_response.to_json()?)),
-                404 => Err(IssuesAddLabelsError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesAddLabelsError::Status410(github_response.to_json()?)),
-                422 => Err(IssuesAddLabelsError::Status422(github_response.to_json()?)),
-                code => Err(IssuesAddLabelsError::Generic { code }),
+                301 => Err(IssuesAddLabelsError::Status301(github_response.to_json()?).into()),
+                404 => Err(IssuesAddLabelsError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesAddLabelsError::Status410(github_response.to_json()?).into()),
+                422 => Err(IssuesAddLabelsError::Status422(github_response.to_json()?).into()),
+                code => Err(IssuesAddLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -2330,19 +2567,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for check_user_can_be_assigned](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned)
     ///
     /// ---
-    pub async fn check_user_can_be_assigned_async(&self, owner: &str, repo: &str, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedError> {
+    pub async fn check_user_can_be_assigned_async(&self, owner: &str, repo: &str, assignee: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/assignees/{}", super::GITHUB_BASE_API_URL, owner, repo, assignee);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2354,8 +2591,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesCheckUserCanBeAssignedError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesCheckUserCanBeAssignedError::Generic { code }),
+                404 => Err(IssuesCheckUserCanBeAssignedError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesCheckUserCanBeAssignedError::Generic { code }.into()),
             }
         }
     }
@@ -2374,7 +2611,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_user_can_be_assigned(&self, owner: &str, repo: &str, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedError> {
+    pub fn check_user_can_be_assigned(&self, owner: &str, repo: &str, assignee: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/assignees/{}", super::GITHUB_BASE_API_URL, owner, repo, assignee);
 
@@ -2386,7 +2623,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2398,8 +2635,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesCheckUserCanBeAssignedError::Status404(github_response.to_json()?)),
-                code => Err(IssuesCheckUserCanBeAssignedError::Generic { code }),
+                404 => Err(IssuesCheckUserCanBeAssignedError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesCheckUserCanBeAssignedError::Generic { code }.into()),
             }
         }
     }
@@ -2417,19 +2654,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for check_user_can_be_assigned_to_issue](https://docs.github.com/rest/issues/assignees#check-if-a-user-can-be-assigned-to-a-issue)
     ///
     /// ---
-    pub async fn check_user_can_be_assigned_to_issue_async(&self, owner: &str, repo: &str, issue_number: i32, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedToIssueError> {
+    pub async fn check_user_can_be_assigned_to_issue_async(&self, owner: &str, repo: &str, issue_number: i32, assignee: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, assignee);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2441,8 +2678,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesCheckUserCanBeAssignedToIssueError::Generic { code }),
+                404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesCheckUserCanBeAssignedToIssueError::Generic { code }.into()),
             }
         }
     }
@@ -2461,7 +2698,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_user_can_be_assigned_to_issue(&self, owner: &str, repo: &str, issue_number: i32, assignee: &str) -> Result<(), IssuesCheckUserCanBeAssignedToIssueError> {
+    pub fn check_user_can_be_assigned_to_issue(&self, owner: &str, repo: &str, issue_number: i32, assignee: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, assignee);
 
@@ -2473,7 +2710,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2485,8 +2722,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(github_response.to_json()?)),
-                code => Err(IssuesCheckUserCanBeAssignedToIssueError::Generic { code }),
+                404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesCheckUserCanBeAssignedToIssueError::Generic { code }.into()),
             }
         }
     }
@@ -2510,19 +2747,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for create](https://docs.github.com/rest/issues/issues#create-an-issue)
     ///
     /// ---
-    pub async fn create_async(&self, owner: &str, repo: &str, body: PostIssuesCreate) -> Result<Issue, IssuesCreateError> {
+    pub async fn create_async(&self, owner: &str, repo: &str, body: PostIssuesCreate) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreate::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2534,13 +2771,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(IssuesCreateError::Status400(github_response.to_json_async().await?)),
-                403 => Err(IssuesCreateError::Status403(github_response.to_json_async().await?)),
-                422 => Err(IssuesCreateError::Status422(github_response.to_json_async().await?)),
-                503 => Err(IssuesCreateError::Status503(github_response.to_json_async().await?)),
-                404 => Err(IssuesCreateError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesCreateError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesCreateError::Generic { code }),
+                400 => Err(IssuesCreateError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(IssuesCreateError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesCreateError::Status422(github_response.to_json_async().await?).into()),
+                503 => Err(IssuesCreateError::Status503(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesCreateError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesCreateError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesCreateError::Generic { code }.into()),
             }
         }
     }
@@ -2565,19 +2802,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create(&self, owner: &str, repo: &str, body: PostIssuesCreate) -> Result<Issue, IssuesCreateError> {
+    pub fn create(&self, owner: &str, repo: &str, body: PostIssuesCreate) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreate::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2589,13 +2826,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(IssuesCreateError::Status400(github_response.to_json()?)),
-                403 => Err(IssuesCreateError::Status403(github_response.to_json()?)),
-                422 => Err(IssuesCreateError::Status422(github_response.to_json()?)),
-                503 => Err(IssuesCreateError::Status503(github_response.to_json()?)),
-                404 => Err(IssuesCreateError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesCreateError::Status410(github_response.to_json()?)),
-                code => Err(IssuesCreateError::Generic { code }),
+                400 => Err(IssuesCreateError::Status400(github_response.to_json()?).into()),
+                403 => Err(IssuesCreateError::Status403(github_response.to_json()?).into()),
+                422 => Err(IssuesCreateError::Status422(github_response.to_json()?).into()),
+                503 => Err(IssuesCreateError::Status503(github_response.to_json()?).into()),
+                404 => Err(IssuesCreateError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesCreateError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesCreateError::Generic { code }.into()),
             }
         }
     }
@@ -2621,19 +2858,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for create_comment](https://docs.github.com/rest/issues/comments#create-an-issue-comment)
     ///
     /// ---
-    pub async fn create_comment_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesCreateComment) -> Result<IssueComment, IssuesCreateCommentError> {
+    pub async fn create_comment_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesCreateComment) -> Result<IssueComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreateComment::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreateComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2645,11 +2882,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(IssuesCreateCommentError::Status403(github_response.to_json_async().await?)),
-                410 => Err(IssuesCreateCommentError::Status410(github_response.to_json_async().await?)),
-                422 => Err(IssuesCreateCommentError::Status422(github_response.to_json_async().await?)),
-                404 => Err(IssuesCreateCommentError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesCreateCommentError::Generic { code }),
+                403 => Err(IssuesCreateCommentError::Status403(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesCreateCommentError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesCreateCommentError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesCreateCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesCreateCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2676,19 +2913,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_comment(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesCreateComment) -> Result<IssueComment, IssuesCreateCommentError> {
+    pub fn create_comment(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesCreateComment) -> Result<IssueComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreateComment::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreateComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2700,11 +2937,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(IssuesCreateCommentError::Status403(github_response.to_json()?)),
-                410 => Err(IssuesCreateCommentError::Status410(github_response.to_json()?)),
-                422 => Err(IssuesCreateCommentError::Status422(github_response.to_json()?)),
-                404 => Err(IssuesCreateCommentError::Status404(github_response.to_json()?)),
-                code => Err(IssuesCreateCommentError::Generic { code }),
+                403 => Err(IssuesCreateCommentError::Status403(github_response.to_json()?).into()),
+                410 => Err(IssuesCreateCommentError::Status410(github_response.to_json()?).into()),
+                422 => Err(IssuesCreateCommentError::Status422(github_response.to_json()?).into()),
+                404 => Err(IssuesCreateCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesCreateCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2718,19 +2955,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for create_label](https://docs.github.com/rest/issues/labels#create-a-label)
     ///
     /// ---
-    pub async fn create_label_async(&self, owner: &str, repo: &str, body: PostIssuesCreateLabel) -> Result<Label, IssuesCreateLabelError> {
+    pub async fn create_label_async(&self, owner: &str, repo: &str, body: PostIssuesCreateLabel) -> Result<Label, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreateLabel::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreateLabel>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2742,9 +2979,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesCreateLabelError::Status422(github_response.to_json_async().await?)),
-                404 => Err(IssuesCreateLabelError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesCreateLabelError::Generic { code }),
+                422 => Err(IssuesCreateLabelError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesCreateLabelError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesCreateLabelError::Generic { code }.into()),
             }
         }
     }
@@ -2759,19 +2996,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_label(&self, owner: &str, repo: &str, body: PostIssuesCreateLabel) -> Result<Label, IssuesCreateLabelError> {
+    pub fn create_label(&self, owner: &str, repo: &str, body: PostIssuesCreateLabel) -> Result<Label, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreateLabel::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreateLabel>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2783,9 +3020,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesCreateLabelError::Status422(github_response.to_json()?)),
-                404 => Err(IssuesCreateLabelError::Status404(github_response.to_json()?)),
-                code => Err(IssuesCreateLabelError::Generic { code }),
+                422 => Err(IssuesCreateLabelError::Status422(github_response.to_json()?).into()),
+                404 => Err(IssuesCreateLabelError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesCreateLabelError::Generic { code }.into()),
             }
         }
     }
@@ -2799,19 +3036,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for create_milestone](https://docs.github.com/rest/issues/milestones#create-a-milestone)
     ///
     /// ---
-    pub async fn create_milestone_async(&self, owner: &str, repo: &str, body: PostIssuesCreateMilestone) -> Result<Milestone, IssuesCreateMilestoneError> {
+    pub async fn create_milestone_async(&self, owner: &str, repo: &str, body: PostIssuesCreateMilestone) -> Result<Milestone, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreateMilestone::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreateMilestone>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2823,9 +3060,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesCreateMilestoneError::Status404(github_response.to_json_async().await?)),
-                422 => Err(IssuesCreateMilestoneError::Status422(github_response.to_json_async().await?)),
-                code => Err(IssuesCreateMilestoneError::Generic { code }),
+                404 => Err(IssuesCreateMilestoneError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesCreateMilestoneError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(IssuesCreateMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -2840,19 +3077,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_milestone(&self, owner: &str, repo: &str, body: PostIssuesCreateMilestone) -> Result<Milestone, IssuesCreateMilestoneError> {
+    pub fn create_milestone(&self, owner: &str, repo: &str, body: PostIssuesCreateMilestone) -> Result<Milestone, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostIssuesCreateMilestone::from_json(body)?),
+            body: Some(C::from_json::<PostIssuesCreateMilestone>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2864,9 +3101,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesCreateMilestoneError::Status404(github_response.to_json()?)),
-                422 => Err(IssuesCreateMilestoneError::Status422(github_response.to_json()?)),
-                code => Err(IssuesCreateMilestoneError::Generic { code }),
+                404 => Err(IssuesCreateMilestoneError::Status404(github_response.to_json()?).into()),
+                422 => Err(IssuesCreateMilestoneError::Status422(github_response.to_json()?).into()),
+                code => Err(IssuesCreateMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -2880,19 +3117,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for delete_comment](https://docs.github.com/rest/issues/comments#delete-an-issue-comment)
     ///
     /// ---
-    pub async fn delete_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), IssuesDeleteCommentError> {
+    pub async fn delete_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2904,7 +3141,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesDeleteCommentError::Generic { code }),
+                code => Err(IssuesDeleteCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2919,7 +3156,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), IssuesDeleteCommentError> {
+    pub fn delete_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2931,7 +3168,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2943,7 +3180,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesDeleteCommentError::Generic { code }),
+                code => Err(IssuesDeleteCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2957,19 +3194,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for delete_label](https://docs.github.com/rest/issues/labels#delete-a-label)
     ///
     /// ---
-    pub async fn delete_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<(), IssuesDeleteLabelError> {
+    pub async fn delete_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2981,7 +3218,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesDeleteLabelError::Generic { code }),
+                code => Err(IssuesDeleteLabelError::Generic { code }.into()),
             }
         }
     }
@@ -2996,7 +3233,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_label(&self, owner: &str, repo: &str, name: &str) -> Result<(), IssuesDeleteLabelError> {
+    pub fn delete_label(&self, owner: &str, repo: &str, name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
@@ -3008,7 +3245,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3020,7 +3257,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesDeleteLabelError::Generic { code }),
+                code => Err(IssuesDeleteLabelError::Generic { code }.into()),
             }
         }
     }
@@ -3034,19 +3271,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for delete_milestone](https://docs.github.com/rest/issues/milestones#delete-a-milestone)
     ///
     /// ---
-    pub async fn delete_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<(), IssuesDeleteMilestoneError> {
+    pub async fn delete_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones/{}", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3058,8 +3295,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesDeleteMilestoneError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesDeleteMilestoneError::Generic { code }),
+                404 => Err(IssuesDeleteMilestoneError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesDeleteMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -3074,7 +3311,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_milestone(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<(), IssuesDeleteMilestoneError> {
+    pub fn delete_milestone(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones/{}", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
@@ -3086,7 +3323,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3098,8 +3335,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesDeleteMilestoneError::Status404(github_response.to_json()?)),
-                code => Err(IssuesDeleteMilestoneError::Generic { code }),
+                404 => Err(IssuesDeleteMilestoneError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesDeleteMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -3128,19 +3365,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for get](https://docs.github.com/rest/issues/issues#get-an-issue)
     ///
     /// ---
-    pub async fn get_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<Issue, IssuesGetError> {
+    pub async fn get_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3152,11 +3389,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesGetError::Status301(github_response.to_json_async().await?)),
-                404 => Err(IssuesGetError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesGetError::Status410(github_response.to_json_async().await?)),
-                304 => Err(IssuesGetError::Status304),
-                code => Err(IssuesGetError::Generic { code }),
+                301 => Err(IssuesGetError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesGetError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesGetError::Status410(github_response.to_json_async().await?).into()),
+                304 => Err(IssuesGetError::Status304.into()),
+                code => Err(IssuesGetError::Generic { code }.into()),
             }
         }
     }
@@ -3186,7 +3423,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, owner: &str, repo: &str, issue_number: i32) -> Result<Issue, IssuesGetError> {
+    pub fn get(&self, owner: &str, repo: &str, issue_number: i32) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -3198,7 +3435,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3210,11 +3447,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesGetError::Status301(github_response.to_json()?)),
-                404 => Err(IssuesGetError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesGetError::Status410(github_response.to_json()?)),
-                304 => Err(IssuesGetError::Status304),
-                code => Err(IssuesGetError::Generic { code }),
+                301 => Err(IssuesGetError::Status301(github_response.to_json()?).into()),
+                404 => Err(IssuesGetError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesGetError::Status410(github_response.to_json()?).into()),
+                304 => Err(IssuesGetError::Status304.into()),
+                code => Err(IssuesGetError::Generic { code }.into()),
             }
         }
     }
@@ -3235,19 +3472,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/issues/comments#get-an-issue-comment)
     ///
     /// ---
-    pub async fn get_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<IssueComment, IssuesGetCommentError> {
+    pub async fn get_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<IssueComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3259,8 +3496,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetCommentError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesGetCommentError::Generic { code }),
+                404 => Err(IssuesGetCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesGetCommentError::Generic { code }.into()),
             }
         }
     }
@@ -3282,7 +3519,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<IssueComment, IssuesGetCommentError> {
+    pub fn get_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<IssueComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -3294,7 +3531,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3306,8 +3543,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetCommentError::Status404(github_response.to_json()?)),
-                code => Err(IssuesGetCommentError::Generic { code }),
+                404 => Err(IssuesGetCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesGetCommentError::Generic { code }.into()),
             }
         }
     }
@@ -3321,19 +3558,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for get_event](https://docs.github.com/rest/issues/events#get-an-issue-event)
     ///
     /// ---
-    pub async fn get_event_async(&self, owner: &str, repo: &str, event_id: i32) -> Result<IssueEvent, IssuesGetEventError> {
+    pub async fn get_event_async(&self, owner: &str, repo: &str, event_id: i32) -> Result<IssueEvent, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/events/{}", super::GITHUB_BASE_API_URL, owner, repo, event_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3345,10 +3582,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetEventError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesGetEventError::Status410(github_response.to_json_async().await?)),
-                403 => Err(IssuesGetEventError::Status403(github_response.to_json_async().await?)),
-                code => Err(IssuesGetEventError::Generic { code }),
+                404 => Err(IssuesGetEventError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesGetEventError::Status410(github_response.to_json_async().await?).into()),
+                403 => Err(IssuesGetEventError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(IssuesGetEventError::Generic { code }.into()),
             }
         }
     }
@@ -3363,7 +3600,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_event(&self, owner: &str, repo: &str, event_id: i32) -> Result<IssueEvent, IssuesGetEventError> {
+    pub fn get_event(&self, owner: &str, repo: &str, event_id: i32) -> Result<IssueEvent, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/events/{}", super::GITHUB_BASE_API_URL, owner, repo, event_id);
 
@@ -3375,7 +3612,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3387,10 +3624,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetEventError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesGetEventError::Status410(github_response.to_json()?)),
-                403 => Err(IssuesGetEventError::Status403(github_response.to_json()?)),
-                code => Err(IssuesGetEventError::Generic { code }),
+                404 => Err(IssuesGetEventError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesGetEventError::Status410(github_response.to_json()?).into()),
+                403 => Err(IssuesGetEventError::Status403(github_response.to_json()?).into()),
+                code => Err(IssuesGetEventError::Generic { code }.into()),
             }
         }
     }
@@ -3404,19 +3641,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for get_label](https://docs.github.com/rest/issues/labels#get-a-label)
     ///
     /// ---
-    pub async fn get_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<Label, IssuesGetLabelError> {
+    pub async fn get_label_async(&self, owner: &str, repo: &str, name: &str) -> Result<Label, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3428,8 +3665,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetLabelError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesGetLabelError::Generic { code }),
+                404 => Err(IssuesGetLabelError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesGetLabelError::Generic { code }.into()),
             }
         }
     }
@@ -3444,7 +3681,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_label(&self, owner: &str, repo: &str, name: &str) -> Result<Label, IssuesGetLabelError> {
+    pub fn get_label(&self, owner: &str, repo: &str, name: &str) -> Result<Label, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
@@ -3456,7 +3693,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3468,8 +3705,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetLabelError::Status404(github_response.to_json()?)),
-                code => Err(IssuesGetLabelError::Generic { code }),
+                404 => Err(IssuesGetLabelError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesGetLabelError::Generic { code }.into()),
             }
         }
     }
@@ -3483,19 +3720,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for get_milestone](https://docs.github.com/rest/issues/milestones#get-a-milestone)
     ///
     /// ---
-    pub async fn get_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<Milestone, IssuesGetMilestoneError> {
+    pub async fn get_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<Milestone, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones/{}", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3507,8 +3744,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetMilestoneError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesGetMilestoneError::Generic { code }),
+                404 => Err(IssuesGetMilestoneError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesGetMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -3523,7 +3760,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_milestone(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<Milestone, IssuesGetMilestoneError> {
+    pub fn get_milestone(&self, owner: &str, repo: &str, milestone_number: i32) -> Result<Milestone, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones/{}", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
@@ -3535,7 +3772,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3547,8 +3784,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesGetMilestoneError::Status404(github_response.to_json()?)),
-                code => Err(IssuesGetMilestoneError::Generic { code }),
+                404 => Err(IssuesGetMilestoneError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesGetMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -3574,7 +3811,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list](https://docs.github.com/rest/issues/issues#list-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_async(&self, query_params: Option<impl Into<IssuesListParams<'api>>>) -> Result<Vec<Issue>, IssuesListError> {
+    pub async fn list_async(&self, query_params: Option<impl Into<IssuesListParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/issues", super::GITHUB_BASE_API_URL);
 
@@ -3585,12 +3822,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3602,10 +3839,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesListError::Status422(github_response.to_json_async().await?)),
-                304 => Err(IssuesListError::Status304),
-                404 => Err(IssuesListError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesListError::Generic { code }),
+                422 => Err(IssuesListError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(IssuesListError::Status304.into()),
+                404 => Err(IssuesListError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListError::Generic { code }.into()),
             }
         }
     }
@@ -3632,7 +3869,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list(&self, query_params: Option<impl Into<IssuesListParams<'api>>>) -> Result<Vec<Issue>, IssuesListError> {
+    pub fn list(&self, query_params: Option<impl Into<IssuesListParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/issues", super::GITHUB_BASE_API_URL);
 
@@ -3649,7 +3886,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3661,10 +3898,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesListError::Status422(github_response.to_json()?)),
-                304 => Err(IssuesListError::Status304),
-                404 => Err(IssuesListError::Status404(github_response.to_json()?)),
-                code => Err(IssuesListError::Generic { code }),
+                422 => Err(IssuesListError::Status422(github_response.to_json()?).into()),
+                304 => Err(IssuesListError::Status304.into()),
+                404 => Err(IssuesListError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesListError::Generic { code }.into()),
             }
         }
     }
@@ -3678,7 +3915,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_assignees](https://docs.github.com/rest/issues/assignees#list-assignees)
     ///
     /// ---
-    pub async fn list_assignees_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListAssigneesParams>>) -> Result<Vec<SimpleUser>, IssuesListAssigneesError> {
+    pub async fn list_assignees_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListAssigneesParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3689,12 +3926,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3706,8 +3943,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListAssigneesError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesListAssigneesError::Generic { code }),
+                404 => Err(IssuesListAssigneesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListAssigneesError::Generic { code }.into()),
             }
         }
     }
@@ -3722,7 +3959,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_assignees(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListAssigneesParams>>) -> Result<Vec<SimpleUser>, IssuesListAssigneesError> {
+    pub fn list_assignees(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListAssigneesParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3739,7 +3976,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3751,8 +3988,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListAssigneesError::Status404(github_response.to_json()?)),
-                code => Err(IssuesListAssigneesError::Generic { code }),
+                404 => Err(IssuesListAssigneesError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesListAssigneesError::Generic { code }.into()),
             }
         }
     }
@@ -3775,7 +4012,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/issues/comments#list-issue-comments)
     ///
     /// ---
-    pub async fn list_comments_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
+    pub async fn list_comments_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -3786,12 +4023,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3803,9 +4040,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListCommentsError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesListCommentsError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesListCommentsError::Generic { code }),
+                404 => Err(IssuesListCommentsError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesListCommentsError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListCommentsError::Generic { code }.into()),
             }
         }
     }
@@ -3829,7 +4066,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_comments(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, IssuesListCommentsError> {
+    pub fn list_comments(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListCommentsParams>>) -> Result<Vec<IssueComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -3846,7 +4083,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3858,9 +4095,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListCommentsError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesListCommentsError::Status410(github_response.to_json()?)),
-                code => Err(IssuesListCommentsError::Generic { code }),
+                404 => Err(IssuesListCommentsError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesListCommentsError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesListCommentsError::Generic { code }.into()),
             }
         }
     }
@@ -3883,7 +4120,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_comments_for_repo](https://docs.github.com/rest/issues/comments#list-issue-comments-for-a-repository)
     ///
     /// ---
-    pub async fn list_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListCommentsForRepoParams<'api>>>) -> Result<Vec<IssueComment>, IssuesListCommentsForRepoError> {
+    pub async fn list_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListCommentsForRepoParams<'api>>>) -> Result<Vec<IssueComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3894,12 +4131,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3911,9 +4148,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesListCommentsForRepoError::Status422(github_response.to_json_async().await?)),
-                404 => Err(IssuesListCommentsForRepoError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesListCommentsForRepoError::Generic { code }),
+                422 => Err(IssuesListCommentsForRepoError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesListCommentsForRepoError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListCommentsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -3937,7 +4174,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListCommentsForRepoParams<'api>>>) -> Result<Vec<IssueComment>, IssuesListCommentsForRepoError> {
+    pub fn list_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListCommentsForRepoParams<'api>>>) -> Result<Vec<IssueComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3954,7 +4191,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3966,9 +4203,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesListCommentsForRepoError::Status422(github_response.to_json()?)),
-                404 => Err(IssuesListCommentsForRepoError::Status404(github_response.to_json()?)),
-                code => Err(IssuesListCommentsForRepoError::Generic { code }),
+                422 => Err(IssuesListCommentsForRepoError::Status422(github_response.to_json()?).into()),
+                404 => Err(IssuesListCommentsForRepoError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesListCommentsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -3982,7 +4219,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_events](https://docs.github.com/rest/issues/events#list-issue-events)
     ///
     /// ---
-    pub async fn list_events_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsParams>>) -> Result<Vec<IssueEventForIssue>, IssuesListEventsError> {
+    pub async fn list_events_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsParams>>) -> Result<Vec<IssueEventForIssue>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/events", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -3993,12 +4230,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4010,8 +4247,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                410 => Err(IssuesListEventsError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesListEventsError::Generic { code }),
+                410 => Err(IssuesListEventsError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListEventsError::Generic { code }.into()),
             }
         }
     }
@@ -4026,7 +4263,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_events(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsParams>>) -> Result<Vec<IssueEventForIssue>, IssuesListEventsError> {
+    pub fn list_events(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsParams>>) -> Result<Vec<IssueEventForIssue>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/events", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -4043,7 +4280,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4055,8 +4292,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                410 => Err(IssuesListEventsError::Status410(github_response.to_json()?)),
-                code => Err(IssuesListEventsError::Generic { code }),
+                410 => Err(IssuesListEventsError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesListEventsError::Generic { code }.into()),
             }
         }
     }
@@ -4070,7 +4307,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_events_for_repo](https://docs.github.com/rest/issues/events#list-issue-events-for-a-repository)
     ///
     /// ---
-    pub async fn list_events_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListEventsForRepoParams>>) -> Result<Vec<IssueEvent>, IssuesListEventsForRepoError> {
+    pub async fn list_events_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListEventsForRepoParams>>) -> Result<Vec<IssueEvent>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/events", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4081,12 +4318,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4098,8 +4335,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesListEventsForRepoError::Status422(github_response.to_json_async().await?)),
-                code => Err(IssuesListEventsForRepoError::Generic { code }),
+                422 => Err(IssuesListEventsForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListEventsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4114,7 +4351,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_events_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListEventsForRepoParams>>) -> Result<Vec<IssueEvent>, IssuesListEventsForRepoError> {
+    pub fn list_events_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListEventsForRepoParams>>) -> Result<Vec<IssueEvent>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/events", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4131,7 +4368,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4143,8 +4380,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesListEventsForRepoError::Status422(github_response.to_json()?)),
-                code => Err(IssuesListEventsForRepoError::Generic { code }),
+                422 => Err(IssuesListEventsForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(IssuesListEventsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4158,7 +4395,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_events_for_timeline](https://docs.github.com/rest/issues/timeline#list-timeline-events-for-an-issue)
     ///
     /// ---
-    pub async fn list_events_for_timeline_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, IssuesListEventsForTimelineError> {
+    pub async fn list_events_for_timeline_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/timeline", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -4169,12 +4406,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4186,9 +4423,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListEventsForTimelineError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesListEventsForTimelineError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesListEventsForTimelineError::Generic { code }),
+                404 => Err(IssuesListEventsForTimelineError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesListEventsForTimelineError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListEventsForTimelineError::Generic { code }.into()),
             }
         }
     }
@@ -4203,7 +4440,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_events_for_timeline(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, IssuesListEventsForTimelineError> {
+    pub fn list_events_for_timeline(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListEventsForTimelineParams>>) -> Result<Vec<TimelineIssueEvents>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/timeline", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -4220,7 +4457,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4232,9 +4469,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListEventsForTimelineError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesListEventsForTimelineError::Status410(github_response.to_json()?)),
-                code => Err(IssuesListEventsForTimelineError::Generic { code }),
+                404 => Err(IssuesListEventsForTimelineError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesListEventsForTimelineError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesListEventsForTimelineError::Generic { code }.into()),
             }
         }
     }
@@ -4258,7 +4495,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/issues/issues#list-user-account-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<IssuesListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Issue>, IssuesListForAuthenticatedUserError> {
+    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<IssuesListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/user/issues", super::GITHUB_BASE_API_URL);
 
@@ -4269,12 +4506,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4286,9 +4523,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                304 => Err(IssuesListForAuthenticatedUserError::Status304),
-                code => Err(IssuesListForAuthenticatedUserError::Generic { code }),
+                404 => Err(IssuesListForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(IssuesListForAuthenticatedUserError::Status304.into()),
+                code => Err(IssuesListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4313,7 +4550,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<IssuesListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Issue>, IssuesListForAuthenticatedUserError> {
+    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<IssuesListForAuthenticatedUserParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/user/issues", super::GITHUB_BASE_API_URL);
 
@@ -4330,7 +4567,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4342,9 +4579,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                304 => Err(IssuesListForAuthenticatedUserError::Status304),
-                code => Err(IssuesListForAuthenticatedUserError::Generic { code }),
+                404 => Err(IssuesListForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                304 => Err(IssuesListForAuthenticatedUserError::Status304.into()),
+                code => Err(IssuesListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4368,7 +4605,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/issues/issues#list-organization-issues-assigned-to-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<IssuesListForOrgParams<'api>>>) -> Result<Vec<Issue>, IssuesListForOrgError> {
+    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<IssuesListForOrgParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/issues", super::GITHUB_BASE_API_URL, org);
 
@@ -4379,12 +4616,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4396,8 +4633,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListForOrgError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesListForOrgError::Generic { code }),
+                404 => Err(IssuesListForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4422,7 +4659,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<IssuesListForOrgParams<'api>>>) -> Result<Vec<Issue>, IssuesListForOrgError> {
+    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<IssuesListForOrgParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/issues", super::GITHUB_BASE_API_URL, org);
 
@@ -4439,7 +4676,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4451,8 +4688,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListForOrgError::Status404(github_response.to_json()?)),
-                code => Err(IssuesListForOrgError::Generic { code }),
+                404 => Err(IssuesListForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4476,7 +4713,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/issues/issues#list-repository-issues)
     ///
     /// ---
-    pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<Issue>, IssuesListForRepoError> {
+    pub async fn list_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4487,12 +4724,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4504,10 +4741,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesListForRepoError::Status301(github_response.to_json_async().await?)),
-                422 => Err(IssuesListForRepoError::Status422(github_response.to_json_async().await?)),
-                404 => Err(IssuesListForRepoError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesListForRepoError::Generic { code }),
+                301 => Err(IssuesListForRepoError::Status301(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesListForRepoError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesListForRepoError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4532,7 +4769,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<Issue>, IssuesListForRepoError> {
+    pub fn list_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListForRepoParams<'api>>>) -> Result<Vec<Issue>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4549,7 +4786,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4561,10 +4798,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesListForRepoError::Status301(github_response.to_json()?)),
-                422 => Err(IssuesListForRepoError::Status422(github_response.to_json()?)),
-                404 => Err(IssuesListForRepoError::Status404(github_response.to_json()?)),
-                code => Err(IssuesListForRepoError::Generic { code }),
+                301 => Err(IssuesListForRepoError::Status301(github_response.to_json()?).into()),
+                422 => Err(IssuesListForRepoError::Status422(github_response.to_json()?).into()),
+                404 => Err(IssuesListForRepoError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesListForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4578,7 +4815,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_labels_for_milestone](https://docs.github.com/rest/issues/labels#list-labels-for-issues-in-a-milestone)
     ///
     /// ---
-    pub async fn list_labels_for_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, query_params: Option<impl Into<IssuesListLabelsForMilestoneParams>>) -> Result<Vec<Label>, IssuesListLabelsForMilestoneError> {
+    pub async fn list_labels_for_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, query_params: Option<impl Into<IssuesListLabelsForMilestoneParams>>) -> Result<Vec<Label>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/milestones/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
@@ -4589,12 +4826,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4606,7 +4843,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesListLabelsForMilestoneError::Generic { code }),
+                code => Err(IssuesListLabelsForMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -4621,7 +4858,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_labels_for_milestone(&self, owner: &str, repo: &str, milestone_number: i32, query_params: Option<impl Into<IssuesListLabelsForMilestoneParams>>) -> Result<Vec<Label>, IssuesListLabelsForMilestoneError> {
+    pub fn list_labels_for_milestone(&self, owner: &str, repo: &str, milestone_number: i32, query_params: Option<impl Into<IssuesListLabelsForMilestoneParams>>) -> Result<Vec<Label>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/milestones/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
@@ -4638,7 +4875,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4650,7 +4887,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesListLabelsForMilestoneError::Generic { code }),
+                code => Err(IssuesListLabelsForMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -4664,7 +4901,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_labels_for_repo](https://docs.github.com/rest/issues/labels#list-labels-for-a-repository)
     ///
     /// ---
-    pub async fn list_labels_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListLabelsForRepoParams>>) -> Result<Vec<Label>, IssuesListLabelsForRepoError> {
+    pub async fn list_labels_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListLabelsForRepoParams>>) -> Result<Vec<Label>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/labels", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4675,12 +4912,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4692,8 +4929,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListLabelsForRepoError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesListLabelsForRepoError::Generic { code }),
+                404 => Err(IssuesListLabelsForRepoError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListLabelsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4708,7 +4945,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_labels_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListLabelsForRepoParams>>) -> Result<Vec<Label>, IssuesListLabelsForRepoError> {
+    pub fn list_labels_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListLabelsForRepoParams>>) -> Result<Vec<Label>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/labels", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4725,7 +4962,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4737,8 +4974,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListLabelsForRepoError::Status404(github_response.to_json()?)),
-                code => Err(IssuesListLabelsForRepoError::Generic { code }),
+                404 => Err(IssuesListLabelsForRepoError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesListLabelsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -4752,7 +4989,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_labels_on_issue](https://docs.github.com/rest/issues/labels#list-labels-for-an-issue)
     ///
     /// ---
-    pub async fn list_labels_on_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListLabelsOnIssueParams>>) -> Result<Vec<Label>, IssuesListLabelsOnIssueError> {
+    pub async fn list_labels_on_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListLabelsOnIssueParams>>) -> Result<Vec<Label>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -4763,12 +5000,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4780,10 +5017,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesListLabelsOnIssueError::Status301(github_response.to_json_async().await?)),
-                404 => Err(IssuesListLabelsOnIssueError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesListLabelsOnIssueError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesListLabelsOnIssueError::Generic { code }),
+                301 => Err(IssuesListLabelsOnIssueError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesListLabelsOnIssueError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesListLabelsOnIssueError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListLabelsOnIssueError::Generic { code }.into()),
             }
         }
     }
@@ -4798,7 +5035,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_labels_on_issue(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListLabelsOnIssueParams>>) -> Result<Vec<Label>, IssuesListLabelsOnIssueError> {
+    pub fn list_labels_on_issue(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListLabelsOnIssueParams>>) -> Result<Vec<Label>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -4815,7 +5052,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4827,10 +5064,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesListLabelsOnIssueError::Status301(github_response.to_json()?)),
-                404 => Err(IssuesListLabelsOnIssueError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesListLabelsOnIssueError::Status410(github_response.to_json()?)),
-                code => Err(IssuesListLabelsOnIssueError::Generic { code }),
+                301 => Err(IssuesListLabelsOnIssueError::Status301(github_response.to_json()?).into()),
+                404 => Err(IssuesListLabelsOnIssueError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesListLabelsOnIssueError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesListLabelsOnIssueError::Generic { code }.into()),
             }
         }
     }
@@ -4844,7 +5081,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for list_milestones](https://docs.github.com/rest/issues/milestones#list-milestones)
     ///
     /// ---
-    pub async fn list_milestones_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListMilestonesParams<'api>>>) -> Result<Vec<Milestone>, IssuesListMilestonesError> {
+    pub async fn list_milestones_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListMilestonesParams<'api>>>) -> Result<Vec<Milestone>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/milestones", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4855,12 +5092,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4872,8 +5109,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListMilestonesError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesListMilestonesError::Generic { code }),
+                404 => Err(IssuesListMilestonesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListMilestonesError::Generic { code }.into()),
             }
         }
     }
@@ -4888,7 +5125,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_milestones(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListMilestonesParams<'api>>>) -> Result<Vec<Milestone>, IssuesListMilestonesError> {
+    pub fn list_milestones(&self, owner: &str, repo: &str, query_params: Option<impl Into<IssuesListMilestonesParams<'api>>>) -> Result<Vec<Milestone>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/milestones", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4905,7 +5142,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4917,8 +5154,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(IssuesListMilestonesError::Status404(github_response.to_json()?)),
-                code => Err(IssuesListMilestonesError::Generic { code }),
+                404 => Err(IssuesListMilestonesError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesListMilestonesError::Generic { code }.into()),
             }
         }
     }
@@ -4934,19 +5171,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for lock](https://docs.github.com/rest/issues/issues#lock-an-issue)
     ///
     /// ---
-    pub async fn lock_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesLock) -> Result<(), IssuesLockError> {
+    pub async fn lock_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesLock) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/lock", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutIssuesLock::from_json(body)?),
+            body: Some(C::from_json::<PutIssuesLock>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4958,11 +5195,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(IssuesLockError::Status403(github_response.to_json_async().await?)),
-                410 => Err(IssuesLockError::Status410(github_response.to_json_async().await?)),
-                404 => Err(IssuesLockError::Status404(github_response.to_json_async().await?)),
-                422 => Err(IssuesLockError::Status422(github_response.to_json_async().await?)),
-                code => Err(IssuesLockError::Generic { code }),
+                403 => Err(IssuesLockError::Status403(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesLockError::Status410(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesLockError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesLockError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(IssuesLockError::Generic { code }.into()),
             }
         }
     }
@@ -4979,19 +5216,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn lock(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesLock) -> Result<(), IssuesLockError> {
+    pub fn lock(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesLock) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/lock", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutIssuesLock::from_json(body)?),
+            body: Some(C::from_json::<PutIssuesLock>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5003,11 +5240,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(IssuesLockError::Status403(github_response.to_json()?)),
-                410 => Err(IssuesLockError::Status410(github_response.to_json()?)),
-                404 => Err(IssuesLockError::Status404(github_response.to_json()?)),
-                422 => Err(IssuesLockError::Status422(github_response.to_json()?)),
-                code => Err(IssuesLockError::Generic { code }),
+                403 => Err(IssuesLockError::Status403(github_response.to_json()?).into()),
+                410 => Err(IssuesLockError::Status410(github_response.to_json()?).into()),
+                404 => Err(IssuesLockError::Status404(github_response.to_json()?).into()),
+                422 => Err(IssuesLockError::Status422(github_response.to_json()?).into()),
+                code => Err(IssuesLockError::Generic { code }.into()),
             }
         }
     }
@@ -5021,19 +5258,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for remove_all_labels](https://docs.github.com/rest/issues/labels#remove-all-labels-from-an-issue)
     ///
     /// ---
-    pub async fn remove_all_labels_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesRemoveAllLabelsError> {
+    pub async fn remove_all_labels_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5045,10 +5282,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesRemoveAllLabelsError::Status301(github_response.to_json_async().await?)),
-                404 => Err(IssuesRemoveAllLabelsError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesRemoveAllLabelsError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesRemoveAllLabelsError::Generic { code }),
+                301 => Err(IssuesRemoveAllLabelsError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesRemoveAllLabelsError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesRemoveAllLabelsError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesRemoveAllLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -5063,7 +5300,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_all_labels(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesRemoveAllLabelsError> {
+    pub fn remove_all_labels(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -5075,7 +5312,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5087,10 +5324,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesRemoveAllLabelsError::Status301(github_response.to_json()?)),
-                404 => Err(IssuesRemoveAllLabelsError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesRemoveAllLabelsError::Status410(github_response.to_json()?)),
-                code => Err(IssuesRemoveAllLabelsError::Generic { code }),
+                301 => Err(IssuesRemoveAllLabelsError::Status301(github_response.to_json()?).into()),
+                404 => Err(IssuesRemoveAllLabelsError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesRemoveAllLabelsError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesRemoveAllLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -5104,19 +5341,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for remove_assignees](https://docs.github.com/rest/issues/assignees#remove-assignees-from-an-issue)
     ///
     /// ---
-    pub async fn remove_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<Issue, IssuesRemoveAssigneesError> {
+    pub async fn remove_assignees_async(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteIssuesRemoveAssignees::from_json(body)?),
+            body: Some(C::from_json::<DeleteIssuesRemoveAssignees>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5128,7 +5365,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesRemoveAssigneesError::Generic { code }),
+                code => Err(IssuesRemoveAssigneesError::Generic { code }.into()),
             }
         }
     }
@@ -5143,19 +5380,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<Issue, IssuesRemoveAssigneesError> {
+    pub fn remove_assignees(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveAssignees) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/assignees", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteIssuesRemoveAssignees::from_json(body)?),
+            body: Some(C::from_json::<DeleteIssuesRemoveAssignees>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5167,7 +5404,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesRemoveAssigneesError::Generic { code }),
+                code => Err(IssuesRemoveAssigneesError::Generic { code }.into()),
             }
         }
     }
@@ -5181,19 +5418,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for remove_label](https://docs.github.com/rest/issues/labels#remove-a-label-from-an-issue)
     ///
     /// ---
-    pub async fn remove_label_async(&self, owner: &str, repo: &str, issue_number: i32, name: &str) -> Result<Vec<Label>, IssuesRemoveLabelError> {
+    pub async fn remove_label_async(&self, owner: &str, repo: &str, issue_number: i32, name: &str) -> Result<Vec<Label>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5205,10 +5442,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesRemoveLabelError::Status301(github_response.to_json_async().await?)),
-                404 => Err(IssuesRemoveLabelError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesRemoveLabelError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesRemoveLabelError::Generic { code }),
+                301 => Err(IssuesRemoveLabelError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesRemoveLabelError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesRemoveLabelError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesRemoveLabelError::Generic { code }.into()),
             }
         }
     }
@@ -5223,7 +5460,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_label(&self, owner: &str, repo: &str, issue_number: i32, name: &str) -> Result<Vec<Label>, IssuesRemoveLabelError> {
+    pub fn remove_label(&self, owner: &str, repo: &str, issue_number: i32, name: &str) -> Result<Vec<Label>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, name);
 
@@ -5235,7 +5472,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5247,10 +5484,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesRemoveLabelError::Status301(github_response.to_json()?)),
-                404 => Err(IssuesRemoveLabelError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesRemoveLabelError::Status410(github_response.to_json()?)),
-                code => Err(IssuesRemoveLabelError::Generic { code }),
+                301 => Err(IssuesRemoveLabelError::Status301(github_response.to_json()?).into()),
+                404 => Err(IssuesRemoveLabelError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesRemoveLabelError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesRemoveLabelError::Generic { code }.into()),
             }
         }
     }
@@ -5264,19 +5501,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for set_labels](https://docs.github.com/rest/issues/labels#set-labels-for-an-issue)
     ///
     /// ---
-    pub async fn set_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesSetLabels) -> Result<Vec<Label>, IssuesSetLabelsError> {
+    pub async fn set_labels_async(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesSetLabels) -> Result<Vec<Label>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutIssuesSetLabels::from_json(body)?),
+            body: Some(C::from_json::<PutIssuesSetLabels>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5288,11 +5525,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesSetLabelsError::Status301(github_response.to_json_async().await?)),
-                404 => Err(IssuesSetLabelsError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesSetLabelsError::Status410(github_response.to_json_async().await?)),
-                422 => Err(IssuesSetLabelsError::Status422(github_response.to_json_async().await?)),
-                code => Err(IssuesSetLabelsError::Generic { code }),
+                301 => Err(IssuesSetLabelsError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesSetLabelsError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesSetLabelsError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesSetLabelsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(IssuesSetLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -5307,19 +5544,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_labels(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesSetLabels) -> Result<Vec<Label>, IssuesSetLabelsError> {
+    pub fn set_labels(&self, owner: &str, repo: &str, issue_number: i32, body: PutIssuesSetLabels) -> Result<Vec<Label>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/labels", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutIssuesSetLabels::from_json(body)?),
+            body: Some(C::from_json::<PutIssuesSetLabels>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5331,11 +5568,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(IssuesSetLabelsError::Status301(github_response.to_json()?)),
-                404 => Err(IssuesSetLabelsError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesSetLabelsError::Status410(github_response.to_json()?)),
-                422 => Err(IssuesSetLabelsError::Status422(github_response.to_json()?)),
-                code => Err(IssuesSetLabelsError::Generic { code }),
+                301 => Err(IssuesSetLabelsError::Status301(github_response.to_json()?).into()),
+                404 => Err(IssuesSetLabelsError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesSetLabelsError::Status410(github_response.to_json()?).into()),
+                422 => Err(IssuesSetLabelsError::Status422(github_response.to_json()?).into()),
+                code => Err(IssuesSetLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -5349,19 +5586,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for unlock](https://docs.github.com/rest/issues/issues#unlock-an-issue)
     ///
     /// ---
-    pub async fn unlock_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesUnlockError> {
+    pub async fn unlock_async(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/lock", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5373,9 +5610,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(IssuesUnlockError::Status403(github_response.to_json_async().await?)),
-                404 => Err(IssuesUnlockError::Status404(github_response.to_json_async().await?)),
-                code => Err(IssuesUnlockError::Generic { code }),
+                403 => Err(IssuesUnlockError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesUnlockError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesUnlockError::Generic { code }.into()),
             }
         }
     }
@@ -5390,7 +5627,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unlock(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), IssuesUnlockError> {
+    pub fn unlock(&self, owner: &str, repo: &str, issue_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/lock", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -5402,7 +5639,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5414,9 +5651,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(IssuesUnlockError::Status403(github_response.to_json()?)),
-                404 => Err(IssuesUnlockError::Status404(github_response.to_json()?)),
-                code => Err(IssuesUnlockError::Generic { code }),
+                403 => Err(IssuesUnlockError::Status403(github_response.to_json()?).into()),
+                404 => Err(IssuesUnlockError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesUnlockError::Generic { code }.into()),
             }
         }
     }
@@ -5437,19 +5674,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for update](https://docs.github.com/rest/issues/issues#update-an-issue)
     ///
     /// ---
-    pub async fn update_async(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesUpdate) -> Result<Issue, IssuesUpdateError> {
+    pub async fn update_async(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesUpdate) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5461,13 +5698,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesUpdateError::Status422(github_response.to_json_async().await?)),
-                503 => Err(IssuesUpdateError::Status503(github_response.to_json_async().await?)),
-                403 => Err(IssuesUpdateError::Status403(github_response.to_json_async().await?)),
-                301 => Err(IssuesUpdateError::Status301(github_response.to_json_async().await?)),
-                404 => Err(IssuesUpdateError::Status404(github_response.to_json_async().await?)),
-                410 => Err(IssuesUpdateError::Status410(github_response.to_json_async().await?)),
-                code => Err(IssuesUpdateError::Generic { code }),
+                422 => Err(IssuesUpdateError::Status422(github_response.to_json_async().await?).into()),
+                503 => Err(IssuesUpdateError::Status503(github_response.to_json_async().await?).into()),
+                403 => Err(IssuesUpdateError::Status403(github_response.to_json_async().await?).into()),
+                301 => Err(IssuesUpdateError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesUpdateError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesUpdateError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -5489,19 +5726,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesUpdate) -> Result<Issue, IssuesUpdateError> {
+    pub fn update(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesUpdate) -> Result<Issue, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5513,13 +5750,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesUpdateError::Status422(github_response.to_json()?)),
-                503 => Err(IssuesUpdateError::Status503(github_response.to_json()?)),
-                403 => Err(IssuesUpdateError::Status403(github_response.to_json()?)),
-                301 => Err(IssuesUpdateError::Status301(github_response.to_json()?)),
-                404 => Err(IssuesUpdateError::Status404(github_response.to_json()?)),
-                410 => Err(IssuesUpdateError::Status410(github_response.to_json()?)),
-                code => Err(IssuesUpdateError::Generic { code }),
+                422 => Err(IssuesUpdateError::Status422(github_response.to_json()?).into()),
+                503 => Err(IssuesUpdateError::Status503(github_response.to_json()?).into()),
+                403 => Err(IssuesUpdateError::Status403(github_response.to_json()?).into()),
+                301 => Err(IssuesUpdateError::Status301(github_response.to_json()?).into()),
+                404 => Err(IssuesUpdateError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesUpdateError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -5540,19 +5777,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for update_comment](https://docs.github.com/rest/issues/comments#update-an-issue-comment)
     ///
     /// ---
-    pub async fn update_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchIssuesUpdateComment) -> Result<IssueComment, IssuesUpdateCommentError> {
+    pub async fn update_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchIssuesUpdateComment) -> Result<IssueComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdateComment::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdateComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5564,8 +5801,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesUpdateCommentError::Status422(github_response.to_json_async().await?)),
-                code => Err(IssuesUpdateCommentError::Generic { code }),
+                422 => Err(IssuesUpdateCommentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(IssuesUpdateCommentError::Generic { code }.into()),
             }
         }
     }
@@ -5587,19 +5824,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchIssuesUpdateComment) -> Result<IssueComment, IssuesUpdateCommentError> {
+    pub fn update_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchIssuesUpdateComment) -> Result<IssueComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdateComment::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdateComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5611,8 +5848,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(IssuesUpdateCommentError::Status422(github_response.to_json()?)),
-                code => Err(IssuesUpdateCommentError::Generic { code }),
+                422 => Err(IssuesUpdateCommentError::Status422(github_response.to_json()?).into()),
+                code => Err(IssuesUpdateCommentError::Generic { code }.into()),
             }
         }
     }
@@ -5626,19 +5863,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for update_label](https://docs.github.com/rest/issues/labels#update-a-label)
     ///
     /// ---
-    pub async fn update_label_async(&self, owner: &str, repo: &str, name: &str, body: PatchIssuesUpdateLabel) -> Result<Label, IssuesUpdateLabelError> {
+    pub async fn update_label_async(&self, owner: &str, repo: &str, name: &str, body: PatchIssuesUpdateLabel) -> Result<Label, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdateLabel::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdateLabel>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5650,7 +5887,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesUpdateLabelError::Generic { code }),
+                code => Err(IssuesUpdateLabelError::Generic { code }.into()),
             }
         }
     }
@@ -5665,19 +5902,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_label(&self, owner: &str, repo: &str, name: &str, body: PatchIssuesUpdateLabel) -> Result<Label, IssuesUpdateLabelError> {
+    pub fn update_label(&self, owner: &str, repo: &str, name: &str, body: PatchIssuesUpdateLabel) -> Result<Label, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/labels/{}", super::GITHUB_BASE_API_URL, owner, repo, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdateLabel::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdateLabel>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5689,7 +5926,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesUpdateLabelError::Generic { code }),
+                code => Err(IssuesUpdateLabelError::Generic { code }.into()),
             }
         }
     }
@@ -5701,19 +5938,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     /// [GitHub API docs for update_milestone](https://docs.github.com/rest/issues/milestones#update-a-milestone)
     ///
     /// ---
-    pub async fn update_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, body: PatchIssuesUpdateMilestone) -> Result<Milestone, IssuesUpdateMilestoneError> {
+    pub async fn update_milestone_async(&self, owner: &str, repo: &str, milestone_number: i32, body: PatchIssuesUpdateMilestone) -> Result<Milestone, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones/{}", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdateMilestone::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdateMilestone>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5725,7 +5962,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesUpdateMilestoneError::Generic { code }),
+                code => Err(IssuesUpdateMilestoneError::Generic { code }.into()),
             }
         }
     }
@@ -5738,19 +5975,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_milestone(&self, owner: &str, repo: &str, milestone_number: i32, body: PatchIssuesUpdateMilestone) -> Result<Milestone, IssuesUpdateMilestoneError> {
+    pub fn update_milestone(&self, owner: &str, repo: &str, milestone_number: i32, body: PatchIssuesUpdateMilestone) -> Result<Milestone, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/milestones/{}", super::GITHUB_BASE_API_URL, owner, repo, milestone_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchIssuesUpdateMilestone::from_json(body)?),
+            body: Some(C::from_json::<PatchIssuesUpdateMilestone>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5762,7 +5999,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Issues<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(IssuesUpdateMilestoneError::Generic { code }),
+                code => Err(IssuesUpdateMilestoneError::Generic { code }.into()),
             }
         }
     }

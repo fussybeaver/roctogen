@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Licenses<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Licenses<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Licenses<C> {
+pub fn new<C: Client>(client: &C) -> Licenses<C> where AdapterError: From<<C as Client>::Err> {
     Licenses { client }
 }
 
 /// Errors for the [Get a license](Licenses::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum LicensesGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -53,42 +43,69 @@ pub enum LicensesGetError {
     Generic { code: u16 },
 }
 
+impl From<LicensesGetError> for AdapterError {
+    fn from(err: LicensesGetError) -> Self {
+        let (description, status_code) = match err {
+            LicensesGetError::Status403(_) => (String::from("Forbidden"), 403),
+            LicensesGetError::Status404(_) => (String::from("Resource not found"), 404),
+            LicensesGetError::Status304 => (String::from("Not modified"), 304),
+            LicensesGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get all commonly used licenses](Licenses::get_all_commonly_used_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum LicensesGetAllCommonlyUsedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<LicensesGetAllCommonlyUsedError> for AdapterError {
+    fn from(err: LicensesGetAllCommonlyUsedError) -> Self {
+        let (description, status_code) = match err {
+            LicensesGetAllCommonlyUsedError::Status304 => (String::from("Not modified"), 304),
+            LicensesGetAllCommonlyUsedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get the license for a repository](Licenses::get_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum LicensesGetForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<LicensesGetForRepoError> for AdapterError {
+    fn from(err: LicensesGetForRepoError) -> Self {
+        let (description, status_code) = match err {
+            LicensesGetForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            LicensesGetForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -166,7 +183,7 @@ impl LicensesGetForRepoParams {
 }
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
+impl<'api, C: Client> Licenses<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get a license
@@ -176,19 +193,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
     /// [GitHub API docs for get](https://docs.github.com/rest/licenses/licenses#get-a-license)
     ///
     /// ---
-    pub async fn get_async(&self, license: &str) -> Result<License, LicensesGetError> {
+    pub async fn get_async(&self, license: &str) -> Result<License, AdapterError> {
 
         let request_uri = format!("{}/licenses/{}", super::GITHUB_BASE_API_URL, license);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -200,10 +217,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(LicensesGetError::Status403(github_response.to_json_async().await?)),
-                404 => Err(LicensesGetError::Status404(github_response.to_json_async().await?)),
-                304 => Err(LicensesGetError::Status304),
-                code => Err(LicensesGetError::Generic { code }),
+                403 => Err(LicensesGetError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(LicensesGetError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(LicensesGetError::Status304.into()),
+                code => Err(LicensesGetError::Generic { code }.into()),
             }
         }
     }
@@ -218,7 +235,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, license: &str) -> Result<License, LicensesGetError> {
+    pub fn get(&self, license: &str) -> Result<License, AdapterError> {
 
         let request_uri = format!("{}/licenses/{}", super::GITHUB_BASE_API_URL, license);
 
@@ -230,7 +247,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -242,10 +259,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(LicensesGetError::Status403(github_response.to_json()?)),
-                404 => Err(LicensesGetError::Status404(github_response.to_json()?)),
-                304 => Err(LicensesGetError::Status304),
-                code => Err(LicensesGetError::Generic { code }),
+                403 => Err(LicensesGetError::Status403(github_response.to_json()?).into()),
+                404 => Err(LicensesGetError::Status404(github_response.to_json()?).into()),
+                304 => Err(LicensesGetError::Status304.into()),
+                code => Err(LicensesGetError::Generic { code }.into()),
             }
         }
     }
@@ -259,7 +276,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
     /// [GitHub API docs for get_all_commonly_used](https://docs.github.com/rest/licenses/licenses#get-all-commonly-used-licenses)
     ///
     /// ---
-    pub async fn get_all_commonly_used_async(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, LicensesGetAllCommonlyUsedError> {
+    pub async fn get_all_commonly_used_async(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/licenses", super::GITHUB_BASE_API_URL);
 
@@ -270,12 +287,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -287,8 +304,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(LicensesGetAllCommonlyUsedError::Status304),
-                code => Err(LicensesGetAllCommonlyUsedError::Generic { code }),
+                304 => Err(LicensesGetAllCommonlyUsedError::Status304.into()),
+                code => Err(LicensesGetAllCommonlyUsedError::Generic { code }.into()),
             }
         }
     }
@@ -303,7 +320,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_commonly_used(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, LicensesGetAllCommonlyUsedError> {
+    pub fn get_all_commonly_used(&self, query_params: Option<impl Into<LicensesGetAllCommonlyUsedParams>>) -> Result<Vec<LicenseSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/licenses", super::GITHUB_BASE_API_URL);
 
@@ -320,7 +337,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -332,8 +349,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(LicensesGetAllCommonlyUsedError::Status304),
-                code => Err(LicensesGetAllCommonlyUsedError::Generic { code }),
+                304 => Err(LicensesGetAllCommonlyUsedError::Status304.into()),
+                code => Err(LicensesGetAllCommonlyUsedError::Generic { code }.into()),
             }
         }
     }
@@ -352,7 +369,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
     /// [GitHub API docs for get_for_repo](https://docs.github.com/rest/licenses/licenses#get-the-license-for-a-repository)
     ///
     /// ---
-    pub async fn get_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<LicensesGetForRepoParams>>) -> Result<LicenseContent, LicensesGetForRepoError> {
+    pub async fn get_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<LicensesGetForRepoParams>>) -> Result<LicenseContent, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/license", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -363,12 +380,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -380,8 +397,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(LicensesGetForRepoError::Status404(github_response.to_json_async().await?)),
-                code => Err(LicensesGetForRepoError::Generic { code }),
+                404 => Err(LicensesGetForRepoError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(LicensesGetForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -401,7 +418,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<LicensesGetForRepoParams>>) -> Result<LicenseContent, LicensesGetForRepoError> {
+    pub fn get_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<LicensesGetForRepoParams>>) -> Result<LicenseContent, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/license", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -418,7 +435,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -430,8 +447,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Licenses<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(LicensesGetForRepoError::Status404(github_response.to_json()?)),
-                code => Err(LicensesGetForRepoError::Generic { code }),
+                404 => Err(LicensesGetForRepoError::Status404(github_response.to_json()?).into()),
+                code => Err(LicensesGetForRepoError::Generic { code }.into()),
             }
         }
     }

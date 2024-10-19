@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,46 +22,41 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct CodesOfConduct<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct CodesOfConduct<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> CodesOfConduct<C> {
+pub fn new<C: Client>(client: &C) -> CodesOfConduct<C> where AdapterError: From<<C as Client>::Err> {
     CodesOfConduct { client }
 }
 
 /// Errors for the [Get all codes of conduct](CodesOfConduct::get_all_codes_of_conduct_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodesOfConductGetAllCodesOfConductError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<CodesOfConductGetAllCodesOfConductError> for AdapterError {
+    fn from(err: CodesOfConductGetAllCodesOfConductError) -> Self {
+        let (description, status_code) = match err {
+            CodesOfConductGetAllCodesOfConductError::Status304 => (String::from("Not modified"), 304),
+            CodesOfConductGetAllCodesOfConductError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a code of conduct](CodesOfConduct::get_conduct_code_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodesOfConductGetConductCodeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -70,9 +65,25 @@ pub enum CodesOfConductGetConductCodeError {
     Generic { code: u16 },
 }
 
+impl From<CodesOfConductGetConductCodeError> for AdapterError {
+    fn from(err: CodesOfConductGetConductCodeError) -> Self {
+        let (description, status_code) = match err {
+            CodesOfConductGetConductCodeError::Status404(_) => (String::from("Resource not found"), 404),
+            CodesOfConductGetConductCodeError::Status304 => (String::from("Not modified"), 304),
+            CodesOfConductGetConductCodeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
+
+impl<'api, C: Client> CodesOfConduct<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get all codes of conduct
@@ -82,19 +93,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
     /// [GitHub API docs for get_all_codes_of_conduct](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-all-codes-of-conduct)
     ///
     /// ---
-    pub async fn get_all_codes_of_conduct_async(&self) -> Result<Vec<CodeOfConduct>, CodesOfConductGetAllCodesOfConductError> {
+    pub async fn get_all_codes_of_conduct_async(&self) -> Result<Vec<CodeOfConduct>, AdapterError> {
 
         let request_uri = format!("{}/codes_of_conduct", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -106,8 +117,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodesOfConductGetAllCodesOfConductError::Status304),
-                code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }),
+                304 => Err(CodesOfConductGetAllCodesOfConductError::Status304.into()),
+                code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }.into()),
             }
         }
     }
@@ -122,7 +133,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_codes_of_conduct(&self) -> Result<Vec<CodeOfConduct>, CodesOfConductGetAllCodesOfConductError> {
+    pub fn get_all_codes_of_conduct(&self) -> Result<Vec<CodeOfConduct>, AdapterError> {
 
         let request_uri = format!("{}/codes_of_conduct", super::GITHUB_BASE_API_URL);
 
@@ -134,7 +145,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -146,8 +157,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodesOfConductGetAllCodesOfConductError::Status304),
-                code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }),
+                304 => Err(CodesOfConductGetAllCodesOfConductError::Status304.into()),
+                code => Err(CodesOfConductGetAllCodesOfConductError::Generic { code }.into()),
             }
         }
     }
@@ -161,19 +172,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
     /// [GitHub API docs for get_conduct_code](https://docs.github.com/rest/codes-of-conduct/codes-of-conduct#get-a-code-of-conduct)
     ///
     /// ---
-    pub async fn get_conduct_code_async(&self, key: &str) -> Result<CodeOfConduct, CodesOfConductGetConductCodeError> {
+    pub async fn get_conduct_code_async(&self, key: &str) -> Result<CodeOfConduct, AdapterError> {
 
         let request_uri = format!("{}/codes_of_conduct/{}", super::GITHUB_BASE_API_URL, key);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -185,9 +196,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodesOfConductGetConductCodeError::Status404(github_response.to_json_async().await?)),
-                304 => Err(CodesOfConductGetConductCodeError::Status304),
-                code => Err(CodesOfConductGetConductCodeError::Generic { code }),
+                404 => Err(CodesOfConductGetConductCodeError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(CodesOfConductGetConductCodeError::Status304.into()),
+                code => Err(CodesOfConductGetConductCodeError::Generic { code }.into()),
             }
         }
     }
@@ -202,7 +213,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_conduct_code(&self, key: &str) -> Result<CodeOfConduct, CodesOfConductGetConductCodeError> {
+    pub fn get_conduct_code(&self, key: &str) -> Result<CodeOfConduct, AdapterError> {
 
         let request_uri = format!("{}/codes_of_conduct/{}", super::GITHUB_BASE_API_URL, key);
 
@@ -214,7 +225,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -226,9 +237,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodesOfConduct<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodesOfConductGetConductCodeError::Status404(github_response.to_json()?)),
-                304 => Err(CodesOfConductGetConductCodeError::Status304),
-                code => Err(CodesOfConductGetConductCodeError::Generic { code }),
+                404 => Err(CodesOfConductGetConductCodeError::Status404(github_response.to_json()?).into()),
+                304 => Err(CodesOfConductGetConductCodeError::Status304.into()),
+                code => Err(CodesOfConductGetConductCodeError::Generic { code }.into()),
             }
         }
     }

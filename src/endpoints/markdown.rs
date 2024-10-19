@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,55 +22,65 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Markdown<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Markdown<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Markdown<C> {
+pub fn new<C: Client>(client: &C) -> Markdown<C> where AdapterError: From<<C as Client>::Err> {
     Markdown { client }
 }
 
 /// Errors for the [Render a Markdown document](Markdown::render_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MarkdownRenderError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MarkdownRenderError> for AdapterError {
+    fn from(err: MarkdownRenderError) -> Self {
+        let (description, status_code) = match err {
+            MarkdownRenderError::Status304 => (String::from("Not modified"), 304),
+            MarkdownRenderError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Render a Markdown document in raw mode](Markdown::render_raw_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MarkdownRenderRawError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<MarkdownRenderRawError> for AdapterError {
+    fn from(err: MarkdownRenderRawError) -> Self {
+        let (description, status_code) = match err {
+            MarkdownRenderRawError::Status304 => (String::from("Not modified"), 304),
+            MarkdownRenderRawError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
+
+impl<'api, C: Client> Markdown<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Render a Markdown document
@@ -78,19 +88,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
     /// [GitHub API docs for render](https://docs.github.com/rest/markdown/markdown#render-a-markdown-document)
     ///
     /// ---
-    pub async fn render_async(&self, body: PostMarkdownRender) -> Result<String, MarkdownRenderError> {
+    pub async fn render_async(&self, body: PostMarkdownRender) -> Result<String, AdapterError> {
 
         let request_uri = format!("{}/markdown", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostMarkdownRender::from_json(body)?),
+            body: Some(C::from_json::<PostMarkdownRender>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -102,8 +112,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(MarkdownRenderError::Status304),
-                code => Err(MarkdownRenderError::Generic { code }),
+                304 => Err(MarkdownRenderError::Status304.into()),
+                code => Err(MarkdownRenderError::Generic { code }.into()),
             }
         }
     }
@@ -116,19 +126,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn render(&self, body: PostMarkdownRender) -> Result<String, MarkdownRenderError> {
+    pub fn render(&self, body: PostMarkdownRender) -> Result<String, AdapterError> {
 
         let request_uri = format!("{}/markdown", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostMarkdownRender::from_json(body)?),
+            body: Some(C::from_json::<PostMarkdownRender>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -140,8 +150,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(MarkdownRenderError::Status304),
-                code => Err(MarkdownRenderError::Generic { code }),
+                304 => Err(MarkdownRenderError::Status304.into()),
+                code => Err(MarkdownRenderError::Generic { code }.into()),
             }
         }
     }
@@ -155,19 +165,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
     /// [GitHub API docs for render_raw](https://docs.github.com/rest/markdown/markdown#render-a-markdown-document-in-raw-mode)
     ///
     /// ---
-    pub async fn render_raw_async(&self, body: String) -> Result<String, MarkdownRenderRawError> {
+    pub async fn render_raw_async(&self, body: String) -> Result<String, AdapterError> {
 
         let request_uri = format!("{}/markdown/raw", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(String::from_json(body)?),
+            body: Some(C::from_json::<String>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -179,8 +189,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(MarkdownRenderRawError::Status304),
-                code => Err(MarkdownRenderRawError::Generic { code }),
+                304 => Err(MarkdownRenderRawError::Status304.into()),
+                code => Err(MarkdownRenderRawError::Generic { code }.into()),
             }
         }
     }
@@ -195,19 +205,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_raw(&self, body: String) -> Result<String, MarkdownRenderRawError> {
+    pub fn render_raw(&self, body: String) -> Result<String, AdapterError> {
 
         let request_uri = format!("{}/markdown/raw", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(String::from_json(body)?),
+            body: Some(C::from_json::<String>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -219,8 +229,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Markdown<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(MarkdownRenderRawError::Status304),
-                code => Err(MarkdownRenderRawError::Generic { code }),
+                304 => Err(MarkdownRenderRawError::Status304.into()),
+                code => Err(MarkdownRenderRawError::Generic { code }.into()),
             }
         }
     }

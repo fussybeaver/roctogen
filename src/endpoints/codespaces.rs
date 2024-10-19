@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Codespaces<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Codespaces<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Codespaces<C> {
+pub fn new<C: Client>(client: &C) -> Codespaces<C> where AdapterError: From<<C as Client>::Err> {
     Codespaces { client }
 }
 
 /// Errors for the [Add a selected repository to a user secret](Codespaces::add_repository_for_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesAddRepositoryForSecretForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -55,19 +45,27 @@ pub enum CodespacesAddRepositoryForSecretForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesAddRepositoryForSecretForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesAddRepositoryForSecretForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesAddRepositoryForSecretForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add selected repository to an organization secret](Codespaces::add_selected_repo_to_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesAddSelectedRepoToOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict when visibility type is not set to selected")]
@@ -78,19 +76,26 @@ pub enum CodespacesAddSelectedRepoToOrgSecretError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesAddSelectedRepoToOrgSecretError> for AdapterError {
+    fn from(err: CodespacesAddSelectedRepoToOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesAddSelectedRepoToOrgSecretError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesAddSelectedRepoToOrgSecretError::Status409 => (String::from("Conflict when visibility type is not set to selected"), 409),
+            CodespacesAddSelectedRepoToOrgSecretError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesAddSelectedRepoToOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if permissions defined by a devcontainer have been accepted by the authenticated user](Codespaces::check_permissions_for_devcontainer_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCheckPermissionsForDevcontainerError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -105,19 +110,28 @@ pub enum CodespacesCheckPermissionsForDevcontainerError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesCheckPermissionsForDevcontainerError> for AdapterError {
+    fn from(err: CodespacesCheckPermissionsForDevcontainerError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCheckPermissionsForDevcontainerError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesCheckPermissionsForDevcontainerError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesCheckPermissionsForDevcontainerError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesCheckPermissionsForDevcontainerError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesCheckPermissionsForDevcontainerError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodespacesCheckPermissionsForDevcontainerError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List machine types for a codespace](Codespaces::codespace_machines_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCodespaceMachinesForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -132,19 +146,28 @@ pub enum CodespacesCodespaceMachinesForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesCodespaceMachinesForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesCodespaceMachinesForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCodespaceMachinesForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesCodespaceMachinesForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a codespace for the authenticated user](Codespaces::create_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCreateForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the codespace creation partially failed but is being retried in the background")]
     Status202(Codespace),
     #[error("Requires authentication")]
@@ -159,19 +182,28 @@ pub enum CodespacesCreateForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesCreateForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesCreateForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCreateForAuthenticatedUserError::Status202(_) => (String::from("Response when the codespace creation partially failed but is being retried in the background"), 202),
+            CodespacesCreateForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesCreateForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesCreateForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesCreateForAuthenticatedUserError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodespacesCreateForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update an organization secret](Codespaces::create_or_update_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCreateOrUpdateOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when updating a secret")]
     Status204,
     #[error("Resource not found")]
@@ -182,38 +214,50 @@ pub enum CodespacesCreateOrUpdateOrgSecretError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesCreateOrUpdateOrgSecretError> for AdapterError {
+    fn from(err: CodespacesCreateOrUpdateOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCreateOrUpdateOrgSecretError::Status204 => (String::from("Response when updating a secret"), 204),
+            CodespacesCreateOrUpdateOrgSecretError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesCreateOrUpdateOrgSecretError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesCreateOrUpdateOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update a repository secret](Codespaces::create_or_update_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCreateOrUpdateRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when updating a secret")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<CodespacesCreateOrUpdateRepoSecretError> for AdapterError {
+    fn from(err: CodespacesCreateOrUpdateRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCreateOrUpdateRepoSecretError::Status204 => (String::from("Response when updating a secret"), 204),
+            CodespacesCreateOrUpdateRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update a secret for the authenticated user](Codespaces::create_or_update_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCreateOrUpdateSecretForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response after successfully updating a secret")]
     Status204,
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -224,19 +268,26 @@ pub enum CodespacesCreateOrUpdateSecretForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesCreateOrUpdateSecretForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesCreateOrUpdateSecretForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status204 => (String::from("Response after successfully updating a secret"), 204),
+            CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a codespace from a pull request](Codespaces::create_with_pr_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCreateWithPrForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the codespace creation partially failed but is being retried in the background")]
     Status202(Codespace),
     #[error("Requires authentication")]
@@ -249,21 +300,30 @@ pub enum CodespacesCreateWithPrForAuthenticatedUserError {
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesCreateWithPrForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesCreateWithPrForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCreateWithPrForAuthenticatedUserError::Status202(_) => (String::from("Response when the codespace creation partially failed but is being retried in the background"), 202),
+            CodespacesCreateWithPrForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesCreateWithPrForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesCreateWithPrForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesCreateWithPrForAuthenticatedUserError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodespacesCreateWithPrForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a codespace in a repository](Codespaces::create_with_repo_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesCreateWithRepoForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when the codespace creation partially failed but is being retried in the background")]
     Status202(Codespace),
     #[error("Bad Request")]
@@ -280,19 +340,29 @@ pub enum CodespacesCreateWithRepoForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesCreateWithRepoForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesCreateWithRepoForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesCreateWithRepoForAuthenticatedUserError::Status202(_) => (String::from("Response when the codespace creation partially failed but is being retried in the background"), 202),
+            CodespacesCreateWithRepoForAuthenticatedUserError::Status400(_) => (String::from("Bad Request"), 400),
+            CodespacesCreateWithRepoForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesCreateWithRepoForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesCreateWithRepoForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesCreateWithRepoForAuthenticatedUserError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove users from Codespaces access for an organization](Codespaces::delete_codespaces_access_users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesDeleteCodespacesAccessUsersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Users are neither members nor collaborators of this organization.")]
@@ -307,19 +377,28 @@ pub enum CodespacesDeleteCodespacesAccessUsersError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesDeleteCodespacesAccessUsersError> for AdapterError {
+    fn from(err: CodespacesDeleteCodespacesAccessUsersError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesDeleteCodespacesAccessUsersError::Status304 => (String::from("Not modified"), 304),
+            CodespacesDeleteCodespacesAccessUsersError::Status400 => (String::from("Users are neither members nor collaborators of this organization."), 400),
+            CodespacesDeleteCodespacesAccessUsersError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesDeleteCodespacesAccessUsersError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesDeleteCodespacesAccessUsersError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesDeleteCodespacesAccessUsersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a codespace for the authenticated user](Codespaces::delete_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesDeleteForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -332,21 +411,30 @@ pub enum CodespacesDeleteForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesDeleteForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesDeleteForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesDeleteForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            CodespacesDeleteForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesDeleteForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesDeleteForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesDeleteForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesDeleteForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a codespace from the organization](Codespaces::delete_from_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesDeleteFromOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -361,72 +449,94 @@ pub enum CodespacesDeleteFromOrganizationError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesDeleteFromOrganizationError> for AdapterError {
+    fn from(err: CodespacesDeleteFromOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesDeleteFromOrganizationError::Status304 => (String::from("Not modified"), 304),
+            CodespacesDeleteFromOrganizationError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesDeleteFromOrganizationError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesDeleteFromOrganizationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesDeleteFromOrganizationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesDeleteFromOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete an organization secret](Codespaces::delete_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesDeleteOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<CodespacesDeleteOrgSecretError> for AdapterError {
+    fn from(err: CodespacesDeleteOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesDeleteOrgSecretError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesDeleteOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a repository secret](Codespaces::delete_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesDeleteRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesDeleteRepoSecretError> for AdapterError {
+    fn from(err: CodespacesDeleteRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesDeleteRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a secret for the authenticated user](Codespaces::delete_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesDeleteSecretForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesDeleteSecretForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesDeleteSecretForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesDeleteSecretForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Export a codespace for the authenticated user](Codespaces::export_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesExportForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -441,19 +551,28 @@ pub enum CodespacesExportForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesExportForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesExportForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesExportForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesExportForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesExportForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesExportForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesExportForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesExportForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List codespaces for a user in organization](Codespaces::get_codespaces_for_user_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetCodespacesForUserInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -466,40 +585,54 @@ pub enum CodespacesGetCodespacesForUserInOrgError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesGetCodespacesForUserInOrgError> for AdapterError {
+    fn from(err: CodespacesGetCodespacesForUserInOrgError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetCodespacesForUserInOrgError::Status304 => (String::from("Not modified"), 304),
+            CodespacesGetCodespacesForUserInOrgError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesGetCodespacesForUserInOrgError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesGetCodespacesForUserInOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesGetCodespacesForUserInOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesGetCodespacesForUserInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get details about a codespace export](Codespaces::get_export_details_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetExportDetailsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<CodespacesGetExportDetailsForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesGetExportDetailsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetExportDetailsForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a codespace for the authenticated user](Codespaces::get_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -514,121 +647,154 @@ pub enum CodespacesGetForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesGetForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesGetForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            CodespacesGetForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesGetForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesGetForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesGetForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesGetForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get an organization public key](Codespaces::get_org_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetOrgPublicKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesGetOrgPublicKeyError> for AdapterError {
+    fn from(err: CodespacesGetOrgPublicKeyError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetOrgPublicKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization secret](Codespaces::get_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesGetOrgSecretError> for AdapterError {
+    fn from(err: CodespacesGetOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get public key for the authenticated user](Codespaces::get_public_key_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetPublicKeyForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesGetPublicKeyForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesGetPublicKeyForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetPublicKeyForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository public key](Codespaces::get_repo_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetRepoPublicKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesGetRepoPublicKeyError> for AdapterError {
+    fn from(err: CodespacesGetRepoPublicKeyError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetRepoPublicKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository secret](Codespaces::get_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesGetRepoSecretError> for AdapterError {
+    fn from(err: CodespacesGetRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a secret for the authenticated user](Codespaces::get_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesGetSecretForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesGetSecretForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesGetSecretForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesGetSecretForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List devcontainer configurations in a repository for the authenticated user](Codespaces::list_devcontainers_in_repository_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListDevcontainersInRepositoryForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Bad Request")]
@@ -643,19 +809,28 @@ pub enum CodespacesListDevcontainersInRepositoryForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesListDevcontainersInRepositoryForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesListDevcontainersInRepositoryForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(_) => (String::from("Bad Request"), 400),
+            CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List codespaces for the authenticated user](Codespaces::list_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -668,21 +843,30 @@ pub enum CodespacesListForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesListForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            CodespacesListForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesListForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesListForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesListForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesListForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List codespaces for the organization](Codespaces::list_in_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListInOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -695,21 +879,30 @@ pub enum CodespacesListInOrganizationError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListInOrganizationError> for AdapterError {
+    fn from(err: CodespacesListInOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListInOrganizationError::Status304 => (String::from("Not modified"), 304),
+            CodespacesListInOrganizationError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesListInOrganizationError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesListInOrganizationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesListInOrganizationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesListInOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List codespaces in a repository for the authenticated user](Codespaces::list_in_repository_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListInRepositoryForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -720,55 +913,71 @@ pub enum CodespacesListInRepositoryForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListInRepositoryForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesListInRepositoryForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListInRepositoryForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesListInRepositoryForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesListInRepositoryForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesListInRepositoryForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesListInRepositoryForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organization secrets](Codespaces::list_org_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListOrgSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListOrgSecretsError> for AdapterError {
+    fn from(err: CodespacesListOrgSecretsError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListOrgSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository secrets](Codespaces::list_repo_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListRepoSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListRepoSecretsError> for AdapterError {
+    fn from(err: CodespacesListRepoSecretsError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListRepoSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List selected repositories for a user secret](Codespaces::list_repositories_for_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListRepositoriesForSecretForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -779,57 +988,74 @@ pub enum CodespacesListRepositoriesForSecretForAuthenticatedUserError {
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListRepositoriesForSecretForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesListRepositoriesForSecretForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesListRepositoriesForSecretForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List secrets for the authenticated user](Codespaces::list_secrets_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListSecretsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListSecretsForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesListSecretsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListSecretsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List selected repositories for an organization secret](Codespaces::list_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesListSelectedReposForOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesListSelectedReposForOrgSecretError> for AdapterError {
+    fn from(err: CodespacesListSelectedReposForOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesListSelectedReposForOrgSecretError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesListSelectedReposForOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get default attributes for a codespace](Codespaces::pre_flight_with_repo_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesPreFlightWithRepoForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -838,21 +1064,28 @@ pub enum CodespacesPreFlightWithRepoForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesPreFlightWithRepoForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesPreFlightWithRepoForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a repository from an unpublished codespace](Codespaces::publish_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesPublishForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -863,21 +1096,29 @@ pub enum CodespacesPublishForAuthenticatedUserError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesPublishForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesPublishForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesPublishForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesPublishForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesPublishForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesPublishForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesPublishForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a selected repository from a user secret](Codespaces::remove_repository_for_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesRemoveRepositoryForSecretForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -888,21 +1129,29 @@ pub enum CodespacesRemoveRepositoryForSecretForAuthenticatedUserError {
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesRemoveRepositoryForSecretForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesRemoveRepositoryForSecretForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove selected repository from an organization secret](Codespaces::remove_selected_repo_from_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesRemoveSelectedRepoFromOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict when visibility type not set to selected")]
@@ -911,21 +1160,28 @@ pub enum CodespacesRemoveSelectedRepoFromOrgSecretError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesRemoveSelectedRepoFromOrgSecretError> for AdapterError {
+    fn from(err: CodespacesRemoveSelectedRepoFromOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesRemoveSelectedRepoFromOrgSecretError::Status409 => (String::from("Conflict when visibility type not set to selected"), 409),
+            CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List available machine types for a repository](Codespaces::repo_machines_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesRepoMachinesForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -938,21 +1194,30 @@ pub enum CodespacesRepoMachinesForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesRepoMachinesForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesRepoMachinesForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesRepoMachinesForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            CodespacesRepoMachinesForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesRepoMachinesForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesRepoMachinesForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesRepoMachinesForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesRepoMachinesForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Manage access control for organization codespaces](Codespaces::set_codespaces_access_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesSetCodespacesAccessError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Users are neither members nor collaborators of this organization.")]
@@ -965,21 +1230,30 @@ pub enum CodespacesSetCodespacesAccessError {
     Status500(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesSetCodespacesAccessError> for AdapterError {
+    fn from(err: CodespacesSetCodespacesAccessError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesSetCodespacesAccessError::Status304 => (String::from("Not modified"), 304),
+            CodespacesSetCodespacesAccessError::Status400 => (String::from("Users are neither members nor collaborators of this organization."), 400),
+            CodespacesSetCodespacesAccessError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesSetCodespacesAccessError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesSetCodespacesAccessError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesSetCodespacesAccessError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Add users to Codespaces access for an organization](Codespaces::set_codespaces_access_users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesSetCodespacesAccessUsersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Users are neither members nor collaborators of this organization.")]
@@ -994,19 +1268,28 @@ pub enum CodespacesSetCodespacesAccessUsersError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesSetCodespacesAccessUsersError> for AdapterError {
+    fn from(err: CodespacesSetCodespacesAccessUsersError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesSetCodespacesAccessUsersError::Status304 => (String::from("Not modified"), 304),
+            CodespacesSetCodespacesAccessUsersError::Status400 => (String::from("Users are neither members nor collaborators of this organization."), 400),
+            CodespacesSetCodespacesAccessUsersError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesSetCodespacesAccessUsersError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            CodespacesSetCodespacesAccessUsersError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesSetCodespacesAccessUsersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set selected repositories for a user secret](Codespaces::set_repositories_for_secret_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesSetRepositoriesForSecretForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -1019,19 +1302,27 @@ pub enum CodespacesSetRepositoriesForSecretForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesSetRepositoriesForSecretForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesSetRepositoriesForSecretForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set selected repositories for an organization secret](Codespaces::set_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesSetSelectedReposForOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict when visibility type not set to selected")]
@@ -1040,19 +1331,25 @@ pub enum CodespacesSetSelectedReposForOrgSecretError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesSetSelectedReposForOrgSecretError> for AdapterError {
+    fn from(err: CodespacesSetSelectedReposForOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesSetSelectedReposForOrgSecretError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesSetSelectedReposForOrgSecretError::Status409 => (String::from("Conflict when visibility type not set to selected"), 409),
+            CodespacesSetSelectedReposForOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Start a codespace for the authenticated user](Codespaces::start_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesStartForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -1073,19 +1370,31 @@ pub enum CodespacesStartForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesStartForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesStartForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesStartForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            CodespacesStartForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesStartForAuthenticatedUserError::Status400(_) => (String::from("Bad Request"), 400),
+            CodespacesStartForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesStartForAuthenticatedUserError::Status402(_) => (String::from("Payment required"), 402),
+            CodespacesStartForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesStartForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesStartForAuthenticatedUserError::Status409(_) => (String::from("Conflict"), 409),
+            CodespacesStartForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Stop a codespace for the authenticated user](Codespaces::stop_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesStopForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Requires authentication")]
@@ -1098,19 +1407,27 @@ pub enum CodespacesStopForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesStopForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesStopForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesStopForAuthenticatedUserError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesStopForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesStopForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesStopForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesStopForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Stop a codespace for an organization user](Codespaces::stop_in_organization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesStopInOrganizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Internal Error")]
@@ -1125,19 +1442,28 @@ pub enum CodespacesStopInOrganizationError {
     Generic { code: u16 },
 }
 
+impl From<CodespacesStopInOrganizationError> for AdapterError {
+    fn from(err: CodespacesStopInOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesStopInOrganizationError::Status304 => (String::from("Not modified"), 304),
+            CodespacesStopInOrganizationError::Status500(_) => (String::from("Internal Error"), 500),
+            CodespacesStopInOrganizationError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesStopInOrganizationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesStopInOrganizationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesStopInOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a codespace for the authenticated user](Codespaces::update_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodespacesUpdateForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -1146,6 +1472,23 @@ pub enum CodespacesUpdateForAuthenticatedUserError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodespacesUpdateForAuthenticatedUserError> for AdapterError {
+    fn from(err: CodespacesUpdateForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            CodespacesUpdateForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            CodespacesUpdateForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            CodespacesUpdateForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            CodespacesUpdateForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -1629,7 +1972,7 @@ impl<'req> CodespacesRepoMachinesForAuthenticatedUserParams<'req> {
 }
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
+impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add a selected repository to a user secret
@@ -1643,19 +1986,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for add_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#add-a-selected-repository-to-a-user-secret)
     ///
     /// ---
-    pub async fn add_repository_for_secret_for_authenticated_user_async(&self, secret_name: &str, repository_id: i32) -> Result<(), CodespacesAddRepositoryForSecretForAuthenticatedUserError> {
+    pub async fn add_repository_for_secret_for_authenticated_user_async(&self, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1667,11 +2010,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                code => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1690,7 +2033,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_repository_for_secret_for_authenticated_user(&self, secret_name: &str, repository_id: i32) -> Result<(), CodespacesAddRepositoryForSecretForAuthenticatedUserError> {
+    pub fn add_repository_for_secret_for_authenticated_user(&self, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, secret_name, repository_id);
 
@@ -1702,7 +2045,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1714,11 +2057,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                code => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                500 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                code => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1733,19 +2076,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
-    pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesAddSelectedRepoToOrgSecretError> {
+    pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1757,10 +2100,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json_async().await?)),
-                409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409),
-                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(github_response.to_json_async().await?)),
-                code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }),
+                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409.into()),
+                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1776,7 +2119,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesAddSelectedRepoToOrgSecretError> {
+    pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
@@ -1788,7 +2131,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1800,10 +2143,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json()?)),
-                409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409),
-                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(github_response.to_json()?)),
-                code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }),
+                404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status409.into()),
+                422 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status422(github_response.to_json()?).into()),
+                code => Err(CodespacesAddSelectedRepoToOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1819,7 +2162,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for check_permissions_for_devcontainer](https://docs.github.com/rest/codespaces/codespaces#check-if-permissions-defined-by-a-devcontainer-have-been-accepted-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn check_permissions_for_devcontainer_async(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesCheckPermissionsForDevcontainerParams<'api>>) -> Result<CodespacesPermissionsCheckForDevcontainer, CodespacesCheckPermissionsForDevcontainerError> {
+    pub async fn check_permissions_for_devcontainer_async(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesCheckPermissionsForDevcontainerParams<'api>>) -> Result<CodespacesPermissionsCheckForDevcontainer, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/permissions_check", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1828,12 +2171,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1845,12 +2188,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(github_response.to_json_async().await?)),
-                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }),
+                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(github_response.to_json_async().await?).into()),
+                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }.into()),
             }
         }
     }
@@ -1867,7 +2210,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_permissions_for_devcontainer(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesCheckPermissionsForDevcontainerParams<'api>>) -> Result<CodespacesPermissionsCheckForDevcontainer, CodespacesCheckPermissionsForDevcontainerError> {
+    pub fn check_permissions_for_devcontainer(&self, owner: &str, repo: &str, query_params: impl Into<CodespacesCheckPermissionsForDevcontainerParams<'api>>) -> Result<CodespacesPermissionsCheckForDevcontainer, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/permissions_check", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1882,7 +2225,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1894,12 +2237,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(github_response.to_json()?)),
-                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(github_response.to_json()?)),
-                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(github_response.to_json()?)),
-                code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }),
+                401 => Err(CodespacesCheckPermissionsForDevcontainerError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesCheckPermissionsForDevcontainerError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesCheckPermissionsForDevcontainerError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodespacesCheckPermissionsForDevcontainerError::Status422(github_response.to_json()?).into()),
+                503 => Err(CodespacesCheckPermissionsForDevcontainerError::Status503(github_response.to_json()?).into()),
+                code => Err(CodespacesCheckPermissionsForDevcontainerError::Generic { code }.into()),
             }
         }
     }
@@ -1915,19 +2258,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for codespace_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-machine-types-for-a-codespace)
     ///
     /// ---
-    pub async fn codespace_machines_for_authenticated_user_async(&self, codespace_name: &str) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesCodespaceMachinesForAuthenticatedUserError> {
+    pub async fn codespace_machines_for_authenticated_user_async(&self, codespace_name: &str) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/machines", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1939,12 +2282,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1961,7 +2304,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn codespace_machines_for_authenticated_user(&self, codespace_name: &str) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesCodespaceMachinesForAuthenticatedUserError> {
+    pub fn codespace_machines_for_authenticated_user(&self, codespace_name: &str) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/machines", super::GITHUB_BASE_API_URL, codespace_name);
 
@@ -1973,7 +2316,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1985,12 +2328,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesCodespaceMachinesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2008,19 +2351,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_for_authenticated_user_async(&self, body: PostCodespacesCreateForAuthenticatedUser) -> Result<Codespace, CodespacesCreateForAuthenticatedUserError> {
+    pub async fn create_for_authenticated_user_async(&self, body: PostCodespacesCreateForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesCreateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesCreateForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2032,12 +2375,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(github_response.to_json_async().await?)),
-                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }),
+                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2056,19 +2399,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_authenticated_user(&self, body: PostCodespacesCreateForAuthenticatedUser) -> Result<Codespace, CodespacesCreateForAuthenticatedUserError> {
+    pub fn create_for_authenticated_user(&self, body: PostCodespacesCreateForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesCreateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesCreateForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2080,12 +2423,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(github_response.to_json()?)),
-                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(github_response.to_json()?)),
-                code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }),
+                202 => Err(CodespacesCreateForAuthenticatedUserError::Status202(github_response.to_json()?).into()),
+                401 => Err(CodespacesCreateForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesCreateForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesCreateForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodespacesCreateForAuthenticatedUserError::Status503(github_response.to_json()?).into()),
+                code => Err(CodespacesCreateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2102,19 +2445,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#create-or-update-an-organization-secret)
     ///
     /// ---
-    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateOrgSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateOrgSecretError> {
+    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateOrgSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesCreateOrUpdateOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesCreateOrUpdateOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2126,10 +2469,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204),
-                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(github_response.to_json_async().await?)),
-                code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }),
+                204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204.into()),
+                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2147,19 +2490,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateOrgSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateOrgSecretError> {
+    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateOrgSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesCreateOrUpdateOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesCreateOrUpdateOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2171,10 +2514,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204),
-                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(github_response.to_json()?)),
-                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(github_response.to_json()?)),
-                code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }),
+                204 => Err(CodespacesCreateOrUpdateOrgSecretError::Status204.into()),
+                404 => Err(CodespacesCreateOrUpdateOrgSecretError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodespacesCreateOrUpdateOrgSecretError::Status422(github_response.to_json()?).into()),
+                code => Err(CodespacesCreateOrUpdateOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2191,19 +2534,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#create-or-update-a-repository-secret)
     ///
     /// ---
-    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateRepoSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateRepoSecretError> {
+    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateRepoSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesCreateOrUpdateRepoSecret::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesCreateOrUpdateRepoSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2215,8 +2558,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204),
-                code => Err(CodespacesCreateOrUpdateRepoSecretError::Generic { code }),
+                204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204.into()),
+                code => Err(CodespacesCreateOrUpdateRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2234,19 +2577,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateRepoSecret) -> Result<EmptyObject, CodespacesCreateOrUpdateRepoSecretError> {
+    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutCodespacesCreateOrUpdateRepoSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesCreateOrUpdateRepoSecret::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesCreateOrUpdateRepoSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2258,8 +2601,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204),
-                code => Err(CodespacesCreateOrUpdateRepoSecretError::Generic { code }),
+                204 => Err(CodespacesCreateOrUpdateRepoSecretError::Status204.into()),
+                code => Err(CodespacesCreateOrUpdateRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2278,19 +2621,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for create_or_update_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#create-or-update-a-secret-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn create_or_update_secret_for_authenticated_user_async(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<EmptyObject, CodespacesCreateOrUpdateSecretForAuthenticatedUserError> {
+    pub async fn create_or_update_secret_for_authenticated_user_async(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesCreateOrUpdateSecretForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesCreateOrUpdateSecretForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2302,10 +2645,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status204),
-                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Generic { code }),
+                204 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status204.into()),
+                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2325,19 +2668,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_secret_for_authenticated_user(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<EmptyObject, CodespacesCreateOrUpdateSecretForAuthenticatedUserError> {
+    pub fn create_or_update_secret_for_authenticated_user(&self, secret_name: &str, body: PutCodespacesCreateOrUpdateSecretForAuthenticatedUser) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesCreateOrUpdateSecretForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesCreateOrUpdateSecretForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2349,10 +2692,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status204),
-                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Generic { code }),
+                204 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status204.into()),
+                422 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                404 => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesCreateOrUpdateSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2368,19 +2711,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for create_with_pr_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-from-a-pull-request)
     ///
     /// ---
-    pub async fn create_with_pr_for_authenticated_user_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostCodespacesCreateWithPrForAuthenticatedUser) -> Result<Codespace, CodespacesCreateWithPrForAuthenticatedUserError> {
+    pub async fn create_with_pr_for_authenticated_user_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostCodespacesCreateWithPrForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/codespaces", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesCreateWithPrForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesCreateWithPrForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2392,12 +2735,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(github_response.to_json_async().await?)),
-                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }),
+                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2414,19 +2757,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_with_pr_for_authenticated_user(&self, owner: &str, repo: &str, pull_number: i32, body: PostCodespacesCreateWithPrForAuthenticatedUser) -> Result<Codespace, CodespacesCreateWithPrForAuthenticatedUserError> {
+    pub fn create_with_pr_for_authenticated_user(&self, owner: &str, repo: &str, pull_number: i32, body: PostCodespacesCreateWithPrForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/codespaces", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesCreateWithPrForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesCreateWithPrForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2438,12 +2781,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(github_response.to_json()?)),
-                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(github_response.to_json()?)),
-                code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }),
+                202 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status202(github_response.to_json()?).into()),
+                401 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodespacesCreateWithPrForAuthenticatedUserError::Status503(github_response.to_json()?).into()),
+                code => Err(CodespacesCreateWithPrForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2459,19 +2802,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for create_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-codespace-in-a-repository)
     ///
     /// ---
-    pub async fn create_with_repo_for_authenticated_user_async(&self, owner: &str, repo: &str, body: PostCodespacesCreateWithRepoForAuthenticatedUser) -> Result<Codespace, CodespacesCreateWithRepoForAuthenticatedUserError> {
+    pub async fn create_with_repo_for_authenticated_user_async(&self, owner: &str, repo: &str, body: PostCodespacesCreateWithRepoForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesCreateWithRepoForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesCreateWithRepoForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2483,13 +2826,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(github_response.to_json_async().await?)),
-                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(github_response.to_json_async().await?)),
-                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(github_response.to_json_async().await?)),
-                code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }),
+                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(github_response.to_json_async().await?).into()),
+                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2506,19 +2849,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_with_repo_for_authenticated_user(&self, owner: &str, repo: &str, body: PostCodespacesCreateWithRepoForAuthenticatedUser) -> Result<Codespace, CodespacesCreateWithRepoForAuthenticatedUserError> {
+    pub fn create_with_repo_for_authenticated_user(&self, owner: &str, repo: &str, body: PostCodespacesCreateWithRepoForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesCreateWithRepoForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesCreateWithRepoForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2530,13 +2873,13 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(github_response.to_json()?)),
-                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(github_response.to_json()?)),
-                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(github_response.to_json()?)),
-                code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }),
+                202 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status202(github_response.to_json()?).into()),
+                400 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status400(github_response.to_json()?).into()),
+                401 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Status503(github_response.to_json()?).into()),
+                code => Err(CodespacesCreateWithRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2555,19 +2898,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for delete_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#remove-users-from-codespaces-access-for-an-organization)
     ///
     /// ---
-    pub async fn delete_codespaces_access_users_async(&self, org: &str, body: DeleteCodespacesDeleteCodespacesAccessUsers) -> Result<(), CodespacesDeleteCodespacesAccessUsersError> {
+    pub async fn delete_codespaces_access_users_async(&self, org: &str, body: DeleteCodespacesDeleteCodespacesAccessUsers) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCodespacesDeleteCodespacesAccessUsers::from_json(body)?),
+            body: Some(C::from_json::<DeleteCodespacesDeleteCodespacesAccessUsers>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2579,12 +2922,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304),
-                400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(github_response.to_json_async().await?)),
-                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(github_response.to_json_async().await?)),
-                code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }),
+                304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304.into()),
+                400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400.into()),
+                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(github_response.to_json_async().await?).into()),
+                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }.into()),
             }
         }
     }
@@ -2604,19 +2947,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_codespaces_access_users(&self, org: &str, body: DeleteCodespacesDeleteCodespacesAccessUsers) -> Result<(), CodespacesDeleteCodespacesAccessUsersError> {
+    pub fn delete_codespaces_access_users(&self, org: &str, body: DeleteCodespacesDeleteCodespacesAccessUsers) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCodespacesDeleteCodespacesAccessUsers::from_json(body)?),
+            body: Some(C::from_json::<DeleteCodespacesDeleteCodespacesAccessUsers>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2628,12 +2971,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304),
-                400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(github_response.to_json()?)),
-                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(github_response.to_json()?)),
-                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(github_response.to_json()?)),
-                code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }),
+                304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304.into()),
+                400 => Err(CodespacesDeleteCodespacesAccessUsersError::Status400.into()),
+                404 => Err(CodespacesDeleteCodespacesAccessUsersError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodespacesDeleteCodespacesAccessUsersError::Status422(github_response.to_json()?).into()),
+                500 => Err(CodespacesDeleteCodespacesAccessUsersError::Status500(github_response.to_json()?).into()),
+                code => Err(CodespacesDeleteCodespacesAccessUsersError::Generic { code }.into()),
             }
         }
     }
@@ -2649,19 +2992,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for delete_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#delete-a-codespace-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_for_authenticated_user_async(&self, codespace_name: &str) -> Result<HashMap<String, Value>, CodespacesDeleteForAuthenticatedUserError> {
+    pub async fn delete_for_authenticated_user_async(&self, codespace_name: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2673,12 +3016,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesDeleteForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesDeleteForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesDeleteForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesDeleteForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2695,7 +3038,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_authenticated_user(&self, codespace_name: &str) -> Result<HashMap<String, Value>, CodespacesDeleteForAuthenticatedUserError> {
+    pub fn delete_for_authenticated_user(&self, codespace_name: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}", super::GITHUB_BASE_API_URL, codespace_name);
 
@@ -2707,7 +3050,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2719,12 +3062,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesDeleteForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesDeleteForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesDeleteForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesDeleteForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesDeleteForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesDeleteForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesDeleteForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesDeleteForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2740,19 +3083,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for delete_from_organization](https://docs.github.com/rest/codespaces/organizations#delete-a-codespace-from-the-organization)
     ///
     /// ---
-    pub async fn delete_from_organization_async(&self, org: &str, username: &str, codespace_name: &str) -> Result<HashMap<String, Value>, CodespacesDeleteFromOrganizationError> {
+    pub async fn delete_from_organization_async(&self, org: &str, username: &str, codespace_name: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}", super::GITHUB_BASE_API_URL, org, username, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2764,12 +3107,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesDeleteFromOrganizationError::Status304),
-                500 => Err(CodespacesDeleteFromOrganizationError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesDeleteFromOrganizationError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesDeleteFromOrganizationError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesDeleteFromOrganizationError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesDeleteFromOrganizationError::Generic { code }),
+                304 => Err(CodespacesDeleteFromOrganizationError::Status304.into()),
+                500 => Err(CodespacesDeleteFromOrganizationError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesDeleteFromOrganizationError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesDeleteFromOrganizationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesDeleteFromOrganizationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesDeleteFromOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2786,7 +3129,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_from_organization(&self, org: &str, username: &str, codespace_name: &str) -> Result<HashMap<String, Value>, CodespacesDeleteFromOrganizationError> {
+    pub fn delete_from_organization(&self, org: &str, username: &str, codespace_name: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}", super::GITHUB_BASE_API_URL, org, username, codespace_name);
 
@@ -2798,7 +3141,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2810,12 +3153,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesDeleteFromOrganizationError::Status304),
-                500 => Err(CodespacesDeleteFromOrganizationError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesDeleteFromOrganizationError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesDeleteFromOrganizationError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesDeleteFromOrganizationError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesDeleteFromOrganizationError::Generic { code }),
+                304 => Err(CodespacesDeleteFromOrganizationError::Status304.into()),
+                500 => Err(CodespacesDeleteFromOrganizationError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesDeleteFromOrganizationError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesDeleteFromOrganizationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesDeleteFromOrganizationError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesDeleteFromOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -2831,19 +3174,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#delete-an-organization-secret)
     ///
     /// ---
-    pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), CodespacesDeleteOrgSecretError> {
+    pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2855,8 +3198,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesDeleteOrgSecretError::Generic { code }),
+                404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesDeleteOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2873,7 +3216,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), CodespacesDeleteOrgSecretError> {
+    pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -2885,7 +3228,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2897,8 +3240,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesDeleteOrgSecretError::Generic { code }),
+                404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesDeleteOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2914,19 +3257,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#delete-a-repository-secret)
     ///
     /// ---
-    pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), CodespacesDeleteRepoSecretError> {
+    pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2938,7 +3281,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesDeleteRepoSecretError::Generic { code }),
+                code => Err(CodespacesDeleteRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2955,7 +3298,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), CodespacesDeleteRepoSecretError> {
+    pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -2967,7 +3310,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2979,7 +3322,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesDeleteRepoSecretError::Generic { code }),
+                code => Err(CodespacesDeleteRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2997,19 +3340,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for delete_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#delete-a-secret-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn delete_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<(), CodespacesDeleteSecretForAuthenticatedUserError> {
+    pub async fn delete_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3021,7 +3364,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3040,7 +3383,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_secret_for_authenticated_user(&self, secret_name: &str) -> Result<(), CodespacesDeleteSecretForAuthenticatedUserError> {
+    pub fn delete_secret_for_authenticated_user(&self, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
@@ -3052,7 +3395,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3064,7 +3407,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3082,19 +3425,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for export_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#export-a-codespace-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn export_for_authenticated_user_async(&self, codespace_name: &str) -> Result<CodespaceExportDetails, CodespacesExportForAuthenticatedUserError> {
+    pub async fn export_for_authenticated_user_async(&self, codespace_name: &str) -> Result<CodespaceExportDetails, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/exports", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3106,12 +3449,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3130,7 +3473,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn export_for_authenticated_user(&self, codespace_name: &str) -> Result<CodespaceExportDetails, CodespacesExportForAuthenticatedUserError> {
+    pub fn export_for_authenticated_user(&self, codespace_name: &str) -> Result<CodespaceExportDetails, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/exports", super::GITHUB_BASE_API_URL, codespace_name);
 
@@ -3142,7 +3485,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3154,12 +3497,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesExportForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesExportForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesExportForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesExportForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodespacesExportForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(CodespacesExportForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3175,7 +3518,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_codespaces_for_user_in_org](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-a-user-in-organization)
     ///
     /// ---
-    pub async fn get_codespaces_for_user_in_org_async(&self, org: &str, username: &str, query_params: Option<impl Into<CodespacesGetCodespacesForUserInOrgParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesGetCodespacesForUserInOrgError> {
+    pub async fn get_codespaces_for_user_in_org_async(&self, org: &str, username: &str, query_params: Option<impl Into<CodespacesGetCodespacesForUserInOrgParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/members/{}/codespaces", super::GITHUB_BASE_API_URL, org, username);
 
@@ -3186,12 +3529,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3203,12 +3546,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304),
-                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }),
+                304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304.into()),
+                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3225,7 +3568,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_codespaces_for_user_in_org(&self, org: &str, username: &str, query_params: Option<impl Into<CodespacesGetCodespacesForUserInOrgParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesGetCodespacesForUserInOrgError> {
+    pub fn get_codespaces_for_user_in_org(&self, org: &str, username: &str, query_params: Option<impl Into<CodespacesGetCodespacesForUserInOrgParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/members/{}/codespaces", super::GITHUB_BASE_API_URL, org, username);
 
@@ -3242,7 +3585,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3254,12 +3597,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304),
-                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }),
+                304 => Err(CodespacesGetCodespacesForUserInOrgError::Status304.into()),
+                500 => Err(CodespacesGetCodespacesForUserInOrgError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesGetCodespacesForUserInOrgError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesGetCodespacesForUserInOrgError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesGetCodespacesForUserInOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesGetCodespacesForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3275,19 +3618,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_export_details_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-details-about-a-codespace-export)
     ///
     /// ---
-    pub async fn get_export_details_for_authenticated_user_async(&self, codespace_name: &str, export_id: &str) -> Result<CodespaceExportDetails, CodespacesGetExportDetailsForAuthenticatedUserError> {
+    pub async fn get_export_details_for_authenticated_user_async(&self, codespace_name: &str, export_id: &str) -> Result<CodespaceExportDetails, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/exports/{}", super::GITHUB_BASE_API_URL, codespace_name, export_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3299,8 +3642,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }),
+                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3317,7 +3660,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_export_details_for_authenticated_user(&self, codespace_name: &str, export_id: &str) -> Result<CodespaceExportDetails, CodespacesGetExportDetailsForAuthenticatedUserError> {
+    pub fn get_export_details_for_authenticated_user(&self, codespace_name: &str, export_id: &str) -> Result<CodespaceExportDetails, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/exports/{}", super::GITHUB_BASE_API_URL, codespace_name, export_id);
 
@@ -3329,7 +3672,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3341,8 +3684,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }),
+                404 => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesGetExportDetailsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3358,19 +3701,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-a-codespace-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, CodespacesGetForAuthenticatedUserError> {
+    pub async fn get_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3382,12 +3725,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesGetForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesGetForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesGetForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesGetForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3404,7 +3747,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_for_authenticated_user(&self, codespace_name: &str) -> Result<Codespace, CodespacesGetForAuthenticatedUserError> {
+    pub fn get_for_authenticated_user(&self, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}", super::GITHUB_BASE_API_URL, codespace_name);
 
@@ -3416,7 +3759,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3428,12 +3771,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesGetForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesGetForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesGetForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesGetForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesGetForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesGetForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesGetForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesGetForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3448,19 +3791,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-public-key)
     ///
     /// ---
-    pub async fn get_org_public_key_async(&self, org: &str) -> Result<CodespacesPublicKey, CodespacesGetOrgPublicKeyError> {
+    pub async fn get_org_public_key_async(&self, org: &str) -> Result<CodespacesPublicKey, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3472,7 +3815,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetOrgPublicKeyError::Generic { code }),
+                code => Err(CodespacesGetOrgPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -3488,7 +3831,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_public_key(&self, org: &str) -> Result<CodespacesPublicKey, CodespacesGetOrgPublicKeyError> {
+    pub fn get_org_public_key(&self, org: &str) -> Result<CodespacesPublicKey, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, org);
 
@@ -3500,7 +3843,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3512,7 +3855,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetOrgPublicKeyError::Generic { code }),
+                code => Err(CodespacesGetOrgPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -3528,19 +3871,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#get-an-organization-secret)
     ///
     /// ---
-    pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<CodespacesOrgSecret, CodespacesGetOrgSecretError> {
+    pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<CodespacesOrgSecret, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3552,7 +3895,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetOrgSecretError::Generic { code }),
+                code => Err(CodespacesGetOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -3569,7 +3912,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<CodespacesOrgSecret, CodespacesGetOrgSecretError> {
+    pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<CodespacesOrgSecret, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -3581,7 +3924,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3593,7 +3936,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetOrgSecretError::Generic { code }),
+                code => Err(CodespacesGetOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -3611,19 +3954,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_public_key_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-public-key-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_public_key_for_authenticated_user_async(&self) -> Result<CodespacesUserPublicKey, CodespacesGetPublicKeyForAuthenticatedUserError> {
+    pub async fn get_public_key_for_authenticated_user_async(&self) -> Result<CodespacesUserPublicKey, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3635,7 +3978,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetPublicKeyForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesGetPublicKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3654,7 +3997,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_public_key_for_authenticated_user(&self) -> Result<CodespacesUserPublicKey, CodespacesGetPublicKeyForAuthenticatedUserError> {
+    pub fn get_public_key_for_authenticated_user(&self) -> Result<CodespacesUserPublicKey, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL);
 
@@ -3666,7 +4009,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3678,7 +4021,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetPublicKeyForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesGetPublicKeyForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3695,19 +4038,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-public-key)
     ///
     /// ---
-    pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<CodespacesPublicKey, CodespacesGetRepoPublicKeyError> {
+    pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<CodespacesPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3719,7 +4062,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetRepoPublicKeyError::Generic { code }),
+                code => Err(CodespacesGetRepoPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -3737,7 +4080,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<CodespacesPublicKey, CodespacesGetRepoPublicKeyError> {
+    pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<CodespacesPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3749,7 +4092,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3761,7 +4104,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetRepoPublicKeyError::Generic { code }),
+                code => Err(CodespacesGetRepoPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -3777,19 +4120,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/codespaces/repository-secrets#get-a-repository-secret)
     ///
     /// ---
-    pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<RepoCodespacesSecret, CodespacesGetRepoSecretError> {
+    pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<RepoCodespacesSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3801,7 +4144,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetRepoSecretError::Generic { code }),
+                code => Err(CodespacesGetRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -3818,7 +4161,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<RepoCodespacesSecret, CodespacesGetRepoSecretError> {
+    pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<RepoCodespacesSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -3830,7 +4173,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3842,7 +4185,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetRepoSecretError::Generic { code }),
+                code => Err(CodespacesGetRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -3860,19 +4203,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for get_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#get-a-secret-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<CodespacesSecret, CodespacesGetSecretForAuthenticatedUserError> {
+    pub async fn get_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<CodespacesSecret, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3884,7 +4227,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetSecretForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesGetSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3903,7 +4246,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_secret_for_authenticated_user(&self, secret_name: &str) -> Result<CodespacesSecret, CodespacesGetSecretForAuthenticatedUserError> {
+    pub fn get_secret_for_authenticated_user(&self, secret_name: &str) -> Result<CodespacesSecret, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}", super::GITHUB_BASE_API_URL, secret_name);
 
@@ -3915,7 +4258,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3927,7 +4270,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesGetSecretForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesGetSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3944,7 +4287,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_devcontainers_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-devcontainer-configurations-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_devcontainers_in_repository_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListDevcontainersInRepositoryForAuthenticatedUserResponse200, CodespacesListDevcontainersInRepositoryForAuthenticatedUserError> {
+    pub async fn list_devcontainers_in_repository_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListDevcontainersInRepositoryForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/devcontainers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3955,12 +4298,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3972,12 +4315,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(github_response.to_json_async().await?)),
-                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3995,7 +4338,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_devcontainers_in_repository_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListDevcontainersInRepositoryForAuthenticatedUserResponse200, CodespacesListDevcontainersInRepositoryForAuthenticatedUserError> {
+    pub fn list_devcontainers_in_repository_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListDevcontainersInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListDevcontainersInRepositoryForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/devcontainers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4012,7 +4355,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4024,12 +4367,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(github_response.to_json()?)),
-                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                400 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status400(github_response.to_json()?).into()),
+                401 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesListDevcontainersInRepositoryForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4045,7 +4388,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<CodespacesListForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListForAuthenticatedUserError> {
+    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<CodespacesListForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/codespaces", super::GITHUB_BASE_API_URL);
 
@@ -4056,12 +4399,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4073,12 +4416,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesListForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesListForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesListForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesListForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesListForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesListForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesListForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesListForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesListForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesListForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesListForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4095,7 +4438,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<CodespacesListForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListForAuthenticatedUserError> {
+    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<CodespacesListForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/codespaces", super::GITHUB_BASE_API_URL);
 
@@ -4112,7 +4455,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4124,12 +4467,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesListForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesListForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesListForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesListForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesListForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesListForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesListForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesListForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesListForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesListForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesListForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4145,7 +4488,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_in_organization](https://docs.github.com/rest/codespaces/organizations#list-codespaces-for-the-organization)
     ///
     /// ---
-    pub async fn list_in_organization_async(&self, org: &str, query_params: Option<impl Into<CodespacesListInOrganizationParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListInOrganizationError> {
+    pub async fn list_in_organization_async(&self, org: &str, query_params: Option<impl Into<CodespacesListInOrganizationParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/codespaces", super::GITHUB_BASE_API_URL, org);
 
@@ -4156,12 +4499,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4173,12 +4516,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesListInOrganizationError::Status304),
-                500 => Err(CodespacesListInOrganizationError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesListInOrganizationError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesListInOrganizationError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesListInOrganizationError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesListInOrganizationError::Generic { code }),
+                304 => Err(CodespacesListInOrganizationError::Status304.into()),
+                500 => Err(CodespacesListInOrganizationError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesListInOrganizationError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesListInOrganizationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesListInOrganizationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesListInOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -4195,7 +4538,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_in_organization(&self, org: &str, query_params: Option<impl Into<CodespacesListInOrganizationParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListInOrganizationError> {
+    pub fn list_in_organization(&self, org: &str, query_params: Option<impl Into<CodespacesListInOrganizationParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/codespaces", super::GITHUB_BASE_API_URL, org);
 
@@ -4212,7 +4555,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4224,12 +4567,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesListInOrganizationError::Status304),
-                500 => Err(CodespacesListInOrganizationError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesListInOrganizationError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesListInOrganizationError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesListInOrganizationError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesListInOrganizationError::Generic { code }),
+                304 => Err(CodespacesListInOrganizationError::Status304.into()),
+                500 => Err(CodespacesListInOrganizationError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesListInOrganizationError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesListInOrganizationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesListInOrganizationError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesListInOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -4245,7 +4588,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_in_repository_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#list-codespaces-in-a-repository-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_in_repository_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListInRepositoryForAuthenticatedUserError> {
+    pub async fn list_in_repository_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4256,12 +4599,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4273,11 +4616,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesListInRepositoryForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesListInRepositoryForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4294,7 +4637,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_in_repository_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, CodespacesListInRepositoryForAuthenticatedUserError> {
+    pub fn list_in_repository_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListInRepositoryForAuthenticatedUserParams>>) -> Result<GetCodespacesListForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4311,7 +4654,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4323,11 +4666,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesListInRepositoryForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesListInRepositoryForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesListInRepositoryForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4344,7 +4687,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/codespaces/organization-secrets#list-organization-secrets)
     ///
     /// ---
-    pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<CodespacesListOrgSecretsParams>>) -> Result<GetCodespacesListOrgSecretsResponse200, CodespacesListOrgSecretsError> {
+    pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<CodespacesListOrgSecretsParams>>) -> Result<GetCodespacesListOrgSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, org);
 
@@ -4355,12 +4698,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4372,7 +4715,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesListOrgSecretsError::Generic { code }),
+                code => Err(CodespacesListOrgSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -4390,7 +4733,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<CodespacesListOrgSecretsParams>>) -> Result<GetCodespacesListOrgSecretsResponse200, CodespacesListOrgSecretsError> {
+    pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<CodespacesListOrgSecretsParams>>) -> Result<GetCodespacesListOrgSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, org);
 
@@ -4407,7 +4750,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4419,7 +4762,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesListOrgSecretsError::Generic { code }),
+                code => Err(CodespacesListOrgSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -4436,7 +4779,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/codespaces/repository-secrets#list-repository-secrets)
     ///
     /// ---
-    pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListRepoSecretsParams>>) -> Result<GetCodespacesListRepoSecretsResponse200, CodespacesListRepoSecretsError> {
+    pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListRepoSecretsParams>>) -> Result<GetCodespacesListRepoSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4447,12 +4790,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4464,7 +4807,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesListRepoSecretsError::Generic { code }),
+                code => Err(CodespacesListRepoSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -4482,7 +4825,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListRepoSecretsParams>>) -> Result<GetCodespacesListRepoSecretsResponse200, CodespacesListRepoSecretsError> {
+    pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesListRepoSecretsParams>>) -> Result<GetCodespacesListRepoSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4499,7 +4842,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4511,7 +4854,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesListRepoSecretsError::Generic { code }),
+                code => Err(CodespacesListRepoSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -4529,19 +4872,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-selected-repositories-for-a-user-secret)
     ///
     /// ---
-    pub async fn list_repositories_for_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, CodespacesListRepositoriesForSecretForAuthenticatedUserError> {
+    pub async fn list_repositories_for_secret_for_authenticated_user_async(&self, secret_name: &str) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4553,11 +4896,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                code => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4576,7 +4919,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repositories_for_secret_for_authenticated_user(&self, secret_name: &str) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, CodespacesListRepositoriesForSecretForAuthenticatedUserError> {
+    pub fn list_repositories_for_secret_for_authenticated_user(&self, secret_name: &str) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, secret_name);
 
@@ -4588,7 +4931,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4600,11 +4943,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                code => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                500 => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                code => Err(CodespacesListRepositoriesForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4623,7 +4966,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_secrets_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#list-secrets-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_secrets_for_authenticated_user_async(&self, query_params: Option<impl Into<CodespacesListSecretsForAuthenticatedUserParams>>) -> Result<GetCodespacesListSecretsForAuthenticatedUserResponse200, CodespacesListSecretsForAuthenticatedUserError> {
+    pub async fn list_secrets_for_authenticated_user_async(&self, query_params: Option<impl Into<CodespacesListSecretsForAuthenticatedUserParams>>) -> Result<GetCodespacesListSecretsForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/codespaces/secrets", super::GITHUB_BASE_API_URL);
 
@@ -4634,12 +4977,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4651,7 +4994,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesListSecretsForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesListSecretsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4671,7 +5014,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_secrets_for_authenticated_user(&self, query_params: Option<impl Into<CodespacesListSecretsForAuthenticatedUserParams>>) -> Result<GetCodespacesListSecretsForAuthenticatedUserResponse200, CodespacesListSecretsForAuthenticatedUserError> {
+    pub fn list_secrets_for_authenticated_user(&self, query_params: Option<impl Into<CodespacesListSecretsForAuthenticatedUserParams>>) -> Result<GetCodespacesListSecretsForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/codespaces/secrets", super::GITHUB_BASE_API_URL);
 
@@ -4688,7 +5031,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4700,7 +5043,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodespacesListSecretsForAuthenticatedUserError::Generic { code }),
+                code => Err(CodespacesListSecretsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4717,7 +5060,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
-    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<CodespacesListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, CodespacesListSelectedReposForOrgSecretError> {
+    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<CodespacesListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -4728,12 +5071,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4745,8 +5088,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }),
+                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4764,7 +5107,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<CodespacesListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, CodespacesListSelectedReposForOrgSecretError> {
+    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<CodespacesListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -4781,7 +5124,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4793,8 +5136,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }),
+                404 => Err(CodespacesListSelectedReposForOrgSecretError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesListSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -4810,7 +5153,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for pre_flight_with_repo_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#get-default-attributes-for-a-codespace)
     ///
     /// ---
-    pub async fn pre_flight_with_repo_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesPreFlightWithRepoForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesPreFlightWithRepoForAuthenticatedUserResponse200, CodespacesPreFlightWithRepoForAuthenticatedUserError> {
+    pub async fn pre_flight_with_repo_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesPreFlightWithRepoForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesPreFlightWithRepoForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/new", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4821,12 +5164,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4838,10 +5181,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4858,7 +5201,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn pre_flight_with_repo_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesPreFlightWithRepoForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesPreFlightWithRepoForAuthenticatedUserResponse200, CodespacesPreFlightWithRepoForAuthenticatedUserError> {
+    pub fn pre_flight_with_repo_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesPreFlightWithRepoForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesPreFlightWithRepoForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/new", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4875,7 +5218,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4887,10 +5230,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesPreFlightWithRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4910,19 +5253,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for publish_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#create-a-repository-from-an-unpublished-codespace)
     ///
     /// ---
-    pub async fn publish_for_authenticated_user_async(&self, codespace_name: &str, body: PostCodespacesPublishForAuthenticatedUser) -> Result<CodespaceWithFullRepository, CodespacesPublishForAuthenticatedUserError> {
+    pub async fn publish_for_authenticated_user_async(&self, codespace_name: &str, body: PostCodespacesPublishForAuthenticatedUser) -> Result<CodespaceWithFullRepository, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/publish", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesPublishForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesPublishForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4934,11 +5277,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(github_response.to_json_async().await?)),
-                code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4959,19 +5302,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn publish_for_authenticated_user(&self, codespace_name: &str, body: PostCodespacesPublishForAuthenticatedUser) -> Result<CodespaceWithFullRepository, CodespacesPublishForAuthenticatedUserError> {
+    pub fn publish_for_authenticated_user(&self, codespace_name: &str, body: PostCodespacesPublishForAuthenticatedUser) -> Result<CodespaceWithFullRepository, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/publish", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesPublishForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesPublishForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4983,11 +5326,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(github_response.to_json()?)),
-                code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesPublishForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesPublishForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesPublishForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodespacesPublishForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(CodespacesPublishForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5005,19 +5348,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for remove_repository_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#remove-a-selected-repository-from-a-user-secret)
     ///
     /// ---
-    pub async fn remove_repository_for_secret_for_authenticated_user_async(&self, secret_name: &str, repository_id: i32) -> Result<(), CodespacesRemoveRepositoryForSecretForAuthenticatedUserError> {
+    pub async fn remove_repository_for_secret_for_authenticated_user_async(&self, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5029,11 +5372,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                code => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5052,7 +5395,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_repository_for_secret_for_authenticated_user(&self, secret_name: &str, repository_id: i32) -> Result<(), CodespacesRemoveRepositoryForSecretForAuthenticatedUserError> {
+    pub fn remove_repository_for_secret_for_authenticated_user(&self, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, secret_name, repository_id);
 
@@ -5064,7 +5407,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5076,11 +5419,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                code => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                500 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                code => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5098,19 +5441,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
-    pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesRemoveSelectedRepoFromOrgSecretError> {
+    pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5122,10 +5465,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json_async().await?)),
-                409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409),
-                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(github_response.to_json_async().await?)),
-                code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409.into()),
+                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5144,7 +5487,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), CodespacesRemoveSelectedRepoFromOrgSecretError> {
+    pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
@@ -5156,7 +5499,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5168,10 +5511,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json()?)),
-                409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409),
-                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(github_response.to_json()?)),
-                code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+                404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status409.into()),
+                422 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status422(github_response.to_json()?).into()),
+                code => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5187,7 +5530,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for repo_machines_for_authenticated_user](https://docs.github.com/rest/codespaces/machines#list-available-machine-types-for-a-repository)
     ///
     /// ---
-    pub async fn repo_machines_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesRepoMachinesForAuthenticatedUserError> {
+    pub async fn repo_machines_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/machines", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -5198,12 +5541,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5215,12 +5558,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesRepoMachinesForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesRepoMachinesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5237,7 +5580,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn repo_machines_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, CodespacesRepoMachinesForAuthenticatedUserError> {
+    pub fn repo_machines_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<CodespacesRepoMachinesForAuthenticatedUserParams<'api>>>) -> Result<GetCodespacesCodespaceMachinesForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/codespaces/machines", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -5254,7 +5597,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5266,12 +5609,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesRepoMachinesForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesRepoMachinesForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesRepoMachinesForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5286,19 +5629,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for set_codespaces_access](https://docs.github.com/rest/codespaces/organizations#manage-access-control-for-organization-codespaces)
     ///
     /// ---
-    pub async fn set_codespaces_access_async(&self, org: &str, body: PutCodespacesSetCodespacesAccess) -> Result<(), CodespacesSetCodespacesAccessError> {
+    pub async fn set_codespaces_access_async(&self, org: &str, body: PutCodespacesSetCodespacesAccess) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/access", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesSetCodespacesAccess::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesSetCodespacesAccess>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5310,12 +5653,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesSetCodespacesAccessError::Status304),
-                400 => Err(CodespacesSetCodespacesAccessError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodespacesSetCodespacesAccessError::Status422(github_response.to_json_async().await?)),
-                500 => Err(CodespacesSetCodespacesAccessError::Status500(github_response.to_json_async().await?)),
-                code => Err(CodespacesSetCodespacesAccessError::Generic { code }),
+                304 => Err(CodespacesSetCodespacesAccessError::Status304.into()),
+                400 => Err(CodespacesSetCodespacesAccessError::Status400.into()),
+                404 => Err(CodespacesSetCodespacesAccessError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodespacesSetCodespacesAccessError::Status422(github_response.to_json_async().await?).into()),
+                500 => Err(CodespacesSetCodespacesAccessError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesSetCodespacesAccessError::Generic { code }.into()),
             }
         }
     }
@@ -5331,19 +5674,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_codespaces_access(&self, org: &str, body: PutCodespacesSetCodespacesAccess) -> Result<(), CodespacesSetCodespacesAccessError> {
+    pub fn set_codespaces_access(&self, org: &str, body: PutCodespacesSetCodespacesAccess) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/access", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesSetCodespacesAccess::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesSetCodespacesAccess>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5355,12 +5698,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesSetCodespacesAccessError::Status304),
-                400 => Err(CodespacesSetCodespacesAccessError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessError::Status404(github_response.to_json()?)),
-                422 => Err(CodespacesSetCodespacesAccessError::Status422(github_response.to_json()?)),
-                500 => Err(CodespacesSetCodespacesAccessError::Status500(github_response.to_json()?)),
-                code => Err(CodespacesSetCodespacesAccessError::Generic { code }),
+                304 => Err(CodespacesSetCodespacesAccessError::Status304.into()),
+                400 => Err(CodespacesSetCodespacesAccessError::Status400.into()),
+                404 => Err(CodespacesSetCodespacesAccessError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodespacesSetCodespacesAccessError::Status422(github_response.to_json()?).into()),
+                500 => Err(CodespacesSetCodespacesAccessError::Status500(github_response.to_json()?).into()),
+                code => Err(CodespacesSetCodespacesAccessError::Generic { code }.into()),
             }
         }
     }
@@ -5379,19 +5722,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for set_codespaces_access_users](https://docs.github.com/rest/codespaces/organizations#add-users-to-codespaces-access-for-an-organization)
     ///
     /// ---
-    pub async fn set_codespaces_access_users_async(&self, org: &str, body: PostCodespacesSetCodespacesAccessUsers) -> Result<(), CodespacesSetCodespacesAccessUsersError> {
+    pub async fn set_codespaces_access_users_async(&self, org: &str, body: PostCodespacesSetCodespacesAccessUsers) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesSetCodespacesAccessUsers::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesSetCodespacesAccessUsers>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5403,12 +5746,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesSetCodespacesAccessUsersError::Status304),
-                400 => Err(CodespacesSetCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(github_response.to_json_async().await?)),
-                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(github_response.to_json_async().await?)),
-                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(github_response.to_json_async().await?)),
-                code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }),
+                304 => Err(CodespacesSetCodespacesAccessUsersError::Status304.into()),
+                400 => Err(CodespacesSetCodespacesAccessUsersError::Status400.into()),
+                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(github_response.to_json_async().await?).into()),
+                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }.into()),
             }
         }
     }
@@ -5428,19 +5771,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_codespaces_access_users(&self, org: &str, body: PostCodespacesSetCodespacesAccessUsers) -> Result<(), CodespacesSetCodespacesAccessUsersError> {
+    pub fn set_codespaces_access_users(&self, org: &str, body: PostCodespacesSetCodespacesAccessUsers) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/access/selected_users", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodespacesSetCodespacesAccessUsers::from_json(body)?),
+            body: Some(C::from_json::<PostCodespacesSetCodespacesAccessUsers>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5452,12 +5795,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesSetCodespacesAccessUsersError::Status304),
-                400 => Err(CodespacesSetCodespacesAccessUsersError::Status400),
-                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(github_response.to_json()?)),
-                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(github_response.to_json()?)),
-                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(github_response.to_json()?)),
-                code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }),
+                304 => Err(CodespacesSetCodespacesAccessUsersError::Status304.into()),
+                400 => Err(CodespacesSetCodespacesAccessUsersError::Status400.into()),
+                404 => Err(CodespacesSetCodespacesAccessUsersError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodespacesSetCodespacesAccessUsersError::Status422(github_response.to_json()?).into()),
+                500 => Err(CodespacesSetCodespacesAccessUsersError::Status500(github_response.to_json()?).into()),
+                code => Err(CodespacesSetCodespacesAccessUsersError::Generic { code }.into()),
             }
         }
     }
@@ -5475,19 +5818,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for set_repositories_for_secret_for_authenticated_user](https://docs.github.com/rest/codespaces/secrets#set-selected-repositories-for-a-user-secret)
     ///
     /// ---
-    pub async fn set_repositories_for_secret_for_authenticated_user_async(&self, secret_name: &str, body: PutCodespacesSetRepositoriesForSecretForAuthenticatedUser) -> Result<(), CodespacesSetRepositoriesForSecretForAuthenticatedUserError> {
+    pub async fn set_repositories_for_secret_for_authenticated_user_async(&self, secret_name: &str, body: PutCodespacesSetRepositoriesForSecretForAuthenticatedUser) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesSetRepositoriesForSecretForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesSetRepositoriesForSecretForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5499,11 +5842,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                code => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5522,19 +5865,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_repositories_for_secret_for_authenticated_user(&self, secret_name: &str, body: PutCodespacesSetRepositoriesForSecretForAuthenticatedUser) -> Result<(), CodespacesSetRepositoriesForSecretForAuthenticatedUserError> {
+    pub fn set_repositories_for_secret_for_authenticated_user(&self, secret_name: &str, body: PutCodespacesSetRepositoriesForSecretForAuthenticatedUser) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesSetRepositoriesForSecretForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesSetRepositoriesForSecretForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5546,11 +5889,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                code => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                500 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                code => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5568,19 +5911,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/codespaces/organization-secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
-    pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutCodespacesSetSelectedReposForOrgSecret) -> Result<(), CodespacesSetSelectedReposForOrgSecretError> {
+    pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutCodespacesSetSelectedReposForOrgSecret) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesSetSelectedReposForOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesSetSelectedReposForOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5592,9 +5935,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json_async().await?)),
-                409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409),
-                code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }),
+                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409.into()),
+                code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5613,19 +5956,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutCodespacesSetSelectedReposForOrgSecret) -> Result<(), CodespacesSetSelectedReposForOrgSecretError> {
+    pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutCodespacesSetSelectedReposForOrgSecret) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/codespaces/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodespacesSetSelectedReposForOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutCodespacesSetSelectedReposForOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5637,9 +5980,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json()?)),
-                409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409),
-                code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }),
+                404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodespacesSetSelectedReposForOrgSecretError::Status409.into()),
+                code => Err(CodespacesSetSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -5655,19 +5998,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#start-a-codespace-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn start_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, CodespacesStartForAuthenticatedUserError> {
+    pub async fn start_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/start", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5679,15 +6022,15 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesStartForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(github_response.to_json_async().await?)),
-                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(github_response.to_json_async().await?)),
-                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(github_response.to_json_async().await?)),
-                code => Err(CodespacesStartForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesStartForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesStartForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5704,7 +6047,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn start_for_authenticated_user(&self, codespace_name: &str) -> Result<Codespace, CodespacesStartForAuthenticatedUserError> {
+    pub fn start_for_authenticated_user(&self, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/start", super::GITHUB_BASE_API_URL, codespace_name);
 
@@ -5716,7 +6059,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5728,15 +6071,15 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesStartForAuthenticatedUserError::Status304),
-                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(github_response.to_json()?)),
-                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(github_response.to_json()?)),
-                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(github_response.to_json()?)),
-                code => Err(CodespacesStartForAuthenticatedUserError::Generic { code }),
+                304 => Err(CodespacesStartForAuthenticatedUserError::Status304.into()),
+                500 => Err(CodespacesStartForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                400 => Err(CodespacesStartForAuthenticatedUserError::Status400(github_response.to_json()?).into()),
+                401 => Err(CodespacesStartForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                402 => Err(CodespacesStartForAuthenticatedUserError::Status402(github_response.to_json()?).into()),
+                403 => Err(CodespacesStartForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesStartForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodespacesStartForAuthenticatedUserError::Status409(github_response.to_json()?).into()),
+                code => Err(CodespacesStartForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5752,19 +6095,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for stop_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#stop-a-codespace-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn stop_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, CodespacesStopForAuthenticatedUserError> {
+    pub async fn stop_for_authenticated_user_async(&self, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/stop", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5776,11 +6119,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesStopForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesStopForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5797,7 +6140,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn stop_for_authenticated_user(&self, codespace_name: &str) -> Result<Codespace, CodespacesStopForAuthenticatedUserError> {
+    pub fn stop_for_authenticated_user(&self, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}/stop", super::GITHUB_BASE_API_URL, codespace_name);
 
@@ -5809,7 +6152,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5821,11 +6164,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesStopForAuthenticatedUserError::Generic { code }),
+                500 => Err(CodespacesStopForAuthenticatedUserError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesStopForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesStopForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesStopForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesStopForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5841,19 +6184,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for stop_in_organization](https://docs.github.com/rest/codespaces/organizations#stop-a-codespace-for-an-organization-user)
     ///
     /// ---
-    pub async fn stop_in_organization_async(&self, org: &str, username: &str, codespace_name: &str) -> Result<Codespace, CodespacesStopInOrganizationError> {
+    pub async fn stop_in_organization_async(&self, org: &str, username: &str, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}/stop", super::GITHUB_BASE_API_URL, org, username, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5865,12 +6208,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesStopInOrganizationError::Status304),
-                500 => Err(CodespacesStopInOrganizationError::Status500(github_response.to_json_async().await?)),
-                401 => Err(CodespacesStopInOrganizationError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesStopInOrganizationError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesStopInOrganizationError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesStopInOrganizationError::Generic { code }),
+                304 => Err(CodespacesStopInOrganizationError::Status304.into()),
+                500 => Err(CodespacesStopInOrganizationError::Status500(github_response.to_json_async().await?).into()),
+                401 => Err(CodespacesStopInOrganizationError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesStopInOrganizationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesStopInOrganizationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesStopInOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -5887,7 +6230,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn stop_in_organization(&self, org: &str, username: &str, codespace_name: &str) -> Result<Codespace, CodespacesStopInOrganizationError> {
+    pub fn stop_in_organization(&self, org: &str, username: &str, codespace_name: &str) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}/codespaces/{}/stop", super::GITHUB_BASE_API_URL, org, username, codespace_name);
 
@@ -5899,7 +6242,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5911,12 +6254,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodespacesStopInOrganizationError::Status304),
-                500 => Err(CodespacesStopInOrganizationError::Status500(github_response.to_json()?)),
-                401 => Err(CodespacesStopInOrganizationError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesStopInOrganizationError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesStopInOrganizationError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesStopInOrganizationError::Generic { code }),
+                304 => Err(CodespacesStopInOrganizationError::Status304.into()),
+                500 => Err(CodespacesStopInOrganizationError::Status500(github_response.to_json()?).into()),
+                401 => Err(CodespacesStopInOrganizationError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesStopInOrganizationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesStopInOrganizationError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesStopInOrganizationError::Generic { code }.into()),
             }
         }
     }
@@ -5934,19 +6277,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     /// [GitHub API docs for update_for_authenticated_user](https://docs.github.com/rest/codespaces/codespaces#update-a-codespace-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn update_for_authenticated_user_async(&self, codespace_name: &str, body: PatchCodespacesUpdateForAuthenticatedUser) -> Result<Codespace, CodespacesUpdateForAuthenticatedUserError> {
+    pub async fn update_for_authenticated_user_async(&self, codespace_name: &str, body: PatchCodespacesUpdateForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodespacesUpdateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PatchCodespacesUpdateForAuthenticatedUser>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -5958,10 +6301,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodespacesUpdateForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodespacesUpdateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5980,19 +6323,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_for_authenticated_user(&self, codespace_name: &str, body: PatchCodespacesUpdateForAuthenticatedUser) -> Result<Codespace, CodespacesUpdateForAuthenticatedUserError> {
+    pub fn update_for_authenticated_user(&self, codespace_name: &str, body: PatchCodespacesUpdateForAuthenticatedUser) -> Result<Codespace, AdapterError> {
 
         let request_uri = format!("{}/user/codespaces/{}", super::GITHUB_BASE_API_URL, codespace_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodespacesUpdateForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PatchCodespacesUpdateForAuthenticatedUser>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -6004,10 +6347,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Codespaces<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(CodespacesUpdateForAuthenticatedUserError::Generic { code }),
+                401 => Err(CodespacesUpdateForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                403 => Err(CodespacesUpdateForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodespacesUpdateForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(CodespacesUpdateForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }

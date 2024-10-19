@@ -6,7 +6,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -14,11 +14,11 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct {{classname}}<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct {{classname}}<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> {{classname}}<C> {
+pub fn new<C: Client>(client: &C) -> {{classname}}<C> where AdapterError: From<<C as Client>::Err> {
     {{classname}} { client }
 }
 
@@ -26,22 +26,29 @@ pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> {{classname}}<C
 /// Errors for the [{{summary}}]({{classname}}::{{operationId}}_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum {{classname}}{{operationIdCamelCase}}Error {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
 {{#responses}}{{^vendorExtensions.x-is-default}}
     #[error("{{{message}}}")]
     Status{{code}}{{#dataType}}({{{.}}}){{/dataType}},
 {{/vendorExtensions.x-is-default}}{{/responses}}
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<{{classname}}{{operationIdCamelCase}}Error> for AdapterError {
+    fn from(err: {{classname}}{{operationIdCamelCase}}Error) -> Self {
+        let (description, status_code) = match err {
+        {{#responses}}{{^vendorExtensions.x-is-default}}
+            {{classname}}{{operationIdCamelCase}}Error::Status{{code}}{{#dataType}}(_){{/dataType}} => (String::from("{{{message}}}"), {{code}}),
+        {{/vendorExtensions.x-is-default}}{{/responses}}
+            {{classname}}{{operationIdCamelCase}}Error::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 {{/contents}}{{/operation}}
@@ -86,7 +93,7 @@ impl<'enc> From<&'enc PerPage> for {{classname}}{{operationIdCamelCase}}Params{{
 {{/hasQueryParams}}
 {{/contents}}{{/operation}}
 
-impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
+impl<'api, C: Client> {{classname}}<'api, C> where AdapterError: From<<C as Client>::Err> {
 {{#operation}}{{#contents}}
     /// ---
     ///
@@ -105,7 +112,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
     ///
     /// ---
     {{#vendorExtensions.x-github.previews}}#[cfg(feature = "{{name}}")]
-    {{/vendorExtensions.x-github.previews}}pub async fn {{operationId}}_async(&self{{#hasParams}}, {{/hasParams}}{{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
+    {{/vendorExtensions.x-github.previews}}pub async fn {{operationId}}_async(&self{{#hasParams}}, {{/hasParams}}{{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, AdapterError> {
 
         let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
 
@@ -124,12 +131,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: {{#hasBodyParam}}Some({{#bodyParam}}{{^vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}::from_json(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-codegen-body-bytes}}body.into(){{/vendorExtensions.x-codegen-body-bytes}}{{/bodyParam}}){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
+            body: {{#hasBodyParam}}Some(C::from_json::<{{#bodyParam}}{{^vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}>(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-codegen-body-bytes}}Vec<u8>>(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{/bodyParam}}){{/hasBodyParam}}{{^hasBodyParam}}None::<C::Body>{{/hasBodyParam}},
             method: "{{httpMethod}}",
             headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -142,9 +149,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json_async().await?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json_async().await?).into()){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}.into()){{/dataType}},
 {{/x-is-default}}{{/vendorExtensions}}{{/responses}}
-                code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
+                code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }.into()),
             }
         }
     }
@@ -167,7 +174,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
     {{#vendorExtensions.x-github.previews}}#[cfg(feature = "{{name}}")]
-    {{/vendorExtensions.x-github.previews}}pub fn {{operationId}}(&self{{#hasParams}}, {{/hasParams}}{{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, {{classname}}{{operationIdCamelCase}}Error> {
+    {{/vendorExtensions.x-github.previews}}pub fn {{operationId}}(&self{{#hasParams}}, {{/hasParams}}{{#pathParams}}{{paramName}}: {{#nullable}}Option<{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}>{{/nullable}}{{^nullable}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{{dataType}}}{{/isUuid}}{{/isString}}{{/nullable}}{{#hasMore}}, {{/hasMore}}{{/pathParams}}{{#hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}query_params: {{#vendorExtensions.x-codegen-has-optional-query-params}}Option<{{/vendorExtensions.x-codegen-has-optional-query-params}}impl Into<{{classname}}{{operationIdCamelCase}}Params{{#vendorExtensions.x-codegen-has-string-params}}<'api>{{/vendorExtensions.x-codegen-has-string-params}}>{{#vendorExtensions.x-codegen-has-optional-query-params}}>{{/vendorExtensions.x-codegen-has-optional-query-params}}{{#hasBodyParam}}, {{/hasBodyParam}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasQueryParams}}{{#hasPathParams}}, {{/hasPathParams}}{{/hasQueryParams}}body: {{#bodyParam}}{{{dataType}}}{{/bodyParam}}{{/hasBodyParam}}) -> Result<{{#responses}}{{#vendorExtensions.x-is-default}}{{{dataType}}}{{/vendorExtensions.x-is-default}}{{/responses}}{{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}, AdapterError> {
 
         let {{#hasQueryParams}}mut {{/hasQueryParams}}request_uri = format!("{}{{path}}", super::GITHUB_BASE_API_URL{{#hasPathParams}}, {{/hasPathParams}}{{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}});
 
@@ -188,12 +195,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: {{#hasBodyParam}}Some({{#bodyParam}}{{^vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}::from_json(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-codegen-body-bytes}}body.into(){{/vendorExtensions.x-codegen-body-bytes}}{{/bodyParam}}){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
+            body: {{#hasBodyParam}}Some(C::from_json::<{{#bodyParam}}{{^vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-is-map-container}}HashMap{{/vendorExtensions.x-is-map-container}}{{^vendorExtensions.x-is-map-container}}{{{dataType}}}{{/vendorExtensions.x-is-map-container}}>(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{#vendorExtensions.x-codegen-body-bytes}}Vec<u8>>(body)?{{/vendorExtensions.x-codegen-body-bytes}}{{/bodyParam}}){{/hasBodyParam}}{{^hasBodyParam}}None{{/hasBodyParam}},
             method: "{{httpMethod}}",
             headers: vec![{{#vendorExtensions.x-github.previews}}("Accept", "application/vnd.github.{{name}}-preview+json"), {{/vendorExtensions.x-github.previews}}]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -206,9 +213,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> {{classname}}<'api, C> {
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}
-                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json()?)){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}){{/dataType}},
+                {{code}} => {{#dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}(github_response.to_json()?).into()){{/dataType}}{{^dataType}}Err({{classname}}{{operationIdCamelCase}}Error::Status{{code}}.into()){{/dataType}},
 {{/x-is-default}}{{/vendorExtensions}}{{/responses}}
-                code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }),
+                code => Err({{classname}}{{operationIdCamelCase}}Error::Generic { code }.into()),
             }
         }
     }

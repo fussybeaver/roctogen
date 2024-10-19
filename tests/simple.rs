@@ -2,7 +2,13 @@
 use wasm_bindgen_test::*;
 
 use roctogen::api::{self, repos};
-use roctogen::{adapters::client, auth::Auth};
+use roctogen::{auth::Auth};
+#[cfg(any(
+    feature = "reqwest",
+    feature = "ureq",
+    target_arch = "wasm32"
+))]
+use roctogen::adapters::client;
 
 use roctogen::models;
 
@@ -31,8 +37,8 @@ async fn get_wasm_fail() {
         .await;
     match &req {
         Ok(_) => {}
-        Err(repos::ReposListCommitsError::Status404(e)) => {
-            debug!("{}", e.message.as_ref().unwrap());
+        Err(roctogen::adapters::AdapterError::Endpoint { description, status_code: 404, .. }) => {
+            debug!("{}", description);
         }
         Err(_) => {
             assert!(false);
@@ -54,8 +60,8 @@ fn get_sync_fail() {
         repos::new(&client).list_commits("this-user-does-not-exist", "bollard", Some(&per_page));
     match &req {
         Ok(_) => {}
-        Err(repos::ReposListCommitsError::Status404(e)) => {
-            debug!("{}", e.message.as_ref().unwrap());
+        Err(roctogen::adapters::AdapterError::Endpoint { description, status_code: 404, .. }) => {
+            debug!("{}", description);
         }
         Err(x) => {
             debug!("{:?}", x);
@@ -146,8 +152,8 @@ async fn get_async_fail() {
         .await;
     match &req {
         Ok(_) => {}
-        Err(repos::ReposListCommitsError::Status404(e)) => {
-            debug!("{}", e.message.as_ref().unwrap());
+        Err(roctogen::adapters::AdapterError::Endpoint { description, status_code: 404, .. }) => {
+            debug!("{}", description);
         }
         Err(x) => {
             debug!("{:?}", x);
@@ -175,8 +181,8 @@ async fn post_wasm_fail() {
         .await;
     match &req {
         Ok(_) => {}
-        Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
-            assert_eq!(404, *code);
+        Err(roctogen::adapters::AdapterError::Endpoint { description, status_code: 404, .. }) => {
+            debug!("{}", description);
         }
         Err(_) => {
             assert!(false);
@@ -200,8 +206,8 @@ fn post_sync_fail() {
         repos::new(&client).add_user_access_restrictions("fussybeaver", "bollard", "master", body);
     match &req {
         Ok(_) => {}
-        Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
-            assert_eq!(404, *code);
+        Err(roctogen::adapters::AdapterError::Endpoint { description, status_code: 404, .. }) => {
+            debug!("{}", description);
         }
         Err(_) => {
             assert!(false);
@@ -214,6 +220,7 @@ fn post_sync_fail() {
 #[cfg(all(not(target_arch = "wasm32"), feature = "reqwest"))]
 #[tokio::test]
 async fn post_async_fail() {
+    env_logger::try_init();
     let auth = Auth::None;
     let client = client(&auth).expect("Cannot create client");
 
@@ -226,8 +233,8 @@ async fn post_async_fail() {
         .await;
     match &req {
         Ok(_) => {}
-        Err(repos::ReposAddUserAccessRestrictionsError::Generic { code }) => {
-            assert_eq!(404, *code);
+        Err(e @ roctogen::adapters::AdapterError::Endpoint { description, status_code: 404, .. }) => {
+            debug!("{:?}", e);
         }
         Err(_) => {
             assert!(false);

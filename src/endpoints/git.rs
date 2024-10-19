@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Git<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Git<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Git<C> {
+pub fn new<C: Client>(client: &C) -> Git<C> where AdapterError: From<<C as Client>::Err> {
     Git { client }
 }
 
 /// Errors for the [Create a blob](Git::create_blob_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitCreateBlobError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict")]
@@ -55,19 +45,27 @@ pub enum GitCreateBlobError {
     Generic { code: u16 },
 }
 
+impl From<GitCreateBlobError> for AdapterError {
+    fn from(err: GitCreateBlobError) -> Self {
+        let (description, status_code) = match err {
+            GitCreateBlobError::Status404(_) => (String::from("Resource not found"), 404),
+            GitCreateBlobError::Status409(_) => (String::from("Conflict"), 409),
+            GitCreateBlobError::Status403(_) => (String::from("Forbidden"), 403),
+            GitCreateBlobError::Status422(_) => (String::from("Validation failed"), 422),
+            GitCreateBlobError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a commit](Git::create_commit_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitCreateCommitError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -76,63 +74,82 @@ pub enum GitCreateCommitError {
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitCreateCommitError> for AdapterError {
+    fn from(err: GitCreateCommitError) -> Self {
+        let (description, status_code) = match err {
+            GitCreateCommitError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitCreateCommitError::Status404(_) => (String::from("Resource not found"), 404),
+            GitCreateCommitError::Status409(_) => (String::from("Conflict"), 409),
+            GitCreateCommitError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a reference](Git::create_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitCreateRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitCreateRefError> for AdapterError {
+    fn from(err: GitCreateRefError) -> Self {
+        let (description, status_code) = match err {
+            GitCreateRefError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitCreateRefError::Status409(_) => (String::from("Conflict"), 409),
+            GitCreateRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a tag object](Git::create_tag_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitCreateTagError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitCreateTagError> for AdapterError {
+    fn from(err: GitCreateTagError) -> Self {
+        let (description, status_code) = match err {
+            GitCreateTagError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitCreateTagError::Status409(_) => (String::from("Conflict"), 409),
+            GitCreateTagError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a tree](Git::create_tree_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitCreateTreeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -143,21 +160,29 @@ pub enum GitCreateTreeError {
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitCreateTreeError> for AdapterError {
+    fn from(err: GitCreateTreeError) -> Self {
+        let (description, status_code) = match err {
+            GitCreateTreeError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitCreateTreeError::Status404(_) => (String::from("Resource not found"), 404),
+            GitCreateTreeError::Status403(_) => (String::from("Forbidden"), 403),
+            GitCreateTreeError::Status409(_) => (String::from("Conflict"), 409),
+            GitCreateTreeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a reference](Git::delete_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitDeleteRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Conflict")]
@@ -166,19 +191,25 @@ pub enum GitDeleteRefError {
     Generic { code: u16 },
 }
 
+impl From<GitDeleteRefError> for AdapterError {
+    fn from(err: GitDeleteRefError) -> Self {
+        let (description, status_code) = match err {
+            GitDeleteRefError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitDeleteRefError::Status409(_) => (String::from("Conflict"), 409),
+            GitDeleteRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a blob](Git::get_blob_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitGetBlobError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -191,82 +222,108 @@ pub enum GitGetBlobError {
     Generic { code: u16 },
 }
 
+impl From<GitGetBlobError> for AdapterError {
+    fn from(err: GitGetBlobError) -> Self {
+        let (description, status_code) = match err {
+            GitGetBlobError::Status404(_) => (String::from("Resource not found"), 404),
+            GitGetBlobError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitGetBlobError::Status403(_) => (String::from("Forbidden"), 403),
+            GitGetBlobError::Status409(_) => (String::from("Conflict"), 409),
+            GitGetBlobError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a commit object](Git::get_commit_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitGetCommitError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitGetCommitError> for AdapterError {
+    fn from(err: GitGetCommitError) -> Self {
+        let (description, status_code) = match err {
+            GitGetCommitError::Status404(_) => (String::from("Resource not found"), 404),
+            GitGetCommitError::Status409(_) => (String::from("Conflict"), 409),
+            GitGetCommitError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a reference](Git::get_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitGetRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitGetRefError> for AdapterError {
+    fn from(err: GitGetRefError) -> Self {
+        let (description, status_code) = match err {
+            GitGetRefError::Status404(_) => (String::from("Resource not found"), 404),
+            GitGetRefError::Status409(_) => (String::from("Conflict"), 409),
+            GitGetRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a tag](Git::get_tag_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitGetTagError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitGetTagError> for AdapterError {
+    fn from(err: GitGetTagError) -> Self {
+        let (description, status_code) = match err {
+            GitGetTagError::Status404(_) => (String::from("Resource not found"), 404),
+            GitGetTagError::Status409(_) => (String::from("Conflict"), 409),
+            GitGetTagError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a tree](Git::get_tree_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitGetTreeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -277,44 +334,72 @@ pub enum GitGetTreeError {
     Generic { code: u16 },
 }
 
+impl From<GitGetTreeError> for AdapterError {
+    fn from(err: GitGetTreeError) -> Self {
+        let (description, status_code) = match err {
+            GitGetTreeError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitGetTreeError::Status404(_) => (String::from("Resource not found"), 404),
+            GitGetTreeError::Status409(_) => (String::from("Conflict"), 409),
+            GitGetTreeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List matching references](Git::list_matching_refs_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitListMatchingRefsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<GitListMatchingRefsError> for AdapterError {
+    fn from(err: GitListMatchingRefsError) -> Self {
+        let (description, status_code) = match err {
+            GitListMatchingRefsError::Status409(_) => (String::from("Conflict"), 409),
+            GitListMatchingRefsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a reference](Git::update_ref_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitUpdateRefError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Conflict")]
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitUpdateRefError> for AdapterError {
+    fn from(err: GitUpdateRefError) -> Self {
+        let (description, status_code) = match err {
+            GitUpdateRefError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GitUpdateRefError::Status409(_) => (String::from("Conflict"), 409),
+            GitUpdateRefError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -339,7 +424,7 @@ impl<'req> GitGetTreeParams<'req> {
 }
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
+impl<'api, C: Client> Git<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Create a blob
@@ -347,19 +432,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for create_blob](https://docs.github.com/rest/git/blobs#create-a-blob)
     ///
     /// ---
-    pub async fn create_blob_async(&self, owner: &str, repo: &str, body: PostGitCreateBlob) -> Result<ShortBlob, GitCreateBlobError> {
+    pub async fn create_blob_async(&self, owner: &str, repo: &str, body: PostGitCreateBlob) -> Result<ShortBlob, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/blobs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateBlob::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateBlob>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -371,11 +456,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitCreateBlobError::Status404(github_response.to_json_async().await?)),
-                409 => Err(GitCreateBlobError::Status409(github_response.to_json_async().await?)),
-                403 => Err(GitCreateBlobError::Status403(github_response.to_json_async().await?)),
-                422 => Err(GitCreateBlobError::Status422(github_response.to_json_async().await?)),
-                code => Err(GitCreateBlobError::Generic { code }),
+                404 => Err(GitCreateBlobError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(GitCreateBlobError::Status409(github_response.to_json_async().await?).into()),
+                403 => Err(GitCreateBlobError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(GitCreateBlobError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(GitCreateBlobError::Generic { code }.into()),
             }
         }
     }
@@ -388,19 +473,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_blob(&self, owner: &str, repo: &str, body: PostGitCreateBlob) -> Result<ShortBlob, GitCreateBlobError> {
+    pub fn create_blob(&self, owner: &str, repo: &str, body: PostGitCreateBlob) -> Result<ShortBlob, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/blobs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateBlob::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateBlob>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -412,11 +497,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitCreateBlobError::Status404(github_response.to_json()?)),
-                409 => Err(GitCreateBlobError::Status409(github_response.to_json()?)),
-                403 => Err(GitCreateBlobError::Status403(github_response.to_json()?)),
-                422 => Err(GitCreateBlobError::Status422(github_response.to_json()?)),
-                code => Err(GitCreateBlobError::Generic { code }),
+                404 => Err(GitCreateBlobError::Status404(github_response.to_json()?).into()),
+                409 => Err(GitCreateBlobError::Status409(github_response.to_json()?).into()),
+                403 => Err(GitCreateBlobError::Status403(github_response.to_json()?).into()),
+                422 => Err(GitCreateBlobError::Status422(github_response.to_json()?).into()),
+                code => Err(GitCreateBlobError::Generic { code }.into()),
             }
         }
     }
@@ -459,19 +544,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for create_commit](https://docs.github.com/rest/git/commits#create-a-commit)
     ///
     /// ---
-    pub async fn create_commit_async(&self, owner: &str, repo: &str, body: PostGitCreateCommit) -> Result<GitCommit, GitCreateCommitError> {
+    pub async fn create_commit_async(&self, owner: &str, repo: &str, body: PostGitCreateCommit) -> Result<GitCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/commits", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateCommit::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateCommit>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -483,10 +568,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateCommitError::Status422(github_response.to_json_async().await?)),
-                404 => Err(GitCreateCommitError::Status404(github_response.to_json_async().await?)),
-                409 => Err(GitCreateCommitError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitCreateCommitError::Generic { code }),
+                422 => Err(GitCreateCommitError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(GitCreateCommitError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(GitCreateCommitError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitCreateCommitError::Generic { code }.into()),
             }
         }
     }
@@ -530,19 +615,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_commit(&self, owner: &str, repo: &str, body: PostGitCreateCommit) -> Result<GitCommit, GitCreateCommitError> {
+    pub fn create_commit(&self, owner: &str, repo: &str, body: PostGitCreateCommit) -> Result<GitCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/commits", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateCommit::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateCommit>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -554,10 +639,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateCommitError::Status422(github_response.to_json()?)),
-                404 => Err(GitCreateCommitError::Status404(github_response.to_json()?)),
-                409 => Err(GitCreateCommitError::Status409(github_response.to_json()?)),
-                code => Err(GitCreateCommitError::Generic { code }),
+                422 => Err(GitCreateCommitError::Status422(github_response.to_json()?).into()),
+                404 => Err(GitCreateCommitError::Status404(github_response.to_json()?).into()),
+                409 => Err(GitCreateCommitError::Status409(github_response.to_json()?).into()),
+                code => Err(GitCreateCommitError::Generic { code }.into()),
             }
         }
     }
@@ -571,19 +656,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for create_ref](https://docs.github.com/rest/git/refs#create-a-reference)
     ///
     /// ---
-    pub async fn create_ref_async(&self, owner: &str, repo: &str, body: PostGitCreateRef) -> Result<GitRef, GitCreateRefError> {
+    pub async fn create_ref_async(&self, owner: &str, repo: &str, body: PostGitCreateRef) -> Result<GitRef, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/refs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateRef::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateRef>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -595,9 +680,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateRefError::Status422(github_response.to_json_async().await?)),
-                409 => Err(GitCreateRefError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitCreateRefError::Generic { code }),
+                422 => Err(GitCreateRefError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(GitCreateRefError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitCreateRefError::Generic { code }.into()),
             }
         }
     }
@@ -612,19 +697,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_ref(&self, owner: &str, repo: &str, body: PostGitCreateRef) -> Result<GitRef, GitCreateRefError> {
+    pub fn create_ref(&self, owner: &str, repo: &str, body: PostGitCreateRef) -> Result<GitRef, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/refs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateRef::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateRef>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -636,9 +721,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateRefError::Status422(github_response.to_json()?)),
-                409 => Err(GitCreateRefError::Status409(github_response.to_json()?)),
-                code => Err(GitCreateRefError::Generic { code }),
+                422 => Err(GitCreateRefError::Status422(github_response.to_json()?).into()),
+                409 => Err(GitCreateRefError::Status409(github_response.to_json()?).into()),
+                code => Err(GitCreateRefError::Generic { code }.into()),
             }
         }
     }
@@ -681,19 +766,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for create_tag](https://docs.github.com/rest/git/tags#create-a-tag-object)
     ///
     /// ---
-    pub async fn create_tag_async(&self, owner: &str, repo: &str, body: PostGitCreateTag) -> Result<GitTag, GitCreateTagError> {
+    pub async fn create_tag_async(&self, owner: &str, repo: &str, body: PostGitCreateTag) -> Result<GitTag, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/tags", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateTag::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateTag>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -705,9 +790,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateTagError::Status422(github_response.to_json_async().await?)),
-                409 => Err(GitCreateTagError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitCreateTagError::Generic { code }),
+                422 => Err(GitCreateTagError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(GitCreateTagError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitCreateTagError::Generic { code }.into()),
             }
         }
     }
@@ -751,19 +836,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_tag(&self, owner: &str, repo: &str, body: PostGitCreateTag) -> Result<GitTag, GitCreateTagError> {
+    pub fn create_tag(&self, owner: &str, repo: &str, body: PostGitCreateTag) -> Result<GitTag, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/tags", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateTag::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateTag>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -775,9 +860,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateTagError::Status422(github_response.to_json()?)),
-                409 => Err(GitCreateTagError::Status409(github_response.to_json()?)),
-                code => Err(GitCreateTagError::Generic { code }),
+                422 => Err(GitCreateTagError::Status422(github_response.to_json()?).into()),
+                409 => Err(GitCreateTagError::Status409(github_response.to_json()?).into()),
+                code => Err(GitCreateTagError::Generic { code }.into()),
             }
         }
     }
@@ -795,19 +880,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for create_tree](https://docs.github.com/rest/git/trees#create-a-tree)
     ///
     /// ---
-    pub async fn create_tree_async(&self, owner: &str, repo: &str, body: PostGitCreateTree) -> Result<GitTree, GitCreateTreeError> {
+    pub async fn create_tree_async(&self, owner: &str, repo: &str, body: PostGitCreateTree) -> Result<GitTree, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/trees", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateTree::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateTree>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -819,11 +904,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateTreeError::Status422(github_response.to_json_async().await?)),
-                404 => Err(GitCreateTreeError::Status404(github_response.to_json_async().await?)),
-                403 => Err(GitCreateTreeError::Status403(github_response.to_json_async().await?)),
-                409 => Err(GitCreateTreeError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitCreateTreeError::Generic { code }),
+                422 => Err(GitCreateTreeError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(GitCreateTreeError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GitCreateTreeError::Status403(github_response.to_json_async().await?).into()),
+                409 => Err(GitCreateTreeError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitCreateTreeError::Generic { code }.into()),
             }
         }
     }
@@ -842,19 +927,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_tree(&self, owner: &str, repo: &str, body: PostGitCreateTree) -> Result<GitTree, GitCreateTreeError> {
+    pub fn create_tree(&self, owner: &str, repo: &str, body: PostGitCreateTree) -> Result<GitTree, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/trees", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGitCreateTree::from_json(body)?),
+            body: Some(C::from_json::<PostGitCreateTree>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -866,11 +951,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitCreateTreeError::Status422(github_response.to_json()?)),
-                404 => Err(GitCreateTreeError::Status404(github_response.to_json()?)),
-                403 => Err(GitCreateTreeError::Status403(github_response.to_json()?)),
-                409 => Err(GitCreateTreeError::Status409(github_response.to_json()?)),
-                code => Err(GitCreateTreeError::Generic { code }),
+                422 => Err(GitCreateTreeError::Status422(github_response.to_json()?).into()),
+                404 => Err(GitCreateTreeError::Status404(github_response.to_json()?).into()),
+                403 => Err(GitCreateTreeError::Status403(github_response.to_json()?).into()),
+                409 => Err(GitCreateTreeError::Status409(github_response.to_json()?).into()),
+                code => Err(GitCreateTreeError::Generic { code }.into()),
             }
         }
     }
@@ -884,19 +969,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for delete_ref](https://docs.github.com/rest/git/refs#delete-a-reference)
     ///
     /// ---
-    pub async fn delete_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), GitDeleteRefError> {
+    pub async fn delete_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -908,9 +993,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitDeleteRefError::Status422(github_response.to_json_async().await?)),
-                409 => Err(GitDeleteRefError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitDeleteRefError::Generic { code }),
+                422 => Err(GitDeleteRefError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(GitDeleteRefError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitDeleteRefError::Generic { code }.into()),
             }
         }
     }
@@ -925,7 +1010,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_ref(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), GitDeleteRefError> {
+    pub fn delete_ref(&self, owner: &str, repo: &str, git_ref: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -937,7 +1022,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -949,9 +1034,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitDeleteRefError::Status422(github_response.to_json()?)),
-                409 => Err(GitDeleteRefError::Status409(github_response.to_json()?)),
-                code => Err(GitDeleteRefError::Generic { code }),
+                422 => Err(GitDeleteRefError::Status422(github_response.to_json()?).into()),
+                409 => Err(GitDeleteRefError::Status409(github_response.to_json()?).into()),
+                code => Err(GitDeleteRefError::Generic { code }.into()),
             }
         }
     }
@@ -972,19 +1057,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for get_blob](https://docs.github.com/rest/git/blobs#get-a-blob)
     ///
     /// ---
-    pub async fn get_blob_async(&self, owner: &str, repo: &str, file_sha: &str) -> Result<Blob, GitGetBlobError> {
+    pub async fn get_blob_async(&self, owner: &str, repo: &str, file_sha: &str) -> Result<Blob, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/blobs/{}", super::GITHUB_BASE_API_URL, owner, repo, file_sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -996,11 +1081,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetBlobError::Status404(github_response.to_json_async().await?)),
-                422 => Err(GitGetBlobError::Status422(github_response.to_json_async().await?)),
-                403 => Err(GitGetBlobError::Status403(github_response.to_json_async().await?)),
-                409 => Err(GitGetBlobError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitGetBlobError::Generic { code }),
+                404 => Err(GitGetBlobError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(GitGetBlobError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(GitGetBlobError::Status403(github_response.to_json_async().await?).into()),
+                409 => Err(GitGetBlobError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitGetBlobError::Generic { code }.into()),
             }
         }
     }
@@ -1022,7 +1107,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_blob(&self, owner: &str, repo: &str, file_sha: &str) -> Result<Blob, GitGetBlobError> {
+    pub fn get_blob(&self, owner: &str, repo: &str, file_sha: &str) -> Result<Blob, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/blobs/{}", super::GITHUB_BASE_API_URL, owner, repo, file_sha);
 
@@ -1034,7 +1119,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1046,11 +1131,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetBlobError::Status404(github_response.to_json()?)),
-                422 => Err(GitGetBlobError::Status422(github_response.to_json()?)),
-                403 => Err(GitGetBlobError::Status403(github_response.to_json()?)),
-                409 => Err(GitGetBlobError::Status409(github_response.to_json()?)),
-                code => Err(GitGetBlobError::Generic { code }),
+                404 => Err(GitGetBlobError::Status404(github_response.to_json()?).into()),
+                422 => Err(GitGetBlobError::Status422(github_response.to_json()?).into()),
+                403 => Err(GitGetBlobError::Status403(github_response.to_json()?).into()),
+                409 => Err(GitGetBlobError::Status409(github_response.to_json()?).into()),
+                code => Err(GitGetBlobError::Generic { code }.into()),
             }
         }
     }
@@ -1095,19 +1180,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for get_commit](https://docs.github.com/rest/git/commits#get-a-commit-object)
     ///
     /// ---
-    pub async fn get_commit_async(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<GitCommit, GitGetCommitError> {
+    pub async fn get_commit_async(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<GitCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/commits/{}", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1119,9 +1204,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetCommitError::Status404(github_response.to_json_async().await?)),
-                409 => Err(GitGetCommitError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitGetCommitError::Generic { code }),
+                404 => Err(GitGetCommitError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(GitGetCommitError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitGetCommitError::Generic { code }.into()),
             }
         }
     }
@@ -1167,7 +1252,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_commit(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<GitCommit, GitGetCommitError> {
+    pub fn get_commit(&self, owner: &str, repo: &str, commit_sha: &str) -> Result<GitCommit, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/commits/{}", super::GITHUB_BASE_API_URL, owner, repo, commit_sha);
 
@@ -1179,7 +1264,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1191,9 +1276,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetCommitError::Status404(github_response.to_json()?)),
-                409 => Err(GitGetCommitError::Status409(github_response.to_json()?)),
-                code => Err(GitGetCommitError::Generic { code }),
+                404 => Err(GitGetCommitError::Status404(github_response.to_json()?).into()),
+                409 => Err(GitGetCommitError::Status409(github_response.to_json()?).into()),
+                code => Err(GitGetCommitError::Generic { code }.into()),
             }
         }
     }
@@ -1210,19 +1295,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for get_ref](https://docs.github.com/rest/git/refs#get-a-reference)
     ///
     /// ---
-    pub async fn get_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<GitRef, GitGetRefError> {
+    pub async fn get_ref_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<GitRef, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/ref/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1234,9 +1319,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetRefError::Status404(github_response.to_json_async().await?)),
-                409 => Err(GitGetRefError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitGetRefError::Generic { code }),
+                404 => Err(GitGetRefError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(GitGetRefError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitGetRefError::Generic { code }.into()),
             }
         }
     }
@@ -1254,7 +1339,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_ref(&self, owner: &str, repo: &str, git_ref: &str) -> Result<GitRef, GitGetRefError> {
+    pub fn get_ref(&self, owner: &str, repo: &str, git_ref: &str) -> Result<GitRef, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/ref/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -1266,7 +1351,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1278,9 +1363,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetRefError::Status404(github_response.to_json()?)),
-                409 => Err(GitGetRefError::Status409(github_response.to_json()?)),
-                code => Err(GitGetRefError::Generic { code }),
+                404 => Err(GitGetRefError::Status404(github_response.to_json()?).into()),
+                409 => Err(GitGetRefError::Status409(github_response.to_json()?).into()),
+                code => Err(GitGetRefError::Generic { code }.into()),
             }
         }
     }
@@ -1321,19 +1406,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for get_tag](https://docs.github.com/rest/git/tags#get-a-tag)
     ///
     /// ---
-    pub async fn get_tag_async(&self, owner: &str, repo: &str, tag_sha: &str) -> Result<GitTag, GitGetTagError> {
+    pub async fn get_tag_async(&self, owner: &str, repo: &str, tag_sha: &str) -> Result<GitTag, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/tags/{}", super::GITHUB_BASE_API_URL, owner, repo, tag_sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1345,9 +1430,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetTagError::Status404(github_response.to_json_async().await?)),
-                409 => Err(GitGetTagError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitGetTagError::Generic { code }),
+                404 => Err(GitGetTagError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(GitGetTagError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitGetTagError::Generic { code }.into()),
             }
         }
     }
@@ -1389,7 +1474,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_tag(&self, owner: &str, repo: &str, tag_sha: &str) -> Result<GitTag, GitGetTagError> {
+    pub fn get_tag(&self, owner: &str, repo: &str, tag_sha: &str) -> Result<GitTag, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/tags/{}", super::GITHUB_BASE_API_URL, owner, repo, tag_sha);
 
@@ -1401,7 +1486,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1413,9 +1498,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GitGetTagError::Status404(github_response.to_json()?)),
-                409 => Err(GitGetTagError::Status409(github_response.to_json()?)),
-                code => Err(GitGetTagError::Generic { code }),
+                404 => Err(GitGetTagError::Status404(github_response.to_json()?).into()),
+                409 => Err(GitGetTagError::Status409(github_response.to_json()?).into()),
+                code => Err(GitGetTagError::Generic { code }.into()),
             }
         }
     }
@@ -1434,7 +1519,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for get_tree](https://docs.github.com/rest/git/trees#get-a-tree)
     ///
     /// ---
-    pub async fn get_tree_async(&self, owner: &str, repo: &str, tree_sha: &str, query_params: Option<impl Into<GitGetTreeParams<'api>>>) -> Result<GitTree, GitGetTreeError> {
+    pub async fn get_tree_async(&self, owner: &str, repo: &str, tree_sha: &str, query_params: Option<impl Into<GitGetTreeParams<'api>>>) -> Result<GitTree, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/git/trees/{}", super::GITHUB_BASE_API_URL, owner, repo, tree_sha);
 
@@ -1445,12 +1530,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1462,10 +1547,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitGetTreeError::Status422(github_response.to_json_async().await?)),
-                404 => Err(GitGetTreeError::Status404(github_response.to_json_async().await?)),
-                409 => Err(GitGetTreeError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitGetTreeError::Generic { code }),
+                422 => Err(GitGetTreeError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(GitGetTreeError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(GitGetTreeError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitGetTreeError::Generic { code }.into()),
             }
         }
     }
@@ -1485,7 +1570,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_tree(&self, owner: &str, repo: &str, tree_sha: &str, query_params: Option<impl Into<GitGetTreeParams<'api>>>) -> Result<GitTree, GitGetTreeError> {
+    pub fn get_tree(&self, owner: &str, repo: &str, tree_sha: &str, query_params: Option<impl Into<GitGetTreeParams<'api>>>) -> Result<GitTree, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/git/trees/{}", super::GITHUB_BASE_API_URL, owner, repo, tree_sha);
 
@@ -1502,7 +1587,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1514,10 +1599,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitGetTreeError::Status422(github_response.to_json()?)),
-                404 => Err(GitGetTreeError::Status404(github_response.to_json()?)),
-                409 => Err(GitGetTreeError::Status409(github_response.to_json()?)),
-                code => Err(GitGetTreeError::Generic { code }),
+                422 => Err(GitGetTreeError::Status422(github_response.to_json()?).into()),
+                404 => Err(GitGetTreeError::Status404(github_response.to_json()?).into()),
+                409 => Err(GitGetTreeError::Status409(github_response.to_json()?).into()),
+                code => Err(GitGetTreeError::Generic { code }.into()),
             }
         }
     }
@@ -1538,19 +1623,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for list_matching_refs](https://docs.github.com/rest/git/refs#list-matching-references)
     ///
     /// ---
-    pub async fn list_matching_refs_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
+    pub async fn list_matching_refs_async(&self, owner: &str, repo: &str, git_ref: &str) -> Result<Vec<GitRef>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/matching-refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1562,8 +1647,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(GitListMatchingRefsError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitListMatchingRefsError::Generic { code }),
+                409 => Err(GitListMatchingRefsError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitListMatchingRefsError::Generic { code }.into()),
             }
         }
     }
@@ -1585,7 +1670,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_matching_refs(&self, owner: &str, repo: &str, git_ref: &str) -> Result<Vec<GitRef>, GitListMatchingRefsError> {
+    pub fn list_matching_refs(&self, owner: &str, repo: &str, git_ref: &str) -> Result<Vec<GitRef>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/matching-refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
@@ -1597,7 +1682,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1609,8 +1694,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(GitListMatchingRefsError::Status409(github_response.to_json()?)),
-                code => Err(GitListMatchingRefsError::Generic { code }),
+                409 => Err(GitListMatchingRefsError::Status409(github_response.to_json()?).into()),
+                code => Err(GitListMatchingRefsError::Generic { code }.into()),
             }
         }
     }
@@ -1624,19 +1709,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     /// [GitHub API docs for update_ref](https://docs.github.com/rest/git/refs#update-a-reference)
     ///
     /// ---
-    pub async fn update_ref_async(&self, owner: &str, repo: &str, git_ref: &str, body: PatchGitUpdateRef) -> Result<GitRef, GitUpdateRefError> {
+    pub async fn update_ref_async(&self, owner: &str, repo: &str, git_ref: &str, body: PatchGitUpdateRef) -> Result<GitRef, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchGitUpdateRef::from_json(body)?),
+            body: Some(C::from_json::<PatchGitUpdateRef>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1648,9 +1733,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitUpdateRefError::Status422(github_response.to_json_async().await?)),
-                409 => Err(GitUpdateRefError::Status409(github_response.to_json_async().await?)),
-                code => Err(GitUpdateRefError::Generic { code }),
+                422 => Err(GitUpdateRefError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(GitUpdateRefError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(GitUpdateRefError::Generic { code }.into()),
             }
         }
     }
@@ -1665,19 +1750,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_ref(&self, owner: &str, repo: &str, git_ref: &str, body: PatchGitUpdateRef) -> Result<GitRef, GitUpdateRefError> {
+    pub fn update_ref(&self, owner: &str, repo: &str, git_ref: &str, body: PatchGitUpdateRef) -> Result<GitRef, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/git/refs/{}", super::GITHUB_BASE_API_URL, owner, repo, git_ref);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchGitUpdateRef::from_json(body)?),
+            body: Some(C::from_json::<PatchGitUpdateRef>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1689,9 +1774,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Git<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GitUpdateRefError::Status422(github_response.to_json()?)),
-                409 => Err(GitUpdateRefError::Status409(github_response.to_json()?)),
-                code => Err(GitUpdateRefError::Generic { code }),
+                422 => Err(GitUpdateRefError::Status422(github_response.to_json()?).into()),
+                409 => Err(GitUpdateRefError::Status409(github_response.to_json()?).into()),
+                code => Err(GitUpdateRefError::Generic { code }.into()),
             }
         }
     }

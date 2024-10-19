@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Apps<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct Apps<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> Apps<C> {
+pub fn new<C: Client>(client: &C) -> Apps<C> where AdapterError: From<<C as Client>::Err> {
     Apps { client }
 }
 
 /// Errors for the [Add a repository to an app installation](Apps::add_repo_to_installation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsAddRepoToInstallationForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Not modified")]
@@ -53,19 +43,26 @@ pub enum AppsAddRepoToInstallationForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<AppsAddRepoToInstallationForAuthenticatedUserError> for AdapterError {
+    fn from(err: AppsAddRepoToInstallationForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            AppsAddRepoToInstallationForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsAddRepoToInstallationForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            AppsAddRepoToInstallationForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check a token](Apps::check_token_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsCheckTokenError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -74,19 +71,25 @@ pub enum AppsCheckTokenError {
     Generic { code: u16 },
 }
 
+impl From<AppsCheckTokenError> for AdapterError {
+    fn from(err: AppsCheckTokenError) -> Self {
+        let (description, status_code) = match err {
+            AppsCheckTokenError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsCheckTokenError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsCheckTokenError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a GitHub App from a manifest](Apps::create_from_manifest_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsCreateFromManifestError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -95,19 +98,25 @@ pub enum AppsCreateFromManifestError {
     Generic { code: u16 },
 }
 
+impl From<AppsCreateFromManifestError> for AdapterError {
+    fn from(err: AppsCreateFromManifestError) -> Self {
+        let (description, status_code) = match err {
+            AppsCreateFromManifestError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsCreateFromManifestError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsCreateFromManifestError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an installation access token for an app](Apps::create_installation_access_token_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsCreateInstallationAccessTokenError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Requires authentication")]
@@ -120,93 +129,120 @@ pub enum AppsCreateInstallationAccessTokenError {
     Generic { code: u16 },
 }
 
+impl From<AppsCreateInstallationAccessTokenError> for AdapterError {
+    fn from(err: AppsCreateInstallationAccessTokenError) -> Self {
+        let (description, status_code) = match err {
+            AppsCreateInstallationAccessTokenError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsCreateInstallationAccessTokenError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsCreateInstallationAccessTokenError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsCreateInstallationAccessTokenError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsCreateInstallationAccessTokenError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete an app authorization](Apps::delete_authorization_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsDeleteAuthorizationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<AppsDeleteAuthorizationError> for AdapterError {
+    fn from(err: AppsDeleteAuthorizationError) -> Self {
+        let (description, status_code) = match err {
+            AppsDeleteAuthorizationError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsDeleteAuthorizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete an installation for the authenticated app](Apps::delete_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsDeleteInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<AppsDeleteInstallationError> for AdapterError {
+    fn from(err: AppsDeleteInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsDeleteInstallationError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsDeleteInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete an app token](Apps::delete_token_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsDeleteTokenError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<AppsDeleteTokenError> for AdapterError {
+    fn from(err: AppsDeleteTokenError) -> Self {
+        let (description, status_code) = match err {
+            AppsDeleteTokenError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsDeleteTokenError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get the authenticated app](Apps::get_authenticated_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetAuthenticatedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsGetAuthenticatedError> for AdapterError {
+    fn from(err: AppsGetAuthenticatedError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetAuthenticatedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an app](Apps::get_by_slug_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetBySlugError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -215,55 +251,70 @@ pub enum AppsGetBySlugError {
     Generic { code: u16 },
 }
 
+impl From<AppsGetBySlugError> for AdapterError {
+    fn from(err: AppsGetBySlugError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetBySlugError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsGetBySlugError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsGetBySlugError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get an installation for the authenticated app](Apps::get_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<AppsGetInstallationError> for AdapterError {
+    fn from(err: AppsGetInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetInstallationError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsGetInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get an organization installation for the authenticated app](Apps::get_org_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetOrgInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsGetOrgInstallationError> for AdapterError {
+    fn from(err: AppsGetOrgInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetOrgInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository installation for the authenticated app](Apps::get_repo_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetRepoInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Moved permanently")]
     Status301(BasicError),
     #[error("Resource not found")]
@@ -272,19 +323,25 @@ pub enum AppsGetRepoInstallationError {
     Generic { code: u16 },
 }
 
+impl From<AppsGetRepoInstallationError> for AdapterError {
+    fn from(err: AppsGetRepoInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetRepoInstallationError::Status301(_) => (String::from("Moved permanently"), 301),
+            AppsGetRepoInstallationError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsGetRepoInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a subscription plan for an account](Apps::get_subscription_plan_for_account_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetSubscriptionPlanForAccountError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found when the account has not purchased the listing")]
     Status404(BasicError),
     #[error("Requires authentication")]
@@ -293,19 +350,25 @@ pub enum AppsGetSubscriptionPlanForAccountError {
     Generic { code: u16 },
 }
 
+impl From<AppsGetSubscriptionPlanForAccountError> for AdapterError {
+    fn from(err: AppsGetSubscriptionPlanForAccountError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetSubscriptionPlanForAccountError::Status404(_) => (String::from("Not Found when the account has not purchased the listing"), 404),
+            AppsGetSubscriptionPlanForAccountError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsGetSubscriptionPlanForAccountError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a subscription plan for an account (stubbed)](Apps::get_subscription_plan_for_account_stubbed_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetSubscriptionPlanForAccountStubbedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found when the account has not purchased the listing")]
     Status404,
     #[error("Requires authentication")]
@@ -314,74 +377,94 @@ pub enum AppsGetSubscriptionPlanForAccountStubbedError {
     Generic { code: u16 },
 }
 
+impl From<AppsGetSubscriptionPlanForAccountStubbedError> for AdapterError {
+    fn from(err: AppsGetSubscriptionPlanForAccountStubbedError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetSubscriptionPlanForAccountStubbedError::Status404 => (String::from("Not Found when the account has not purchased the listing"), 404),
+            AppsGetSubscriptionPlanForAccountStubbedError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsGetSubscriptionPlanForAccountStubbedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a user installation for the authenticated app](Apps::get_user_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetUserInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsGetUserInstallationError> for AdapterError {
+    fn from(err: AppsGetUserInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetUserInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a webhook configuration for an app](Apps::get_webhook_config_for_app_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetWebhookConfigForAppError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsGetWebhookConfigForAppError> for AdapterError {
+    fn from(err: AppsGetWebhookConfigForAppError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetWebhookConfigForAppError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a delivery for an app webhook](Apps::get_webhook_delivery_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsGetWebhookDeliveryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsGetWebhookDeliveryError> for AdapterError {
+    fn from(err: AppsGetWebhookDeliveryError) -> Self {
+        let (description, status_code) = match err {
+            AppsGetWebhookDeliveryError::Status400(_) => (String::from("Bad Request"), 400),
+            AppsGetWebhookDeliveryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsGetWebhookDeliveryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List accounts for a plan](Apps::list_accounts_for_plan_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListAccountsForPlanError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -390,40 +473,52 @@ pub enum AppsListAccountsForPlanError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsListAccountsForPlanError> for AdapterError {
+    fn from(err: AppsListAccountsForPlanError) -> Self {
+        let (description, status_code) = match err {
+            AppsListAccountsForPlanError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsListAccountsForPlanError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsListAccountsForPlanError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListAccountsForPlanError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List accounts for a plan (stubbed)](Apps::list_accounts_for_plan_stubbed_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListAccountsForPlanStubbedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsListAccountsForPlanStubbedError> for AdapterError {
+    fn from(err: AppsListAccountsForPlanStubbedError) -> Self {
+        let (description, status_code) = match err {
+            AppsListAccountsForPlanStubbedError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListAccountsForPlanStubbedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories accessible to the user access token](Apps::list_installation_repos_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListInstallationReposForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -432,59 +527,76 @@ pub enum AppsListInstallationReposForAuthenticatedUserError {
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsListInstallationReposForAuthenticatedUserError> for AdapterError {
+    fn from(err: AppsListInstallationReposForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            AppsListInstallationReposForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsListInstallationReposForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsListInstallationReposForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            AppsListInstallationReposForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List installation requests for the authenticated app](Apps::list_installation_requests_for_authenticated_app_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListInstallationRequestsForAuthenticatedAppError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsListInstallationRequestsForAuthenticatedAppError> for AdapterError {
+    fn from(err: AppsListInstallationRequestsForAuthenticatedAppError) -> Self {
+        let (description, status_code) = match err {
+            AppsListInstallationRequestsForAuthenticatedAppError::Status304 => (String::from("Not modified"), 304),
+            AppsListInstallationRequestsForAuthenticatedAppError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListInstallationRequestsForAuthenticatedAppError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List installations for the authenticated app](Apps::list_installations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListInstallationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsListInstallationsError> for AdapterError {
+    fn from(err: AppsListInstallationsError) -> Self {
+        let (description, status_code) = match err {
+            AppsListInstallationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List app installations accessible to the user access token](Apps::list_installations_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListInstallationsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -493,21 +605,28 @@ pub enum AppsListInstallationsForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsListInstallationsForAuthenticatedUserError> for AdapterError {
+    fn from(err: AppsListInstallationsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            AppsListInstallationsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            AppsListInstallationsForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsListInstallationsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListInstallationsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List plans](Apps::list_plans_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListPlansError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Requires authentication")]
@@ -516,38 +635,49 @@ pub enum AppsListPlansError {
     Generic { code: u16 },
 }
 
+impl From<AppsListPlansError> for AdapterError {
+    fn from(err: AppsListPlansError) -> Self {
+        let (description, status_code) = match err {
+            AppsListPlansError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsListPlansError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListPlansError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List plans (stubbed)](Apps::list_plans_stubbed_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListPlansStubbedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<AppsListPlansStubbedError> for AdapterError {
+    fn from(err: AppsListPlansStubbedError) -> Self {
+        let (description, status_code) = match err {
+            AppsListPlansStubbedError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListPlansStubbedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repositories accessible to the app installation](Apps::list_repos_accessible_to_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListReposAccessibleToInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Not modified")]
@@ -558,19 +688,26 @@ pub enum AppsListReposAccessibleToInstallationError {
     Generic { code: u16 },
 }
 
+impl From<AppsListReposAccessibleToInstallationError> for AdapterError {
+    fn from(err: AppsListReposAccessibleToInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsListReposAccessibleToInstallationError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsListReposAccessibleToInstallationError::Status304 => (String::from("Not modified"), 304),
+            AppsListReposAccessibleToInstallationError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListReposAccessibleToInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List subscriptions for the authenticated user](Apps::list_subscriptions_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListSubscriptionsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Requires authentication")]
@@ -581,19 +718,26 @@ pub enum AppsListSubscriptionsForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<AppsListSubscriptionsForAuthenticatedUserError> for AdapterError {
+    fn from(err: AppsListSubscriptionsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            AppsListSubscriptionsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            AppsListSubscriptionsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListSubscriptionsForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsListSubscriptionsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List subscriptions for the authenticated user (stubbed)](Apps::list_subscriptions_for_authenticated_user_stubbed_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListSubscriptionsForAuthenticatedUserStubbedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Requires authentication")]
@@ -602,40 +746,52 @@ pub enum AppsListSubscriptionsForAuthenticatedUserStubbedError {
     Generic { code: u16 },
 }
 
+impl From<AppsListSubscriptionsForAuthenticatedUserStubbedError> for AdapterError {
+    fn from(err: AppsListSubscriptionsForAuthenticatedUserStubbedError) -> Self {
+        let (description, status_code) = match err {
+            AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304 => (String::from("Not modified"), 304),
+            AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List deliveries for an app webhook](Apps::list_webhook_deliveries_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsListWebhookDeliveriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsListWebhookDeliveriesError> for AdapterError {
+    fn from(err: AppsListWebhookDeliveriesError) -> Self {
+        let (description, status_code) = match err {
+            AppsListWebhookDeliveriesError::Status400(_) => (String::from("Bad Request"), 400),
+            AppsListWebhookDeliveriesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsListWebhookDeliveriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Redeliver a delivery for an app webhook](Apps::redeliver_webhook_delivery_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsRedeliverWebhookDeliveryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -644,19 +800,25 @@ pub enum AppsRedeliverWebhookDeliveryError {
     Generic { code: u16 },
 }
 
+impl From<AppsRedeliverWebhookDeliveryError> for AdapterError {
+    fn from(err: AppsRedeliverWebhookDeliveryError) -> Self {
+        let (description, status_code) = match err {
+            AppsRedeliverWebhookDeliveryError::Status400(_) => (String::from("Bad Request"), 400),
+            AppsRedeliverWebhookDeliveryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsRedeliverWebhookDeliveryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove a repository from an app installation](Apps::remove_repo_from_installation_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsRemoveRepoFromInstallationForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Not modified")]
@@ -669,55 +831,72 @@ pub enum AppsRemoveRepoFromInstallationForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<AppsRemoveRepoFromInstallationForAuthenticatedUserError> for AdapterError {
+    fn from(err: AppsRemoveRepoFromInstallationForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status422 => (String::from("Returned when the application is installed on `all` repositories in the organization, or if this request would remove the last repository that the application has access to in the organization."), 422),
+            AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Reset a token](Apps::reset_token_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsResetTokenError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<AppsResetTokenError> for AdapterError {
+    fn from(err: AppsResetTokenError) -> Self {
+        let (description, status_code) = match err {
+            AppsResetTokenError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsResetTokenError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Revoke an installation access token](Apps::revoke_installation_access_token_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsRevokeInstallationAccessTokenError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsRevokeInstallationAccessTokenError> for AdapterError {
+    fn from(err: AppsRevokeInstallationAccessTokenError) -> Self {
+        let (description, status_code) = match err {
+            AppsRevokeInstallationAccessTokenError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a scoped access token](Apps::scope_token_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsScopeTokenError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Forbidden")]
@@ -730,59 +909,91 @@ pub enum AppsScopeTokenError {
     Generic { code: u16 },
 }
 
+impl From<AppsScopeTokenError> for AdapterError {
+    fn from(err: AppsScopeTokenError) -> Self {
+        let (description, status_code) = match err {
+            AppsScopeTokenError::Status401(_) => (String::from("Requires authentication"), 401),
+            AppsScopeTokenError::Status403(_) => (String::from("Forbidden"), 403),
+            AppsScopeTokenError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsScopeTokenError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            AppsScopeTokenError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Suspend an app installation](Apps::suspend_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsSuspendInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsSuspendInstallationError> for AdapterError {
+    fn from(err: AppsSuspendInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsSuspendInstallationError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsSuspendInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Unsuspend an app installation](Apps::unsuspend_installation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsUnsuspendInstallationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<AppsUnsuspendInstallationError> for AdapterError {
+    fn from(err: AppsUnsuspendInstallationError) -> Self {
+        let (description, status_code) = match err {
+            AppsUnsuspendInstallationError::Status404(_) => (String::from("Resource not found"), 404),
+            AppsUnsuspendInstallationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a webhook configuration for an app](Apps::update_webhook_config_for_app_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum AppsUpdateWebhookConfigForAppError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<AppsUpdateWebhookConfigForAppError> for AdapterError {
+    fn from(err: AppsUpdateWebhookConfigForAppError) -> Self {
+        let (description, status_code) = match err {
+            AppsUpdateWebhookConfigForAppError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -1355,7 +1566,7 @@ impl<'req> AppsListWebhookDeliveriesParams<'req> {
 }
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
+impl<'api, C: Client> Apps<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add a repository to an app installation
@@ -1367,19 +1578,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for add_repo_to_installation_for_authenticated_user](https://docs.github.com/rest/apps/installations#add-a-repository-to-an-app-installation)
     ///
     /// ---
-    pub async fn add_repo_to_installation_for_authenticated_user_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsAddRepoToInstallationForAuthenticatedUserError> {
+    pub async fn add_repo_to_installation_for_authenticated_user_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1391,10 +1602,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }),
+                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304.into()),
+                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1411,7 +1622,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_repo_to_installation_for_authenticated_user(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsAddRepoToInstallationForAuthenticatedUserError> {
+    pub fn add_repo_to_installation_for_authenticated_user(&self, installation_id: i32, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
@@ -1423,7 +1634,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1435,10 +1646,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }),
+                403 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                304 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status304.into()),
+                404 => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsAddRepoToInstallationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1452,19 +1663,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for check_token](https://docs.github.com/rest/apps/oauth-applications#check-a-token)
     ///
     /// ---
-    pub async fn check_token_async(&self, client_id: &str, body: PostAppsCheckToken) -> Result<Authorization, AppsCheckTokenError> {
+    pub async fn check_token_async(&self, client_id: &str, body: PostAppsCheckToken) -> Result<Authorization, AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostAppsCheckToken::from_json(body)?),
+            body: Some(C::from_json::<PostAppsCheckToken>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1476,9 +1687,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCheckTokenError::Status422(github_response.to_json_async().await?)),
-                404 => Err(AppsCheckTokenError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsCheckTokenError::Generic { code }),
+                422 => Err(AppsCheckTokenError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(AppsCheckTokenError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsCheckTokenError::Generic { code }.into()),
             }
         }
     }
@@ -1493,19 +1704,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_token(&self, client_id: &str, body: PostAppsCheckToken) -> Result<Authorization, AppsCheckTokenError> {
+    pub fn check_token(&self, client_id: &str, body: PostAppsCheckToken) -> Result<Authorization, AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostAppsCheckToken::from_json(body)?),
+            body: Some(C::from_json::<PostAppsCheckToken>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1517,9 +1728,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsCheckTokenError::Status422(github_response.to_json()?)),
-                404 => Err(AppsCheckTokenError::Status404(github_response.to_json()?)),
-                code => Err(AppsCheckTokenError::Generic { code }),
+                422 => Err(AppsCheckTokenError::Status422(github_response.to_json()?).into()),
+                404 => Err(AppsCheckTokenError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsCheckTokenError::Generic { code }.into()),
             }
         }
     }
@@ -1533,19 +1744,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for create_from_manifest](https://docs.github.com/rest/apps/apps#create-a-github-app-from-a-manifest)
     ///
     /// ---
-    pub async fn create_from_manifest_async(&self, code: &str) -> Result<PostAppsCreateFromManifestResponse201, AppsCreateFromManifestError> {
+    pub async fn create_from_manifest_async(&self, code: &str) -> Result<PostAppsCreateFromManifestResponse201, AdapterError> {
 
         let request_uri = format!("{}/app-manifests/{}/conversions", super::GITHUB_BASE_API_URL, code);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1557,9 +1768,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json_async().await?)),
-                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsCreateFromManifestError::Generic { code }),
+                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsCreateFromManifestError::Generic { code }.into()),
             }
         }
     }
@@ -1574,7 +1785,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_from_manifest(&self, code: &str) -> Result<PostAppsCreateFromManifestResponse201, AppsCreateFromManifestError> {
+    pub fn create_from_manifest(&self, code: &str) -> Result<PostAppsCreateFromManifestResponse201, AdapterError> {
 
         let request_uri = format!("{}/app-manifests/{}/conversions", super::GITHUB_BASE_API_URL, code);
 
@@ -1586,7 +1797,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1598,9 +1809,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json()?)),
-                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json()?)),
-                code => Err(AppsCreateFromManifestError::Generic { code }),
+                404 => Err(AppsCreateFromManifestError::Status404(github_response.to_json()?).into()),
+                422 => Err(AppsCreateFromManifestError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsCreateFromManifestError::Generic { code }.into()),
             }
         }
     }
@@ -1622,19 +1833,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for create_installation_access_token](https://docs.github.com/rest/apps/apps#create-an-installation-access-token-for-an-app)
     ///
     /// ---
-    pub async fn create_installation_access_token_async(&self, installation_id: i32, body: PostAppsCreateInstallationAccessToken) -> Result<InstallationToken, AppsCreateInstallationAccessTokenError> {
+    pub async fn create_installation_access_token_async(&self, installation_id: i32, body: PostAppsCreateInstallationAccessToken) -> Result<InstallationToken, AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}/access_tokens", super::GITHUB_BASE_API_URL, installation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostAppsCreateInstallationAccessToken::from_json(body)?),
+            body: Some(C::from_json::<PostAppsCreateInstallationAccessToken>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1646,11 +1857,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json_async().await?)),
-                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json_async().await?)),
-                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json_async().await?)),
-                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsCreateInstallationAccessTokenError::Generic { code }),
+                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json_async().await?).into()),
+                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsCreateInstallationAccessTokenError::Generic { code }.into()),
             }
         }
     }
@@ -1673,19 +1884,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_installation_access_token(&self, installation_id: i32, body: PostAppsCreateInstallationAccessToken) -> Result<InstallationToken, AppsCreateInstallationAccessTokenError> {
+    pub fn create_installation_access_token(&self, installation_id: i32, body: PostAppsCreateInstallationAccessToken) -> Result<InstallationToken, AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}/access_tokens", super::GITHUB_BASE_API_URL, installation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostAppsCreateInstallationAccessToken::from_json(body)?),
+            body: Some(C::from_json::<PostAppsCreateInstallationAccessToken>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1697,11 +1908,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json()?)),
-                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json()?)),
-                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json()?)),
-                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json()?)),
-                code => Err(AppsCreateInstallationAccessTokenError::Generic { code }),
+                403 => Err(AppsCreateInstallationAccessTokenError::Status403(github_response.to_json()?).into()),
+                401 => Err(AppsCreateInstallationAccessTokenError::Status401(github_response.to_json()?).into()),
+                404 => Err(AppsCreateInstallationAccessTokenError::Status404(github_response.to_json()?).into()),
+                422 => Err(AppsCreateInstallationAccessTokenError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsCreateInstallationAccessTokenError::Generic { code }.into()),
             }
         }
     }
@@ -1716,19 +1927,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for delete_authorization](https://docs.github.com/rest/apps/oauth-applications#delete-an-app-authorization)
     ///
     /// ---
-    pub async fn delete_authorization_async(&self, client_id: &str, body: DeleteAppsDeleteAuthorization) -> Result<(), AppsDeleteAuthorizationError> {
+    pub async fn delete_authorization_async(&self, client_id: &str, body: DeleteAppsDeleteAuthorization) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/applications/{}/grant", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteAppsDeleteAuthorization::from_json(body)?),
+            body: Some(C::from_json::<DeleteAppsDeleteAuthorization>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1740,8 +1951,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsDeleteAuthorizationError::Generic { code }),
+                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsDeleteAuthorizationError::Generic { code }.into()),
             }
         }
     }
@@ -1757,19 +1968,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_authorization(&self, client_id: &str, body: DeleteAppsDeleteAuthorization) -> Result<(), AppsDeleteAuthorizationError> {
+    pub fn delete_authorization(&self, client_id: &str, body: DeleteAppsDeleteAuthorization) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/applications/{}/grant", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteAppsDeleteAuthorization::from_json(body)?),
+            body: Some(C::from_json::<DeleteAppsDeleteAuthorization>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1781,8 +1992,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json()?)),
-                code => Err(AppsDeleteAuthorizationError::Generic { code }),
+                422 => Err(AppsDeleteAuthorizationError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsDeleteAuthorizationError::Generic { code }.into()),
             }
         }
     }
@@ -1798,19 +2009,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for delete_installation](https://docs.github.com/rest/apps/apps#delete-an-installation-for-the-authenticated-app)
     ///
     /// ---
-    pub async fn delete_installation_async(&self, installation_id: i32) -> Result<(), AppsDeleteInstallationError> {
+    pub async fn delete_installation_async(&self, installation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}", super::GITHUB_BASE_API_URL, installation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1822,8 +2033,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsDeleteInstallationError::Generic { code }),
+                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsDeleteInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -1840,7 +2051,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_installation(&self, installation_id: i32) -> Result<(), AppsDeleteInstallationError> {
+    pub fn delete_installation(&self, installation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}", super::GITHUB_BASE_API_URL, installation_id);
 
@@ -1852,7 +2063,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1864,8 +2075,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json()?)),
-                code => Err(AppsDeleteInstallationError::Generic { code }),
+                404 => Err(AppsDeleteInstallationError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsDeleteInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -1879,19 +2090,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for delete_token](https://docs.github.com/rest/apps/oauth-applications#delete-an-app-token)
     ///
     /// ---
-    pub async fn delete_token_async(&self, client_id: &str, body: DeleteAppsDeleteToken) -> Result<(), AppsDeleteTokenError> {
+    pub async fn delete_token_async(&self, client_id: &str, body: DeleteAppsDeleteToken) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteAppsDeleteToken::from_json(body)?),
+            body: Some(C::from_json::<DeleteAppsDeleteToken>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1903,8 +2114,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsDeleteTokenError::Generic { code }),
+                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsDeleteTokenError::Generic { code }.into()),
             }
         }
     }
@@ -1919,19 +2130,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_token(&self, client_id: &str, body: DeleteAppsDeleteToken) -> Result<(), AppsDeleteTokenError> {
+    pub fn delete_token(&self, client_id: &str, body: DeleteAppsDeleteToken) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteAppsDeleteToken::from_json(body)?),
+            body: Some(C::from_json::<DeleteAppsDeleteToken>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1943,8 +2154,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json()?)),
-                code => Err(AppsDeleteTokenError::Generic { code }),
+                422 => Err(AppsDeleteTokenError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsDeleteTokenError::Generic { code }.into()),
             }
         }
     }
@@ -1960,19 +2171,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_authenticated](https://docs.github.com/rest/apps/apps#get-the-authenticated-app)
     ///
     /// ---
-    pub async fn get_authenticated_async(&self) -> Result<Integration, AppsGetAuthenticatedError> {
+    pub async fn get_authenticated_async(&self) -> Result<Integration, AdapterError> {
 
         let request_uri = format!("{}/app", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1984,7 +2195,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetAuthenticatedError::Generic { code }),
+                code => Err(AppsGetAuthenticatedError::Generic { code }.into()),
             }
         }
     }
@@ -2001,7 +2212,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_authenticated(&self) -> Result<Integration, AppsGetAuthenticatedError> {
+    pub fn get_authenticated(&self) -> Result<Integration, AdapterError> {
 
         let request_uri = format!("{}/app", super::GITHUB_BASE_API_URL);
 
@@ -2013,7 +2224,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2025,7 +2236,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetAuthenticatedError::Generic { code }),
+                code => Err(AppsGetAuthenticatedError::Generic { code }.into()),
             }
         }
     }
@@ -2040,19 +2251,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_by_slug](https://docs.github.com/rest/apps/apps#get-an-app)
     ///
     /// ---
-    pub async fn get_by_slug_async(&self, app_slug: &str) -> Result<Integration, AppsGetBySlugError> {
+    pub async fn get_by_slug_async(&self, app_slug: &str) -> Result<Integration, AdapterError> {
 
         let request_uri = format!("{}/apps/{}", super::GITHUB_BASE_API_URL, app_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2064,9 +2275,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsGetBySlugError::Status403(github_response.to_json_async().await?)),
-                404 => Err(AppsGetBySlugError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsGetBySlugError::Generic { code }),
+                403 => Err(AppsGetBySlugError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(AppsGetBySlugError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsGetBySlugError::Generic { code }.into()),
             }
         }
     }
@@ -2082,7 +2293,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_by_slug(&self, app_slug: &str) -> Result<Integration, AppsGetBySlugError> {
+    pub fn get_by_slug(&self, app_slug: &str) -> Result<Integration, AdapterError> {
 
         let request_uri = format!("{}/apps/{}", super::GITHUB_BASE_API_URL, app_slug);
 
@@ -2094,7 +2305,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2106,9 +2317,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsGetBySlugError::Status403(github_response.to_json()?)),
-                404 => Err(AppsGetBySlugError::Status404(github_response.to_json()?)),
-                code => Err(AppsGetBySlugError::Generic { code }),
+                403 => Err(AppsGetBySlugError::Status403(github_response.to_json()?).into()),
+                404 => Err(AppsGetBySlugError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsGetBySlugError::Generic { code }.into()),
             }
         }
     }
@@ -2124,19 +2335,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_installation](https://docs.github.com/rest/apps/apps#get-an-installation-for-the-authenticated-app)
     ///
     /// ---
-    pub async fn get_installation_async(&self, installation_id: i32) -> Result<Installation, AppsGetInstallationError> {
+    pub async fn get_installation_async(&self, installation_id: i32) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}", super::GITHUB_BASE_API_URL, installation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2148,8 +2359,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetInstallationError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsGetInstallationError::Generic { code }),
+                404 => Err(AppsGetInstallationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsGetInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2166,7 +2377,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_installation(&self, installation_id: i32) -> Result<Installation, AppsGetInstallationError> {
+    pub fn get_installation(&self, installation_id: i32) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}", super::GITHUB_BASE_API_URL, installation_id);
 
@@ -2178,7 +2389,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2190,8 +2401,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetInstallationError::Status404(github_response.to_json()?)),
-                code => Err(AppsGetInstallationError::Generic { code }),
+                404 => Err(AppsGetInstallationError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsGetInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2207,19 +2418,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_org_installation](https://docs.github.com/rest/apps/apps#get-an-organization-installation-for-the-authenticated-app)
     ///
     /// ---
-    pub async fn get_org_installation_async(&self, org: &str) -> Result<Installation, AppsGetOrgInstallationError> {
+    pub async fn get_org_installation_async(&self, org: &str) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/installation", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2231,7 +2442,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetOrgInstallationError::Generic { code }),
+                code => Err(AppsGetOrgInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2248,7 +2459,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_installation(&self, org: &str) -> Result<Installation, AppsGetOrgInstallationError> {
+    pub fn get_org_installation(&self, org: &str) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/installation", super::GITHUB_BASE_API_URL, org);
 
@@ -2260,7 +2471,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2272,7 +2483,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetOrgInstallationError::Generic { code }),
+                code => Err(AppsGetOrgInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2288,19 +2499,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_repo_installation](https://docs.github.com/rest/apps/apps#get-a-repository-installation-for-the-authenticated-app)
     ///
     /// ---
-    pub async fn get_repo_installation_async(&self, owner: &str, repo: &str) -> Result<Installation, AppsGetRepoInstallationError> {
+    pub async fn get_repo_installation_async(&self, owner: &str, repo: &str) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/installation", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2312,9 +2523,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                301 => Err(AppsGetRepoInstallationError::Status301(github_response.to_json_async().await?)),
-                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsGetRepoInstallationError::Generic { code }),
+                301 => Err(AppsGetRepoInstallationError::Status301(github_response.to_json_async().await?).into()),
+                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsGetRepoInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2331,7 +2542,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_installation(&self, owner: &str, repo: &str) -> Result<Installation, AppsGetRepoInstallationError> {
+    pub fn get_repo_installation(&self, owner: &str, repo: &str) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/installation", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2343,7 +2554,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2355,9 +2566,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                301 => Err(AppsGetRepoInstallationError::Status301(github_response.to_json()?)),
-                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json()?)),
-                code => Err(AppsGetRepoInstallationError::Generic { code }),
+                301 => Err(AppsGetRepoInstallationError::Status301(github_response.to_json()?).into()),
+                404 => Err(AppsGetRepoInstallationError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsGetRepoInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2373,19 +2584,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_subscription_plan_for_account](https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account)
     ///
     /// ---
-    pub async fn get_subscription_plan_for_account_async(&self, account_id: i32) -> Result<MarketplacePurchase, AppsGetSubscriptionPlanForAccountError> {
+    pub async fn get_subscription_plan_for_account_async(&self, account_id: i32) -> Result<MarketplacePurchase, AdapterError> {
 
         let request_uri = format!("{}/marketplace_listing/accounts/{}", super::GITHUB_BASE_API_URL, account_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2397,9 +2608,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json_async().await?)),
-                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }),
+                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json_async().await?).into()),
+                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }.into()),
             }
         }
     }
@@ -2416,7 +2627,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_subscription_plan_for_account(&self, account_id: i32) -> Result<MarketplacePurchase, AppsGetSubscriptionPlanForAccountError> {
+    pub fn get_subscription_plan_for_account(&self, account_id: i32) -> Result<MarketplacePurchase, AdapterError> {
 
         let request_uri = format!("{}/marketplace_listing/accounts/{}", super::GITHUB_BASE_API_URL, account_id);
 
@@ -2428,7 +2639,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2440,9 +2651,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json()?)),
-                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json()?)),
-                code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }),
+                404 => Err(AppsGetSubscriptionPlanForAccountError::Status404(github_response.to_json()?).into()),
+                401 => Err(AppsGetSubscriptionPlanForAccountError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsGetSubscriptionPlanForAccountError::Generic { code }.into()),
             }
         }
     }
@@ -2458,19 +2669,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_subscription_plan_for_account_stubbed](https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account-stubbed)
     ///
     /// ---
-    pub async fn get_subscription_plan_for_account_stubbed_async(&self, account_id: i32) -> Result<MarketplacePurchase, AppsGetSubscriptionPlanForAccountStubbedError> {
+    pub async fn get_subscription_plan_for_account_stubbed_async(&self, account_id: i32) -> Result<MarketplacePurchase, AdapterError> {
 
         let request_uri = format!("{}/marketplace_listing/stubbed/accounts/{}", super::GITHUB_BASE_API_URL, account_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2482,9 +2693,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404),
-                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }),
+                404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404.into()),
+                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -2501,7 +2712,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_subscription_plan_for_account_stubbed(&self, account_id: i32) -> Result<MarketplacePurchase, AppsGetSubscriptionPlanForAccountStubbedError> {
+    pub fn get_subscription_plan_for_account_stubbed(&self, account_id: i32) -> Result<MarketplacePurchase, AdapterError> {
 
         let request_uri = format!("{}/marketplace_listing/stubbed/accounts/{}", super::GITHUB_BASE_API_URL, account_id);
 
@@ -2513,7 +2724,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2525,9 +2736,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404),
-                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json()?)),
-                code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }),
+                404 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status404.into()),
+                401 => Err(AppsGetSubscriptionPlanForAccountStubbedError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsGetSubscriptionPlanForAccountStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -2543,19 +2754,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_user_installation](https://docs.github.com/rest/apps/apps#get-a-user-installation-for-the-authenticated-app)
     ///
     /// ---
-    pub async fn get_user_installation_async(&self, username: &str) -> Result<Installation, AppsGetUserInstallationError> {
+    pub async fn get_user_installation_async(&self, username: &str) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/users/{}/installation", super::GITHUB_BASE_API_URL, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2567,7 +2778,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetUserInstallationError::Generic { code }),
+                code => Err(AppsGetUserInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2584,7 +2795,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_user_installation(&self, username: &str) -> Result<Installation, AppsGetUserInstallationError> {
+    pub fn get_user_installation(&self, username: &str) -> Result<Installation, AdapterError> {
 
         let request_uri = format!("{}/users/{}/installation", super::GITHUB_BASE_API_URL, username);
 
@@ -2596,7 +2807,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2608,7 +2819,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetUserInstallationError::Generic { code }),
+                code => Err(AppsGetUserInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -2624,19 +2835,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_webhook_config_for_app](https://docs.github.com/rest/apps/webhooks#get-a-webhook-configuration-for-an-app)
     ///
     /// ---
-    pub async fn get_webhook_config_for_app_async(&self) -> Result<WebhookConfig, AppsGetWebhookConfigForAppError> {
+    pub async fn get_webhook_config_for_app_async(&self) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/app/hook/config", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2648,7 +2859,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetWebhookConfigForAppError::Generic { code }),
+                code => Err(AppsGetWebhookConfigForAppError::Generic { code }.into()),
             }
         }
     }
@@ -2665,7 +2876,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook_config_for_app(&self) -> Result<WebhookConfig, AppsGetWebhookConfigForAppError> {
+    pub fn get_webhook_config_for_app(&self) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/app/hook/config", super::GITHUB_BASE_API_URL);
 
@@ -2677,7 +2888,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2689,7 +2900,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsGetWebhookConfigForAppError::Generic { code }),
+                code => Err(AppsGetWebhookConfigForAppError::Generic { code }.into()),
             }
         }
     }
@@ -2705,19 +2916,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/apps/webhooks#get-a-delivery-for-an-app-webhook)
     ///
     /// ---
-    pub async fn get_webhook_delivery_async(&self, delivery_id: i32) -> Result<HookDelivery, AppsGetWebhookDeliveryError> {
+    pub async fn get_webhook_delivery_async(&self, delivery_id: i32) -> Result<HookDelivery, AdapterError> {
 
         let request_uri = format!("{}/app/hook/deliveries/{}", super::GITHUB_BASE_API_URL, delivery_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2729,9 +2940,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsGetWebhookDeliveryError::Status400(github_response.to_json_async().await?)),
-                422 => Err(AppsGetWebhookDeliveryError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsGetWebhookDeliveryError::Generic { code }),
+                400 => Err(AppsGetWebhookDeliveryError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(AppsGetWebhookDeliveryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsGetWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -2748,7 +2959,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook_delivery(&self, delivery_id: i32) -> Result<HookDelivery, AppsGetWebhookDeliveryError> {
+    pub fn get_webhook_delivery(&self, delivery_id: i32) -> Result<HookDelivery, AdapterError> {
 
         let request_uri = format!("{}/app/hook/deliveries/{}", super::GITHUB_BASE_API_URL, delivery_id);
 
@@ -2760,7 +2971,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2772,9 +2983,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsGetWebhookDeliveryError::Status400(github_response.to_json()?)),
-                422 => Err(AppsGetWebhookDeliveryError::Status422(github_response.to_json()?)),
-                code => Err(AppsGetWebhookDeliveryError::Generic { code }),
+                400 => Err(AppsGetWebhookDeliveryError::Status400(github_response.to_json()?).into()),
+                422 => Err(AppsGetWebhookDeliveryError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsGetWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -2790,7 +3001,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_accounts_for_plan](https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan)
     ///
     /// ---
-    pub async fn list_accounts_for_plan_async(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AppsListAccountsForPlanError> {
+    pub async fn list_accounts_for_plan_async(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/plans/{}/accounts", super::GITHUB_BASE_API_URL, plan_id);
 
@@ -2801,12 +3012,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2818,10 +3029,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json_async().await?)),
-                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json_async().await?)),
-                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListAccountsForPlanError::Generic { code }),
+                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json_async().await?).into()),
+                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListAccountsForPlanError::Generic { code }.into()),
             }
         }
     }
@@ -2838,7 +3049,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_accounts_for_plan(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AppsListAccountsForPlanError> {
+    pub fn list_accounts_for_plan(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/plans/{}/accounts", super::GITHUB_BASE_API_URL, plan_id);
 
@@ -2855,7 +3066,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2867,10 +3078,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json()?)),
-                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json()?)),
-                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json()?)),
-                code => Err(AppsListAccountsForPlanError::Generic { code }),
+                404 => Err(AppsListAccountsForPlanError::Status404(github_response.to_json()?).into()),
+                422 => Err(AppsListAccountsForPlanError::Status422(github_response.to_json()?).into()),
+                401 => Err(AppsListAccountsForPlanError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListAccountsForPlanError::Generic { code }.into()),
             }
         }
     }
@@ -2886,7 +3097,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_accounts_for_plan_stubbed](https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan-stubbed)
     ///
     /// ---
-    pub async fn list_accounts_for_plan_stubbed_async(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanStubbedParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AppsListAccountsForPlanStubbedError> {
+    pub async fn list_accounts_for_plan_stubbed_async(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanStubbedParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/stubbed/plans/{}/accounts", super::GITHUB_BASE_API_URL, plan_id);
 
@@ -2897,12 +3108,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2914,8 +3125,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListAccountsForPlanStubbedError::Generic { code }),
+                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListAccountsForPlanStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -2932,7 +3143,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_accounts_for_plan_stubbed(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanStubbedParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AppsListAccountsForPlanStubbedError> {
+    pub fn list_accounts_for_plan_stubbed(&self, plan_id: i32, query_params: Option<impl Into<AppsListAccountsForPlanStubbedParams<'api>>>) -> Result<Vec<MarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/stubbed/plans/{}/accounts", super::GITHUB_BASE_API_URL, plan_id);
 
@@ -2949,7 +3160,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -2961,8 +3172,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json()?)),
-                code => Err(AppsListAccountsForPlanStubbedError::Generic { code }),
+                401 => Err(AppsListAccountsForPlanStubbedError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListAccountsForPlanStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -2980,7 +3191,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_installation_repos_for_authenticated_user](https://docs.github.com/rest/apps/installations#list-repositories-accessible-to-the-user-access-token)
     ///
     /// ---
-    pub async fn list_installation_repos_for_authenticated_user_async(&self, installation_id: i32, query_params: Option<impl Into<AppsListInstallationReposForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationReposForAuthenticatedUserResponse200, AppsListInstallationReposForAuthenticatedUserError> {
+    pub async fn list_installation_repos_for_authenticated_user_async(&self, installation_id: i32, query_params: Option<impl Into<AppsListInstallationReposForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationReposForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/installations/{}/repositories", super::GITHUB_BASE_API_URL, installation_id);
 
@@ -2991,12 +3202,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3008,10 +3219,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304),
-                code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }),
+                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304.into()),
+                code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3030,7 +3241,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_installation_repos_for_authenticated_user(&self, installation_id: i32, query_params: Option<impl Into<AppsListInstallationReposForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationReposForAuthenticatedUserResponse200, AppsListInstallationReposForAuthenticatedUserError> {
+    pub fn list_installation_repos_for_authenticated_user(&self, installation_id: i32, query_params: Option<impl Into<AppsListInstallationReposForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationReposForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/installations/{}/repositories", super::GITHUB_BASE_API_URL, installation_id);
 
@@ -3047,7 +3258,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3059,10 +3270,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304),
-                code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }),
+                404 => Err(AppsListInstallationReposForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(AppsListInstallationReposForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                304 => Err(AppsListInstallationReposForAuthenticatedUserError::Status304.into()),
+                code => Err(AppsListInstallationReposForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3076,7 +3287,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_installation_requests_for_authenticated_app](https://docs.github.com/rest/apps/apps#list-installation-requests-for-the-authenticated-app)
     ///
     /// ---
-    pub async fn list_installation_requests_for_authenticated_app_async(&self, query_params: Option<impl Into<AppsListInstallationRequestsForAuthenticatedAppParams>>) -> Result<Vec<IntegrationInstallationRequest>, AppsListInstallationRequestsForAuthenticatedAppError> {
+    pub async fn list_installation_requests_for_authenticated_app_async(&self, query_params: Option<impl Into<AppsListInstallationRequestsForAuthenticatedAppParams>>) -> Result<Vec<IntegrationInstallationRequest>, AdapterError> {
 
         let mut request_uri = format!("{}/app/installation-requests", super::GITHUB_BASE_API_URL);
 
@@ -3087,12 +3298,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3104,9 +3315,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status304),
-                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListInstallationRequestsForAuthenticatedAppError::Generic { code }),
+                304 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status304.into()),
+                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListInstallationRequestsForAuthenticatedAppError::Generic { code }.into()),
             }
         }
     }
@@ -3121,7 +3332,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_installation_requests_for_authenticated_app(&self, query_params: Option<impl Into<AppsListInstallationRequestsForAuthenticatedAppParams>>) -> Result<Vec<IntegrationInstallationRequest>, AppsListInstallationRequestsForAuthenticatedAppError> {
+    pub fn list_installation_requests_for_authenticated_app(&self, query_params: Option<impl Into<AppsListInstallationRequestsForAuthenticatedAppParams>>) -> Result<Vec<IntegrationInstallationRequest>, AdapterError> {
 
         let mut request_uri = format!("{}/app/installation-requests", super::GITHUB_BASE_API_URL);
 
@@ -3138,7 +3349,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3150,9 +3361,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status304),
-                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(github_response.to_json()?)),
-                code => Err(AppsListInstallationRequestsForAuthenticatedAppError::Generic { code }),
+                304 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status304.into()),
+                401 => Err(AppsListInstallationRequestsForAuthenticatedAppError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListInstallationRequestsForAuthenticatedAppError::Generic { code }.into()),
             }
         }
     }
@@ -3168,7 +3379,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_installations](https://docs.github.com/rest/apps/apps#list-installations-for-the-authenticated-app)
     ///
     /// ---
-    pub async fn list_installations_async(&self, query_params: Option<impl Into<AppsListInstallationsParams<'api>>>) -> Result<Vec<Installation>, AppsListInstallationsError> {
+    pub async fn list_installations_async(&self, query_params: Option<impl Into<AppsListInstallationsParams<'api>>>) -> Result<Vec<Installation>, AdapterError> {
 
         let mut request_uri = format!("{}/app/installations", super::GITHUB_BASE_API_URL);
 
@@ -3179,12 +3390,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3196,7 +3407,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsListInstallationsError::Generic { code }),
+                code => Err(AppsListInstallationsError::Generic { code }.into()),
             }
         }
     }
@@ -3213,7 +3424,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_installations(&self, query_params: Option<impl Into<AppsListInstallationsParams<'api>>>) -> Result<Vec<Installation>, AppsListInstallationsError> {
+    pub fn list_installations(&self, query_params: Option<impl Into<AppsListInstallationsParams<'api>>>) -> Result<Vec<Installation>, AdapterError> {
 
         let mut request_uri = format!("{}/app/installations", super::GITHUB_BASE_API_URL);
 
@@ -3230,7 +3441,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3242,7 +3453,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsListInstallationsError::Generic { code }),
+                code => Err(AppsListInstallationsError::Generic { code }.into()),
             }
         }
     }
@@ -3260,7 +3471,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_installations_for_authenticated_user](https://docs.github.com/rest/apps/installations#list-app-installations-accessible-to-the-user-access-token)
     ///
     /// ---
-    pub async fn list_installations_for_authenticated_user_async(&self, query_params: Option<impl Into<AppsListInstallationsForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, AppsListInstallationsForAuthenticatedUserError> {
+    pub async fn list_installations_for_authenticated_user_async(&self, query_params: Option<impl Into<AppsListInstallationsForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/installations", super::GITHUB_BASE_API_URL);
 
@@ -3271,12 +3482,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3288,10 +3499,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304),
-                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }),
+                304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304.into()),
+                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3310,7 +3521,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_installations_for_authenticated_user(&self, query_params: Option<impl Into<AppsListInstallationsForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, AppsListInstallationsForAuthenticatedUserError> {
+    pub fn list_installations_for_authenticated_user(&self, query_params: Option<impl Into<AppsListInstallationsForAuthenticatedUserParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/user/installations", super::GITHUB_BASE_API_URL);
 
@@ -3327,7 +3538,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3339,10 +3550,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304),
-                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }),
+                304 => Err(AppsListInstallationsForAuthenticatedUserError::Status304.into()),
+                403 => Err(AppsListInstallationsForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(AppsListInstallationsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListInstallationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3358,7 +3569,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_plans](https://docs.github.com/rest/apps/marketplace#list-plans)
     ///
     /// ---
-    pub async fn list_plans_async(&self, query_params: Option<impl Into<AppsListPlansParams>>) -> Result<Vec<MarketplaceListingPlan>, AppsListPlansError> {
+    pub async fn list_plans_async(&self, query_params: Option<impl Into<AppsListPlansParams>>) -> Result<Vec<MarketplaceListingPlan>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/plans", super::GITHUB_BASE_API_URL);
 
@@ -3369,12 +3580,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3386,9 +3597,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListPlansError::Status404(github_response.to_json_async().await?)),
-                401 => Err(AppsListPlansError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListPlansError::Generic { code }),
+                404 => Err(AppsListPlansError::Status404(github_response.to_json_async().await?).into()),
+                401 => Err(AppsListPlansError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListPlansError::Generic { code }.into()),
             }
         }
     }
@@ -3405,7 +3616,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_plans(&self, query_params: Option<impl Into<AppsListPlansParams>>) -> Result<Vec<MarketplaceListingPlan>, AppsListPlansError> {
+    pub fn list_plans(&self, query_params: Option<impl Into<AppsListPlansParams>>) -> Result<Vec<MarketplaceListingPlan>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/plans", super::GITHUB_BASE_API_URL);
 
@@ -3422,7 +3633,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3434,9 +3645,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsListPlansError::Status404(github_response.to_json()?)),
-                401 => Err(AppsListPlansError::Status401(github_response.to_json()?)),
-                code => Err(AppsListPlansError::Generic { code }),
+                404 => Err(AppsListPlansError::Status404(github_response.to_json()?).into()),
+                401 => Err(AppsListPlansError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListPlansError::Generic { code }.into()),
             }
         }
     }
@@ -3452,7 +3663,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_plans_stubbed](https://docs.github.com/rest/apps/marketplace#list-plans-stubbed)
     ///
     /// ---
-    pub async fn list_plans_stubbed_async(&self, query_params: Option<impl Into<AppsListPlansStubbedParams>>) -> Result<Vec<MarketplaceListingPlan>, AppsListPlansStubbedError> {
+    pub async fn list_plans_stubbed_async(&self, query_params: Option<impl Into<AppsListPlansStubbedParams>>) -> Result<Vec<MarketplaceListingPlan>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/stubbed/plans", super::GITHUB_BASE_API_URL);
 
@@ -3463,12 +3674,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3480,8 +3691,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListPlansStubbedError::Generic { code }),
+                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListPlansStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -3498,7 +3709,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_plans_stubbed(&self, query_params: Option<impl Into<AppsListPlansStubbedParams>>) -> Result<Vec<MarketplaceListingPlan>, AppsListPlansStubbedError> {
+    pub fn list_plans_stubbed(&self, query_params: Option<impl Into<AppsListPlansStubbedParams>>) -> Result<Vec<MarketplaceListingPlan>, AdapterError> {
 
         let mut request_uri = format!("{}/marketplace_listing/stubbed/plans", super::GITHUB_BASE_API_URL);
 
@@ -3515,7 +3726,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3527,8 +3738,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json()?)),
-                code => Err(AppsListPlansStubbedError::Generic { code }),
+                401 => Err(AppsListPlansStubbedError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListPlansStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -3542,7 +3753,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_repos_accessible_to_installation](https://docs.github.com/rest/apps/installations#list-repositories-accessible-to-the-app-installation)
     ///
     /// ---
-    pub async fn list_repos_accessible_to_installation_async(&self, query_params: Option<impl Into<AppsListReposAccessibleToInstallationParams>>) -> Result<GetAppsListReposAccessibleToInstallationResponse200, AppsListReposAccessibleToInstallationError> {
+    pub async fn list_repos_accessible_to_installation_async(&self, query_params: Option<impl Into<AppsListReposAccessibleToInstallationParams>>) -> Result<GetAppsListReposAccessibleToInstallationResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/installation/repositories", super::GITHUB_BASE_API_URL);
 
@@ -3553,12 +3764,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3570,10 +3781,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json_async().await?)),
-                304 => Err(AppsListReposAccessibleToInstallationError::Status304),
-                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListReposAccessibleToInstallationError::Generic { code }),
+                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json_async().await?).into()),
+                304 => Err(AppsListReposAccessibleToInstallationError::Status304.into()),
+                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListReposAccessibleToInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -3588,7 +3799,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_accessible_to_installation(&self, query_params: Option<impl Into<AppsListReposAccessibleToInstallationParams>>) -> Result<GetAppsListReposAccessibleToInstallationResponse200, AppsListReposAccessibleToInstallationError> {
+    pub fn list_repos_accessible_to_installation(&self, query_params: Option<impl Into<AppsListReposAccessibleToInstallationParams>>) -> Result<GetAppsListReposAccessibleToInstallationResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/installation/repositories", super::GITHUB_BASE_API_URL);
 
@@ -3605,7 +3816,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3617,10 +3828,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json()?)),
-                304 => Err(AppsListReposAccessibleToInstallationError::Status304),
-                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json()?)),
-                code => Err(AppsListReposAccessibleToInstallationError::Generic { code }),
+                403 => Err(AppsListReposAccessibleToInstallationError::Status403(github_response.to_json()?).into()),
+                304 => Err(AppsListReposAccessibleToInstallationError::Status304.into()),
+                401 => Err(AppsListReposAccessibleToInstallationError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListReposAccessibleToInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -3634,7 +3845,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_subscriptions_for_authenticated_user](https://docs.github.com/rest/apps/marketplace#list-subscriptions-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_subscriptions_for_authenticated_user_async(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserParams>>) -> Result<Vec<UserMarketplacePurchase>, AppsListSubscriptionsForAuthenticatedUserError> {
+    pub async fn list_subscriptions_for_authenticated_user_async(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserParams>>) -> Result<Vec<UserMarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/user/marketplace_purchases", super::GITHUB_BASE_API_URL);
 
@@ -3645,12 +3856,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3662,10 +3873,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json_async().await?)),
-                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }),
+                304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304.into()),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3680,7 +3891,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_subscriptions_for_authenticated_user(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserParams>>) -> Result<Vec<UserMarketplacePurchase>, AppsListSubscriptionsForAuthenticatedUserError> {
+    pub fn list_subscriptions_for_authenticated_user(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserParams>>) -> Result<Vec<UserMarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/user/marketplace_purchases", super::GITHUB_BASE_API_URL);
 
@@ -3697,7 +3908,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3709,10 +3920,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json()?)),
-                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }),
+                304 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status304.into()),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                404 => Err(AppsListSubscriptionsForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsListSubscriptionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3726,7 +3937,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_subscriptions_for_authenticated_user_stubbed](https://docs.github.com/rest/apps/marketplace#list-subscriptions-for-the-authenticated-user-stubbed)
     ///
     /// ---
-    pub async fn list_subscriptions_for_authenticated_user_stubbed_async(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserStubbedParams>>) -> Result<Vec<UserMarketplacePurchase>, AppsListSubscriptionsForAuthenticatedUserStubbedError> {
+    pub async fn list_subscriptions_for_authenticated_user_stubbed_async(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserStubbedParams>>) -> Result<Vec<UserMarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/user/marketplace_purchases/stubbed", super::GITHUB_BASE_API_URL);
 
@@ -3737,12 +3948,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3754,9 +3965,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json_async().await?)),
-                code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }),
+                304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304.into()),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -3771,7 +3982,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_subscriptions_for_authenticated_user_stubbed(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserStubbedParams>>) -> Result<Vec<UserMarketplacePurchase>, AppsListSubscriptionsForAuthenticatedUserStubbedError> {
+    pub fn list_subscriptions_for_authenticated_user_stubbed(&self, query_params: Option<impl Into<AppsListSubscriptionsForAuthenticatedUserStubbedParams>>) -> Result<Vec<UserMarketplacePurchase>, AdapterError> {
 
         let mut request_uri = format!("{}/user/marketplace_purchases/stubbed", super::GITHUB_BASE_API_URL);
 
@@ -3788,7 +3999,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3800,9 +4011,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304),
-                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json()?)),
-                code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }),
+                304 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status304.into()),
+                401 => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Status401(github_response.to_json()?).into()),
+                code => Err(AppsListSubscriptionsForAuthenticatedUserStubbedError::Generic { code }.into()),
             }
         }
     }
@@ -3818,7 +4029,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/apps/webhooks#list-deliveries-for-an-app-webhook)
     ///
     /// ---
-    pub async fn list_webhook_deliveries_async(&self, query_params: Option<impl Into<AppsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AppsListWebhookDeliveriesError> {
+    pub async fn list_webhook_deliveries_async(&self, query_params: Option<impl Into<AppsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AdapterError> {
 
         let mut request_uri = format!("{}/app/hook/deliveries", super::GITHUB_BASE_API_URL);
 
@@ -3829,12 +4040,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3846,9 +4057,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsListWebhookDeliveriesError::Status400(github_response.to_json_async().await?)),
-                422 => Err(AppsListWebhookDeliveriesError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsListWebhookDeliveriesError::Generic { code }),
+                400 => Err(AppsListWebhookDeliveriesError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(AppsListWebhookDeliveriesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsListWebhookDeliveriesError::Generic { code }.into()),
             }
         }
     }
@@ -3865,7 +4076,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_webhook_deliveries(&self, query_params: Option<impl Into<AppsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AppsListWebhookDeliveriesError> {
+    pub fn list_webhook_deliveries(&self, query_params: Option<impl Into<AppsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AdapterError> {
 
         let mut request_uri = format!("{}/app/hook/deliveries", super::GITHUB_BASE_API_URL);
 
@@ -3882,7 +4093,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3894,9 +4105,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsListWebhookDeliveriesError::Status400(github_response.to_json()?)),
-                422 => Err(AppsListWebhookDeliveriesError::Status422(github_response.to_json()?)),
-                code => Err(AppsListWebhookDeliveriesError::Generic { code }),
+                400 => Err(AppsListWebhookDeliveriesError::Status400(github_response.to_json()?).into()),
+                422 => Err(AppsListWebhookDeliveriesError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsListWebhookDeliveriesError::Generic { code }.into()),
             }
         }
     }
@@ -3912,19 +4123,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/apps/webhooks#redeliver-a-delivery-for-an-app-webhook)
     ///
     /// ---
-    pub async fn redeliver_webhook_delivery_async(&self, delivery_id: i32) -> Result<HashMap<String, Value>, AppsRedeliverWebhookDeliveryError> {
+    pub async fn redeliver_webhook_delivery_async(&self, delivery_id: i32) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/app/hook/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, delivery_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3936,9 +4147,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(github_response.to_json_async().await?)),
-                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }),
+                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -3955,7 +4166,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn redeliver_webhook_delivery(&self, delivery_id: i32) -> Result<HashMap<String, Value>, AppsRedeliverWebhookDeliveryError> {
+    pub fn redeliver_webhook_delivery(&self, delivery_id: i32) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/app/hook/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, delivery_id);
 
@@ -3967,7 +4178,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -3979,9 +4190,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(github_response.to_json()?)),
-                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(github_response.to_json()?)),
-                code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }),
+                400 => Err(AppsRedeliverWebhookDeliveryError::Status400(github_response.to_json()?).into()),
+                422 => Err(AppsRedeliverWebhookDeliveryError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsRedeliverWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -3997,19 +4208,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for remove_repo_from_installation_for_authenticated_user](https://docs.github.com/rest/apps/installations#remove-a-repository-from-an-app-installation)
     ///
     /// ---
-    pub async fn remove_repo_from_installation_for_authenticated_user_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsRemoveRepoFromInstallationForAuthenticatedUserError> {
+    pub async fn remove_repo_from_installation_for_authenticated_user_async(&self, installation_id: i32, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4021,11 +4232,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(github_response.to_json_async().await?)),
-                304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(github_response.to_json_async().await?)),
-                422 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status422),
-                code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }),
+                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304.into()),
+                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status422.into()),
+                code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4042,7 +4253,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_repo_from_installation_for_authenticated_user(&self, installation_id: i32, repository_id: i32) -> Result<(), AppsRemoveRepoFromInstallationForAuthenticatedUserError> {
+    pub fn remove_repo_from_installation_for_authenticated_user(&self, installation_id: i32, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/installations/{}/repositories/{}", super::GITHUB_BASE_API_URL, installation_id, repository_id);
 
@@ -4054,7 +4265,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4066,11 +4277,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(github_response.to_json()?)),
-                304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304),
-                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(github_response.to_json()?)),
-                422 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status422),
-                code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }),
+                403 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                304 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status304.into()),
+                404 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Status422.into()),
+                code => Err(AppsRemoveRepoFromInstallationForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4084,19 +4295,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for reset_token](https://docs.github.com/rest/apps/oauth-applications#reset-a-token)
     ///
     /// ---
-    pub async fn reset_token_async(&self, client_id: &str, body: PatchAppsResetToken) -> Result<Authorization, AppsResetTokenError> {
+    pub async fn reset_token_async(&self, client_id: &str, body: PatchAppsResetToken) -> Result<Authorization, AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchAppsResetToken::from_json(body)?),
+            body: Some(C::from_json::<PatchAppsResetToken>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4108,8 +4319,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsResetTokenError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsResetTokenError::Generic { code }),
+                422 => Err(AppsResetTokenError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsResetTokenError::Generic { code }.into()),
             }
         }
     }
@@ -4124,19 +4335,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn reset_token(&self, client_id: &str, body: PatchAppsResetToken) -> Result<Authorization, AppsResetTokenError> {
+    pub fn reset_token(&self, client_id: &str, body: PatchAppsResetToken) -> Result<Authorization, AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchAppsResetToken::from_json(body)?),
+            body: Some(C::from_json::<PatchAppsResetToken>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4148,8 +4359,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(AppsResetTokenError::Status422(github_response.to_json()?)),
-                code => Err(AppsResetTokenError::Generic { code }),
+                422 => Err(AppsResetTokenError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsResetTokenError::Generic { code }.into()),
             }
         }
     }
@@ -4165,19 +4376,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for revoke_installation_access_token](https://docs.github.com/rest/apps/installations#revoke-an-installation-access-token)
     ///
     /// ---
-    pub async fn revoke_installation_access_token_async(&self) -> Result<(), AppsRevokeInstallationAccessTokenError> {
+    pub async fn revoke_installation_access_token_async(&self) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/installation/token", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4189,7 +4400,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }),
+                code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }.into()),
             }
         }
     }
@@ -4206,7 +4417,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn revoke_installation_access_token(&self) -> Result<(), AppsRevokeInstallationAccessTokenError> {
+    pub fn revoke_installation_access_token(&self) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/installation/token", super::GITHUB_BASE_API_URL);
 
@@ -4218,7 +4429,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4230,7 +4441,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }),
+                code => Err(AppsRevokeInstallationAccessTokenError::Generic { code }.into()),
             }
         }
     }
@@ -4248,19 +4459,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for scope_token](https://docs.github.com/rest/apps/apps#create-a-scoped-access-token)
     ///
     /// ---
-    pub async fn scope_token_async(&self, client_id: &str, body: PostAppsScopeToken) -> Result<Authorization, AppsScopeTokenError> {
+    pub async fn scope_token_async(&self, client_id: &str, body: PostAppsScopeToken) -> Result<Authorization, AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token/scoped", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostAppsScopeToken::from_json(body)?),
+            body: Some(C::from_json::<PostAppsScopeToken>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4272,11 +4483,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsScopeTokenError::Status401(github_response.to_json_async().await?)),
-                403 => Err(AppsScopeTokenError::Status403(github_response.to_json_async().await?)),
-                404 => Err(AppsScopeTokenError::Status404(github_response.to_json_async().await?)),
-                422 => Err(AppsScopeTokenError::Status422(github_response.to_json_async().await?)),
-                code => Err(AppsScopeTokenError::Generic { code }),
+                401 => Err(AppsScopeTokenError::Status401(github_response.to_json_async().await?).into()),
+                403 => Err(AppsScopeTokenError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(AppsScopeTokenError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(AppsScopeTokenError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(AppsScopeTokenError::Generic { code }.into()),
             }
         }
     }
@@ -4295,19 +4506,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn scope_token(&self, client_id: &str, body: PostAppsScopeToken) -> Result<Authorization, AppsScopeTokenError> {
+    pub fn scope_token(&self, client_id: &str, body: PostAppsScopeToken) -> Result<Authorization, AdapterError> {
 
         let request_uri = format!("{}/applications/{}/token/scoped", super::GITHUB_BASE_API_URL, client_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostAppsScopeToken::from_json(body)?),
+            body: Some(C::from_json::<PostAppsScopeToken>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4319,11 +4530,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(AppsScopeTokenError::Status401(github_response.to_json()?)),
-                403 => Err(AppsScopeTokenError::Status403(github_response.to_json()?)),
-                404 => Err(AppsScopeTokenError::Status404(github_response.to_json()?)),
-                422 => Err(AppsScopeTokenError::Status422(github_response.to_json()?)),
-                code => Err(AppsScopeTokenError::Generic { code }),
+                401 => Err(AppsScopeTokenError::Status401(github_response.to_json()?).into()),
+                403 => Err(AppsScopeTokenError::Status403(github_response.to_json()?).into()),
+                404 => Err(AppsScopeTokenError::Status404(github_response.to_json()?).into()),
+                422 => Err(AppsScopeTokenError::Status422(github_response.to_json()?).into()),
+                code => Err(AppsScopeTokenError::Generic { code }.into()),
             }
         }
     }
@@ -4339,19 +4550,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for suspend_installation](https://docs.github.com/rest/apps/apps#suspend-an-app-installation)
     ///
     /// ---
-    pub async fn suspend_installation_async(&self, installation_id: i32) -> Result<(), AppsSuspendInstallationError> {
+    pub async fn suspend_installation_async(&self, installation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}/suspended", super::GITHUB_BASE_API_URL, installation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4363,8 +4574,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsSuspendInstallationError::Generic { code }),
+                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsSuspendInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -4381,7 +4592,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn suspend_installation(&self, installation_id: i32) -> Result<(), AppsSuspendInstallationError> {
+    pub fn suspend_installation(&self, installation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}/suspended", super::GITHUB_BASE_API_URL, installation_id);
 
@@ -4393,7 +4604,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4405,8 +4616,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json()?)),
-                code => Err(AppsSuspendInstallationError::Generic { code }),
+                404 => Err(AppsSuspendInstallationError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsSuspendInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -4422,19 +4633,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for unsuspend_installation](https://docs.github.com/rest/apps/apps#unsuspend-an-app-installation)
     ///
     /// ---
-    pub async fn unsuspend_installation_async(&self, installation_id: i32) -> Result<(), AppsUnsuspendInstallationError> {
+    pub async fn unsuspend_installation_async(&self, installation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}/suspended", super::GITHUB_BASE_API_URL, installation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4446,8 +4657,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json_async().await?)),
-                code => Err(AppsUnsuspendInstallationError::Generic { code }),
+                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(AppsUnsuspendInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -4464,7 +4675,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unsuspend_installation(&self, installation_id: i32) -> Result<(), AppsUnsuspendInstallationError> {
+    pub fn unsuspend_installation(&self, installation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/app/installations/{}/suspended", super::GITHUB_BASE_API_URL, installation_id);
 
@@ -4476,7 +4687,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4488,8 +4699,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json()?)),
-                code => Err(AppsUnsuspendInstallationError::Generic { code }),
+                404 => Err(AppsUnsuspendInstallationError::Status404(github_response.to_json()?).into()),
+                code => Err(AppsUnsuspendInstallationError::Generic { code }.into()),
             }
         }
     }
@@ -4505,19 +4716,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     /// [GitHub API docs for update_webhook_config_for_app](https://docs.github.com/rest/apps/webhooks#update-a-webhook-configuration-for-an-app)
     ///
     /// ---
-    pub async fn update_webhook_config_for_app_async(&self, body: PatchAppsUpdateWebhookConfigForApp) -> Result<WebhookConfig, AppsUpdateWebhookConfigForAppError> {
+    pub async fn update_webhook_config_for_app_async(&self, body: PatchAppsUpdateWebhookConfigForApp) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/app/hook/config", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchAppsUpdateWebhookConfigForApp::from_json(body)?),
+            body: Some(C::from_json::<PatchAppsUpdateWebhookConfigForApp>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4529,7 +4740,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }),
+                code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }.into()),
             }
         }
     }
@@ -4546,19 +4757,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_webhook_config_for_app(&self, body: PatchAppsUpdateWebhookConfigForApp) -> Result<WebhookConfig, AppsUpdateWebhookConfigForAppError> {
+    pub fn update_webhook_config_for_app(&self, body: PatchAppsUpdateWebhookConfigForApp) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/app/hook/config", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchAppsUpdateWebhookConfigForApp::from_json(body)?),
+            body: Some(C::from_json::<PatchAppsUpdateWebhookConfigForApp>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -4570,7 +4781,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> Apps<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }),
+                code => Err(AppsUpdateWebhookConfigForAppError::Generic { code }.into()),
             }
         }
     }

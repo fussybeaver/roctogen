@@ -6,20 +6,17 @@ use http::{
     Request, Response,
 };
 
-use ureq::{Agent, AsSendBody};
+use ureq::{config::Config, Agent, AsSendBody};
 
 use log::debug;
 
-use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use super::{GitHubRequest, GitHubResponseExt};
 use crate::auth::Auth;
 
 use serde::{de::DeserializeOwned, ser, Deserialize};
 use serde_json::value::Value;
 
-pub struct RequestWithBody {
-    pub(crate) req: http::request::Builder,
-    pub(crate) body: Option<Vec<u8>>,
-}
+use std::error::Error;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AdapterError {
@@ -35,28 +32,32 @@ pub enum AdapterError {
     UnimplementedAsync,
 }
 
+impl From<AdapterError> for crate::adapters::AdapterError {
+    fn from(err: AdapterError) -> Self {
+        Self::Client {
+            description: err.to_string(),
+            source: Some(Box::new(err)),
+        }
+    }
+}
+
 impl super::Client for Client {
     type Req = RequestWithBody;
+    type Body = Vec<u8>;
+    type Err = AdapterError where crate::adapters::AdapterError: From<Self::Err>;
 
-    fn new(auth: &Auth) -> Result<Self, AdapterError> {
+    fn new(auth: &Auth) -> Result<Self, Self::Err> {
         Ok(Self {
             auth: auth.to_owned(),
-            agent: Agent::new_with_config(ureq::Config {
-                http_status_as_error: false,
-                ..Default::default()
-            }),
+            agent: Agent::new_with_config(Config::builder().http_status_as_error(false).build()),
         })
     }
 
-    fn get_auth(&self) -> &Auth {
-        &self.auth
-    }
-
-    fn fetch(&self, request: Self::Req) -> Result<impl GitHubResponseExt, AdapterError> {
-        let res = if let Some(body) = request.body {
-            self.agent.run(request.req.body(body)?)
+    fn fetch(&self, req: Self::Req) -> Result<impl GitHubResponseExt, Self::Err> {
+        let res = if let Some(body) = req.body {
+            self.agent.run(req.req.body(body)?)
         } else {
-            self.agent.run(request.req.body(())?)
+            self.agent.run(req.req.body(())?)
         };
 
         match res {
@@ -65,63 +66,11 @@ impl super::Client for Client {
         }
     }
 
-    async fn fetch_async(
-        &self,
-        _request: Self::Req,
-    ) -> Result<impl GitHubResponseExt, AdapterError> {
+    async fn fetch_async(&self, _request: Self::Req) -> Result<impl GitHubResponseExt, Self::Err> {
         Err::<Response<ureq::Body>, _>(AdapterError::UnimplementedAsync)
     }
-}
 
-pub struct Client {
-    auth: Auth,
-    agent: Agent,
-}
-
-impl GitHubResponseExt for Response<ureq::Body> {
-    fn is_success(&self) -> bool {
-        300 > self.status().as_u16() && self.status().as_u16() >= 200
-    }
-
-    fn status_code(&self) -> u16 {
-        self.status().as_u16()
-    }
-
-    fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(self) -> Result<E, AdapterError> {
-        Ok(serde_json::from_reader(self.into_body().as_reader())?)
-    }
-
-    async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(
-        self,
-    ) -> Result<E, AdapterError> {
-        unimplemented!("Ureq adapter only has sync json conversion implemented");
-    }
-}
-
-impl<E> FromJson<E, Value> for E
-where
-    E: ser::Serialize + std::fmt::Debug,
-{
-    fn from_json(model: E) -> Result<Value, serde_json::Error> {
-        debug!("Error: {:?}", model);
-
-        Ok(serde_json::to_value(&model)?.into())
-    }
-}
-
-impl<E> FromJson<E, Vec<u8>> for E
-where
-    E: ser::Serialize + std::fmt::Debug,
-{
-    fn from_json(model: E) -> Result<Vec<u8>, serde_json::Error> {
-        debug!("Error: {:?}", model);
-
-        Ok(serde_json::to_vec(&model)?)
-    }
-}
-
-impl<C: super::Client> GitHubRequestBuilder<Vec<u8>, C> for RequestWithBody {
-    fn build(req: GitHubRequest<Vec<u8>>, client: &C) -> Result<Self, AdapterError> {
+    fn build(&self, req: GitHubRequest<Self::Body>) -> Result<Self::Req, Self::Err> {
         let mut builder = http::Request::builder();
 
         builder = builder
@@ -135,7 +84,7 @@ impl<C: super::Client> GitHubRequestBuilder<Vec<u8>, C> for RequestWithBody {
             builder = builder.header(header.0, header.1);
         }
 
-        builder = match client.get_auth() {
+        builder = match &self.auth {
             Auth::Basic { user, pass } => {
                 let creds = format!("{}:{}", user, pass);
                 builder.header(
@@ -153,4 +102,40 @@ impl<C: super::Client> GitHubRequestBuilder<Vec<u8>, C> for RequestWithBody {
             body: req.body,
         })
     }
+
+    fn from_json<E: ser::Serialize>(model: E) -> Result<Self::Body, Self::Err> {
+        Ok(serde_json::to_vec(&model)?)
+    }
+}
+
+pub struct Client {
+    auth: Auth,
+    agent: Agent,
+}
+
+impl GitHubResponseExt for Response<ureq::Body> {
+    fn is_success(&self) -> bool {
+        300 > self.status().as_u16() && self.status().as_u16() >= 200
+    }
+
+    fn status_code(&self) -> u16 {
+        self.status().as_u16()
+    }
+
+    fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(
+        self,
+    ) -> Result<E, serde_json::Error> {
+        Ok(serde_json::from_reader(self.into_body().as_reader())?)
+    }
+
+    async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(
+        self,
+    ) -> Result<E, serde_json::Error> {
+        unimplemented!("Ureq adapter only has sync json conversion implemented");
+    }
+}
+
+pub struct RequestWithBody {
+    pub(crate) req: http::request::Builder,
+    pub(crate) body: Option<Vec<u8>>,
 }

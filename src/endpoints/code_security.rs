@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,61 +22,59 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct CodeSecurity<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct CodeSecurity<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> CodeSecurity<C> {
+pub fn new<C: Client>(client: &C) -> CodeSecurity<C> where AdapterError: From<<C as Client>::Err> {
     CodeSecurity { client }
 }
 
 /// Errors for the [Attach a configuration to repositories](CodeSecurity::attach_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityAttachConfigurationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeSecurityAttachConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityAttachConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityAttachConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a code security configuration](CodeSecurity::create_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityCreateConfigurationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeSecurityCreateConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityCreateConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityCreateConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a code security configuration](CodeSecurity::delete_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityDeleteConfigurationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Forbidden")]
@@ -87,21 +85,29 @@ pub enum CodeSecurityDeleteConfigurationError {
     Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeSecurityDeleteConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityDeleteConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityDeleteConfigurationError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeSecurityDeleteConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityDeleteConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityDeleteConfigurationError::Status409(_) => (String::from("Conflict"), 409),
+            CodeSecurityDeleteConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Detach configurations from repositories](CodeSecurity::detach_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityDetachConfigurationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Forbidden")]
@@ -114,19 +120,27 @@ pub enum CodeSecurityDetachConfigurationError {
     Generic { code: u16 },
 }
 
+impl From<CodeSecurityDetachConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityDetachConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityDetachConfigurationError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeSecurityDetachConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityDetachConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityDetachConfigurationError::Status409(_) => (String::from("Conflict"), 409),
+            CodeSecurityDetachConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a code security configuration](CodeSecurity::get_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityGetConfigurationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -137,19 +151,26 @@ pub enum CodeSecurityGetConfigurationError {
     Generic { code: u16 },
 }
 
+impl From<CodeSecurityGetConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityGetConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetConfigurationError::Status304 => (String::from("Not modified"), 304),
+            CodeSecurityGetConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get the code security configuration associated with a repository](CodeSecurity::get_configuration_for_repository_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityGetConfigurationForRepositoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("A header with no content is returned.")]
     Status204,
     #[error("Not modified")]
@@ -162,19 +183,27 @@ pub enum CodeSecurityGetConfigurationForRepositoryError {
     Generic { code: u16 },
 }
 
+impl From<CodeSecurityGetConfigurationForRepositoryError> for AdapterError {
+    fn from(err: CodeSecurityGetConfigurationForRepositoryError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetConfigurationForRepositoryError::Status204 => (String::from("A header with no content is returned."), 204),
+            CodeSecurityGetConfigurationForRepositoryError::Status304 => (String::from("Not modified"), 304),
+            CodeSecurityGetConfigurationForRepositoryError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetConfigurationForRepositoryError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetConfigurationForRepositoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get code security configurations for an organization](CodeSecurity::get_configurations_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityGetConfigurationsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -183,19 +212,25 @@ pub enum CodeSecurityGetConfigurationsForOrgError {
     Generic { code: u16 },
 }
 
+impl From<CodeSecurityGetConfigurationsForOrgError> for AdapterError {
+    fn from(err: CodeSecurityGetConfigurationsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetConfigurationsForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetConfigurationsForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetConfigurationsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get default code security configurations](CodeSecurity::get_default_configurations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityGetDefaultConfigurationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -206,40 +241,53 @@ pub enum CodeSecurityGetDefaultConfigurationsError {
     Generic { code: u16 },
 }
 
+impl From<CodeSecurityGetDefaultConfigurationsError> for AdapterError {
+    fn from(err: CodeSecurityGetDefaultConfigurationsError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetDefaultConfigurationsError::Status304 => (String::from("Not modified"), 304),
+            CodeSecurityGetDefaultConfigurationsError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetDefaultConfigurationsError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetDefaultConfigurationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get repositories associated with a code security configuration](CodeSecurity::get_repositories_for_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityGetRepositoriesForConfigurationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeSecurityGetRepositoriesForConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityGetRepositoriesForConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetRepositoriesForConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetRepositoriesForConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetRepositoriesForConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set a code security configuration as a default for an organization](CodeSecurity::set_configuration_as_default_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecuritySetConfigurationAsDefaultError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -248,23 +296,44 @@ pub enum CodeSecuritySetConfigurationAsDefaultError {
     Generic { code: u16 },
 }
 
+impl From<CodeSecuritySetConfigurationAsDefaultError> for AdapterError {
+    fn from(err: CodeSecuritySetConfigurationAsDefaultError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecuritySetConfigurationAsDefaultError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecuritySetConfigurationAsDefaultError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecuritySetConfigurationAsDefaultError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a code security configuration](CodeSecurity::update_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityUpdateConfigurationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when no new updates are made")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<CodeSecurityUpdateConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityUpdateConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityUpdateConfigurationError::Status204 => (String::from("Response when no new updates are made"), 204),
+            CodeSecurityUpdateConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -387,7 +456,7 @@ impl<'req> CodeSecurityGetRepositoriesForConfigurationParams<'req> {
 }
 
 
-impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
+impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Attach a configuration to repositories
@@ -403,19 +472,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for attach_configuration](https://docs.github.com/rest/code-security/configurations#attach-a-configuration-to-repositories)
     ///
     /// ---
-    pub async fn attach_configuration_async(&self, org: &str, configuration_id: i32, body: PostCodeSecurityAttachConfiguration) -> Result<HashMap<String, Value>, CodeSecurityAttachConfigurationError> {
+    pub async fn attach_configuration_async(&self, org: &str, configuration_id: i32, body: PostCodeSecurityAttachConfiguration) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}/attach", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeSecurityAttachConfiguration::from_json(body)?),
+            body: Some(C::from_json::<PostCodeSecurityAttachConfiguration>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -427,7 +496,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodeSecurityAttachConfigurationError::Generic { code }),
+                code => Err(CodeSecurityAttachConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -448,19 +517,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn attach_configuration(&self, org: &str, configuration_id: i32, body: PostCodeSecurityAttachConfiguration) -> Result<HashMap<String, Value>, CodeSecurityAttachConfigurationError> {
+    pub fn attach_configuration(&self, org: &str, configuration_id: i32, body: PostCodeSecurityAttachConfiguration) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}/attach", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeSecurityAttachConfiguration::from_json(body)?),
+            body: Some(C::from_json::<PostCodeSecurityAttachConfiguration>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -472,7 +541,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodeSecurityAttachConfigurationError::Generic { code }),
+                code => Err(CodeSecurityAttachConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -490,19 +559,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for create_configuration](https://docs.github.com/rest/code-security/configurations#create-a-code-security-configuration)
     ///
     /// ---
-    pub async fn create_configuration_async(&self, org: &str, body: PostCodeSecurityCreateConfiguration) -> Result<CodeSecurityConfiguration, CodeSecurityCreateConfigurationError> {
+    pub async fn create_configuration_async(&self, org: &str, body: PostCodeSecurityCreateConfiguration) -> Result<CodeSecurityConfiguration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeSecurityCreateConfiguration::from_json(body)?),
+            body: Some(C::from_json::<PostCodeSecurityCreateConfiguration>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -514,7 +583,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(CodeSecurityCreateConfigurationError::Generic { code }),
+                code => Err(CodeSecurityCreateConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -533,19 +602,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_configuration(&self, org: &str, body: PostCodeSecurityCreateConfiguration) -> Result<CodeSecurityConfiguration, CodeSecurityCreateConfigurationError> {
+    pub fn create_configuration(&self, org: &str, body: PostCodeSecurityCreateConfiguration) -> Result<CodeSecurityConfiguration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostCodeSecurityCreateConfiguration::from_json(body)?),
+            body: Some(C::from_json::<PostCodeSecurityCreateConfiguration>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -557,7 +626,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(CodeSecurityCreateConfigurationError::Generic { code }),
+                code => Err(CodeSecurityCreateConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -577,19 +646,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for delete_configuration](https://docs.github.com/rest/code-security/configurations#delete-a-code-security-configuration)
     ///
     /// ---
-    pub async fn delete_configuration_async(&self, org: &str, configuration_id: i32) -> Result<(), CodeSecurityDeleteConfigurationError> {
+    pub async fn delete_configuration_async(&self, org: &str, configuration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -601,11 +670,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeSecurityDeleteConfigurationError::Status400(github_response.to_json_async().await?)),
-                403 => Err(CodeSecurityDeleteConfigurationError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecurityDeleteConfigurationError::Status404(github_response.to_json_async().await?)),
-                409 => Err(CodeSecurityDeleteConfigurationError::Status409(github_response.to_json_async().await?)),
-                code => Err(CodeSecurityDeleteConfigurationError::Generic { code }),
+                400 => Err(CodeSecurityDeleteConfigurationError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeSecurityDeleteConfigurationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityDeleteConfigurationError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodeSecurityDeleteConfigurationError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityDeleteConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -626,7 +695,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_configuration(&self, org: &str, configuration_id: i32) -> Result<(), CodeSecurityDeleteConfigurationError> {
+    pub fn delete_configuration(&self, org: &str, configuration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, org, configuration_id);
 
@@ -638,7 +707,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -650,11 +719,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeSecurityDeleteConfigurationError::Status400(github_response.to_json()?)),
-                403 => Err(CodeSecurityDeleteConfigurationError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecurityDeleteConfigurationError::Status404(github_response.to_json()?)),
-                409 => Err(CodeSecurityDeleteConfigurationError::Status409(github_response.to_json()?)),
-                code => Err(CodeSecurityDeleteConfigurationError::Generic { code }),
+                400 => Err(CodeSecurityDeleteConfigurationError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeSecurityDeleteConfigurationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityDeleteConfigurationError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodeSecurityDeleteConfigurationError::Status409(github_response.to_json()?).into()),
+                code => Err(CodeSecurityDeleteConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -673,19 +742,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for detach_configuration](https://docs.github.com/rest/code-security/configurations#detach-configurations-from-repositories)
     ///
     /// ---
-    pub async fn detach_configuration_async(&self, org: &str, body: DeleteCodeSecurityDetachConfiguration) -> Result<(), CodeSecurityDetachConfigurationError> {
+    pub async fn detach_configuration_async(&self, org: &str, body: DeleteCodeSecurityDetachConfiguration) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/detach", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCodeSecurityDetachConfiguration::from_json(body)?),
+            body: Some(C::from_json::<DeleteCodeSecurityDetachConfiguration>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -697,11 +766,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeSecurityDetachConfigurationError::Status400(github_response.to_json_async().await?)),
-                403 => Err(CodeSecurityDetachConfigurationError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecurityDetachConfigurationError::Status404(github_response.to_json_async().await?)),
-                409 => Err(CodeSecurityDetachConfigurationError::Status409(github_response.to_json_async().await?)),
-                code => Err(CodeSecurityDetachConfigurationError::Generic { code }),
+                400 => Err(CodeSecurityDetachConfigurationError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeSecurityDetachConfigurationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityDetachConfigurationError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodeSecurityDetachConfigurationError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityDetachConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -721,19 +790,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn detach_configuration(&self, org: &str, body: DeleteCodeSecurityDetachConfiguration) -> Result<(), CodeSecurityDetachConfigurationError> {
+    pub fn detach_configuration(&self, org: &str, body: DeleteCodeSecurityDetachConfiguration) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/detach", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeleteCodeSecurityDetachConfiguration::from_json(body)?),
+            body: Some(C::from_json::<DeleteCodeSecurityDetachConfiguration>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -745,11 +814,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(CodeSecurityDetachConfigurationError::Status400(github_response.to_json()?)),
-                403 => Err(CodeSecurityDetachConfigurationError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecurityDetachConfigurationError::Status404(github_response.to_json()?)),
-                409 => Err(CodeSecurityDetachConfigurationError::Status409(github_response.to_json()?)),
-                code => Err(CodeSecurityDetachConfigurationError::Generic { code }),
+                400 => Err(CodeSecurityDetachConfigurationError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeSecurityDetachConfigurationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityDetachConfigurationError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodeSecurityDetachConfigurationError::Status409(github_response.to_json()?).into()),
+                code => Err(CodeSecurityDetachConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -767,19 +836,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for get_configuration](https://docs.github.com/rest/code-security/configurations#get-a-code-security-configuration)
     ///
     /// ---
-    pub async fn get_configuration_async(&self, org: &str, configuration_id: i32) -> Result<CodeSecurityConfiguration, CodeSecurityGetConfigurationError> {
+    pub async fn get_configuration_async(&self, org: &str, configuration_id: i32) -> Result<CodeSecurityConfiguration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -791,10 +860,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeSecurityGetConfigurationError::Status304),
-                403 => Err(CodeSecurityGetConfigurationError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecurityGetConfigurationError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodeSecurityGetConfigurationError::Generic { code }),
+                304 => Err(CodeSecurityGetConfigurationError::Status304.into()),
+                403 => Err(CodeSecurityGetConfigurationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetConfigurationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -813,7 +882,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_configuration(&self, org: &str, configuration_id: i32) -> Result<CodeSecurityConfiguration, CodeSecurityGetConfigurationError> {
+    pub fn get_configuration(&self, org: &str, configuration_id: i32) -> Result<CodeSecurityConfiguration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, org, configuration_id);
 
@@ -825,7 +894,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -837,10 +906,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeSecurityGetConfigurationError::Status304),
-                403 => Err(CodeSecurityGetConfigurationError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecurityGetConfigurationError::Status404(github_response.to_json()?)),
-                code => Err(CodeSecurityGetConfigurationError::Generic { code }),
+                304 => Err(CodeSecurityGetConfigurationError::Status304.into()),
+                403 => Err(CodeSecurityGetConfigurationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetConfigurationError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -858,19 +927,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for get_configuration_for_repository](https://docs.github.com/rest/code-security/configurations#get-the-code-security-configuration-associated-with-a-repository)
     ///
     /// ---
-    pub async fn get_configuration_for_repository_async(&self, owner: &str, repo: &str) -> Result<CodeSecurityConfigurationForRepository, CodeSecurityGetConfigurationForRepositoryError> {
+    pub async fn get_configuration_for_repository_async(&self, owner: &str, repo: &str) -> Result<CodeSecurityConfigurationForRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-security-configuration", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -882,11 +951,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodeSecurityGetConfigurationForRepositoryError::Status204),
-                304 => Err(CodeSecurityGetConfigurationForRepositoryError::Status304),
-                403 => Err(CodeSecurityGetConfigurationForRepositoryError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecurityGetConfigurationForRepositoryError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodeSecurityGetConfigurationForRepositoryError::Generic { code }),
+                204 => Err(CodeSecurityGetConfigurationForRepositoryError::Status204.into()),
+                304 => Err(CodeSecurityGetConfigurationForRepositoryError::Status304.into()),
+                403 => Err(CodeSecurityGetConfigurationForRepositoryError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetConfigurationForRepositoryError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetConfigurationForRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -905,7 +974,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_configuration_for_repository(&self, owner: &str, repo: &str) -> Result<CodeSecurityConfigurationForRepository, CodeSecurityGetConfigurationForRepositoryError> {
+    pub fn get_configuration_for_repository(&self, owner: &str, repo: &str) -> Result<CodeSecurityConfigurationForRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/code-security-configuration", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -917,7 +986,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -929,11 +998,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodeSecurityGetConfigurationForRepositoryError::Status204),
-                304 => Err(CodeSecurityGetConfigurationForRepositoryError::Status304),
-                403 => Err(CodeSecurityGetConfigurationForRepositoryError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecurityGetConfigurationForRepositoryError::Status404(github_response.to_json()?)),
-                code => Err(CodeSecurityGetConfigurationForRepositoryError::Generic { code }),
+                204 => Err(CodeSecurityGetConfigurationForRepositoryError::Status204.into()),
+                304 => Err(CodeSecurityGetConfigurationForRepositoryError::Status304.into()),
+                403 => Err(CodeSecurityGetConfigurationForRepositoryError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetConfigurationForRepositoryError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetConfigurationForRepositoryError::Generic { code }.into()),
             }
         }
     }
@@ -951,7 +1020,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for get_configurations_for_org](https://docs.github.com/rest/code-security/configurations#get-code-security-configurations-for-an-organization)
     ///
     /// ---
-    pub async fn get_configurations_for_org_async(&self, org: &str, query_params: Option<impl Into<CodeSecurityGetConfigurationsForOrgParams<'api>>>) -> Result<Vec<CodeSecurityConfiguration>, CodeSecurityGetConfigurationsForOrgError> {
+    pub async fn get_configurations_for_org_async(&self, org: &str, query_params: Option<impl Into<CodeSecurityGetConfigurationsForOrgParams<'api>>>) -> Result<Vec<CodeSecurityConfiguration>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/code-security/configurations", super::GITHUB_BASE_API_URL, org);
 
@@ -962,12 +1031,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -979,9 +1048,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeSecurityGetConfigurationsForOrgError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecurityGetConfigurationsForOrgError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodeSecurityGetConfigurationsForOrgError::Generic { code }),
+                403 => Err(CodeSecurityGetConfigurationsForOrgError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetConfigurationsForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetConfigurationsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1000,7 +1069,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_configurations_for_org(&self, org: &str, query_params: Option<impl Into<CodeSecurityGetConfigurationsForOrgParams<'api>>>) -> Result<Vec<CodeSecurityConfiguration>, CodeSecurityGetConfigurationsForOrgError> {
+    pub fn get_configurations_for_org(&self, org: &str, query_params: Option<impl Into<CodeSecurityGetConfigurationsForOrgParams<'api>>>) -> Result<Vec<CodeSecurityConfiguration>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/code-security/configurations", super::GITHUB_BASE_API_URL, org);
 
@@ -1017,7 +1086,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1029,9 +1098,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeSecurityGetConfigurationsForOrgError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecurityGetConfigurationsForOrgError::Status404(github_response.to_json()?)),
-                code => Err(CodeSecurityGetConfigurationsForOrgError::Generic { code }),
+                403 => Err(CodeSecurityGetConfigurationsForOrgError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetConfigurationsForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetConfigurationsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1049,19 +1118,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for get_default_configurations](https://docs.github.com/rest/code-security/configurations#get-default-code-security-configurations)
     ///
     /// ---
-    pub async fn get_default_configurations_async(&self, org: &str) -> Result<CodeSecurityDefaultConfigurations, CodeSecurityGetDefaultConfigurationsError> {
+    pub async fn get_default_configurations_async(&self, org: &str) -> Result<CodeSecurityDefaultConfigurations, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/defaults", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1073,10 +1142,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeSecurityGetDefaultConfigurationsError::Status304),
-                403 => Err(CodeSecurityGetDefaultConfigurationsError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecurityGetDefaultConfigurationsError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodeSecurityGetDefaultConfigurationsError::Generic { code }),
+                304 => Err(CodeSecurityGetDefaultConfigurationsError::Status304.into()),
+                403 => Err(CodeSecurityGetDefaultConfigurationsError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetDefaultConfigurationsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetDefaultConfigurationsError::Generic { code }.into()),
             }
         }
     }
@@ -1095,7 +1164,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_default_configurations(&self, org: &str) -> Result<CodeSecurityDefaultConfigurations, CodeSecurityGetDefaultConfigurationsError> {
+    pub fn get_default_configurations(&self, org: &str) -> Result<CodeSecurityDefaultConfigurations, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/defaults", super::GITHUB_BASE_API_URL, org);
 
@@ -1107,7 +1176,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1119,10 +1188,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(CodeSecurityGetDefaultConfigurationsError::Status304),
-                403 => Err(CodeSecurityGetDefaultConfigurationsError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecurityGetDefaultConfigurationsError::Status404(github_response.to_json()?)),
-                code => Err(CodeSecurityGetDefaultConfigurationsError::Generic { code }),
+                304 => Err(CodeSecurityGetDefaultConfigurationsError::Status304.into()),
+                403 => Err(CodeSecurityGetDefaultConfigurationsError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetDefaultConfigurationsError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetDefaultConfigurationsError::Generic { code }.into()),
             }
         }
     }
@@ -1140,7 +1209,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for get_repositories_for_configuration](https://docs.github.com/rest/code-security/configurations#get-repositories-associated-with-a-code-security-configuration)
     ///
     /// ---
-    pub async fn get_repositories_for_configuration_async(&self, org: &str, configuration_id: i32, query_params: Option<impl Into<CodeSecurityGetRepositoriesForConfigurationParams<'api>>>) -> Result<Vec<CodeSecurityConfigurationRepositories>, CodeSecurityGetRepositoriesForConfigurationError> {
+    pub async fn get_repositories_for_configuration_async(&self, org: &str, configuration_id: i32, query_params: Option<impl Into<CodeSecurityGetRepositoriesForConfigurationParams<'api>>>) -> Result<Vec<CodeSecurityConfigurationRepositories>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/code-security/configurations/{}/repositories", super::GITHUB_BASE_API_URL, org, configuration_id);
 
@@ -1151,12 +1220,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1168,9 +1237,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodeSecurityGetRepositoriesForConfigurationError::Generic { code }),
+                403 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetRepositoriesForConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -1189,7 +1258,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repositories_for_configuration(&self, org: &str, configuration_id: i32, query_params: Option<impl Into<CodeSecurityGetRepositoriesForConfigurationParams<'api>>>) -> Result<Vec<CodeSecurityConfigurationRepositories>, CodeSecurityGetRepositoriesForConfigurationError> {
+    pub fn get_repositories_for_configuration(&self, org: &str, configuration_id: i32, query_params: Option<impl Into<CodeSecurityGetRepositoriesForConfigurationParams<'api>>>) -> Result<Vec<CodeSecurityConfigurationRepositories>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/code-security/configurations/{}/repositories", super::GITHUB_BASE_API_URL, org, configuration_id);
 
@@ -1206,7 +1275,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1218,9 +1287,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status404(github_response.to_json()?)),
-                code => Err(CodeSecurityGetRepositoriesForConfigurationError::Generic { code }),
+                403 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetRepositoriesForConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -1240,19 +1309,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for set_configuration_as_default](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization)
     ///
     /// ---
-    pub async fn set_configuration_as_default_async(&self, org: &str, configuration_id: i32, body: PutCodeSecuritySetConfigurationAsDefault) -> Result<PutCodeSecuritySetConfigurationAsDefaultResponse200, CodeSecuritySetConfigurationAsDefaultError> {
+    pub async fn set_configuration_as_default_async(&self, org: &str, configuration_id: i32, body: PutCodeSecuritySetConfigurationAsDefault) -> Result<PutCodeSecuritySetConfigurationAsDefaultResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}/defaults", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodeSecuritySetConfigurationAsDefault::from_json(body)?),
+            body: Some(C::from_json::<PutCodeSecuritySetConfigurationAsDefault>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1264,9 +1333,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeSecuritySetConfigurationAsDefaultError::Status403(github_response.to_json_async().await?)),
-                404 => Err(CodeSecuritySetConfigurationAsDefaultError::Status404(github_response.to_json_async().await?)),
-                code => Err(CodeSecuritySetConfigurationAsDefaultError::Generic { code }),
+                403 => Err(CodeSecuritySetConfigurationAsDefaultError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecuritySetConfigurationAsDefaultError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecuritySetConfigurationAsDefaultError::Generic { code }.into()),
             }
         }
     }
@@ -1287,19 +1356,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_configuration_as_default(&self, org: &str, configuration_id: i32, body: PutCodeSecuritySetConfigurationAsDefault) -> Result<PutCodeSecuritySetConfigurationAsDefaultResponse200, CodeSecuritySetConfigurationAsDefaultError> {
+    pub fn set_configuration_as_default(&self, org: &str, configuration_id: i32, body: PutCodeSecuritySetConfigurationAsDefault) -> Result<PutCodeSecuritySetConfigurationAsDefaultResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}/defaults", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutCodeSecuritySetConfigurationAsDefault::from_json(body)?),
+            body: Some(C::from_json::<PutCodeSecuritySetConfigurationAsDefault>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1311,9 +1380,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(CodeSecuritySetConfigurationAsDefaultError::Status403(github_response.to_json()?)),
-                404 => Err(CodeSecuritySetConfigurationAsDefaultError::Status404(github_response.to_json()?)),
-                code => Err(CodeSecuritySetConfigurationAsDefaultError::Generic { code }),
+                403 => Err(CodeSecuritySetConfigurationAsDefaultError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecuritySetConfigurationAsDefaultError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecuritySetConfigurationAsDefaultError::Generic { code }.into()),
             }
         }
     }
@@ -1331,19 +1400,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     /// [GitHub API docs for update_configuration](https://docs.github.com/rest/code-security/configurations#update-a-code-security-configuration)
     ///
     /// ---
-    pub async fn update_configuration_async(&self, org: &str, configuration_id: i32, body: PatchCodeSecurityUpdateConfiguration) -> Result<CodeSecurityConfiguration, CodeSecurityUpdateConfigurationError> {
+    pub async fn update_configuration_async(&self, org: &str, configuration_id: i32, body: PatchCodeSecurityUpdateConfiguration) -> Result<CodeSecurityConfiguration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodeSecurityUpdateConfiguration::from_json(body)?),
+            body: Some(C::from_json::<PatchCodeSecurityUpdateConfiguration>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1355,8 +1424,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodeSecurityUpdateConfigurationError::Status204),
-                code => Err(CodeSecurityUpdateConfigurationError::Generic { code }),
+                204 => Err(CodeSecurityUpdateConfigurationError::Status204.into()),
+                code => Err(CodeSecurityUpdateConfigurationError::Generic { code }.into()),
             }
         }
     }
@@ -1375,19 +1444,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_configuration(&self, org: &str, configuration_id: i32, body: PatchCodeSecurityUpdateConfiguration) -> Result<CodeSecurityConfiguration, CodeSecurityUpdateConfigurationError> {
+    pub fn update_configuration(&self, org: &str, configuration_id: i32, body: PatchCodeSecurityUpdateConfiguration) -> Result<CodeSecurityConfiguration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, org, configuration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchCodeSecurityUpdateConfiguration::from_json(body)?),
+            body: Some(C::from_json::<PatchCodeSecurityUpdateConfiguration>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1399,8 +1468,8 @@ impl<'api, C: Client<Req = crate::adapters::Req>> CodeSecurity<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(CodeSecurityUpdateConfigurationError::Status204),
-                code => Err(CodeSecurityUpdateConfigurationError::Generic { code }),
+                204 => Err(CodeSecurityUpdateConfigurationError::Status204.into()),
+                code => Err(CodeSecurityUpdateConfigurationError::Generic { code }.into()),
             }
         }
     }

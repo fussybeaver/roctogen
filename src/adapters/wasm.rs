@@ -1,4 +1,4 @@
-use super::{FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use super::{GitHubRequest, GitHubResponseExt};
 use crate::auth::Auth;
 use base64::{prelude::BASE64_STANDARD, Engine};
 
@@ -52,6 +52,15 @@ pub enum AdapterError {
     UnimplementedSync,
 }
 
+impl From<AdapterError> for crate::adapters::AdapterError {
+    fn from(err: AdapterError) -> Self {
+        Self::Client {
+            description: err.to_string(),
+            source: Some(Box::new(err)),
+        }
+    }
+}
+
 #[derive(thiserror::Error, Debug)]
 #[error("{msg}")]
 pub struct JsValueError {
@@ -68,26 +77,21 @@ pub struct ObjectError {
 
 impl super::Client for Client {
     type Req = web_sys::Request;
+    type Body = JsValue;
+    type Err = AdapterError where crate::adapters::AdapterError: From<Self::Err>;
 
-    fn new(auth: &Auth) -> Result<Self, AdapterError> {
+    fn new(auth: &Auth) -> Result<Self, Self::Err> {
         Ok(Self {
             auth: auth.to_owned(),
             scope: scope()?,
         })
     }
 
-    fn get_auth(&self) -> &Auth {
-        &self.auth
-    }
-
-    fn fetch(&self, _request: Self::Req) -> Result<impl GitHubResponseExt, AdapterError> {
+    fn fetch(&self, _req: Self::Req) -> Result<impl GitHubResponseExt, Self::Err> {
         Err::<GitHubResponse, _>(AdapterError::UnimplementedSync)
     }
 
-    async fn fetch_async(
-        &self,
-        request: Self::Req,
-    ) -> Result<impl GitHubResponseExt, AdapterError> {
+    async fn fetch_async(&self, request: Self::Req) -> Result<impl GitHubResponseExt, Self::Err> {
         let resp_value = JsFuture::from(self.scope.fetch(&request)).await?;
 
         debug!("Response: {:?}", &resp_value);
@@ -99,6 +103,47 @@ impl super::Client for Client {
 
         Ok(GitHubResponse { json, resp })
     }
+
+fn build(&self, req: GitHubRequest<Self::Body>) -> Result<Self::Req, Self::Err> {
+        let opts = RequestInit::new();
+        opts.set_method(&req.method);
+        if let Some(body) = req.body {
+            debug!("Adding request body: {:?}", &body);
+
+            opts.set_body(&js_sys::JSON::stringify(&body)?.into());
+        }
+
+        let request = Request::new_with_str_and_init(&req.uri, &opts)?;
+        let headers = request.headers();
+        headers.set("Accept", "application/vnd.github.v3+json")?;
+        headers.set("Content-Type", "application/json")?;
+        headers.set("User-Agent", "roctogen")?;
+
+        for header in req.headers.iter() {
+            headers.set(header.0, header.1)?;
+        }
+
+        match &self.auth {
+            Auth::Basic { user, pass } => {
+                let creds = format!("{}:{}", user, pass);
+                headers.set(
+                    "Authorization",
+                    &format!("Basic {}", BASE64_STANDARD.encode(creds.as_bytes())),
+                )?;
+            }
+            Auth::Token(token) => headers.set("Authorization", &format!("token {}", token))?,
+            Auth::Bearer(bearer) => headers.set("Authorization", &format!("Bearer {}", bearer))?,
+            Auth::None => (),
+        }
+
+        debug!("Built request object: {:?}", &request);
+
+        Ok(request)
+    }
+
+    fn from_json<E: ser::Serialize>(model: E) -> Result<Self::Body, Self::Err> {
+        Ok(JsValue::from_serde(&model)?)
+        }
 }
 
 pub struct Client {
@@ -137,61 +182,13 @@ impl GitHubResponseExt for GitHubResponse {
     fn status_code(&self) -> u16 {
         self.resp.status()
     }
-    fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(self) -> Result<E, AdapterError> {
+    fn to_json<E: for<'de> Deserialize<'de> + std::fmt::Debug>(self) -> Result<E, serde_json::Error> {
         unimplemented!("Reqwest adapter only has async json conversion implemented");
     }
 
     async fn to_json_async<E: for<'de> Deserialize<'de> + Unpin + std::fmt::Debug>(
         self,
-    ) -> Result<E, AdapterError> {
+    ) -> Result<E, serde_json::Error> {
         Ok(self.json.into_serde()?)
-    }
-}
-
-impl<E> FromJson<E, JsValue> for E
-where
-    E: ser::Serialize,
-{
-    fn from_json(model: E) -> Result<JsValue, serde_json::Error> {
-        JsValue::from_serde(&model)
-    }
-}
-
-impl<C: super::Client> GitHubRequestBuilder<JsValue, C> for Request {
-    fn build(req: GitHubRequest<JsValue>, client: &C) -> Result<Self, AdapterError> {
-        let opts = RequestInit::new();
-        opts.set_method(&req.method);
-        if let Some(body) = req.body {
-            debug!("Adding request body: {:?}", &body);
-
-            opts.set_body(&js_sys::JSON::stringify(&body)?.into());
-        }
-
-        let request = Request::new_with_str_and_init(&req.uri, &opts)?;
-        let headers = request.headers();
-        headers.set("Accept", "application/vnd.github.v3+json")?;
-        headers.set("Content-Type", "application/json")?;
-        headers.set("User-Agent", "roctogen")?;
-
-        for header in req.headers.iter() {
-            headers.set(header.0, header.1)?;
-        }
-
-        match client.get_auth() {
-            Auth::Basic { user, pass } => {
-                let creds = format!("{}:{}", user, pass);
-                headers.set(
-                    "Authorization",
-                    &format!("Basic {}", BASE64_STANDARD.encode(creds.as_bytes())),
-                )?;
-            }
-            Auth::Token(token) => headers.set("Authorization", &format!("token {}", token))?,
-            Auth::Bearer(bearer) => headers.set("Authorization", &format!("Bearer {}", bearer))?,
-            Auth::None => (),
-        }
-
-        debug!("Built request object: {:?}", &request);
-
-        Ok(request)
     }
 }

@@ -14,7 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, Client, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -22,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct SecretScanning<'api, C: Client<Req = crate::adapters::Req>> {
+pub struct SecretScanning<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
     client: &'api C
 }
 
-pub fn new<C: Client<Req = crate::adapters::Req>>(client: &C) -> SecretScanning<C> {
+pub fn new<C: Client>(client: &C) -> SecretScanning<C> where AdapterError: From<<C as Client>::Err> {
     SecretScanning { client }
 }
 
 /// Errors for the [Create a push protection bypass](SecretScanning::create_push_protection_bypass_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningCreatePushProtectionBypassError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("User does not have enough permissions to perform this action.")]
     Status403,
     #[error("Placeholder ID not found, or push protection is disabled on this repository.")]
@@ -55,19 +45,27 @@ pub enum SecretScanningCreatePushProtectionBypassError {
     Generic { code: u16 },
 }
 
+impl From<SecretScanningCreatePushProtectionBypassError> for AdapterError {
+    fn from(err: SecretScanningCreatePushProtectionBypassError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningCreatePushProtectionBypassError::Status403 => (String::from("User does not have enough permissions to perform this action."), 403),
+            SecretScanningCreatePushProtectionBypassError::Status404 => (String::from("Placeholder ID not found, or push protection is disabled on this repository."), 404),
+            SecretScanningCreatePushProtectionBypassError::Status422 => (String::from("Bad request, input data missing or incorrect."), 422),
+            SecretScanningCreatePushProtectionBypassError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningCreatePushProtectionBypassError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a secret scanning alert](SecretScanning::get_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningGetAlertError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
@@ -78,40 +76,53 @@ pub enum SecretScanningGetAlertError {
     Generic { code: u16 },
 }
 
+impl From<SecretScanningGetAlertError> for AdapterError {
+    fn from(err: SecretScanningGetAlertError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningGetAlertError::Status304 => (String::from("Not modified"), 304),
+            SecretScanningGetAlertError::Status404 => (String::from("Repository is public, or secret scanning is disabled for the repository, or the resource is not found"), 404),
+            SecretScanningGetAlertError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningGetAlertError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List secret scanning alerts for an enterprise](SecretScanning::list_alerts_for_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningListAlertsForEnterpriseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SecretScanningListAlertsForEnterpriseError> for AdapterError {
+    fn from(err: SecretScanningListAlertsForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningListAlertsForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            SecretScanningListAlertsForEnterpriseError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningListAlertsForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List secret scanning alerts for an organization](SecretScanning::list_alerts_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningListAlertsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Service unavailable")]
@@ -120,19 +131,25 @@ pub enum SecretScanningListAlertsForOrgError {
     Generic { code: u16 },
 }
 
+impl From<SecretScanningListAlertsForOrgError> for AdapterError {
+    fn from(err: SecretScanningListAlertsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningListAlertsForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            SecretScanningListAlertsForOrgError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningListAlertsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List secret scanning alerts for a repository](SecretScanning::list_alerts_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningListAlertsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Repository is public or secret scanning is disabled for the repository")]
     Status404,
     #[error("Service unavailable")]
@@ -141,19 +158,25 @@ pub enum SecretScanningListAlertsForRepoError {
     Generic { code: u16 },
 }
 
+impl From<SecretScanningListAlertsForRepoError> for AdapterError {
+    fn from(err: SecretScanningListAlertsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningListAlertsForRepoError::Status404 => (String::from("Repository is public or secret scanning is disabled for the repository"), 404),
+            SecretScanningListAlertsForRepoError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningListAlertsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List locations for a secret scanning alert](SecretScanning::list_locations_for_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningListLocationsForAlertError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
     Status404,
     #[error("Service unavailable")]
@@ -162,19 +185,25 @@ pub enum SecretScanningListLocationsForAlertError {
     Generic { code: u16 },
 }
 
+impl From<SecretScanningListLocationsForAlertError> for AdapterError {
+    fn from(err: SecretScanningListLocationsForAlertError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningListLocationsForAlertError::Status404 => (String::from("Repository is public, or secret scanning is disabled for the repository, or the resource is not found"), 404),
+            SecretScanningListLocationsForAlertError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningListLocationsForAlertError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a secret scanning alert](SecretScanning::update_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningUpdateAlertError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad request, resolution comment is invalid or the resolution was not changed.")]
     Status400,
     #[error("Repository is public, or secret scanning is disabled for the repository, or the resource is not found")]
@@ -185,6 +214,24 @@ pub enum SecretScanningUpdateAlertError {
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SecretScanningUpdateAlertError> for AdapterError {
+    fn from(err: SecretScanningUpdateAlertError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningUpdateAlertError::Status400 => (String::from("Bad request, resolution comment is invalid or the resolution was not changed."), 400),
+            SecretScanningUpdateAlertError::Status404 => (String::from("Repository is public, or secret scanning is disabled for the repository, or the resource is not found"), 404),
+            SecretScanningUpdateAlertError::Status422 => (String::from("State does not match the resolution or resolution comment"), 422),
+            SecretScanningUpdateAlertError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningUpdateAlertError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -793,7 +840,7 @@ impl<'enc> From<&'enc PerPage> for SecretScanningListLocationsForAlertParams {
     }
 }
 
-impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
+impl<'api, C: Client> SecretScanning<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Create a push protection bypass
@@ -807,19 +854,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// [GitHub API docs for create_push_protection_bypass](https://docs.github.com/rest/secret-scanning/secret-scanning#create-a-push-protection-bypass)
     ///
     /// ---
-    pub async fn create_push_protection_bypass_async(&self, owner: &str, repo: &str, body: PostSecretScanningCreatePushProtectionBypass) -> Result<SecretScanningPushProtectionBypass, SecretScanningCreatePushProtectionBypassError> {
+    pub async fn create_push_protection_bypass_async(&self, owner: &str, repo: &str, body: PostSecretScanningCreatePushProtectionBypass) -> Result<SecretScanningPushProtectionBypass, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/secret-scanning/push-protection-bypasses", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostSecretScanningCreatePushProtectionBypass::from_json(body)?),
+            body: Some(C::from_json::<PostSecretScanningCreatePushProtectionBypass>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -831,11 +878,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecretScanningCreatePushProtectionBypassError::Status403),
-                404 => Err(SecretScanningCreatePushProtectionBypassError::Status404),
-                422 => Err(SecretScanningCreatePushProtectionBypassError::Status422),
-                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(github_response.to_json_async().await?)),
-                code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }),
+                403 => Err(SecretScanningCreatePushProtectionBypassError::Status403.into()),
+                404 => Err(SecretScanningCreatePushProtectionBypassError::Status404.into()),
+                422 => Err(SecretScanningCreatePushProtectionBypassError::Status422.into()),
+                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }.into()),
             }
         }
     }
@@ -854,19 +901,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_push_protection_bypass(&self, owner: &str, repo: &str, body: PostSecretScanningCreatePushProtectionBypass) -> Result<SecretScanningPushProtectionBypass, SecretScanningCreatePushProtectionBypassError> {
+    pub fn create_push_protection_bypass(&self, owner: &str, repo: &str, body: PostSecretScanningCreatePushProtectionBypass) -> Result<SecretScanningPushProtectionBypass, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/secret-scanning/push-protection-bypasses", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostSecretScanningCreatePushProtectionBypass::from_json(body)?),
+            body: Some(C::from_json::<PostSecretScanningCreatePushProtectionBypass>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -878,11 +925,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecretScanningCreatePushProtectionBypassError::Status403),
-                404 => Err(SecretScanningCreatePushProtectionBypassError::Status404),
-                422 => Err(SecretScanningCreatePushProtectionBypassError::Status422),
-                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(github_response.to_json()?)),
-                code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }),
+                403 => Err(SecretScanningCreatePushProtectionBypassError::Status403.into()),
+                404 => Err(SecretScanningCreatePushProtectionBypassError::Status404.into()),
+                422 => Err(SecretScanningCreatePushProtectionBypassError::Status422.into()),
+                503 => Err(SecretScanningCreatePushProtectionBypassError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningCreatePushProtectionBypassError::Generic { code }.into()),
             }
         }
     }
@@ -900,19 +947,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#get-a-secret-scanning-alert)
     ///
     /// ---
-    pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<SecretScanningAlert, SecretScanningGetAlertError> {
+    pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<SecretScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -924,10 +971,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(SecretScanningGetAlertError::Status304),
-                404 => Err(SecretScanningGetAlertError::Status404),
-                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json_async().await?)),
-                code => Err(SecretScanningGetAlertError::Generic { code }),
+                304 => Err(SecretScanningGetAlertError::Status304.into()),
+                404 => Err(SecretScanningGetAlertError::Status404.into()),
+                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningGetAlertError::Generic { code }.into()),
             }
         }
     }
@@ -946,7 +993,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<SecretScanningAlert, SecretScanningGetAlertError> {
+    pub fn get_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<SecretScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
@@ -958,7 +1005,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -970,10 +1017,10 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(SecretScanningGetAlertError::Status304),
-                404 => Err(SecretScanningGetAlertError::Status404),
-                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json()?)),
-                code => Err(SecretScanningGetAlertError::Generic { code }),
+                304 => Err(SecretScanningGetAlertError::Status304.into()),
+                404 => Err(SecretScanningGetAlertError::Status404.into()),
+                503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningGetAlertError::Generic { code }.into()),
             }
         }
     }
@@ -993,7 +1040,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-enterprise)
     ///
     /// ---
-    pub async fn list_alerts_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<SecretScanningListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForEnterpriseError> {
+    pub async fn list_alerts_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<SecretScanningListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -1004,12 +1051,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1021,9 +1068,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(github_response.to_json_async().await?)),
-                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(github_response.to_json_async().await?)),
-                code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }),
+                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1044,7 +1091,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<SecretScanningListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForEnterpriseError> {
+    pub fn list_alerts_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<SecretScanningListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -1061,7 +1108,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1073,9 +1120,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(github_response.to_json()?)),
-                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(github_response.to_json()?)),
-                code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }),
+                404 => Err(SecretScanningListAlertsForEnterpriseError::Status404(github_response.to_json()?).into()),
+                503 => Err(SecretScanningListAlertsForEnterpriseError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningListAlertsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1093,7 +1140,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-organization)
     ///
     /// ---
-    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForOrgError> {
+    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, org);
 
@@ -1104,12 +1151,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1121,9 +1168,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForOrgError::Status404(github_response.to_json_async().await?)),
-                503 => Err(SecretScanningListAlertsForOrgError::Status503(github_response.to_json_async().await?)),
-                code => Err(SecretScanningListAlertsForOrgError::Generic { code }),
+                404 => Err(SecretScanningListAlertsForOrgError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(SecretScanningListAlertsForOrgError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningListAlertsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1142,7 +1189,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, SecretScanningListAlertsForOrgError> {
+    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<SecretScanningListAlertsForOrgParams<'api>>>) -> Result<Vec<OrganizationSecretScanningAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, org);
 
@@ -1159,7 +1206,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1171,9 +1218,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForOrgError::Status404(github_response.to_json()?)),
-                503 => Err(SecretScanningListAlertsForOrgError::Status503(github_response.to_json()?)),
-                code => Err(SecretScanningListAlertsForOrgError::Generic { code }),
+                404 => Err(SecretScanningListAlertsForOrgError::Status404(github_response.to_json()?).into()),
+                503 => Err(SecretScanningListAlertsForOrgError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningListAlertsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1191,7 +1238,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository)
     ///
     /// ---
-    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecretScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<SecretScanningAlert>, SecretScanningListAlertsForRepoError> {
+    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecretScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<SecretScanningAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1202,12 +1249,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1219,9 +1266,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForRepoError::Status404),
-                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json_async().await?)),
-                code => Err(SecretScanningListAlertsForRepoError::Generic { code }),
+                404 => Err(SecretScanningListAlertsForRepoError::Status404.into()),
+                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningListAlertsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -1240,7 +1287,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecretScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<SecretScanningAlert>, SecretScanningListAlertsForRepoError> {
+    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecretScanningListAlertsForRepoParams<'api>>>) -> Result<Vec<SecretScanningAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1257,7 +1304,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1269,9 +1316,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListAlertsForRepoError::Status404),
-                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json()?)),
-                code => Err(SecretScanningListAlertsForRepoError::Generic { code }),
+                404 => Err(SecretScanningListAlertsForRepoError::Status404.into()),
+                503 => Err(SecretScanningListAlertsForRepoError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningListAlertsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -1289,7 +1336,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// [GitHub API docs for list_locations_for_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#list-locations-for-a-secret-scanning-alert)
     ///
     /// ---
-    pub async fn list_locations_for_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<SecretScanningListLocationsForAlertParams>>) -> Result<Vec<SecretScanningLocation>, SecretScanningListLocationsForAlertError> {
+    pub async fn list_locations_for_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<SecretScanningListLocationsForAlertParams>>) -> Result<Vec<SecretScanningLocation>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}/locations", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
@@ -1300,12 +1347,12 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1317,9 +1364,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListLocationsForAlertError::Status404),
-                503 => Err(SecretScanningListLocationsForAlertError::Status503(github_response.to_json_async().await?)),
-                code => Err(SecretScanningListLocationsForAlertError::Generic { code }),
+                404 => Err(SecretScanningListLocationsForAlertError::Status404.into()),
+                503 => Err(SecretScanningListLocationsForAlertError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningListLocationsForAlertError::Generic { code }.into()),
             }
         }
     }
@@ -1338,7 +1385,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_locations_for_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<SecretScanningListLocationsForAlertParams>>) -> Result<Vec<SecretScanningLocation>, SecretScanningListLocationsForAlertError> {
+    pub fn list_locations_for_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, query_params: Option<impl Into<SecretScanningListLocationsForAlertParams>>) -> Result<Vec<SecretScanningLocation>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}/locations", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
@@ -1355,7 +1402,7 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1367,9 +1414,9 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecretScanningListLocationsForAlertError::Status404),
-                503 => Err(SecretScanningListLocationsForAlertError::Status503(github_response.to_json()?)),
-                code => Err(SecretScanningListLocationsForAlertError::Generic { code }),
+                404 => Err(SecretScanningListLocationsForAlertError::Status404.into()),
+                503 => Err(SecretScanningListLocationsForAlertError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningListLocationsForAlertError::Generic { code }.into()),
             }
         }
     }
@@ -1387,19 +1434,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/secret-scanning/secret-scanning#update-a-secret-scanning-alert)
     ///
     /// ---
-    pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchSecretScanningUpdateAlert) -> Result<SecretScanningAlert, SecretScanningUpdateAlertError> {
+    pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchSecretScanningUpdateAlert) -> Result<SecretScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchSecretScanningUpdateAlert::from_json(body)?),
+            body: Some(C::from_json::<PatchSecretScanningUpdateAlert>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1411,11 +1458,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecretScanningUpdateAlertError::Status400),
-                404 => Err(SecretScanningUpdateAlertError::Status404),
-                422 => Err(SecretScanningUpdateAlertError::Status422),
-                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json_async().await?)),
-                code => Err(SecretScanningUpdateAlertError::Generic { code }),
+                400 => Err(SecretScanningUpdateAlertError::Status400.into()),
+                404 => Err(SecretScanningUpdateAlertError::Status404.into()),
+                422 => Err(SecretScanningUpdateAlertError::Status422.into()),
+                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningUpdateAlertError::Generic { code }.into()),
             }
         }
     }
@@ -1434,19 +1481,19 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchSecretScanningUpdateAlert) -> Result<SecretScanningAlert, SecretScanningUpdateAlertError> {
+    pub fn update_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchSecretScanningUpdateAlert) -> Result<SecretScanningAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/secret-scanning/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchSecretScanningUpdateAlert::from_json(body)?),
+            body: Some(C::from_json::<PatchSecretScanningUpdateAlert>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.client)?;
+        let request = self.client.build(req)?;
 
         // --
 
@@ -1458,11 +1505,11 @@ impl<'api, C: Client<Req = crate::adapters::Req>> SecretScanning<'api, C> {
             Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecretScanningUpdateAlertError::Status400),
-                404 => Err(SecretScanningUpdateAlertError::Status404),
-                422 => Err(SecretScanningUpdateAlertError::Status422),
-                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json()?)),
-                code => Err(SecretScanningUpdateAlertError::Generic { code }),
+                400 => Err(SecretScanningUpdateAlertError::Status400.into()),
+                404 => Err(SecretScanningUpdateAlertError::Status404.into()),
+                422 => Err(SecretScanningUpdateAlertError::Status422.into()),
+                503 => Err(SecretScanningUpdateAlertError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningUpdateAlertError::Generic { code }.into()),
             }
         }
     }
