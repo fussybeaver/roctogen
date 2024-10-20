@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Activity<'api> {
-    auth: &'api Auth
+pub struct Activity<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Activity {
-    Activity { auth }
+pub fn new<C: Client>(client: &C) -> Activity<C> where AdapterError: From<<C as Client>::Err> {
+    Activity { client }
 }
 
 /// Errors for the [Check if a repository is starred by the authenticated user](Activity::check_repo_is_starred_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityCheckRepoIsStarredByAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if this repository is not starred by you")]
     Status404(BasicError),
     #[error("Requires authentication")]
@@ -56,36 +45,48 @@ pub enum ActivityCheckRepoIsStarredByAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ActivityCheckRepoIsStarredByAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityCheckRepoIsStarredByAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(_) => (String::from("Not Found if this repository is not starred by you"), 404),
+            ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityCheckRepoIsStarredByAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityCheckRepoIsStarredByAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a repository subscription](Activity::delete_repo_subscription_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityDeleteRepoSubscriptionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityDeleteRepoSubscriptionError> for AdapterError {
+    fn from(err: ActivityDeleteRepoSubscriptionError) -> Self {
+        let (description, status_code) = match err {
+            ActivityDeleteRepoSubscriptionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a thread subscription](Activity::delete_thread_subscription_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityDeleteThreadSubscriptionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -96,36 +97,47 @@ pub enum ActivityDeleteThreadSubscriptionError {
     Generic { code: u16 },
 }
 
+impl From<ActivityDeleteThreadSubscriptionError> for AdapterError {
+    fn from(err: ActivityDeleteThreadSubscriptionError) -> Self {
+        let (description, status_code) = match err {
+            ActivityDeleteThreadSubscriptionError::Status304 => (String::from("Not modified"), 304),
+            ActivityDeleteThreadSubscriptionError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityDeleteThreadSubscriptionError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityDeleteThreadSubscriptionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get feeds](Activity::get_feeds_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityGetFeedsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityGetFeedsError> for AdapterError {
+    fn from(err: ActivityGetFeedsError) -> Self {
+        let (description, status_code) = match err {
+            ActivityGetFeedsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository subscription](Activity::get_repo_subscription_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityGetRepoSubscriptionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if you don't subscribe to the repository")]
     Status404,
     #[error("Forbidden")]
@@ -134,19 +146,25 @@ pub enum ActivityGetRepoSubscriptionError {
     Generic { code: u16 },
 }
 
+impl From<ActivityGetRepoSubscriptionError> for AdapterError {
+    fn from(err: ActivityGetRepoSubscriptionError) -> Self {
+        let (description, status_code) = match err {
+            ActivityGetRepoSubscriptionError::Status404 => (String::from("Not Found if you don't subscribe to the repository"), 404),
+            ActivityGetRepoSubscriptionError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityGetRepoSubscriptionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a thread](Activity::get_thread_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityGetThreadError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -155,21 +173,28 @@ pub enum ActivityGetThreadError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityGetThreadError> for AdapterError {
+    fn from(err: ActivityGetThreadError) -> Self {
+        let (description, status_code) = match err {
+            ActivityGetThreadError::Status304 => (String::from("Not modified"), 304),
+            ActivityGetThreadError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityGetThreadError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityGetThreadError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a thread subscription for the authenticated user](Activity::get_thread_subscription_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityGetThreadSubscriptionForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -180,36 +205,47 @@ pub enum ActivityGetThreadSubscriptionForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ActivityGetThreadSubscriptionForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityGetThreadSubscriptionForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityGetThreadSubscriptionForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityGetThreadSubscriptionForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List events for the authenticated user](Activity::list_events_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListEventsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListEventsForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityListEventsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListEventsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List notifications for the authenticated user](Activity::list_notifications_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListNotificationsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -222,36 +258,48 @@ pub enum ActivityListNotificationsForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ActivityListNotificationsForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityListNotificationsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListNotificationsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ActivityListNotificationsForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityListNotificationsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityListNotificationsForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActivityListNotificationsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization events for the authenticated user](Activity::list_org_events_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListOrgEventsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListOrgEventsForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityListOrgEventsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListOrgEventsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public events](Activity::list_public_events_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListPublicEventsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -262,19 +310,26 @@ pub enum ActivityListPublicEventsError {
     Generic { code: u16 },
 }
 
+impl From<ActivityListPublicEventsError> for AdapterError {
+    fn from(err: ActivityListPublicEventsError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListPublicEventsError::Status304 => (String::from("Not modified"), 304),
+            ActivityListPublicEventsError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityListPublicEventsError::Status503(_) => (String::from("Service unavailable"), 503),
+            ActivityListPublicEventsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List public events for a network of repositories](Activity::list_public_events_for_repo_network_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListPublicEventsForRepoNetworkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -287,121 +342,153 @@ pub enum ActivityListPublicEventsForRepoNetworkError {
     Generic { code: u16 },
 }
 
+impl From<ActivityListPublicEventsForRepoNetworkError> for AdapterError {
+    fn from(err: ActivityListPublicEventsForRepoNetworkError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListPublicEventsForRepoNetworkError::Status404(_) => (String::from("Resource not found"), 404),
+            ActivityListPublicEventsForRepoNetworkError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityListPublicEventsForRepoNetworkError::Status304 => (String::from("Not modified"), 304),
+            ActivityListPublicEventsForRepoNetworkError::Status301(_) => (String::from("Moved permanently"), 301),
+            ActivityListPublicEventsForRepoNetworkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List public events for a user](Activity::list_public_events_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListPublicEventsForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListPublicEventsForUserError> for AdapterError {
+    fn from(err: ActivityListPublicEventsForUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListPublicEventsForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public organization events](Activity::list_public_org_events_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListPublicOrgEventsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListPublicOrgEventsError> for AdapterError {
+    fn from(err: ActivityListPublicOrgEventsError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListPublicOrgEventsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List events received by the authenticated user](Activity::list_received_events_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListReceivedEventsForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListReceivedEventsForUserError> for AdapterError {
+    fn from(err: ActivityListReceivedEventsForUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListReceivedEventsForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public events received by a user](Activity::list_received_public_events_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListReceivedPublicEventsForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListReceivedPublicEventsForUserError> for AdapterError {
+    fn from(err: ActivityListReceivedPublicEventsForUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListReceivedPublicEventsForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository events](Activity::list_repo_events_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListRepoEventsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListRepoEventsError> for AdapterError {
+    fn from(err: ActivityListRepoEventsError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListRepoEventsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository notifications for the authenticated user](Activity::list_repo_notifications_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListRepoNotificationsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListRepoNotificationsForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityListRepoNotificationsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListRepoNotificationsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories starred by the authenticated user](Activity::list_repos_starred_by_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListReposStarredByAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -412,72 +499,92 @@ pub enum ActivityListReposStarredByAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ActivityListReposStarredByAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityListReposStarredByAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListReposStarredByAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ActivityListReposStarredByAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityListReposStarredByAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityListReposStarredByAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repositories starred by a user](Activity::list_repos_starred_by_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListReposStarredByUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListReposStarredByUserError> for AdapterError {
+    fn from(err: ActivityListReposStarredByUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListReposStarredByUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories watched by a user](Activity::list_repos_watched_by_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListReposWatchedByUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListReposWatchedByUserError> for AdapterError {
+    fn from(err: ActivityListReposWatchedByUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListReposWatchedByUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List stargazers](Activity::list_stargazers_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListStargazersForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActivityListStargazersForRepoError> for AdapterError {
+    fn from(err: ActivityListStargazersForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListStargazersForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActivityListStargazersForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repositories watched by the authenticated user](Activity::list_watched_repos_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListWatchedReposForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -486,38 +593,49 @@ pub enum ActivityListWatchedReposForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListWatchedReposForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityListWatchedReposForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListWatchedReposForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ActivityListWatchedReposForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityListWatchedReposForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityListWatchedReposForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List watchers](Activity::list_watchers_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityListWatchersForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityListWatchersForRepoError> for AdapterError {
+    fn from(err: ActivityListWatchersForRepoError) -> Self {
+        let (description, status_code) = match err {
+            ActivityListWatchersForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Mark notifications as read](Activity::mark_notifications_as_read_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityMarkNotificationsAsReadError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Reset Content")]
     Status205,
     #[error("Not modified")]
@@ -528,95 +646,122 @@ pub enum ActivityMarkNotificationsAsReadError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityMarkNotificationsAsReadError> for AdapterError {
+    fn from(err: ActivityMarkNotificationsAsReadError) -> Self {
+        let (description, status_code) = match err {
+            ActivityMarkNotificationsAsReadError::Status205 => (String::from("Reset Content"), 205),
+            ActivityMarkNotificationsAsReadError::Status304 => (String::from("Not modified"), 304),
+            ActivityMarkNotificationsAsReadError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityMarkNotificationsAsReadError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityMarkNotificationsAsReadError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Mark repository notifications as read](Activity::mark_repo_notifications_as_read_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityMarkRepoNotificationsAsReadError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Reset Content")]
     Status205,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ActivityMarkRepoNotificationsAsReadError> for AdapterError {
+    fn from(err: ActivityMarkRepoNotificationsAsReadError) -> Self {
+        let (description, status_code) = match err {
+            ActivityMarkRepoNotificationsAsReadError::Status205 => (String::from("Reset Content"), 205),
+            ActivityMarkRepoNotificationsAsReadError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Mark a thread as done](Activity::mark_thread_as_done_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityMarkThreadAsDoneError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityMarkThreadAsDoneError> for AdapterError {
+    fn from(err: ActivityMarkThreadAsDoneError) -> Self {
+        let (description, status_code) = match err {
+            ActivityMarkThreadAsDoneError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Mark a thread as read](Activity::mark_thread_as_read_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityMarkThreadAsReadError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityMarkThreadAsReadError> for AdapterError {
+    fn from(err: ActivityMarkThreadAsReadError) -> Self {
+        let (description, status_code) = match err {
+            ActivityMarkThreadAsReadError::Status304 => (String::from("Not modified"), 304),
+            ActivityMarkThreadAsReadError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityMarkThreadAsReadError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set a repository subscription](Activity::set_repo_subscription_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivitySetRepoSubscriptionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivitySetRepoSubscriptionError> for AdapterError {
+    fn from(err: ActivitySetRepoSubscriptionError) -> Self {
+        let (description, status_code) = match err {
+            ActivitySetRepoSubscriptionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set a thread subscription](Activity::set_thread_subscription_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivitySetThreadSubscriptionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -625,21 +770,28 @@ pub enum ActivitySetThreadSubscriptionError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivitySetThreadSubscriptionError> for AdapterError {
+    fn from(err: ActivitySetThreadSubscriptionError) -> Self {
+        let (description, status_code) = match err {
+            ActivitySetThreadSubscriptionError::Status304 => (String::from("Not modified"), 304),
+            ActivitySetThreadSubscriptionError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivitySetThreadSubscriptionError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivitySetThreadSubscriptionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Star a repository for the authenticated user](Activity::star_repo_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityStarRepoForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -652,19 +804,27 @@ pub enum ActivityStarRepoForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<ActivityStarRepoForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityStarRepoForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityStarRepoForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityStarRepoForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            ActivityStarRepoForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityStarRepoForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ActivityStarRepoForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Unstar a repository for the authenticated user](Activity::unstar_repo_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActivityUnstarRepoForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Requires authentication")]
@@ -675,6 +835,24 @@ pub enum ActivityUnstarRepoForAuthenticatedUserError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ActivityUnstarRepoForAuthenticatedUserError> for AdapterError {
+    fn from(err: ActivityUnstarRepoForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            ActivityUnstarRepoForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            ActivityUnstarRepoForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            ActivityUnstarRepoForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            ActivityUnstarRepoForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            ActivityUnstarRepoForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -1543,7 +1721,7 @@ impl<'enc> From<&'enc PerPage> for ActivityListWatchersForRepoParams {
     }
 }
 
-impl<'api> Activity<'api> {
+impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Check if a repository is starred by the authenticated user
@@ -1553,35 +1731,35 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for check_repo_is_starred_by_authenticated_user](https://docs.github.com/rest/activity/starring#check-if-a-repository-is-starred-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn check_repo_is_starred_by_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityCheckRepoIsStarredByAuthenticatedUserError> {
+    pub async fn check_repo_is_starred_by_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/starred/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Generic { code }),
+                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                304 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1596,7 +1774,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_repo_is_starred_by_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), ActivityCheckRepoIsStarredByAuthenticatedUserError> {
+    pub fn check_repo_is_starred_by_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/starred/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1608,23 +1786,23 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                304 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Generic { code }),
+                404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                401 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                304 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                code => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1638,31 +1816,31 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for delete_repo_subscription](https://docs.github.com/rest/activity/watching#delete-a-repository-subscription)
     ///
     /// ---
-    pub async fn delete_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<(), ActivityDeleteRepoSubscriptionError> {
+    pub async fn delete_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/subscription", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }),
+                code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -1677,7 +1855,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_repo_subscription(&self, owner: &str, repo: &str) -> Result<(), ActivityDeleteRepoSubscriptionError> {
+    pub fn delete_repo_subscription(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/subscription", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1689,19 +1867,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }),
+                code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -1715,34 +1893,34 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for delete_thread_subscription](https://docs.github.com/rest/activity/notifications#delete-a-thread-subscription)
     ///
     /// ---
-    pub async fn delete_thread_subscription_async(&self, thread_id: i32) -> Result<(), ActivityDeleteThreadSubscriptionError> {
+    pub async fn delete_thread_subscription_async(&self, thread_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}/subscription", super::GITHUB_BASE_API_URL, thread_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityDeleteThreadSubscriptionError::Status304),
-                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityDeleteThreadSubscriptionError::Generic { code }),
+                304 => Err(ActivityDeleteThreadSubscriptionError::Status304.into()),
+                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ActivityDeleteThreadSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -1757,7 +1935,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_thread_subscription(&self, thread_id: i32) -> Result<(), ActivityDeleteThreadSubscriptionError> {
+    pub fn delete_thread_subscription(&self, thread_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}/subscription", super::GITHUB_BASE_API_URL, thread_id);
 
@@ -1769,22 +1947,22 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityDeleteThreadSubscriptionError::Status304),
-                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityDeleteThreadSubscriptionError::Generic { code }),
+                304 => Err(ActivityDeleteThreadSubscriptionError::Status304.into()),
+                403 => Err(ActivityDeleteThreadSubscriptionError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivityDeleteThreadSubscriptionError::Status401(github_response.to_json()?).into()),
+                code => Err(ActivityDeleteThreadSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -1811,31 +1989,31 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for get_feeds](https://docs.github.com/rest/activity/feeds#get-feeds)
     ///
     /// ---
-    pub async fn get_feeds_async(&self) -> Result<Feed, ActivityGetFeedsError> {
+    pub async fn get_feeds_async(&self) -> Result<Feed, AdapterError> {
 
         let request_uri = format!("{}/feeds", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityGetFeedsError::Generic { code }),
+                code => Err(ActivityGetFeedsError::Generic { code }.into()),
             }
         }
     }
@@ -1863,7 +2041,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_feeds(&self) -> Result<Feed, ActivityGetFeedsError> {
+    pub fn get_feeds(&self) -> Result<Feed, AdapterError> {
 
         let request_uri = format!("{}/feeds", super::GITHUB_BASE_API_URL);
 
@@ -1875,19 +2053,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityGetFeedsError::Generic { code }),
+                code => Err(ActivityGetFeedsError::Generic { code }.into()),
             }
         }
     }
@@ -1901,33 +2079,33 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for get_repo_subscription](https://docs.github.com/rest/activity/watching#get-a-repository-subscription)
     ///
     /// ---
-    pub async fn get_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<RepositorySubscription, ActivityGetRepoSubscriptionError> {
+    pub async fn get_repo_subscription_async(&self, owner: &str, repo: &str) -> Result<RepositorySubscription, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/subscription", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityGetRepoSubscriptionError::Status404),
-                403 => Err(ActivityGetRepoSubscriptionError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityGetRepoSubscriptionError::Generic { code }),
+                404 => Err(ActivityGetRepoSubscriptionError::Status404.into()),
+                403 => Err(ActivityGetRepoSubscriptionError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ActivityGetRepoSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -1942,7 +2120,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_subscription(&self, owner: &str, repo: &str) -> Result<RepositorySubscription, ActivityGetRepoSubscriptionError> {
+    pub fn get_repo_subscription(&self, owner: &str, repo: &str) -> Result<RepositorySubscription, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/subscription", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1954,21 +2132,21 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityGetRepoSubscriptionError::Status404),
-                403 => Err(ActivityGetRepoSubscriptionError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityGetRepoSubscriptionError::Generic { code }),
+                404 => Err(ActivityGetRepoSubscriptionError::Status404.into()),
+                403 => Err(ActivityGetRepoSubscriptionError::Status403(github_response.to_json()?).into()),
+                code => Err(ActivityGetRepoSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -1982,34 +2160,34 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for get_thread](https://docs.github.com/rest/activity/notifications#get-a-thread)
     ///
     /// ---
-    pub async fn get_thread_async(&self, thread_id: i32) -> Result<Thread, ActivityGetThreadError> {
+    pub async fn get_thread_async(&self, thread_id: i32) -> Result<Thread, AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityGetThreadError::Status304),
-                403 => Err(ActivityGetThreadError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityGetThreadError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityGetThreadError::Generic { code }),
+                304 => Err(ActivityGetThreadError::Status304.into()),
+                403 => Err(ActivityGetThreadError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityGetThreadError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ActivityGetThreadError::Generic { code }.into()),
             }
         }
     }
@@ -2024,7 +2202,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_thread(&self, thread_id: i32) -> Result<Thread, ActivityGetThreadError> {
+    pub fn get_thread(&self, thread_id: i32) -> Result<Thread, AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
 
@@ -2036,22 +2214,22 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityGetThreadError::Status304),
-                403 => Err(ActivityGetThreadError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityGetThreadError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityGetThreadError::Generic { code }),
+                304 => Err(ActivityGetThreadError::Status304.into()),
+                403 => Err(ActivityGetThreadError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivityGetThreadError::Status401(github_response.to_json()?).into()),
+                code => Err(ActivityGetThreadError::Generic { code }.into()),
             }
         }
     }
@@ -2067,34 +2245,34 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for get_thread_subscription_for_authenticated_user](https://docs.github.com/rest/activity/notifications#get-a-thread-subscription-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_thread_subscription_for_authenticated_user_async(&self, thread_id: i32) -> Result<ThreadSubscription, ActivityGetThreadSubscriptionForAuthenticatedUserError> {
+    pub async fn get_thread_subscription_for_authenticated_user_async(&self, thread_id: i32) -> Result<ThreadSubscription, AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}/subscription", super::GITHUB_BASE_API_URL, thread_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status304),
-                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2111,7 +2289,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_thread_subscription_for_authenticated_user(&self, thread_id: i32) -> Result<ThreadSubscription, ActivityGetThreadSubscriptionForAuthenticatedUserError> {
+    pub fn get_thread_subscription_for_authenticated_user(&self, thread_id: i32) -> Result<ThreadSubscription, AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}/subscription", super::GITHUB_BASE_API_URL, thread_id);
 
@@ -2123,22 +2301,22 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status304),
-                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(ActivityGetThreadSubscriptionForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2155,7 +2333,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_events_for_authenticated_user](https://docs.github.com/rest/activity/events#list-events-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_events_for_authenticated_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListEventsForAuthenticatedUserError> {
+    pub async fn list_events_for_authenticated_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/events", super::GITHUB_BASE_API_URL, username);
 
@@ -2166,24 +2344,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListEventsForAuthenticatedUserError::Generic { code }),
+                code => Err(ActivityListEventsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2201,7 +2379,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_events_for_authenticated_user(&self, username: &str, query_params: Option<impl Into<ActivityListEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListEventsForAuthenticatedUserError> {
+    pub fn list_events_for_authenticated_user(&self, username: &str, query_params: Option<impl Into<ActivityListEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/events", super::GITHUB_BASE_API_URL, username);
 
@@ -2218,19 +2396,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListEventsForAuthenticatedUserError::Generic { code }),
+                code => Err(ActivityListEventsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2244,7 +2422,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_notifications_for_authenticated_user](https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_notifications_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
+    pub async fn list_notifications_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, AdapterError> {
 
         let mut request_uri = format!("{}/notifications", super::GITHUB_BASE_API_URL);
 
@@ -2255,28 +2433,28 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListNotificationsForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityListNotificationsForAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityListNotificationsForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActivityListNotificationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2291,7 +2469,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_notifications_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListNotificationsForAuthenticatedUserError> {
+    pub fn list_notifications_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, AdapterError> {
 
         let mut request_uri = format!("{}/notifications", super::GITHUB_BASE_API_URL);
 
@@ -2308,23 +2486,23 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListNotificationsForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityListNotificationsForAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityListNotificationsForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityListNotificationsForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivityListNotificationsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                422 => Err(ActivityListNotificationsForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(ActivityListNotificationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2341,7 +2519,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_org_events_for_authenticated_user](https://docs.github.com/rest/activity/events#list-organization-events-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_org_events_for_authenticated_user_async(&self, username: &str, org: &str, query_params: Option<impl Into<ActivityListOrgEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListOrgEventsForAuthenticatedUserError> {
+    pub async fn list_org_events_for_authenticated_user_async(&self, username: &str, org: &str, query_params: Option<impl Into<ActivityListOrgEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/events/orgs/{}", super::GITHUB_BASE_API_URL, username, org);
 
@@ -2352,24 +2530,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListOrgEventsForAuthenticatedUserError::Generic { code }),
+                code => Err(ActivityListOrgEventsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2387,7 +2565,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_events_for_authenticated_user(&self, username: &str, org: &str, query_params: Option<impl Into<ActivityListOrgEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, ActivityListOrgEventsForAuthenticatedUserError> {
+    pub fn list_org_events_for_authenticated_user(&self, username: &str, org: &str, query_params: Option<impl Into<ActivityListOrgEventsForAuthenticatedUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/events/orgs/{}", super::GITHUB_BASE_API_URL, username, org);
 
@@ -2404,19 +2582,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListOrgEventsForAuthenticatedUserError::Generic { code }),
+                code => Err(ActivityListOrgEventsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2431,7 +2609,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_public_events](https://docs.github.com/rest/activity/events#list-public-events)
     ///
     /// ---
-    pub async fn list_public_events_async(&self, query_params: Option<impl Into<ActivityListPublicEventsParams>>) -> Result<Vec<Event>, ActivityListPublicEventsError> {
+    pub async fn list_public_events_async(&self, query_params: Option<impl Into<ActivityListPublicEventsParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/events", super::GITHUB_BASE_API_URL);
 
@@ -2442,27 +2620,27 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListPublicEventsError::Status304),
-                403 => Err(ActivityListPublicEventsError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(ActivityListPublicEventsError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityListPublicEventsError::Generic { code }),
+                304 => Err(ActivityListPublicEventsError::Status304.into()),
+                403 => Err(ActivityListPublicEventsError::Status403(github_response.to_json_async().await?).into()),
+                503 => Err(ActivityListPublicEventsError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(ActivityListPublicEventsError::Generic { code }.into()),
             }
         }
     }
@@ -2478,7 +2656,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_events(&self, query_params: Option<impl Into<ActivityListPublicEventsParams>>) -> Result<Vec<Event>, ActivityListPublicEventsError> {
+    pub fn list_public_events(&self, query_params: Option<impl Into<ActivityListPublicEventsParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/events", super::GITHUB_BASE_API_URL);
 
@@ -2495,22 +2673,22 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListPublicEventsError::Status304),
-                403 => Err(ActivityListPublicEventsError::Status403(crate::adapters::to_json(github_response)?)),
-                503 => Err(ActivityListPublicEventsError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityListPublicEventsError::Generic { code }),
+                304 => Err(ActivityListPublicEventsError::Status304.into()),
+                403 => Err(ActivityListPublicEventsError::Status403(github_response.to_json()?).into()),
+                503 => Err(ActivityListPublicEventsError::Status503(github_response.to_json()?).into()),
+                code => Err(ActivityListPublicEventsError::Generic { code }.into()),
             }
         }
     }
@@ -2525,7 +2703,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_public_events_for_repo_network](https://docs.github.com/rest/activity/events#list-public-events-for-a-network-of-repositories)
     ///
     /// ---
-    pub async fn list_public_events_for_repo_network_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListPublicEventsForRepoNetworkParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForRepoNetworkError> {
+    pub async fn list_public_events_for_repo_network_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListPublicEventsForRepoNetworkParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/networks/{}/{}/events", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2536,28 +2714,28 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304),
-                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }),
+                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(github_response.to_json_async().await?).into()),
+                304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304.into()),
+                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301(github_response.to_json_async().await?).into()),
+                code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }.into()),
             }
         }
     }
@@ -2573,7 +2751,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_events_for_repo_network(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListPublicEventsForRepoNetworkParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForRepoNetworkError> {
+    pub fn list_public_events_for_repo_network(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListPublicEventsForRepoNetworkParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/networks/{}/{}/events", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2590,23 +2768,23 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(crate::adapters::to_json(github_response)?)),
-                304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304),
-                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }),
+                404 => Err(ActivityListPublicEventsForRepoNetworkError::Status404(github_response.to_json()?).into()),
+                403 => Err(ActivityListPublicEventsForRepoNetworkError::Status403(github_response.to_json()?).into()),
+                304 => Err(ActivityListPublicEventsForRepoNetworkError::Status304.into()),
+                301 => Err(ActivityListPublicEventsForRepoNetworkError::Status301(github_response.to_json()?).into()),
+                code => Err(ActivityListPublicEventsForRepoNetworkError::Generic { code }.into()),
             }
         }
     }
@@ -2621,7 +2799,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_public_events_for_user](https://docs.github.com/rest/activity/events#list-public-events-for-a-user)
     ///
     /// ---
-    pub async fn list_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForUserError> {
+    pub async fn list_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListPublicEventsForUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/events/public", super::GITHUB_BASE_API_URL, username);
 
@@ -2632,24 +2810,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListPublicEventsForUserError::Generic { code }),
+                code => Err(ActivityListPublicEventsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2665,7 +2843,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListPublicEventsForUserError> {
+    pub fn list_public_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListPublicEventsForUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/events/public", super::GITHUB_BASE_API_URL, username);
 
@@ -2682,19 +2860,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListPublicEventsForUserError::Generic { code }),
+                code => Err(ActivityListPublicEventsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2709,7 +2887,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_public_org_events](https://docs.github.com/rest/activity/events#list-public-organization-events)
     ///
     /// ---
-    pub async fn list_public_org_events_async(&self, org: &str, query_params: Option<impl Into<ActivityListPublicOrgEventsParams>>) -> Result<Vec<Event>, ActivityListPublicOrgEventsError> {
+    pub async fn list_public_org_events_async(&self, org: &str, query_params: Option<impl Into<ActivityListPublicOrgEventsParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/events", super::GITHUB_BASE_API_URL, org);
 
@@ -2720,24 +2898,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListPublicOrgEventsError::Generic { code }),
+                code => Err(ActivityListPublicOrgEventsError::Generic { code }.into()),
             }
         }
     }
@@ -2753,7 +2931,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_org_events(&self, org: &str, query_params: Option<impl Into<ActivityListPublicOrgEventsParams>>) -> Result<Vec<Event>, ActivityListPublicOrgEventsError> {
+    pub fn list_public_org_events(&self, org: &str, query_params: Option<impl Into<ActivityListPublicOrgEventsParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/events", super::GITHUB_BASE_API_URL, org);
 
@@ -2770,19 +2948,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListPublicOrgEventsError::Generic { code }),
+                code => Err(ActivityListPublicOrgEventsError::Generic { code }.into()),
             }
         }
     }
@@ -2800,7 +2978,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_received_events_for_user](https://docs.github.com/rest/activity/events#list-events-received-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_received_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedEventsForUserError> {
+    pub async fn list_received_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedEventsForUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/received_events", super::GITHUB_BASE_API_URL, username);
 
@@ -2811,24 +2989,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReceivedEventsForUserError::Generic { code }),
+                code => Err(ActivityListReceivedEventsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2847,7 +3025,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_received_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedEventsForUserError> {
+    pub fn list_received_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedEventsForUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/received_events", super::GITHUB_BASE_API_URL, username);
 
@@ -2864,19 +3042,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReceivedEventsForUserError::Generic { code }),
+                code => Err(ActivityListReceivedEventsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2891,7 +3069,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_received_public_events_for_user](https://docs.github.com/rest/activity/events#list-public-events-received-by-a-user)
     ///
     /// ---
-    pub async fn list_received_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedPublicEventsForUserError> {
+    pub async fn list_received_public_events_for_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedPublicEventsForUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/received_events/public", super::GITHUB_BASE_API_URL, username);
 
@@ -2902,24 +3080,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReceivedPublicEventsForUserError::Generic { code }),
+                code => Err(ActivityListReceivedPublicEventsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2935,7 +3113,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_received_public_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedPublicEventsForUserParams>>) -> Result<Vec<Event>, ActivityListReceivedPublicEventsForUserError> {
+    pub fn list_received_public_events_for_user(&self, username: &str, query_params: Option<impl Into<ActivityListReceivedPublicEventsForUserParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/received_events/public", super::GITHUB_BASE_API_URL, username);
 
@@ -2952,19 +3130,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReceivedPublicEventsForUserError::Generic { code }),
+                code => Err(ActivityListReceivedPublicEventsForUserError::Generic { code }.into()),
             }
         }
     }
@@ -2979,7 +3157,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_repo_events](https://docs.github.com/rest/activity/events#list-repository-events)
     ///
     /// ---
-    pub async fn list_repo_events_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoEventsParams>>) -> Result<Vec<Event>, ActivityListRepoEventsError> {
+    pub async fn list_repo_events_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoEventsParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/events", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2990,24 +3168,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListRepoEventsError::Generic { code }),
+                code => Err(ActivityListRepoEventsError::Generic { code }.into()),
             }
         }
     }
@@ -3023,7 +3201,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_events(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoEventsParams>>) -> Result<Vec<Event>, ActivityListRepoEventsError> {
+    pub fn list_repo_events(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoEventsParams>>) -> Result<Vec<Event>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/events", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3040,19 +3218,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListRepoEventsError::Generic { code }),
+                code => Err(ActivityListRepoEventsError::Generic { code }.into()),
             }
         }
     }
@@ -3066,7 +3244,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_repo_notifications_for_authenticated_user](https://docs.github.com/rest/activity/notifications#list-repository-notifications-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_repo_notifications_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
+    pub async fn list_repo_notifications_for_authenticated_user_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3077,24 +3255,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListRepoNotificationsForAuthenticatedUserError::Generic { code }),
+                code => Err(ActivityListRepoNotificationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3109,7 +3287,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_notifications_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, ActivityListRepoNotificationsForAuthenticatedUserError> {
+    pub fn list_repo_notifications_for_authenticated_user(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListRepoNotificationsForAuthenticatedUserParams>>) -> Result<Vec<Thread>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3126,19 +3304,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListRepoNotificationsForAuthenticatedUserError::Generic { code }),
+                code => Err(ActivityListRepoNotificationsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3156,7 +3334,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_repos_starred_by_authenticated_user](https://docs.github.com/rest/activity/starring#list-repositories-starred-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_repos_starred_by_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListReposStarredByAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByAuthenticatedUserError> {
+    pub async fn list_repos_starred_by_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListReposStarredByAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/starred", super::GITHUB_BASE_API_URL);
 
@@ -3167,27 +3345,27 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListReposStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityListReposStarredByAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityListReposStarredByAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ActivityListReposStarredByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3206,7 +3384,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_starred_by_authenticated_user(&self, query_params: Option<impl Into<ActivityListReposStarredByAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, ActivityListReposStarredByAuthenticatedUserError> {
+    pub fn list_repos_starred_by_authenticated_user(&self, query_params: Option<impl Into<ActivityListReposStarredByAuthenticatedUserParams<'api>>>) -> Result<Vec<Repository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/starred", super::GITHUB_BASE_API_URL);
 
@@ -3223,22 +3401,22 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListReposStarredByAuthenticatedUserError::Status304),
-                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityListReposStarredByAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityListReposStarredByAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityListReposStarredByAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivityListReposStarredByAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(ActivityListReposStarredByAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3256,7 +3434,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_repos_starred_by_user](https://docs.github.com/rest/activity/starring#list-repositories-starred-by-a-user)
     ///
     /// ---
-    pub async fn list_repos_starred_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<GetActivityListReposStarredByUserResponse200, ActivityListReposStarredByUserError> {
+    pub async fn list_repos_starred_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<GetActivityListReposStarredByUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/starred", super::GITHUB_BASE_API_URL, username);
 
@@ -3267,24 +3445,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReposStarredByUserError::Generic { code }),
+                code => Err(ActivityListReposStarredByUserError::Generic { code }.into()),
             }
         }
     }
@@ -3303,7 +3481,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_starred_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<GetActivityListReposStarredByUserResponse200, ActivityListReposStarredByUserError> {
+    pub fn list_repos_starred_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposStarredByUserParams<'api>>>) -> Result<GetActivityListReposStarredByUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/starred", super::GITHUB_BASE_API_URL, username);
 
@@ -3320,19 +3498,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReposStarredByUserError::Generic { code }),
+                code => Err(ActivityListReposStarredByUserError::Generic { code }.into()),
             }
         }
     }
@@ -3346,7 +3524,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_repos_watched_by_user](https://docs.github.com/rest/activity/watching#list-repositories-watched-by-a-user)
     ///
     /// ---
-    pub async fn list_repos_watched_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposWatchedByUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListReposWatchedByUserError> {
+    pub async fn list_repos_watched_by_user_async(&self, username: &str, query_params: Option<impl Into<ActivityListReposWatchedByUserParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/subscriptions", super::GITHUB_BASE_API_URL, username);
 
@@ -3357,24 +3535,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReposWatchedByUserError::Generic { code }),
+                code => Err(ActivityListReposWatchedByUserError::Generic { code }.into()),
             }
         }
     }
@@ -3389,7 +3567,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_watched_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposWatchedByUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListReposWatchedByUserError> {
+    pub fn list_repos_watched_by_user(&self, username: &str, query_params: Option<impl Into<ActivityListReposWatchedByUserParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/subscriptions", super::GITHUB_BASE_API_URL, username);
 
@@ -3406,19 +3584,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListReposWatchedByUserError::Generic { code }),
+                code => Err(ActivityListReposWatchedByUserError::Generic { code }.into()),
             }
         }
     }
@@ -3436,7 +3614,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_stargazers_for_repo](https://docs.github.com/rest/activity/starring#list-stargazers)
     ///
     /// ---
-    pub async fn list_stargazers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<GetActivityListStargazersForRepoResponse200, ActivityListStargazersForRepoError> {
+    pub async fn list_stargazers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<GetActivityListStargazersForRepoResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/stargazers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3447,25 +3625,25 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(ActivityListStargazersForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityListStargazersForRepoError::Generic { code }),
+                422 => Err(ActivityListStargazersForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ActivityListStargazersForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -3484,7 +3662,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_stargazers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<GetActivityListStargazersForRepoResponse200, ActivityListStargazersForRepoError> {
+    pub fn list_stargazers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListStargazersForRepoParams>>) -> Result<GetActivityListStargazersForRepoResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/stargazers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3501,20 +3679,20 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(ActivityListStargazersForRepoError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityListStargazersForRepoError::Generic { code }),
+                422 => Err(ActivityListStargazersForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(ActivityListStargazersForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -3528,7 +3706,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_watched_repos_for_authenticated_user](https://docs.github.com/rest/activity/watching#list-repositories-watched-by-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_watched_repos_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListWatchedReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListWatchedReposForAuthenticatedUserError> {
+    pub async fn list_watched_repos_for_authenticated_user_async(&self, query_params: Option<impl Into<ActivityListWatchedReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/subscriptions", super::GITHUB_BASE_API_URL);
 
@@ -3539,27 +3717,27 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityListWatchedReposForAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ActivityListWatchedReposForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3574,7 +3752,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_watched_repos_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListWatchedReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, ActivityListWatchedReposForAuthenticatedUserError> {
+    pub fn list_watched_repos_for_authenticated_user(&self, query_params: Option<impl Into<ActivityListWatchedReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/subscriptions", super::GITHUB_BASE_API_URL);
 
@@ -3591,22 +3769,22 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status304),
-                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityListWatchedReposForAuthenticatedUserError::Generic { code }),
+                304 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivityListWatchedReposForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(ActivityListWatchedReposForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3620,7 +3798,7 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for list_watchers_for_repo](https://docs.github.com/rest/activity/watching#list-watchers)
     ///
     /// ---
-    pub async fn list_watchers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListWatchersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListWatchersForRepoError> {
+    pub async fn list_watchers_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListWatchersForRepoParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/subscribers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3631,24 +3809,24 @@ impl<'api> Activity<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListWatchersForRepoError::Generic { code }),
+                code => Err(ActivityListWatchersForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -3663,7 +3841,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_watchers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListWatchersForRepoParams>>) -> Result<Vec<SimpleUser>, ActivityListWatchersForRepoError> {
+    pub fn list_watchers_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<ActivityListWatchersForRepoParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/subscribers", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -3680,19 +3858,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityListWatchersForRepoError::Generic { code }),
+                code => Err(ActivityListWatchersForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -3706,35 +3884,35 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for mark_notifications_as_read](https://docs.github.com/rest/activity/notifications#mark-notifications-as-read)
     ///
     /// ---
-    pub async fn mark_notifications_as_read_async(&self, body: PutActivityMarkNotificationsAsRead) -> Result<PostReposCreateDeploymentResponse202, ActivityMarkNotificationsAsReadError> {
+    pub async fn mark_notifications_as_read_async(&self, body: PutActivityMarkNotificationsAsRead) -> Result<PostReposCreateDeploymentResponse202, AdapterError> {
 
         let request_uri = format!("{}/notifications", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivityMarkNotificationsAsRead::from_json(body)?),
+            body: Some(C::from_json::<PutActivityMarkNotificationsAsRead>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                205 => Err(ActivityMarkNotificationsAsReadError::Status205),
-                304 => Err(ActivityMarkNotificationsAsReadError::Status304),
-                403 => Err(ActivityMarkNotificationsAsReadError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityMarkNotificationsAsReadError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityMarkNotificationsAsReadError::Generic { code }),
+                205 => Err(ActivityMarkNotificationsAsReadError::Status205.into()),
+                304 => Err(ActivityMarkNotificationsAsReadError::Status304.into()),
+                403 => Err(ActivityMarkNotificationsAsReadError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityMarkNotificationsAsReadError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ActivityMarkNotificationsAsReadError::Generic { code }.into()),
             }
         }
     }
@@ -3749,35 +3927,35 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn mark_notifications_as_read(&self, body: PutActivityMarkNotificationsAsRead) -> Result<PostReposCreateDeploymentResponse202, ActivityMarkNotificationsAsReadError> {
+    pub fn mark_notifications_as_read(&self, body: PutActivityMarkNotificationsAsRead) -> Result<PostReposCreateDeploymentResponse202, AdapterError> {
 
         let request_uri = format!("{}/notifications", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivityMarkNotificationsAsRead::from_json(body)?),
+            body: Some(C::from_json::<PutActivityMarkNotificationsAsRead>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                205 => Err(ActivityMarkNotificationsAsReadError::Status205),
-                304 => Err(ActivityMarkNotificationsAsReadError::Status304),
-                403 => Err(ActivityMarkNotificationsAsReadError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityMarkNotificationsAsReadError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityMarkNotificationsAsReadError::Generic { code }),
+                205 => Err(ActivityMarkNotificationsAsReadError::Status205.into()),
+                304 => Err(ActivityMarkNotificationsAsReadError::Status304.into()),
+                403 => Err(ActivityMarkNotificationsAsReadError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivityMarkNotificationsAsReadError::Status401(github_response.to_json()?).into()),
+                code => Err(ActivityMarkNotificationsAsReadError::Generic { code }.into()),
             }
         }
     }
@@ -3791,32 +3969,32 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for mark_repo_notifications_as_read](https://docs.github.com/rest/activity/notifications#mark-repository-notifications-as-read)
     ///
     /// ---
-    pub async fn mark_repo_notifications_as_read_async(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<PutPullsUpdateBranchResponse202, ActivityMarkRepoNotificationsAsReadError> {
+    pub async fn mark_repo_notifications_as_read_async(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<PutPullsUpdateBranchResponse202, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivityMarkRepoNotificationsAsRead::from_json(body)?),
+            body: Some(C::from_json::<PutActivityMarkRepoNotificationsAsRead>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                205 => Err(ActivityMarkRepoNotificationsAsReadError::Status205),
-                code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }),
+                205 => Err(ActivityMarkRepoNotificationsAsReadError::Status205.into()),
+                code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }.into()),
             }
         }
     }
@@ -3831,32 +4009,32 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn mark_repo_notifications_as_read(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<PutPullsUpdateBranchResponse202, ActivityMarkRepoNotificationsAsReadError> {
+    pub fn mark_repo_notifications_as_read(&self, owner: &str, repo: &str, body: PutActivityMarkRepoNotificationsAsRead) -> Result<PutPullsUpdateBranchResponse202, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/notifications", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivityMarkRepoNotificationsAsRead::from_json(body)?),
+            body: Some(C::from_json::<PutActivityMarkRepoNotificationsAsRead>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                205 => Err(ActivityMarkRepoNotificationsAsReadError::Status205),
-                code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }),
+                205 => Err(ActivityMarkRepoNotificationsAsReadError::Status205.into()),
+                code => Err(ActivityMarkRepoNotificationsAsReadError::Generic { code }.into()),
             }
         }
     }
@@ -3870,31 +4048,31 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for mark_thread_as_done](https://docs.github.com/rest/activity/notifications#mark-a-thread-as-done)
     ///
     /// ---
-    pub async fn mark_thread_as_done_async(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsDoneError> {
+    pub async fn mark_thread_as_done_async(&self, thread_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityMarkThreadAsDoneError::Generic { code }),
+                code => Err(ActivityMarkThreadAsDoneError::Generic { code }.into()),
             }
         }
     }
@@ -3909,7 +4087,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn mark_thread_as_done(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsDoneError> {
+    pub fn mark_thread_as_done(&self, thread_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
 
@@ -3921,19 +4099,19 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivityMarkThreadAsDoneError::Generic { code }),
+                code => Err(ActivityMarkThreadAsDoneError::Generic { code }.into()),
             }
         }
     }
@@ -3947,33 +4125,33 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for mark_thread_as_read](https://docs.github.com/rest/activity/notifications#mark-a-thread-as-read)
     ///
     /// ---
-    pub async fn mark_thread_as_read_async(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsReadError> {
+    pub async fn mark_thread_as_read_async(&self, thread_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityMarkThreadAsReadError::Status304),
-                403 => Err(ActivityMarkThreadAsReadError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityMarkThreadAsReadError::Generic { code }),
+                304 => Err(ActivityMarkThreadAsReadError::Status304.into()),
+                403 => Err(ActivityMarkThreadAsReadError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ActivityMarkThreadAsReadError::Generic { code }.into()),
             }
         }
     }
@@ -3988,7 +4166,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn mark_thread_as_read(&self, thread_id: i32) -> Result<(), ActivityMarkThreadAsReadError> {
+    pub fn mark_thread_as_read(&self, thread_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}", super::GITHUB_BASE_API_URL, thread_id);
 
@@ -4000,21 +4178,21 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivityMarkThreadAsReadError::Status304),
-                403 => Err(ActivityMarkThreadAsReadError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityMarkThreadAsReadError::Generic { code }),
+                304 => Err(ActivityMarkThreadAsReadError::Status304.into()),
+                403 => Err(ActivityMarkThreadAsReadError::Status403(github_response.to_json()?).into()),
+                code => Err(ActivityMarkThreadAsReadError::Generic { code }.into()),
             }
         }
     }
@@ -4028,31 +4206,31 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for set_repo_subscription](https://docs.github.com/rest/activity/watching#set-a-repository-subscription)
     ///
     /// ---
-    pub async fn set_repo_subscription_async(&self, owner: &str, repo: &str, body: PutActivitySetRepoSubscription) -> Result<RepositorySubscription, ActivitySetRepoSubscriptionError> {
+    pub async fn set_repo_subscription_async(&self, owner: &str, repo: &str, body: PutActivitySetRepoSubscription) -> Result<RepositorySubscription, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/subscription", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivitySetRepoSubscription::from_json(body)?),
+            body: Some(C::from_json::<PutActivitySetRepoSubscription>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivitySetRepoSubscriptionError::Generic { code }),
+                code => Err(ActivitySetRepoSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -4067,31 +4245,31 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_repo_subscription(&self, owner: &str, repo: &str, body: PutActivitySetRepoSubscription) -> Result<RepositorySubscription, ActivitySetRepoSubscriptionError> {
+    pub fn set_repo_subscription(&self, owner: &str, repo: &str, body: PutActivitySetRepoSubscription) -> Result<RepositorySubscription, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/subscription", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivitySetRepoSubscription::from_json(body)?),
+            body: Some(C::from_json::<PutActivitySetRepoSubscription>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ActivitySetRepoSubscriptionError::Generic { code }),
+                code => Err(ActivitySetRepoSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -4109,34 +4287,34 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for set_thread_subscription](https://docs.github.com/rest/activity/notifications#set-a-thread-subscription)
     ///
     /// ---
-    pub async fn set_thread_subscription_async(&self, thread_id: i32, body: PutActivitySetThreadSubscription) -> Result<ThreadSubscription, ActivitySetThreadSubscriptionError> {
+    pub async fn set_thread_subscription_async(&self, thread_id: i32, body: PutActivitySetThreadSubscription) -> Result<ThreadSubscription, AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}/subscription", super::GITHUB_BASE_API_URL, thread_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivitySetThreadSubscription::from_json(body)?),
+            body: Some(C::from_json::<PutActivitySetThreadSubscription>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivitySetThreadSubscriptionError::Status304),
-                403 => Err(ActivitySetThreadSubscriptionError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivitySetThreadSubscriptionError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivitySetThreadSubscriptionError::Generic { code }),
+                304 => Err(ActivitySetThreadSubscriptionError::Status304.into()),
+                403 => Err(ActivitySetThreadSubscriptionError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(ActivitySetThreadSubscriptionError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(ActivitySetThreadSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -4155,34 +4333,34 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_thread_subscription(&self, thread_id: i32, body: PutActivitySetThreadSubscription) -> Result<ThreadSubscription, ActivitySetThreadSubscriptionError> {
+    pub fn set_thread_subscription(&self, thread_id: i32, body: PutActivitySetThreadSubscription) -> Result<ThreadSubscription, AdapterError> {
 
         let request_uri = format!("{}/notifications/threads/{}/subscription", super::GITHUB_BASE_API_URL, thread_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutActivitySetThreadSubscription::from_json(body)?),
+            body: Some(C::from_json::<PutActivitySetThreadSubscription>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(ActivitySetThreadSubscriptionError::Status304),
-                403 => Err(ActivitySetThreadSubscriptionError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivitySetThreadSubscriptionError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivitySetThreadSubscriptionError::Generic { code }),
+                304 => Err(ActivitySetThreadSubscriptionError::Status304.into()),
+                403 => Err(ActivitySetThreadSubscriptionError::Status403(github_response.to_json()?).into()),
+                401 => Err(ActivitySetThreadSubscriptionError::Status401(github_response.to_json()?).into()),
+                code => Err(ActivitySetThreadSubscriptionError::Generic { code }.into()),
             }
         }
     }
@@ -4196,35 +4374,35 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for star_repo_for_authenticated_user](https://docs.github.com/rest/activity/starring#star-a-repository-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn star_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityStarRepoForAuthenticatedUserError> {
+    pub async fn star_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/starred/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(ActivityStarRepoForAuthenticatedUserError::Status304),
-                code => Err(ActivityStarRepoForAuthenticatedUserError::Generic { code }),
+                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                304 => Err(ActivityStarRepoForAuthenticatedUserError::Status304.into()),
+                code => Err(ActivityStarRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4239,7 +4417,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn star_repo_for_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), ActivityStarRepoForAuthenticatedUserError> {
+    pub fn star_repo_for_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/starred/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4251,23 +4429,23 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                304 => Err(ActivityStarRepoForAuthenticatedUserError::Status304),
-                code => Err(ActivityStarRepoForAuthenticatedUserError::Generic { code }),
+                403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(ActivityStarRepoForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                401 => Err(ActivityStarRepoForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                304 => Err(ActivityStarRepoForAuthenticatedUserError::Status304.into()),
+                code => Err(ActivityStarRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4281,35 +4459,35 @@ impl<'api> Activity<'api> {
     /// [GitHub API docs for unstar_repo_for_authenticated_user](https://docs.github.com/rest/activity/starring#unstar-a-repository-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn unstar_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), ActivityUnstarRepoForAuthenticatedUserError> {
+    pub async fn unstar_repo_for_authenticated_user_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/starred/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status304),
-                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ActivityUnstarRepoForAuthenticatedUserError::Generic { code }),
+                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                304 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(ActivityUnstarRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4324,7 +4502,7 @@ impl<'api> Activity<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unstar_repo_for_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), ActivityUnstarRepoForAuthenticatedUserError> {
+    pub fn unstar_repo_for_authenticated_user(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/starred/{}/{}", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -4336,23 +4514,23 @@ impl<'api> Activity<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                304 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status304),
-                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(ActivityUnstarRepoForAuthenticatedUserError::Generic { code }),
+                404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                401 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                304 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status304.into()),
+                403 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                code => Err(ActivityUnstarRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }

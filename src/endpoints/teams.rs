@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Teams<'api> {
-    auth: &'api Auth
+pub struct Teams<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Teams {
-    Teams { auth }
+pub fn new<C: Client>(client: &C) -> Teams<C> where AdapterError: From<<C as Client>::Err> {
+    Teams { client }
 }
 
 /// Errors for the [Add team member (Legacy)](Teams::add_member_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsAddMemberLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if team synchronization is set up")]
     Status404,
     #[error("Unprocessable Entity if you attempt to add an organization to a team or you attempt to add a user to a team when they are not a member of at least one other team in the same organization")]
@@ -54,19 +43,26 @@ pub enum TeamsAddMemberLegacyError {
     Generic { code: u16 },
 }
 
+impl From<TeamsAddMemberLegacyError> for AdapterError {
+    fn from(err: TeamsAddMemberLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsAddMemberLegacyError::Status404 => (String::from("Not Found if team synchronization is set up"), 404),
+            TeamsAddMemberLegacyError::Status422 => (String::from("Unprocessable Entity if you attempt to add an organization to a team or you attempt to add a user to a team when they are not a member of at least one other team in the same organization"), 422),
+            TeamsAddMemberLegacyError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsAddMemberLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add or update team membership for a user](Teams::add_or_update_membership_for_user_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsAddOrUpdateMembershipForUserInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden if team synchronization is set up")]
     Status403,
     #[error("Unprocessable Entity if you attempt to add an organization to a team")]
@@ -75,19 +71,25 @@ pub enum TeamsAddOrUpdateMembershipForUserInOrgError {
     Generic { code: u16 },
 }
 
+impl From<TeamsAddOrUpdateMembershipForUserInOrgError> for AdapterError {
+    fn from(err: TeamsAddOrUpdateMembershipForUserInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsAddOrUpdateMembershipForUserInOrgError::Status403 => (String::from("Forbidden if team synchronization is set up"), 403),
+            TeamsAddOrUpdateMembershipForUserInOrgError::Status422 => (String::from("Unprocessable Entity if you attempt to add an organization to a team"), 422),
+            TeamsAddOrUpdateMembershipForUserInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add or update team membership for a user (Legacy)](Teams::add_or_update_membership_for_user_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsAddOrUpdateMembershipForUserLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden if team synchronization is set up")]
     Status403,
     #[error("Unprocessable Entity if you attempt to add an organization to a team")]
@@ -98,38 +100,50 @@ pub enum TeamsAddOrUpdateMembershipForUserLegacyError {
     Generic { code: u16 },
 }
 
+impl From<TeamsAddOrUpdateMembershipForUserLegacyError> for AdapterError {
+    fn from(err: TeamsAddOrUpdateMembershipForUserLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsAddOrUpdateMembershipForUserLegacyError::Status403 => (String::from("Forbidden if team synchronization is set up"), 403),
+            TeamsAddOrUpdateMembershipForUserLegacyError::Status422 => (String::from("Unprocessable Entity if you attempt to add an organization to a team"), 422),
+            TeamsAddOrUpdateMembershipForUserLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add or update team project permissions](Teams::add_or_update_project_permissions_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsAddOrUpdateProjectPermissionsInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden if the project is not owned by the organization")]
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsAddOrUpdateProjectPermissionsInOrgError> for AdapterError {
+    fn from(err: TeamsAddOrUpdateProjectPermissionsInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(_) => (String::from("Forbidden if the project is not owned by the organization"), 403),
+            TeamsAddOrUpdateProjectPermissionsInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add or update team project permissions (Legacy)](Teams::add_or_update_project_permissions_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsAddOrUpdateProjectPermissionsLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden if the project is not owned by the organization")]
     Status403(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Resource not found")]
@@ -140,36 +154,47 @@ pub enum TeamsAddOrUpdateProjectPermissionsLegacyError {
     Generic { code: u16 },
 }
 
+impl From<TeamsAddOrUpdateProjectPermissionsLegacyError> for AdapterError {
+    fn from(err: TeamsAddOrUpdateProjectPermissionsLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(_) => (String::from("Forbidden if the project is not owned by the organization"), 403),
+            TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Add or update team repository permissions](Teams::add_or_update_repo_permissions_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsAddOrUpdateRepoPermissionsInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsAddOrUpdateRepoPermissionsInOrgError> for AdapterError {
+    fn from(err: TeamsAddOrUpdateRepoPermissionsInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Add or update team repository permissions (Legacy)](Teams::add_or_update_repo_permissions_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsAddOrUpdateRepoPermissionsLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -178,57 +203,73 @@ pub enum TeamsAddOrUpdateRepoPermissionsLegacyError {
     Generic { code: u16 },
 }
 
+impl From<TeamsAddOrUpdateRepoPermissionsLegacyError> for AdapterError {
+    fn from(err: TeamsAddOrUpdateRepoPermissionsLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsAddOrUpdateRepoPermissionsLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check team permissions for a project](Teams::check_permissions_for_project_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCheckPermissionsForProjectInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if project is not managed by this team")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsCheckPermissionsForProjectInOrgError> for AdapterError {
+    fn from(err: TeamsCheckPermissionsForProjectInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCheckPermissionsForProjectInOrgError::Status404 => (String::from("Not Found if project is not managed by this team"), 404),
+            TeamsCheckPermissionsForProjectInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Check team permissions for a project (Legacy)](Teams::check_permissions_for_project_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCheckPermissionsForProjectLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if project is not managed by this team")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsCheckPermissionsForProjectLegacyError> for AdapterError {
+    fn from(err: TeamsCheckPermissionsForProjectLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCheckPermissionsForProjectLegacyError::Status404 => (String::from("Not Found if project is not managed by this team"), 404),
+            TeamsCheckPermissionsForProjectLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check team permissions for a repository](Teams::check_permissions_for_repo_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCheckPermissionsForRepoInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if team has permission for the repository. This is the response when the repository media type hasn't been provded in the Accept header.")]
     Status204,
     #[error("Not Found if team does not have permission for the repository")]
@@ -237,19 +278,25 @@ pub enum TeamsCheckPermissionsForRepoInOrgError {
     Generic { code: u16 },
 }
 
+impl From<TeamsCheckPermissionsForRepoInOrgError> for AdapterError {
+    fn from(err: TeamsCheckPermissionsForRepoInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCheckPermissionsForRepoInOrgError::Status204 => (String::from("Response if team has permission for the repository. This is the response when the repository media type hasn't been provded in the Accept header."), 204),
+            TeamsCheckPermissionsForRepoInOrgError::Status404 => (String::from("Not Found if team does not have permission for the repository"), 404),
+            TeamsCheckPermissionsForRepoInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check team permissions for a repository (Legacy)](Teams::check_permissions_for_repo_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCheckPermissionsForRepoLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if repository is managed by this team")]
     Status204,
     #[error("Not Found if repository is not managed by this team")]
@@ -258,19 +305,25 @@ pub enum TeamsCheckPermissionsForRepoLegacyError {
     Generic { code: u16 },
 }
 
+impl From<TeamsCheckPermissionsForRepoLegacyError> for AdapterError {
+    fn from(err: TeamsCheckPermissionsForRepoLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCheckPermissionsForRepoLegacyError::Status204 => (String::from("Response if repository is managed by this team"), 204),
+            TeamsCheckPermissionsForRepoLegacyError::Status404 => (String::from("Not Found if repository is not managed by this team"), 404),
+            TeamsCheckPermissionsForRepoLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a team](Teams::create_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCreateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
@@ -279,172 +332,214 @@ pub enum TeamsCreateError {
     Generic { code: u16 },
 }
 
+impl From<TeamsCreateError> for AdapterError {
+    fn from(err: TeamsCreateError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCreateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsCreateError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsCreateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a discussion comment](Teams::create_discussion_comment_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCreateDiscussionCommentInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsCreateDiscussionCommentInOrgError> for AdapterError {
+    fn from(err: TeamsCreateDiscussionCommentInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCreateDiscussionCommentInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a discussion comment (Legacy)](Teams::create_discussion_comment_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCreateDiscussionCommentLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsCreateDiscussionCommentLegacyError> for AdapterError {
+    fn from(err: TeamsCreateDiscussionCommentLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCreateDiscussionCommentLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a discussion](Teams::create_discussion_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCreateDiscussionInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsCreateDiscussionInOrgError> for AdapterError {
+    fn from(err: TeamsCreateDiscussionInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCreateDiscussionInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a discussion (Legacy)](Teams::create_discussion_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsCreateDiscussionLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsCreateDiscussionLegacyError> for AdapterError {
+    fn from(err: TeamsCreateDiscussionLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsCreateDiscussionLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a discussion comment](Teams::delete_discussion_comment_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsDeleteDiscussionCommentInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsDeleteDiscussionCommentInOrgError> for AdapterError {
+    fn from(err: TeamsDeleteDiscussionCommentInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsDeleteDiscussionCommentInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a discussion comment (Legacy)](Teams::delete_discussion_comment_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsDeleteDiscussionCommentLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsDeleteDiscussionCommentLegacyError> for AdapterError {
+    fn from(err: TeamsDeleteDiscussionCommentLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsDeleteDiscussionCommentLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a discussion](Teams::delete_discussion_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsDeleteDiscussionInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsDeleteDiscussionInOrgError> for AdapterError {
+    fn from(err: TeamsDeleteDiscussionInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsDeleteDiscussionInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a discussion (Legacy)](Teams::delete_discussion_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsDeleteDiscussionLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsDeleteDiscussionLegacyError> for AdapterError {
+    fn from(err: TeamsDeleteDiscussionLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsDeleteDiscussionLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a team](Teams::delete_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsDeleteInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsDeleteInOrgError> for AdapterError {
+    fn from(err: TeamsDeleteInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsDeleteInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a team (Legacy)](Teams::delete_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsDeleteLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -453,218 +548,274 @@ pub enum TeamsDeleteLegacyError {
     Generic { code: u16 },
 }
 
+impl From<TeamsDeleteLegacyError> for AdapterError {
+    fn from(err: TeamsDeleteLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsDeleteLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsDeleteLegacyError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsDeleteLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a team by name](Teams::get_by_name_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetByNameError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsGetByNameError> for AdapterError {
+    fn from(err: TeamsGetByNameError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetByNameError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsGetByNameError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a discussion comment](Teams::get_discussion_comment_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetDiscussionCommentInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsGetDiscussionCommentInOrgError> for AdapterError {
+    fn from(err: TeamsGetDiscussionCommentInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetDiscussionCommentInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a discussion comment (Legacy)](Teams::get_discussion_comment_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetDiscussionCommentLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsGetDiscussionCommentLegacyError> for AdapterError {
+    fn from(err: TeamsGetDiscussionCommentLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetDiscussionCommentLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a discussion](Teams::get_discussion_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetDiscussionInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsGetDiscussionInOrgError> for AdapterError {
+    fn from(err: TeamsGetDiscussionInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetDiscussionInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a discussion (Legacy)](Teams::get_discussion_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetDiscussionLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsGetDiscussionLegacyError> for AdapterError {
+    fn from(err: TeamsGetDiscussionLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetDiscussionLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a team (Legacy)](Teams::get_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsGetLegacyError> for AdapterError {
+    fn from(err: TeamsGetLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsGetLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get team member (Legacy)](Teams::get_member_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetMemberLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("if user is not a member")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsGetMemberLegacyError> for AdapterError {
+    fn from(err: TeamsGetMemberLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetMemberLegacyError::Status404 => (String::from("if user is not a member"), 404),
+            TeamsGetMemberLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get team membership for a user](Teams::get_membership_for_user_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetMembershipForUserInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("if user has no team membership")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsGetMembershipForUserInOrgError> for AdapterError {
+    fn from(err: TeamsGetMembershipForUserInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetMembershipForUserInOrgError::Status404 => (String::from("if user has no team membership"), 404),
+            TeamsGetMembershipForUserInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get team membership for a user (Legacy)](Teams::get_membership_for_user_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsGetMembershipForUserLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsGetMembershipForUserLegacyError> for AdapterError {
+    fn from(err: TeamsGetMembershipForUserLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsGetMembershipForUserLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsGetMembershipForUserLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List teams](Teams::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsListError> for AdapterError {
+    fn from(err: TeamsListError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsListError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List child teams](Teams::list_child_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListChildInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListChildInOrgError> for AdapterError {
+    fn from(err: TeamsListChildInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListChildInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List child teams (Legacy)](Teams::list_child_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListChildLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -675,87 +826,110 @@ pub enum TeamsListChildLegacyError {
     Generic { code: u16 },
 }
 
+impl From<TeamsListChildLegacyError> for AdapterError {
+    fn from(err: TeamsListChildLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListChildLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsListChildLegacyError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsListChildLegacyError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsListChildLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List discussion comments](Teams::list_discussion_comments_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListDiscussionCommentsInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListDiscussionCommentsInOrgError> for AdapterError {
+    fn from(err: TeamsListDiscussionCommentsInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListDiscussionCommentsInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List discussion comments (Legacy)](Teams::list_discussion_comments_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListDiscussionCommentsLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListDiscussionCommentsLegacyError> for AdapterError {
+    fn from(err: TeamsListDiscussionCommentsLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListDiscussionCommentsLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List discussions](Teams::list_discussions_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListDiscussionsInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListDiscussionsInOrgError> for AdapterError {
+    fn from(err: TeamsListDiscussionsInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListDiscussionsInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List discussions (Legacy)](Teams::list_discussions_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListDiscussionsLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListDiscussionsLegacyError> for AdapterError {
+    fn from(err: TeamsListDiscussionsLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListDiscussionsLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List teams for the authenticated user](Teams::list_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -766,358 +940,449 @@ pub enum TeamsListForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<TeamsListForAuthenticatedUserError> for AdapterError {
+    fn from(err: TeamsListForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            TeamsListForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsListForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsListForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List team members](Teams::list_members_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListMembersInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListMembersInOrgError> for AdapterError {
+    fn from(err: TeamsListMembersInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListMembersInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List team members (Legacy)](Teams::list_members_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListMembersLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListMembersLegacyError> for AdapterError {
+    fn from(err: TeamsListMembersLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListMembersLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsListMembersLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List pending team invitations](Teams::list_pending_invitations_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListPendingInvitationsInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListPendingInvitationsInOrgError> for AdapterError {
+    fn from(err: TeamsListPendingInvitationsInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListPendingInvitationsInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List pending team invitations (Legacy)](Teams::list_pending_invitations_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListPendingInvitationsLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListPendingInvitationsLegacyError> for AdapterError {
+    fn from(err: TeamsListPendingInvitationsLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListPendingInvitationsLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List team projects](Teams::list_projects_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListProjectsInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListProjectsInOrgError> for AdapterError {
+    fn from(err: TeamsListProjectsInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListProjectsInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List team projects (Legacy)](Teams::list_projects_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListProjectsLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListProjectsLegacyError> for AdapterError {
+    fn from(err: TeamsListProjectsLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListProjectsLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsListProjectsLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List team repositories](Teams::list_repos_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListReposInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsListReposInOrgError> for AdapterError {
+    fn from(err: TeamsListReposInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListReposInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List team repositories (Legacy)](Teams::list_repos_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsListReposLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsListReposLegacyError> for AdapterError {
+    fn from(err: TeamsListReposLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsListReposLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsListReposLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove team member (Legacy)](Teams::remove_member_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveMemberLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if team synchronization is setup")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsRemoveMemberLegacyError> for AdapterError {
+    fn from(err: TeamsRemoveMemberLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsRemoveMemberLegacyError::Status404 => (String::from("Not Found if team synchronization is setup"), 404),
+            TeamsRemoveMemberLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove team membership for a user](Teams::remove_membership_for_user_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveMembershipForUserInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden if team synchronization is set up")]
     Status403,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsRemoveMembershipForUserInOrgError> for AdapterError {
+    fn from(err: TeamsRemoveMembershipForUserInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsRemoveMembershipForUserInOrgError::Status403 => (String::from("Forbidden if team synchronization is set up"), 403),
+            TeamsRemoveMembershipForUserInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove team membership for a user (Legacy)](Teams::remove_membership_for_user_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveMembershipForUserLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("if team synchronization is set up")]
     Status403,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<TeamsRemoveMembershipForUserLegacyError> for AdapterError {
+    fn from(err: TeamsRemoveMembershipForUserLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsRemoveMembershipForUserLegacyError::Status403 => (String::from("if team synchronization is set up"), 403),
+            TeamsRemoveMembershipForUserLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove a project from a team](Teams::remove_project_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveProjectInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsRemoveProjectInOrgError> for AdapterError {
+    fn from(err: TeamsRemoveProjectInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsRemoveProjectInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a project from a team (Legacy)](Teams::remove_project_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveProjectLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsRemoveProjectLegacyError> for AdapterError {
+    fn from(err: TeamsRemoveProjectLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsRemoveProjectLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsRemoveProjectLegacyError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsRemoveProjectLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a repository from a team](Teams::remove_repo_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveRepoInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsRemoveRepoInOrgError> for AdapterError {
+    fn from(err: TeamsRemoveRepoInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsRemoveRepoInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a repository from a team (Legacy)](Teams::remove_repo_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsRemoveRepoLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsRemoveRepoLegacyError> for AdapterError {
+    fn from(err: TeamsRemoveRepoLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsRemoveRepoLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a discussion comment](Teams::update_discussion_comment_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsUpdateDiscussionCommentInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsUpdateDiscussionCommentInOrgError> for AdapterError {
+    fn from(err: TeamsUpdateDiscussionCommentInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsUpdateDiscussionCommentInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a discussion comment (Legacy)](Teams::update_discussion_comment_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsUpdateDiscussionCommentLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsUpdateDiscussionCommentLegacyError> for AdapterError {
+    fn from(err: TeamsUpdateDiscussionCommentLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsUpdateDiscussionCommentLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a discussion](Teams::update_discussion_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsUpdateDiscussionInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsUpdateDiscussionInOrgError> for AdapterError {
+    fn from(err: TeamsUpdateDiscussionInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsUpdateDiscussionInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a discussion (Legacy)](Teams::update_discussion_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsUpdateDiscussionLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsUpdateDiscussionLegacyError> for AdapterError {
+    fn from(err: TeamsUpdateDiscussionLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsUpdateDiscussionLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a team](Teams::update_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsUpdateInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status201(TeamFull),
     #[error("Resource not found")]
@@ -1130,19 +1395,27 @@ pub enum TeamsUpdateInOrgError {
     Generic { code: u16 },
 }
 
+impl From<TeamsUpdateInOrgError> for AdapterError {
+    fn from(err: TeamsUpdateInOrgError) -> Self {
+        let (description, status_code) = match err {
+            TeamsUpdateInOrgError::Status201(_) => (String::from("Response"), 201),
+            TeamsUpdateInOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsUpdateInOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsUpdateInOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsUpdateInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a team (Legacy)](Teams::update_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum TeamsUpdateLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status201(TeamFull),
     #[error("Resource not found")]
@@ -1153,6 +1426,24 @@ pub enum TeamsUpdateLegacyError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<TeamsUpdateLegacyError> for AdapterError {
+    fn from(err: TeamsUpdateLegacyError) -> Self {
+        let (description, status_code) = match err {
+            TeamsUpdateLegacyError::Status201(_) => (String::from("Response"), 201),
+            TeamsUpdateLegacyError::Status404(_) => (String::from("Resource not found"), 404),
+            TeamsUpdateLegacyError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            TeamsUpdateLegacyError::Status403(_) => (String::from("Forbidden"), 403),
+            TeamsUpdateLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -1890,7 +2181,7 @@ impl<'enc> From<&'enc PerPage> for TeamsListReposLegacyParams {
     }
 }
 
-impl<'api> Teams<'api> {
+impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add team member (Legacy)
@@ -1911,34 +2202,34 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for add_member_legacy](https://docs.github.com/rest/teams/members#add-team-member-legacy)
     ///
     /// ---
-    pub async fn add_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsAddMemberLegacyError> {
+    pub async fn add_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/members/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsAddMemberLegacyError::Status404),
-                422 => Err(TeamsAddMemberLegacyError::Status422),
-                403 => Err(TeamsAddMemberLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsAddMemberLegacyError::Generic { code }),
+                404 => Err(TeamsAddMemberLegacyError::Status404.into()),
+                422 => Err(TeamsAddMemberLegacyError::Status422.into()),
+                403 => Err(TeamsAddMemberLegacyError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(TeamsAddMemberLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -1964,7 +2255,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_member_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsAddMemberLegacyError> {
+    pub fn add_member_legacy(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/members/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
@@ -1976,22 +2267,22 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsAddMemberLegacyError::Status404),
-                422 => Err(TeamsAddMemberLegacyError::Status422),
-                403 => Err(TeamsAddMemberLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsAddMemberLegacyError::Generic { code }),
+                404 => Err(TeamsAddMemberLegacyError::Status404.into()),
+                422 => Err(TeamsAddMemberLegacyError::Status422.into()),
+                403 => Err(TeamsAddMemberLegacyError::Status403(github_response.to_json()?).into()),
+                code => Err(TeamsAddMemberLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2017,33 +2308,33 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for add_or_update_membership_for_user_in_org](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user)
     ///
     /// ---
-    pub async fn add_or_update_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str, body: PutTeamsAddOrUpdateMembershipForUserInOrg) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserInOrgError> {
+    pub async fn add_or_update_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str, body: PutTeamsAddOrUpdateMembershipForUserInOrg) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, team_slug, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateMembershipForUserInOrg::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateMembershipForUserInOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422),
-                code => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403.into()),
+                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422.into()),
+                code => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2070,33 +2361,33 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_or_update_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str, body: PutTeamsAddOrUpdateMembershipForUserInOrg) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserInOrgError> {
+    pub fn add_or_update_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str, body: PutTeamsAddOrUpdateMembershipForUserInOrg) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, team_slug, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateMembershipForUserInOrg::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateMembershipForUserInOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422),
-                code => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status403.into()),
+                422 => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Status422.into()),
+                code => Err(TeamsAddOrUpdateMembershipForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2122,34 +2413,34 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for add_or_update_membership_for_user_legacy](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user-legacy)
     ///
     /// ---
-    pub async fn add_or_update_membership_for_user_legacy_async(&self, team_id: i32, username: &str, body: PutTeamsAddOrUpdateMembershipForUserLegacy) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserLegacyError> {
+    pub async fn add_or_update_membership_for_user_legacy_async(&self, team_id: i32, username: &str, body: PutTeamsAddOrUpdateMembershipForUserLegacy) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateMembershipForUserLegacy::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateMembershipForUserLegacy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422),
-                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403.into()),
+                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422.into()),
+                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2176,34 +2467,34 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_or_update_membership_for_user_legacy(&self, team_id: i32, username: &str, body: PutTeamsAddOrUpdateMembershipForUserLegacy) -> Result<TeamMembership, TeamsAddOrUpdateMembershipForUserLegacyError> {
+    pub fn add_or_update_membership_for_user_legacy(&self, team_id: i32, username: &str, body: PutTeamsAddOrUpdateMembershipForUserLegacy) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateMembershipForUserLegacy::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateMembershipForUserLegacy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403),
-                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422),
-                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status403.into()),
+                422 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status422.into()),
+                404 => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Status404(github_response.to_json()?).into()),
+                code => Err(TeamsAddOrUpdateMembershipForUserLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2220,32 +2511,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for add_or_update_project_permissions_in_org](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions)
     ///
     /// ---
-    pub async fn add_or_update_project_permissions_in_org_async(&self, org: &str, team_slug: &str, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsInOrg) -> Result<(), TeamsAddOrUpdateProjectPermissionsInOrgError> {
+    pub async fn add_or_update_project_permissions_in_org_async(&self, org: &str, team_slug: &str, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsInOrg) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateProjectPermissionsInOrg::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateProjectPermissionsInOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2263,32 +2554,32 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_or_update_project_permissions_in_org(&self, org: &str, team_slug: &str, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsInOrg) -> Result<(), TeamsAddOrUpdateProjectPermissionsInOrgError> {
+    pub fn add_or_update_project_permissions_in_org(&self, org: &str, team_slug: &str, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsInOrg) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateProjectPermissionsInOrg::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateProjectPermissionsInOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(github_response.to_json()?).into()),
+                code => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2305,34 +2596,34 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for add_or_update_project_permissions_legacy](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions-legacy)
     ///
     /// ---
-    pub async fn add_or_update_project_permissions_legacy_async(&self, team_id: i32, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsLegacy) -> Result<(), TeamsAddOrUpdateProjectPermissionsLegacyError> {
+    pub async fn add_or_update_project_permissions_legacy_async(&self, team_id: i32, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsLegacy) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateProjectPermissionsLegacy::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateProjectPermissionsLegacy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2350,34 +2641,34 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_or_update_project_permissions_legacy(&self, team_id: i32, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsLegacy) -> Result<(), TeamsAddOrUpdateProjectPermissionsLegacyError> {
+    pub fn add_or_update_project_permissions_legacy(&self, team_id: i32, project_id: i32, body: PutTeamsAddOrUpdateProjectPermissionsLegacy) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateProjectPermissionsLegacy::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateProjectPermissionsLegacy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(github_response.to_json()?).into()),
+                404 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status404(github_response.to_json()?).into()),
+                422 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status422(github_response.to_json()?).into()),
+                code => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2396,31 +2687,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for add_or_update_repo_permissions_in_org](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions)
     ///
     /// ---
-    pub async fn add_or_update_repo_permissions_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsInOrg) -> Result<(), TeamsAddOrUpdateRepoPermissionsInOrgError> {
+    pub async fn add_or_update_repo_permissions_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsInOrg) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateRepoPermissionsInOrg::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateRepoPermissionsInOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }),
+                code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2440,31 +2731,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_or_update_repo_permissions_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsInOrg) -> Result<(), TeamsAddOrUpdateRepoPermissionsInOrgError> {
+    pub fn add_or_update_repo_permissions_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsInOrg) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateRepoPermissionsInOrg::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateRepoPermissionsInOrg>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }),
+                code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2483,33 +2774,33 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for add_or_update_repo_permissions_legacy](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions-legacy)
     ///
     /// ---
-    pub async fn add_or_update_repo_permissions_legacy_async(&self, team_id: i32, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsLegacy) -> Result<(), TeamsAddOrUpdateRepoPermissionsLegacyError> {
+    pub async fn add_or_update_repo_permissions_legacy_async(&self, team_id: i32, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsLegacy) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, team_id, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateRepoPermissionsLegacy::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateRepoPermissionsLegacy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2529,33 +2820,33 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_or_update_repo_permissions_legacy(&self, team_id: i32, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsLegacy) -> Result<(), TeamsAddOrUpdateRepoPermissionsLegacyError> {
+    pub fn add_or_update_repo_permissions_legacy(&self, team_id: i32, owner: &str, repo: &str, body: PutTeamsAddOrUpdateRepoPermissionsLegacy) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, team_id, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutTeamsAddOrUpdateRepoPermissionsLegacy::from_json(body)?),
+            body: Some(C::from_json::<PutTeamsAddOrUpdateRepoPermissionsLegacy>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Generic { code }),
+                403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(github_response.to_json()?).into()),
+                422 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status422(github_response.to_json()?).into()),
+                code => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2572,32 +2863,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for check_permissions_for_project_in_org](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project)
     ///
     /// ---
-    pub async fn check_permissions_for_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectInOrgError> {
+    pub async fn check_permissions_for_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<TeamProject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsCheckPermissionsForProjectInOrgError::Status404),
-                code => Err(TeamsCheckPermissionsForProjectInOrgError::Generic { code }),
+                404 => Err(TeamsCheckPermissionsForProjectInOrgError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForProjectInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2615,7 +2906,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_permissions_for_project_in_org(&self, org: &str, team_slug: &str, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectInOrgError> {
+    pub fn check_permissions_for_project_in_org(&self, org: &str, team_slug: &str, project_id: i32) -> Result<TeamProject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
 
@@ -2627,20 +2918,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsCheckPermissionsForProjectInOrgError::Status404),
-                code => Err(TeamsCheckPermissionsForProjectInOrgError::Generic { code }),
+                404 => Err(TeamsCheckPermissionsForProjectInOrgError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForProjectInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2657,32 +2948,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for check_permissions_for_project_legacy](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project-legacy)
     ///
     /// ---
-    pub async fn check_permissions_for_project_legacy_async(&self, team_id: i32, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectLegacyError> {
+    pub async fn check_permissions_for_project_legacy_async(&self, team_id: i32, project_id: i32) -> Result<TeamProject, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404),
-                code => Err(TeamsCheckPermissionsForProjectLegacyError::Generic { code }),
+                404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForProjectLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2700,7 +2991,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_permissions_for_project_legacy(&self, team_id: i32, project_id: i32) -> Result<TeamProject, TeamsCheckPermissionsForProjectLegacyError> {
+    pub fn check_permissions_for_project_legacy(&self, team_id: i32, project_id: i32) -> Result<TeamProject, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
 
@@ -2712,20 +3003,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404),
-                code => Err(TeamsCheckPermissionsForProjectLegacyError::Generic { code }),
+                404 => Err(TeamsCheckPermissionsForProjectLegacyError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForProjectLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2748,33 +3039,33 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for check_permissions_for_repo_in_org](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository)
     ///
     /// ---
-    pub async fn check_permissions_for_repo_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoInOrgError> {
+    pub async fn check_permissions_for_repo_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<TeamRepository, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(TeamsCheckPermissionsForRepoInOrgError::Status204),
-                404 => Err(TeamsCheckPermissionsForRepoInOrgError::Status404),
-                code => Err(TeamsCheckPermissionsForRepoInOrgError::Generic { code }),
+                204 => Err(TeamsCheckPermissionsForRepoInOrgError::Status204.into()),
+                404 => Err(TeamsCheckPermissionsForRepoInOrgError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForRepoInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2798,7 +3089,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_permissions_for_repo_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoInOrgError> {
+    pub fn check_permissions_for_repo_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<TeamRepository, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, owner, repo);
 
@@ -2810,21 +3101,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(TeamsCheckPermissionsForRepoInOrgError::Status204),
-                404 => Err(TeamsCheckPermissionsForRepoInOrgError::Status404),
-                code => Err(TeamsCheckPermissionsForRepoInOrgError::Generic { code }),
+                204 => Err(TeamsCheckPermissionsForRepoInOrgError::Status204.into()),
+                404 => Err(TeamsCheckPermissionsForRepoInOrgError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForRepoInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2844,33 +3135,33 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for check_permissions_for_repo_legacy](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository-legacy)
     ///
     /// ---
-    pub async fn check_permissions_for_repo_legacy_async(&self, team_id: i32, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoLegacyError> {
+    pub async fn check_permissions_for_repo_legacy_async(&self, team_id: i32, owner: &str, repo: &str) -> Result<TeamRepository, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, team_id, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(TeamsCheckPermissionsForRepoLegacyError::Status204),
-                404 => Err(TeamsCheckPermissionsForRepoLegacyError::Status404),
-                code => Err(TeamsCheckPermissionsForRepoLegacyError::Generic { code }),
+                204 => Err(TeamsCheckPermissionsForRepoLegacyError::Status204.into()),
+                404 => Err(TeamsCheckPermissionsForRepoLegacyError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForRepoLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2891,7 +3182,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_permissions_for_repo_legacy(&self, team_id: i32, owner: &str, repo: &str) -> Result<TeamRepository, TeamsCheckPermissionsForRepoLegacyError> {
+    pub fn check_permissions_for_repo_legacy(&self, team_id: i32, owner: &str, repo: &str) -> Result<TeamRepository, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, team_id, owner, repo);
 
@@ -2903,21 +3194,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(TeamsCheckPermissionsForRepoLegacyError::Status204),
-                404 => Err(TeamsCheckPermissionsForRepoLegacyError::Status404),
-                code => Err(TeamsCheckPermissionsForRepoLegacyError::Generic { code }),
+                204 => Err(TeamsCheckPermissionsForRepoLegacyError::Status204.into()),
+                404 => Err(TeamsCheckPermissionsForRepoLegacyError::Status404.into()),
+                code => Err(TeamsCheckPermissionsForRepoLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2933,33 +3224,33 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for create](https://docs.github.com/rest/teams/teams#create-a-team)
     ///
     /// ---
-    pub async fn create_async(&self, org: &str, body: PostTeamsCreate) -> Result<TeamFull, TeamsCreateError> {
+    pub async fn create_async(&self, org: &str, body: PostTeamsCreate) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreate::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(TeamsCreateError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsCreateError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsCreateError::Generic { code }),
+                422 => Err(TeamsCreateError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(TeamsCreateError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(TeamsCreateError::Generic { code }.into()),
             }
         }
     }
@@ -2976,33 +3267,33 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create(&self, org: &str, body: PostTeamsCreate) -> Result<TeamFull, TeamsCreateError> {
+    pub fn create(&self, org: &str, body: PostTeamsCreate) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreate::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(TeamsCreateError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsCreateError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsCreateError::Generic { code }),
+                422 => Err(TeamsCreateError::Status422(github_response.to_json()?).into()),
+                403 => Err(TeamsCreateError::Status403(github_response.to_json()?).into()),
+                code => Err(TeamsCreateError::Generic { code }.into()),
             }
         }
     }
@@ -3023,31 +3314,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for create_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment)
     ///
     /// ---
-    pub async fn create_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostTeamsCreateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentInOrgError> {
+    pub async fn create_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostTeamsCreateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionCommentInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionCommentInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsCreateDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3069,31 +3360,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostTeamsCreateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentInOrgError> {
+    pub fn create_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostTeamsCreateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionCommentInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionCommentInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsCreateDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3114,31 +3405,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for create_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment-legacy)
     ///
     /// ---
-    pub async fn create_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostTeamsCreateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentLegacyError> {
+    pub async fn create_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostTeamsCreateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionCommentLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionCommentLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsCreateDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3160,31 +3451,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, body: PostTeamsCreateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsCreateDiscussionCommentLegacyError> {
+    pub fn create_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, body: PostTeamsCreateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionCommentLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionCommentLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsCreateDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3205,31 +3496,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for create_discussion_in_org](https://docs.github.com/rest/teams/discussions#create-a-discussion)
     ///
     /// ---
-    pub async fn create_discussion_in_org_async(&self, org: &str, team_slug: &str, body: PostTeamsCreateDiscussionInOrg) -> Result<TeamDiscussion, TeamsCreateDiscussionInOrgError> {
+    pub async fn create_discussion_in_org_async(&self, org: &str, team_slug: &str, body: PostTeamsCreateDiscussionInOrg) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsCreateDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3251,31 +3542,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_discussion_in_org(&self, org: &str, team_slug: &str, body: PostTeamsCreateDiscussionInOrg) -> Result<TeamDiscussion, TeamsCreateDiscussionInOrgError> {
+    pub fn create_discussion_in_org(&self, org: &str, team_slug: &str, body: PostTeamsCreateDiscussionInOrg) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsCreateDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3296,31 +3587,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for create_discussion_legacy](https://docs.github.com/rest/teams/discussions#create-a-discussion-legacy)
     ///
     /// ---
-    pub async fn create_discussion_legacy_async(&self, team_id: i32, body: PostTeamsCreateDiscussionLegacy) -> Result<TeamDiscussion, TeamsCreateDiscussionLegacyError> {
+    pub async fn create_discussion_legacy_async(&self, team_id: i32, body: PostTeamsCreateDiscussionLegacy) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsCreateDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3342,31 +3633,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_discussion_legacy(&self, team_id: i32, body: PostTeamsCreateDiscussionLegacy) -> Result<TeamDiscussion, TeamsCreateDiscussionLegacyError> {
+    pub fn create_discussion_legacy(&self, team_id: i32, body: PostTeamsCreateDiscussionLegacy) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostTeamsCreateDiscussionLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostTeamsCreateDiscussionLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsCreateDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsCreateDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3385,31 +3676,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for delete_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment)
     ///
     /// ---
-    pub async fn delete_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentInOrgError> {
+    pub async fn delete_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3429,7 +3720,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentInOrgError> {
+    pub fn delete_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
@@ -3441,19 +3732,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3472,31 +3763,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for delete_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment-legacy)
     ///
     /// ---
-    pub async fn delete_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentLegacyError> {
+    pub async fn delete_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3516,7 +3807,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<(), TeamsDeleteDiscussionCommentLegacyError> {
+    pub fn delete_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
@@ -3528,19 +3819,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3559,31 +3850,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for delete_discussion_in_org](https://docs.github.com/rest/teams/discussions#delete-a-discussion)
     ///
     /// ---
-    pub async fn delete_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionInOrgError> {
+    pub async fn delete_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3603,7 +3894,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionInOrgError> {
+    pub fn delete_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
@@ -3615,19 +3906,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3646,31 +3937,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for delete_discussion_legacy](https://docs.github.com/rest/teams/discussions#delete-a-discussion-legacy)
     ///
     /// ---
-    pub async fn delete_discussion_legacy_async(&self, team_id: i32, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionLegacyError> {
+    pub async fn delete_discussion_legacy_async(&self, team_id: i32, discussion_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3690,7 +3981,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_discussion_legacy(&self, team_id: i32, discussion_number: i32) -> Result<(), TeamsDeleteDiscussionLegacyError> {
+    pub fn delete_discussion_legacy(&self, team_id: i32, discussion_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
@@ -3702,19 +3993,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3733,31 +4024,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for delete_in_org](https://docs.github.com/rest/teams/teams#delete-a-team)
     ///
     /// ---
-    pub async fn delete_in_org_async(&self, org: &str, team_slug: &str) -> Result<(), TeamsDeleteInOrgError> {
+    pub async fn delete_in_org_async(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteInOrgError::Generic { code }),
+                code => Err(TeamsDeleteInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3777,7 +4068,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_in_org(&self, org: &str, team_slug: &str) -> Result<(), TeamsDeleteInOrgError> {
+    pub fn delete_in_org(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -3789,19 +4080,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsDeleteInOrgError::Generic { code }),
+                code => Err(TeamsDeleteInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3820,33 +4111,33 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for delete_legacy](https://docs.github.com/rest/teams/teams#delete-a-team-legacy)
     ///
     /// ---
-    pub async fn delete_legacy_async(&self, team_id: i32) -> Result<(), TeamsDeleteLegacyError> {
+    pub async fn delete_legacy_async(&self, team_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}", super::GITHUB_BASE_API_URL, team_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsDeleteLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsDeleteLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsDeleteLegacyError::Generic { code }),
+                404 => Err(TeamsDeleteLegacyError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(TeamsDeleteLegacyError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(TeamsDeleteLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3866,7 +4157,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_legacy(&self, team_id: i32) -> Result<(), TeamsDeleteLegacyError> {
+    pub fn delete_legacy(&self, team_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}", super::GITHUB_BASE_API_URL, team_id);
 
@@ -3878,21 +4169,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsDeleteLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsDeleteLegacyError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsDeleteLegacyError::Generic { code }),
+                404 => Err(TeamsDeleteLegacyError::Status404(github_response.to_json()?).into()),
+                422 => Err(TeamsDeleteLegacyError::Status422(github_response.to_json()?).into()),
+                code => Err(TeamsDeleteLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3909,32 +4200,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_by_name](https://docs.github.com/rest/teams/teams#get-a-team-by-name)
     ///
     /// ---
-    pub async fn get_by_name_async(&self, org: &str, team_slug: &str) -> Result<TeamFull, TeamsGetByNameError> {
+    pub async fn get_by_name_async(&self, org: &str, team_slug: &str) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetByNameError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsGetByNameError::Generic { code }),
+                404 => Err(TeamsGetByNameError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(TeamsGetByNameError::Generic { code }.into()),
             }
         }
     }
@@ -3952,7 +4243,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_by_name(&self, org: &str, team_slug: &str) -> Result<TeamFull, TeamsGetByNameError> {
+    pub fn get_by_name(&self, org: &str, team_slug: &str) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -3964,20 +4255,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetByNameError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsGetByNameError::Generic { code }),
+                404 => Err(TeamsGetByNameError::Status404(github_response.to_json()?).into()),
+                code => Err(TeamsGetByNameError::Generic { code }.into()),
             }
         }
     }
@@ -3996,31 +4287,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment)
     ///
     /// ---
-    pub async fn get_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentInOrgError> {
+    pub async fn get_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsGetDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4040,7 +4331,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentInOrgError> {
+    pub fn get_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
@@ -4052,19 +4343,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsGetDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4083,31 +4374,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment-legacy)
     ///
     /// ---
-    pub async fn get_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentLegacyError> {
+    pub async fn get_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsGetDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4127,7 +4418,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, TeamsGetDiscussionCommentLegacyError> {
+    pub fn get_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
@@ -4139,19 +4430,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsGetDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4170,31 +4461,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_discussion_in_org](https://docs.github.com/rest/teams/discussions#get-a-discussion)
     ///
     /// ---
-    pub async fn get_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionInOrgError> {
+    pub async fn get_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsGetDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4214,7 +4505,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionInOrgError> {
+    pub fn get_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
@@ -4226,19 +4517,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsGetDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4257,31 +4548,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_discussion_legacy](https://docs.github.com/rest/teams/discussions#get-a-discussion-legacy)
     ///
     /// ---
-    pub async fn get_discussion_legacy_async(&self, team_id: i32, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionLegacyError> {
+    pub async fn get_discussion_legacy_async(&self, team_id: i32, discussion_number: i32) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsGetDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4301,7 +4592,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_discussion_legacy(&self, team_id: i32, discussion_number: i32) -> Result<TeamDiscussion, TeamsGetDiscussionLegacyError> {
+    pub fn get_discussion_legacy(&self, team_id: i32, discussion_number: i32) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
@@ -4313,19 +4604,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsGetDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsGetDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4340,32 +4631,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_legacy](https://docs.github.com/rest/teams/teams#get-a-team-legacy)
     ///
     /// ---
-    pub async fn get_legacy_async(&self, team_id: i32) -> Result<TeamFull, TeamsGetLegacyError> {
+    pub async fn get_legacy_async(&self, team_id: i32) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/teams/{}", super::GITHUB_BASE_API_URL, team_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsGetLegacyError::Generic { code }),
+                404 => Err(TeamsGetLegacyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(TeamsGetLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4381,7 +4672,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_legacy(&self, team_id: i32) -> Result<TeamFull, TeamsGetLegacyError> {
+    pub fn get_legacy(&self, team_id: i32) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/teams/{}", super::GITHUB_BASE_API_URL, team_id);
 
@@ -4393,20 +4684,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsGetLegacyError::Generic { code }),
+                404 => Err(TeamsGetLegacyError::Status404(github_response.to_json()?).into()),
+                code => Err(TeamsGetLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4424,32 +4715,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_member_legacy](https://docs.github.com/rest/teams/members#get-team-member-legacy)
     ///
     /// ---
-    pub async fn get_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsGetMemberLegacyError> {
+    pub async fn get_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/members/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMemberLegacyError::Status404),
-                code => Err(TeamsGetMemberLegacyError::Generic { code }),
+                404 => Err(TeamsGetMemberLegacyError::Status404.into()),
+                code => Err(TeamsGetMemberLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4468,7 +4759,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_member_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsGetMemberLegacyError> {
+    pub fn get_member_legacy(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/members/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
@@ -4480,20 +4771,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMemberLegacyError::Status404),
-                code => Err(TeamsGetMemberLegacyError::Generic { code }),
+                404 => Err(TeamsGetMemberLegacyError::Status404.into()),
+                code => Err(TeamsGetMemberLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4517,32 +4808,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_membership_for_user_in_org](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user)
     ///
     /// ---
-    pub async fn get_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserInOrgError> {
+    pub async fn get_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, team_slug, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMembershipForUserInOrgError::Status404),
-                code => Err(TeamsGetMembershipForUserInOrgError::Generic { code }),
+                404 => Err(TeamsGetMembershipForUserInOrgError::Status404.into()),
+                code => Err(TeamsGetMembershipForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4567,7 +4858,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserInOrgError> {
+    pub fn get_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, team_slug, username);
 
@@ -4579,20 +4870,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMembershipForUserInOrgError::Status404),
-                code => Err(TeamsGetMembershipForUserInOrgError::Generic { code }),
+                404 => Err(TeamsGetMembershipForUserInOrgError::Status404.into()),
+                code => Err(TeamsGetMembershipForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4616,32 +4907,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for get_membership_for_user_legacy](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user-legacy)
     ///
     /// ---
-    pub async fn get_membership_for_user_legacy_async(&self, team_id: i32, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserLegacyError> {
+    pub async fn get_membership_for_user_legacy_async(&self, team_id: i32, username: &str) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsGetMembershipForUserLegacyError::Generic { code }),
+                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(TeamsGetMembershipForUserLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4666,7 +4957,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_membership_for_user_legacy(&self, team_id: i32, username: &str) -> Result<TeamMembership, TeamsGetMembershipForUserLegacyError> {
+    pub fn get_membership_for_user_legacy(&self, team_id: i32, username: &str) -> Result<TeamMembership, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
@@ -4678,20 +4969,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsGetMembershipForUserLegacyError::Generic { code }),
+                404 => Err(TeamsGetMembershipForUserLegacyError::Status404(github_response.to_json()?).into()),
+                code => Err(TeamsGetMembershipForUserLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4705,7 +4996,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list](https://docs.github.com/rest/teams/teams#list-teams)
     ///
     /// ---
-    pub async fn list_async(&self, org: &str, query_params: Option<impl Into<TeamsListParams>>) -> Result<Vec<Team>, TeamsListError> {
+    pub async fn list_async(&self, org: &str, query_params: Option<impl Into<TeamsListParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams", super::GITHUB_BASE_API_URL, org);
 
@@ -4716,25 +5007,25 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsListError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsListError::Generic { code }),
+                403 => Err(TeamsListError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(TeamsListError::Generic { code }.into()),
             }
         }
     }
@@ -4749,7 +5040,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list(&self, org: &str, query_params: Option<impl Into<TeamsListParams>>) -> Result<Vec<Team>, TeamsListError> {
+    pub fn list(&self, org: &str, query_params: Option<impl Into<TeamsListParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams", super::GITHUB_BASE_API_URL, org);
 
@@ -4766,20 +5057,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsListError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsListError::Generic { code }),
+                403 => Err(TeamsListError::Status403(github_response.to_json()?).into()),
+                code => Err(TeamsListError::Generic { code }.into()),
             }
         }
     }
@@ -4796,7 +5087,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_child_in_org](https://docs.github.com/rest/teams/teams#list-child-teams)
     ///
     /// ---
-    pub async fn list_child_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListChildInOrgParams>>) -> Result<Vec<Team>, TeamsListChildInOrgError> {
+    pub async fn list_child_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListChildInOrgParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/teams", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -4807,24 +5098,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListChildInOrgError::Generic { code }),
+                code => Err(TeamsListChildInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4842,7 +5133,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_child_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListChildInOrgParams>>) -> Result<Vec<Team>, TeamsListChildInOrgError> {
+    pub fn list_child_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListChildInOrgParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/teams", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -4859,19 +5150,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListChildInOrgError::Generic { code }),
+                code => Err(TeamsListChildInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4886,7 +5177,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_child_legacy](https://docs.github.com/rest/teams/teams#list-child-teams-legacy)
     ///
     /// ---
-    pub async fn list_child_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListChildLegacyParams>>) -> Result<Vec<Team>, TeamsListChildLegacyError> {
+    pub async fn list_child_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListChildLegacyParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/teams", super::GITHUB_BASE_API_URL, team_id);
 
@@ -4897,27 +5188,27 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListChildLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsListChildLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsListChildLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsListChildLegacyError::Generic { code }),
+                404 => Err(TeamsListChildLegacyError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(TeamsListChildLegacyError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(TeamsListChildLegacyError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(TeamsListChildLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4933,7 +5224,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_child_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListChildLegacyParams>>) -> Result<Vec<Team>, TeamsListChildLegacyError> {
+    pub fn list_child_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListChildLegacyParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/teams", super::GITHUB_BASE_API_URL, team_id);
 
@@ -4950,22 +5241,22 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListChildLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsListChildLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsListChildLegacyError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsListChildLegacyError::Generic { code }),
+                404 => Err(TeamsListChildLegacyError::Status404(github_response.to_json()?).into()),
+                403 => Err(TeamsListChildLegacyError::Status403(github_response.to_json()?).into()),
+                422 => Err(TeamsListChildLegacyError::Status422(github_response.to_json()?).into()),
+                code => Err(TeamsListChildLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -4984,7 +5275,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_discussion_comments_in_org](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments)
     ///
     /// ---
-    pub async fn list_discussion_comments_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsInOrgError> {
+    pub async fn list_discussion_comments_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
@@ -4995,24 +5286,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionCommentsInOrgError::Generic { code }),
+                code => Err(TeamsListDiscussionCommentsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5032,7 +5323,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_discussion_comments_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsInOrgError> {
+    pub fn list_discussion_comments_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
@@ -5049,19 +5340,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionCommentsInOrgError::Generic { code }),
+                code => Err(TeamsListDiscussionCommentsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5080,7 +5371,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_discussion_comments_legacy](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments-legacy)
     ///
     /// ---
-    pub async fn list_discussion_comments_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsLegacyError> {
+    pub async fn list_discussion_comments_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
@@ -5091,24 +5382,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionCommentsLegacyError::Generic { code }),
+                code => Err(TeamsListDiscussionCommentsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5128,7 +5419,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_discussion_comments_legacy(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, TeamsListDiscussionCommentsLegacyError> {
+    pub fn list_discussion_comments_legacy(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<TeamsListDiscussionCommentsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussionComment>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
@@ -5145,19 +5436,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionCommentsLegacyError::Generic { code }),
+                code => Err(TeamsListDiscussionCommentsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5176,7 +5467,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_discussions_in_org](https://docs.github.com/rest/teams/discussions#list-discussions)
     ///
     /// ---
-    pub async fn list_discussions_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListDiscussionsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsInOrgError> {
+    pub async fn list_discussions_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListDiscussionsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussion>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5187,24 +5478,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionsInOrgError::Generic { code }),
+                code => Err(TeamsListDiscussionsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5224,7 +5515,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_discussions_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListDiscussionsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsInOrgError> {
+    pub fn list_discussions_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListDiscussionsInOrgParams<'api>>>) -> Result<Vec<TeamDiscussion>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5241,19 +5532,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionsInOrgError::Generic { code }),
+                code => Err(TeamsListDiscussionsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5272,7 +5563,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_discussions_legacy](https://docs.github.com/rest/teams/discussions#list-discussions-legacy)
     ///
     /// ---
-    pub async fn list_discussions_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListDiscussionsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsLegacyError> {
+    pub async fn list_discussions_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListDiscussionsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussion>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5283,24 +5574,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionsLegacyError::Generic { code }),
+                code => Err(TeamsListDiscussionsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5320,7 +5611,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_discussions_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListDiscussionsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussion>, TeamsListDiscussionsLegacyError> {
+    pub fn list_discussions_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListDiscussionsLegacyParams<'api>>>) -> Result<Vec<TeamDiscussion>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5337,19 +5628,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListDiscussionsLegacyError::Generic { code }),
+                code => Err(TeamsListDiscussionsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5368,7 +5659,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/teams/teams#list-teams-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<TeamsListForAuthenticatedUserParams>>) -> Result<Vec<TeamFull>, TeamsListForAuthenticatedUserError> {
+    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<TeamsListForAuthenticatedUserParams>>) -> Result<Vec<TeamFull>, AdapterError> {
 
         let mut request_uri = format!("{}/user/teams", super::GITHUB_BASE_API_URL);
 
@@ -5379,27 +5670,27 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(TeamsListForAuthenticatedUserError::Status304),
-                404 => Err(TeamsListForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsListForAuthenticatedUserError::Generic { code }),
+                304 => Err(TeamsListForAuthenticatedUserError::Status304.into()),
+                404 => Err(TeamsListForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(TeamsListForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(TeamsListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5419,7 +5710,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<TeamsListForAuthenticatedUserParams>>) -> Result<Vec<TeamFull>, TeamsListForAuthenticatedUserError> {
+    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<TeamsListForAuthenticatedUserParams>>) -> Result<Vec<TeamFull>, AdapterError> {
 
         let mut request_uri = format!("{}/user/teams", super::GITHUB_BASE_API_URL);
 
@@ -5436,22 +5727,22 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(TeamsListForAuthenticatedUserError::Status304),
-                404 => Err(TeamsListForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsListForAuthenticatedUserError::Generic { code }),
+                304 => Err(TeamsListForAuthenticatedUserError::Status304.into()),
+                404 => Err(TeamsListForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(TeamsListForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                code => Err(TeamsListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5467,7 +5758,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_members_in_org](https://docs.github.com/rest/teams/members#list-team-members)
     ///
     /// ---
-    pub async fn list_members_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListMembersInOrgParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersInOrgError> {
+    pub async fn list_members_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListMembersInOrgParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/members", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5478,24 +5769,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListMembersInOrgError::Generic { code }),
+                code => Err(TeamsListMembersInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5512,7 +5803,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_members_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListMembersInOrgParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersInOrgError> {
+    pub fn list_members_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListMembersInOrgParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/members", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5529,19 +5820,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListMembersInOrgError::Generic { code }),
+                code => Err(TeamsListMembersInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5558,7 +5849,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_members_legacy](https://docs.github.com/rest/teams/members#list-team-members-legacy)
     ///
     /// ---
-    pub async fn list_members_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListMembersLegacyParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersLegacyError> {
+    pub async fn list_members_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListMembersLegacyParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/members", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5569,25 +5860,25 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListMembersLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsListMembersLegacyError::Generic { code }),
+                404 => Err(TeamsListMembersLegacyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(TeamsListMembersLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5605,7 +5896,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_members_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListMembersLegacyParams<'api>>>) -> Result<Vec<SimpleUser>, TeamsListMembersLegacyError> {
+    pub fn list_members_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListMembersLegacyParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/members", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5622,20 +5913,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListMembersLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsListMembersLegacyError::Generic { code }),
+                404 => Err(TeamsListMembersLegacyError::Status404(github_response.to_json()?).into()),
+                code => Err(TeamsListMembersLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5652,7 +5943,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_pending_invitations_in_org](https://docs.github.com/rest/teams/members#list-pending-team-invitations)
     ///
     /// ---
-    pub async fn list_pending_invitations_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListPendingInvitationsInOrgParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsInOrgError> {
+    pub async fn list_pending_invitations_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListPendingInvitationsInOrgParams>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/invitations", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5663,24 +5954,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListPendingInvitationsInOrgError::Generic { code }),
+                code => Err(TeamsListPendingInvitationsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5698,7 +5989,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pending_invitations_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListPendingInvitationsInOrgParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsInOrgError> {
+    pub fn list_pending_invitations_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListPendingInvitationsInOrgParams>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/invitations", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5715,19 +6006,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListPendingInvitationsInOrgError::Generic { code }),
+                code => Err(TeamsListPendingInvitationsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5744,7 +6035,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_pending_invitations_legacy](https://docs.github.com/rest/teams/members#list-pending-team-invitations-legacy)
     ///
     /// ---
-    pub async fn list_pending_invitations_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListPendingInvitationsLegacyParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsLegacyError> {
+    pub async fn list_pending_invitations_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListPendingInvitationsLegacyParams>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/invitations", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5755,24 +6046,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListPendingInvitationsLegacyError::Generic { code }),
+                code => Err(TeamsListPendingInvitationsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5790,7 +6081,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pending_invitations_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListPendingInvitationsLegacyParams>>) -> Result<Vec<OrganizationInvitation>, TeamsListPendingInvitationsLegacyError> {
+    pub fn list_pending_invitations_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListPendingInvitationsLegacyParams>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/invitations", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5807,19 +6098,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListPendingInvitationsLegacyError::Generic { code }),
+                code => Err(TeamsListPendingInvitationsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5836,7 +6127,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_projects_in_org](https://docs.github.com/rest/teams/teams#list-team-projects)
     ///
     /// ---
-    pub async fn list_projects_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListProjectsInOrgParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsInOrgError> {
+    pub async fn list_projects_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListProjectsInOrgParams>>) -> Result<Vec<TeamProject>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/projects", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5847,24 +6138,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListProjectsInOrgError::Generic { code }),
+                code => Err(TeamsListProjectsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5882,7 +6173,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_projects_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListProjectsInOrgParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsInOrgError> {
+    pub fn list_projects_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListProjectsInOrgParams>>) -> Result<Vec<TeamProject>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/projects", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -5899,19 +6190,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListProjectsInOrgError::Generic { code }),
+                code => Err(TeamsListProjectsInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -5928,7 +6219,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_projects_legacy](https://docs.github.com/rest/teams/teams#list-team-projects-legacy)
     ///
     /// ---
-    pub async fn list_projects_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListProjectsLegacyParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsLegacyError> {
+    pub async fn list_projects_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListProjectsLegacyParams>>) -> Result<Vec<TeamProject>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/projects", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5939,25 +6230,25 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListProjectsLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsListProjectsLegacyError::Generic { code }),
+                404 => Err(TeamsListProjectsLegacyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(TeamsListProjectsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -5975,7 +6266,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_projects_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListProjectsLegacyParams>>) -> Result<Vec<TeamProject>, TeamsListProjectsLegacyError> {
+    pub fn list_projects_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListProjectsLegacyParams>>) -> Result<Vec<TeamProject>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/projects", super::GITHUB_BASE_API_URL, team_id);
 
@@ -5992,20 +6283,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListProjectsLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsListProjectsLegacyError::Generic { code }),
+                404 => Err(TeamsListProjectsLegacyError::Status404(github_response.to_json()?).into()),
+                code => Err(TeamsListProjectsLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6022,7 +6313,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_repos_in_org](https://docs.github.com/rest/teams/teams#list-team-repositories)
     ///
     /// ---
-    pub async fn list_repos_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListReposInOrgParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposInOrgError> {
+    pub async fn list_repos_in_org_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListReposInOrgParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/repos", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -6033,24 +6324,24 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListReposInOrgError::Generic { code }),
+                code => Err(TeamsListReposInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6068,7 +6359,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListReposInOrgParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposInOrgError> {
+    pub fn list_repos_in_org(&self, org: &str, team_slug: &str, query_params: Option<impl Into<TeamsListReposInOrgParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/repos", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -6085,19 +6376,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsListReposInOrgError::Generic { code }),
+                code => Err(TeamsListReposInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6112,7 +6403,7 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for list_repos_legacy](https://docs.github.com/rest/teams/teams#list-team-repositories-legacy)
     ///
     /// ---
-    pub async fn list_repos_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListReposLegacyParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposLegacyError> {
+    pub async fn list_repos_legacy_async(&self, team_id: i32, query_params: Option<impl Into<TeamsListReposLegacyParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/repos", super::GITHUB_BASE_API_URL, team_id);
 
@@ -6123,25 +6414,25 @@ impl<'api> Teams<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListReposLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsListReposLegacyError::Generic { code }),
+                404 => Err(TeamsListReposLegacyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(TeamsListReposLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6157,7 +6448,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListReposLegacyParams>>) -> Result<Vec<MinimalRepository>, TeamsListReposLegacyError> {
+    pub fn list_repos_legacy(&self, team_id: i32, query_params: Option<impl Into<TeamsListReposLegacyParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/repos", super::GITHUB_BASE_API_URL, team_id);
 
@@ -6174,20 +6465,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsListReposLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsListReposLegacyError::Generic { code }),
+                404 => Err(TeamsListReposLegacyError::Status404(github_response.to_json()?).into()),
+                code => Err(TeamsListReposLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6210,32 +6501,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for remove_member_legacy](https://docs.github.com/rest/teams/members#remove-team-member-legacy)
     ///
     /// ---
-    pub async fn remove_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMemberLegacyError> {
+    pub async fn remove_member_legacy_async(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/members/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsRemoveMemberLegacyError::Status404),
-                code => Err(TeamsRemoveMemberLegacyError::Generic { code }),
+                404 => Err(TeamsRemoveMemberLegacyError::Status404.into()),
+                code => Err(TeamsRemoveMemberLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6259,7 +6550,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_member_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMemberLegacyError> {
+    pub fn remove_member_legacy(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/members/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
@@ -6271,20 +6562,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsRemoveMemberLegacyError::Status404),
-                code => Err(TeamsRemoveMemberLegacyError::Generic { code }),
+                404 => Err(TeamsRemoveMemberLegacyError::Status404.into()),
+                code => Err(TeamsRemoveMemberLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6306,32 +6597,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for remove_membership_for_user_in_org](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user)
     ///
     /// ---
-    pub async fn remove_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str) -> Result<(), TeamsRemoveMembershipForUserInOrgError> {
+    pub async fn remove_membership_for_user_in_org_async(&self, org: &str, team_slug: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, team_slug, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403),
-                code => Err(TeamsRemoveMembershipForUserInOrgError::Generic { code }),
+                403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403.into()),
+                code => Err(TeamsRemoveMembershipForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6354,7 +6645,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str) -> Result<(), TeamsRemoveMembershipForUserInOrgError> {
+    pub fn remove_membership_for_user_in_org(&self, org: &str, team_slug: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, team_slug, username);
 
@@ -6366,20 +6657,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403),
-                code => Err(TeamsRemoveMembershipForUserInOrgError::Generic { code }),
+                403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403.into()),
+                code => Err(TeamsRemoveMembershipForUserInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6401,32 +6692,32 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for remove_membership_for_user_legacy](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user-legacy)
     ///
     /// ---
-    pub async fn remove_membership_for_user_legacy_async(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMembershipForUserLegacyError> {
+    pub async fn remove_membership_for_user_legacy_async(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403),
-                code => Err(TeamsRemoveMembershipForUserLegacyError::Generic { code }),
+                403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403.into()),
+                code => Err(TeamsRemoveMembershipForUserLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6449,7 +6740,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_membership_for_user_legacy(&self, team_id: i32, username: &str) -> Result<(), TeamsRemoveMembershipForUserLegacyError> {
+    pub fn remove_membership_for_user_legacy(&self, team_id: i32, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/memberships/{}", super::GITHUB_BASE_API_URL, team_id, username);
 
@@ -6461,20 +6752,20 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403),
-                code => Err(TeamsRemoveMembershipForUserLegacyError::Generic { code }),
+                403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403.into()),
+                code => Err(TeamsRemoveMembershipForUserLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6491,31 +6782,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for remove_project_in_org](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team)
     ///
     /// ---
-    pub async fn remove_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<(), TeamsRemoveProjectInOrgError> {
+    pub async fn remove_project_in_org_async(&self, org: &str, team_slug: &str, project_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsRemoveProjectInOrgError::Generic { code }),
+                code => Err(TeamsRemoveProjectInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6533,7 +6824,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_project_in_org(&self, org: &str, team_slug: &str, project_id: i32) -> Result<(), TeamsRemoveProjectInOrgError> {
+    pub fn remove_project_in_org(&self, org: &str, team_slug: &str, project_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, org, team_slug, project_id);
 
@@ -6545,19 +6836,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsRemoveProjectInOrgError::Generic { code }),
+                code => Err(TeamsRemoveProjectInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6574,33 +6865,33 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for remove_project_legacy](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team-legacy)
     ///
     /// ---
-    pub async fn remove_project_legacy_async(&self, team_id: i32, project_id: i32) -> Result<(), TeamsRemoveProjectLegacyError> {
+    pub async fn remove_project_legacy_async(&self, team_id: i32, project_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsRemoveProjectLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsRemoveProjectLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsRemoveProjectLegacyError::Generic { code }),
+                404 => Err(TeamsRemoveProjectLegacyError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(TeamsRemoveProjectLegacyError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(TeamsRemoveProjectLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6618,7 +6909,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_project_legacy(&self, team_id: i32, project_id: i32) -> Result<(), TeamsRemoveProjectLegacyError> {
+    pub fn remove_project_legacy(&self, team_id: i32, project_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/projects/{}", super::GITHUB_BASE_API_URL, team_id, project_id);
 
@@ -6630,21 +6921,21 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(TeamsRemoveProjectLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsRemoveProjectLegacyError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsRemoveProjectLegacyError::Generic { code }),
+                404 => Err(TeamsRemoveProjectLegacyError::Status404(github_response.to_json()?).into()),
+                422 => Err(TeamsRemoveProjectLegacyError::Status422(github_response.to_json()?).into()),
+                code => Err(TeamsRemoveProjectLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6661,31 +6952,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for remove_repo_in_org](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team)
     ///
     /// ---
-    pub async fn remove_repo_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoInOrgError> {
+    pub async fn remove_repo_in_org_async(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsRemoveRepoInOrgError::Generic { code }),
+                code => Err(TeamsRemoveRepoInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6703,7 +6994,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_repo_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoInOrgError> {
+    pub fn remove_repo_in_org(&self, org: &str, team_slug: &str, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, owner, repo);
 
@@ -6715,19 +7006,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsRemoveRepoInOrgError::Generic { code }),
+                code => Err(TeamsRemoveRepoInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6744,31 +7035,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for remove_repo_legacy](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team-legacy)
     ///
     /// ---
-    pub async fn remove_repo_legacy_async(&self, team_id: i32, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoLegacyError> {
+    pub async fn remove_repo_legacy_async(&self, team_id: i32, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, team_id, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsRemoveRepoLegacyError::Generic { code }),
+                code => Err(TeamsRemoveRepoLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6786,7 +7077,7 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_repo_legacy(&self, team_id: i32, owner: &str, repo: &str) -> Result<(), TeamsRemoveRepoLegacyError> {
+    pub fn remove_repo_legacy(&self, team_id: i32, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/teams/{}/repos/{}/{}", super::GITHUB_BASE_API_URL, team_id, owner, repo);
 
@@ -6798,19 +7089,19 @@ impl<'api> Teams<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsRemoveRepoLegacyError::Generic { code }),
+                code => Err(TeamsRemoveRepoLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6829,31 +7120,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for update_discussion_comment_in_org](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment)
     ///
     /// ---
-    pub async fn update_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentInOrgError> {
+    pub async fn update_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionCommentInOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionCommentInOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6873,31 +7164,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentInOrgError> {
+    pub fn update_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentInOrg) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionCommentInOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionCommentInOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionCommentInOrgError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -6916,31 +7207,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for update_discussion_comment_legacy](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment-legacy)
     ///
     /// ---
-    pub async fn update_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentLegacyError> {
+    pub async fn update_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionCommentLegacy::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionCommentLegacy>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -6960,31 +7251,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, TeamsUpdateDiscussionCommentLegacyError> {
+    pub fn update_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PatchTeamsUpdateDiscussionCommentLegacy) -> Result<TeamDiscussionComment, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionCommentLegacy::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionCommentLegacy>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionCommentLegacyError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -7003,31 +7294,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for update_discussion_in_org](https://docs.github.com/rest/teams/discussions#update-a-discussion)
     ///
     /// ---
-    pub async fn update_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PatchTeamsUpdateDiscussionInOrg) -> Result<TeamDiscussion, TeamsUpdateDiscussionInOrgError> {
+    pub async fn update_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PatchTeamsUpdateDiscussionInOrg) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionInOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionInOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7047,31 +7338,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PatchTeamsUpdateDiscussionInOrg) -> Result<TeamDiscussion, TeamsUpdateDiscussionInOrgError> {
+    pub fn update_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PatchTeamsUpdateDiscussionInOrg) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionInOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionInOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionInOrgError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7090,31 +7381,31 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for update_discussion_legacy](https://docs.github.com/rest/teams/discussions#update-a-discussion-legacy)
     ///
     /// ---
-    pub async fn update_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PatchTeamsUpdateDiscussionLegacy) -> Result<TeamDiscussion, TeamsUpdateDiscussionLegacyError> {
+    pub async fn update_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PatchTeamsUpdateDiscussionLegacy) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionLegacy::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionLegacy>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -7134,31 +7425,31 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_discussion_legacy(&self, team_id: i32, discussion_number: i32, body: PatchTeamsUpdateDiscussionLegacy) -> Result<TeamDiscussion, TeamsUpdateDiscussionLegacyError> {
+    pub fn update_discussion_legacy(&self, team_id: i32, discussion_number: i32, body: PatchTeamsUpdateDiscussionLegacy) -> Result<TeamDiscussion, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateDiscussionLegacy::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateDiscussionLegacy>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(TeamsUpdateDiscussionLegacyError::Generic { code }),
+                code => Err(TeamsUpdateDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -7175,35 +7466,35 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for update_in_org](https://docs.github.com/rest/teams/teams#update-a-team)
     ///
     /// ---
-    pub async fn update_in_org_async(&self, org: &str, team_slug: &str, body: PatchTeamsUpdateInOrg) -> Result<TeamFull, TeamsUpdateInOrgError> {
+    pub async fn update_in_org_async(&self, org: &str, team_slug: &str, body: PatchTeamsUpdateInOrg) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateInOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateInOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(TeamsUpdateInOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsUpdateInOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsUpdateInOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsUpdateInOrgError::Generic { code }),
+                201 => Err(TeamsUpdateInOrgError::Status201(github_response.to_json_async().await?).into()),
+                404 => Err(TeamsUpdateInOrgError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(TeamsUpdateInOrgError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(TeamsUpdateInOrgError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(TeamsUpdateInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7221,35 +7512,35 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_in_org(&self, org: &str, team_slug: &str, body: PatchTeamsUpdateInOrg) -> Result<TeamFull, TeamsUpdateInOrgError> {
+    pub fn update_in_org(&self, org: &str, team_slug: &str, body: PatchTeamsUpdateInOrg) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateInOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateInOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateInOrgError::Status201(crate::adapters::to_json(github_response)?)),
-                404 => Err(TeamsUpdateInOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsUpdateInOrgError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsUpdateInOrgError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsUpdateInOrgError::Generic { code }),
+                201 => Err(TeamsUpdateInOrgError::Status201(github_response.to_json()?).into()),
+                404 => Err(TeamsUpdateInOrgError::Status404(github_response.to_json()?).into()),
+                422 => Err(TeamsUpdateInOrgError::Status422(github_response.to_json()?).into()),
+                403 => Err(TeamsUpdateInOrgError::Status403(github_response.to_json()?).into()),
+                code => Err(TeamsUpdateInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -7269,35 +7560,35 @@ impl<'api> Teams<'api> {
     /// [GitHub API docs for update_legacy](https://docs.github.com/rest/teams/teams#update-a-team-legacy)
     ///
     /// ---
-    pub async fn update_legacy_async(&self, team_id: i32, body: PatchTeamsUpdateLegacy) -> Result<TeamFull, TeamsUpdateLegacyError> {
+    pub async fn update_legacy_async(&self, team_id: i32, body: PatchTeamsUpdateLegacy) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/teams/{}", super::GITHUB_BASE_API_URL, team_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateLegacy::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateLegacy>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateLegacyError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(TeamsUpdateLegacyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(TeamsUpdateLegacyError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(TeamsUpdateLegacyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(TeamsUpdateLegacyError::Generic { code }),
+                201 => Err(TeamsUpdateLegacyError::Status201(github_response.to_json_async().await?).into()),
+                404 => Err(TeamsUpdateLegacyError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(TeamsUpdateLegacyError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(TeamsUpdateLegacyError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(TeamsUpdateLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -7318,35 +7609,35 @@ impl<'api> Teams<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_legacy(&self, team_id: i32, body: PatchTeamsUpdateLegacy) -> Result<TeamFull, TeamsUpdateLegacyError> {
+    pub fn update_legacy(&self, team_id: i32, body: PatchTeamsUpdateLegacy) -> Result<TeamFull, AdapterError> {
 
         let request_uri = format!("{}/teams/{}", super::GITHUB_BASE_API_URL, team_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchTeamsUpdateLegacy::from_json(body)?),
+            body: Some(C::from_json::<PatchTeamsUpdateLegacy>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(TeamsUpdateLegacyError::Status201(crate::adapters::to_json(github_response)?)),
-                404 => Err(TeamsUpdateLegacyError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(TeamsUpdateLegacyError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(TeamsUpdateLegacyError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(TeamsUpdateLegacyError::Generic { code }),
+                201 => Err(TeamsUpdateLegacyError::Status201(github_response.to_json()?).into()),
+                404 => Err(TeamsUpdateLegacyError::Status404(github_response.to_json()?).into()),
+                422 => Err(TeamsUpdateLegacyError::Status422(github_response.to_json()?).into()),
+                403 => Err(TeamsUpdateLegacyError::Status403(github_response.to_json()?).into()),
+                code => Err(TeamsUpdateLegacyError::Generic { code }.into()),
             }
         }
     }

@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,46 +22,41 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Migrations<'api> {
-    auth: &'api Auth
+pub struct Migrations<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Migrations {
-    Migrations { auth }
+pub fn new<C: Client>(client: &C) -> Migrations<C> where AdapterError: From<<C as Client>::Err> {
+    Migrations { client }
 }
 
 /// Errors for the [Cancel an import](Migrations::cancel_import_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsCancelImportError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Unavailable due to service under maintenance.")]
     Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsCancelImportError> for AdapterError {
+    fn from(err: MigrationsCancelImportError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsCancelImportError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsCancelImportError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a user migration archive](Migrations::delete_archive_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsDeleteArchiveForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -73,61 +67,80 @@ pub enum MigrationsDeleteArchiveForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsDeleteArchiveForAuthenticatedUserError> for AdapterError {
+    fn from(err: MigrationsDeleteArchiveForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsDeleteArchiveForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsDeleteArchiveForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            MigrationsDeleteArchiveForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            MigrationsDeleteArchiveForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            MigrationsDeleteArchiveForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an organization migration archive](Migrations::delete_archive_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsDeleteArchiveForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsDeleteArchiveForOrgError> for AdapterError {
+    fn from(err: MigrationsDeleteArchiveForOrgError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsDeleteArchiveForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsDeleteArchiveForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Download an organization migration archive](Migrations::download_archive_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsDownloadArchiveForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsDownloadArchiveForOrgError> for AdapterError {
+    fn from(err: MigrationsDownloadArchiveForOrgError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsDownloadArchiveForOrgError::Status302 => (String::from("Response"), 302),
+            MigrationsDownloadArchiveForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsDownloadArchiveForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Download a user migration archive](Migrations::get_archive_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsGetArchiveForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status302,
     #[error("Not modified")]
@@ -140,80 +153,105 @@ pub enum MigrationsGetArchiveForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<MigrationsGetArchiveForAuthenticatedUserError> for AdapterError {
+    fn from(err: MigrationsGetArchiveForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsGetArchiveForAuthenticatedUserError::Status302 => (String::from("Response"), 302),
+            MigrationsGetArchiveForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            MigrationsGetArchiveForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            MigrationsGetArchiveForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            MigrationsGetArchiveForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get commit authors](Migrations::get_commit_authors_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsGetCommitAuthorsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Unavailable due to service under maintenance.")]
     Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsGetCommitAuthorsError> for AdapterError {
+    fn from(err: MigrationsGetCommitAuthorsError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsGetCommitAuthorsError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsGetCommitAuthorsError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsGetCommitAuthorsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an import status](Migrations::get_import_status_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsGetImportStatusError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Unavailable due to service under maintenance.")]
     Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsGetImportStatusError> for AdapterError {
+    fn from(err: MigrationsGetImportStatusError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsGetImportStatusError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsGetImportStatusError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsGetImportStatusError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get large files](Migrations::get_large_files_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsGetLargeFilesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Unavailable due to service under maintenance.")]
     Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsGetLargeFilesError> for AdapterError {
+    fn from(err: MigrationsGetLargeFilesError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsGetLargeFilesError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsGetLargeFilesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a user migration status](Migrations::get_status_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsGetStatusForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -224,40 +262,53 @@ pub enum MigrationsGetStatusForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsGetStatusForAuthenticatedUserError> for AdapterError {
+    fn from(err: MigrationsGetStatusForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsGetStatusForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsGetStatusForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            MigrationsGetStatusForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            MigrationsGetStatusForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            MigrationsGetStatusForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization migration status](Migrations::get_status_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsGetStatusForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsGetStatusForOrgError> for AdapterError {
+    fn from(err: MigrationsGetStatusForOrgError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsGetStatusForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsGetStatusForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List user migrations](Migrations::list_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsListForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -266,76 +317,97 @@ pub enum MigrationsListForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsListForAuthenticatedUserError> for AdapterError {
+    fn from(err: MigrationsListForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsListForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            MigrationsListForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            MigrationsListForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            MigrationsListForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organization migrations](Migrations::list_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsListForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsListForOrgError> for AdapterError {
+    fn from(err: MigrationsListForOrgError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsListForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories for a user migration](Migrations::list_repos_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsListReposForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsListReposForAuthenticatedUserError> for AdapterError {
+    fn from(err: MigrationsListReposForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsListReposForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsListReposForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories in an organization migration](Migrations::list_repos_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsListReposForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsListReposForOrgError> for AdapterError {
+    fn from(err: MigrationsListReposForOrgError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsListReposForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsListReposForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Map a commit author](Migrations::map_commit_author_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsMapCommitAuthorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -344,42 +416,55 @@ pub enum MigrationsMapCommitAuthorError {
     Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsMapCommitAuthorError> for AdapterError {
+    fn from(err: MigrationsMapCommitAuthorError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsMapCommitAuthorError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            MigrationsMapCommitAuthorError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsMapCommitAuthorError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsMapCommitAuthorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update Git LFS preference](Migrations::set_lfs_preference_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsSetLfsPreferenceError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Unavailable due to service under maintenance.")]
     Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsSetLfsPreferenceError> for AdapterError {
+    fn from(err: MigrationsSetLfsPreferenceError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsSetLfsPreferenceError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            MigrationsSetLfsPreferenceError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsSetLfsPreferenceError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Start a user migration](Migrations::start_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsStartForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -390,21 +475,29 @@ pub enum MigrationsStartForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsStartForAuthenticatedUserError> for AdapterError {
+    fn from(err: MigrationsStartForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsStartForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            MigrationsStartForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            MigrationsStartForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            MigrationsStartForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            MigrationsStartForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Start an organization migration](Migrations::start_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsStartForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -413,19 +506,25 @@ pub enum MigrationsStartForOrgError {
     Generic { code: u16 },
 }
 
+impl From<MigrationsStartForOrgError> for AdapterError {
+    fn from(err: MigrationsStartForOrgError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsStartForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsStartForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            MigrationsStartForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Start an import](Migrations::start_import_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsStartImportError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -436,19 +535,26 @@ pub enum MigrationsStartImportError {
     Generic { code: u16 },
 }
 
+impl From<MigrationsStartImportError> for AdapterError {
+    fn from(err: MigrationsStartImportError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsStartImportError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            MigrationsStartImportError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsStartImportError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsStartImportError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Unlock a user repository](Migrations::unlock_repo_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsUnlockRepoForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -461,42 +567,70 @@ pub enum MigrationsUnlockRepoForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<MigrationsUnlockRepoForAuthenticatedUserError> for AdapterError {
+    fn from(err: MigrationsUnlockRepoForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsUnlockRepoForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            MigrationsUnlockRepoForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsUnlockRepoForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            MigrationsUnlockRepoForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            MigrationsUnlockRepoForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Unlock an organization repository](Migrations::unlock_repo_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsUnlockRepoForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<MigrationsUnlockRepoForOrgError> for AdapterError {
+    fn from(err: MigrationsUnlockRepoForOrgError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsUnlockRepoForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            MigrationsUnlockRepoForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an import](Migrations::update_import_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum MigrationsUpdateImportError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Unavailable due to service under maintenance.")]
     Status503(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<MigrationsUpdateImportError> for AdapterError {
+    fn from(err: MigrationsUpdateImportError) -> Self {
+        let (description, status_code) = match err {
+            MigrationsUpdateImportError::Status503(_) => (String::from("Unavailable due to service under maintenance."), 503),
+            MigrationsUpdateImportError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -734,7 +868,7 @@ impl<'enc> From<&'enc PerPage> for MigrationsListReposForOrgParams {
     }
 }
 
-impl<'api> Migrations<'api> {
+impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Cancel an import
@@ -747,32 +881,32 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for cancel_import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import)
     ///
     /// ---
-    pub async fn cancel_import_async(&self, owner: &str, repo: &str) -> Result<(), MigrationsCancelImportError> {
+    pub async fn cancel_import_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                503 => Err(MigrationsCancelImportError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsCancelImportError::Generic { code }),
+                503 => Err(MigrationsCancelImportError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsCancelImportError::Generic { code }.into()),
             }
         }
     }
@@ -790,7 +924,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_import(&self, owner: &str, repo: &str) -> Result<(), MigrationsCancelImportError> {
+    pub fn cancel_import(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -802,20 +936,20 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                503 => Err(MigrationsCancelImportError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsCancelImportError::Generic { code }),
+                503 => Err(MigrationsCancelImportError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsCancelImportError::Generic { code }.into()),
             }
         }
     }
@@ -829,35 +963,35 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for delete_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#delete-a-user-migration-archive)
     ///
     /// ---
-    pub async fn delete_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForAuthenticatedUserError> {
+    pub async fn delete_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Generic { code }),
+                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -872,7 +1006,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_archive_for_authenticated_user(&self, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForAuthenticatedUserError> {
+    pub fn delete_archive_for_authenticated_user(&self, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
 
@@ -884,23 +1018,23 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Generic { code }),
+                404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                304 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -914,32 +1048,32 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for delete_archive_for_org](https://docs.github.com/rest/migrations/orgs#delete-an-organization-migration-archive)
     ///
     /// ---
-    pub async fn delete_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForOrgError> {
+    pub async fn delete_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsDeleteArchiveForOrgError::Generic { code }),
+                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsDeleteArchiveForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -954,7 +1088,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_archive_for_org(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDeleteArchiveForOrgError> {
+    pub fn delete_archive_for_org(&self, org: &str, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
 
@@ -966,20 +1100,20 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsDeleteArchiveForOrgError::Generic { code }),
+                404 => Err(MigrationsDeleteArchiveForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(MigrationsDeleteArchiveForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -993,33 +1127,33 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for download_archive_for_org](https://docs.github.com/rest/migrations/orgs#download-an-organization-migration-archive)
     ///
     /// ---
-    pub async fn download_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDownloadArchiveForOrgError> {
+    pub async fn download_archive_for_org_async(&self, org: &str, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(MigrationsDownloadArchiveForOrgError::Status302),
-                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsDownloadArchiveForOrgError::Generic { code }),
+                302 => Err(MigrationsDownloadArchiveForOrgError::Status302.into()),
+                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsDownloadArchiveForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1034,7 +1168,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn download_archive_for_org(&self, org: &str, migration_id: i32) -> Result<(), MigrationsDownloadArchiveForOrgError> {
+    pub fn download_archive_for_org(&self, org: &str, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/archive", super::GITHUB_BASE_API_URL, org, migration_id);
 
@@ -1046,21 +1180,21 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(MigrationsDownloadArchiveForOrgError::Status302),
-                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsDownloadArchiveForOrgError::Generic { code }),
+                302 => Err(MigrationsDownloadArchiveForOrgError::Status302.into()),
+                404 => Err(MigrationsDownloadArchiveForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(MigrationsDownloadArchiveForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1094,35 +1228,35 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for get_archive_for_authenticated_user](https://docs.github.com/rest/migrations/users#download-a-user-migration-archive)
     ///
     /// ---
-    pub async fn get_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), MigrationsGetArchiveForAuthenticatedUserError> {
+    pub async fn get_archive_for_authenticated_user_async(&self, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302),
-                304 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsGetArchiveForAuthenticatedUserError::Generic { code }),
+                302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302.into()),
+                304 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsGetArchiveForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1157,7 +1291,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_archive_for_authenticated_user(&self, migration_id: i32) -> Result<(), MigrationsGetArchiveForAuthenticatedUserError> {
+    pub fn get_archive_for_authenticated_user(&self, migration_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/migrations/{}/archive", super::GITHUB_BASE_API_URL, migration_id);
 
@@ -1169,23 +1303,23 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302),
-                304 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsGetArchiveForAuthenticatedUserError::Generic { code }),
+                302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302.into()),
+                304 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(MigrationsGetArchiveForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1204,7 +1338,7 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/migrations/source-imports#get-commit-authors)
     ///
     /// ---
-    pub async fn get_commit_authors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, MigrationsGetCommitAuthorsError> {
+    pub async fn get_commit_authors_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/import/authors", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1215,26 +1349,26 @@ impl<'api> Migrations<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetCommitAuthorsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(MigrationsGetCommitAuthorsError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsGetCommitAuthorsError::Generic { code }),
+                404 => Err(MigrationsGetCommitAuthorsError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(MigrationsGetCommitAuthorsError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsGetCommitAuthorsError::Generic { code }.into()),
             }
         }
     }
@@ -1254,7 +1388,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_commit_authors(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, MigrationsGetCommitAuthorsError> {
+    pub fn get_commit_authors(&self, owner: &str, repo: &str, query_params: Option<impl Into<MigrationsGetCommitAuthorsParams>>) -> Result<Vec<PorterAuthor>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/import/authors", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1271,21 +1405,21 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetCommitAuthorsError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(MigrationsGetCommitAuthorsError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsGetCommitAuthorsError::Generic { code }),
+                404 => Err(MigrationsGetCommitAuthorsError::Status404(github_response.to_json()?).into()),
+                503 => Err(MigrationsGetCommitAuthorsError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsGetCommitAuthorsError::Generic { code }.into()),
             }
         }
     }
@@ -1335,33 +1469,33 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for get_import_status](https://docs.github.com/rest/migrations/source-imports#get-an-import-status)
     ///
     /// ---
-    pub async fn get_import_status_async(&self, owner: &str, repo: &str) -> Result<Import, MigrationsGetImportStatusError> {
+    pub async fn get_import_status_async(&self, owner: &str, repo: &str) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetImportStatusError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(MigrationsGetImportStatusError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsGetImportStatusError::Generic { code }),
+                404 => Err(MigrationsGetImportStatusError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(MigrationsGetImportStatusError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsGetImportStatusError::Generic { code }.into()),
             }
         }
     }
@@ -1412,7 +1546,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_import_status(&self, owner: &str, repo: &str) -> Result<Import, MigrationsGetImportStatusError> {
+    pub fn get_import_status(&self, owner: &str, repo: &str) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1424,21 +1558,21 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetImportStatusError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(MigrationsGetImportStatusError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsGetImportStatusError::Generic { code }),
+                404 => Err(MigrationsGetImportStatusError::Status404(github_response.to_json()?).into()),
+                503 => Err(MigrationsGetImportStatusError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsGetImportStatusError::Generic { code }.into()),
             }
         }
     }
@@ -1455,32 +1589,32 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for get_large_files](https://docs.github.com/rest/migrations/source-imports#get-large-files)
     ///
     /// ---
-    pub async fn get_large_files_async(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, MigrationsGetLargeFilesError> {
+    pub async fn get_large_files_async(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import/large_files", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                503 => Err(MigrationsGetLargeFilesError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsGetLargeFilesError::Generic { code }),
+                503 => Err(MigrationsGetLargeFilesError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsGetLargeFilesError::Generic { code }.into()),
             }
         }
     }
@@ -1498,7 +1632,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_large_files(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, MigrationsGetLargeFilesError> {
+    pub fn get_large_files(&self, owner: &str, repo: &str) -> Result<Vec<PorterLargeFile>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import/large_files", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1510,20 +1644,20 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                503 => Err(MigrationsGetLargeFilesError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsGetLargeFilesError::Generic { code }),
+                503 => Err(MigrationsGetLargeFilesError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsGetLargeFilesError::Generic { code }.into()),
             }
         }
     }
@@ -1544,7 +1678,7 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for get_status_for_authenticated_user](https://docs.github.com/rest/migrations/users#get-a-user-migration-status)
     ///
     /// ---
-    pub async fn get_status_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, MigrationsGetStatusForAuthenticatedUserError> {
+    pub async fn get_status_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, AdapterError> {
 
         let mut request_uri = format!("{}/user/migrations/{}", super::GITHUB_BASE_API_URL, migration_id);
 
@@ -1555,28 +1689,28 @@ impl<'api> Migrations<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(MigrationsGetStatusForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsGetStatusForAuthenticatedUserError::Generic { code }),
+                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(MigrationsGetStatusForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsGetStatusForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1598,7 +1732,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_status_for_authenticated_user(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, MigrationsGetStatusForAuthenticatedUserError> {
+    pub fn get_status_for_authenticated_user(&self, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForAuthenticatedUserParams>>) -> Result<Migration, AdapterError> {
 
         let mut request_uri = format!("{}/user/migrations/{}", super::GITHUB_BASE_API_URL, migration_id);
 
@@ -1615,23 +1749,23 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(MigrationsGetStatusForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsGetStatusForAuthenticatedUserError::Generic { code }),
+                404 => Err(MigrationsGetStatusForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                304 => Err(MigrationsGetStatusForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsGetStatusForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(MigrationsGetStatusForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(MigrationsGetStatusForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1652,7 +1786,7 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for get_status_for_org](https://docs.github.com/rest/migrations/orgs#get-an-organization-migration-status)
     ///
     /// ---
-    pub async fn get_status_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, MigrationsGetStatusForOrgError> {
+    pub async fn get_status_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}", super::GITHUB_BASE_API_URL, org, migration_id);
 
@@ -1663,25 +1797,25 @@ impl<'api> Migrations<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsGetStatusForOrgError::Generic { code }),
+                404 => Err(MigrationsGetStatusForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsGetStatusForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1703,7 +1837,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_status_for_org(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, MigrationsGetStatusForOrgError> {
+    pub fn get_status_for_org(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsGetStatusForOrgParams>>) -> Result<Migration, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}", super::GITHUB_BASE_API_URL, org, migration_id);
 
@@ -1720,20 +1854,20 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsGetStatusForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsGetStatusForOrgError::Generic { code }),
+                404 => Err(MigrationsGetStatusForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(MigrationsGetStatusForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1747,7 +1881,7 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-user-migrations)
     ///
     /// ---
-    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, MigrationsListForAuthenticatedUserError> {
+    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, AdapterError> {
 
         let mut request_uri = format!("{}/user/migrations", super::GITHUB_BASE_API_URL);
 
@@ -1758,27 +1892,27 @@ impl<'api> Migrations<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(MigrationsListForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(MigrationsListForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsListForAuthenticatedUserError::Generic { code }),
+                304 => Err(MigrationsListForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsListForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(MigrationsListForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1793,7 +1927,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, MigrationsListForAuthenticatedUserError> {
+    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<MigrationsListForAuthenticatedUserParams>>) -> Result<Vec<Migration>, AdapterError> {
 
         let mut request_uri = format!("{}/user/migrations", super::GITHUB_BASE_API_URL);
 
@@ -1810,22 +1944,22 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(MigrationsListForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(MigrationsListForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsListForAuthenticatedUserError::Generic { code }),
+                304 => Err(MigrationsListForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsListForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(MigrationsListForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(MigrationsListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1841,7 +1975,7 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/migrations/orgs#list-organization-migrations)
     ///
     /// ---
-    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, MigrationsListForOrgError> {
+    pub async fn list_for_org_async(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations", super::GITHUB_BASE_API_URL, org);
 
@@ -1852,24 +1986,24 @@ impl<'api> Migrations<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(MigrationsListForOrgError::Generic { code }),
+                code => Err(MigrationsListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1886,7 +2020,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, MigrationsListForOrgError> {
+    pub fn list_for_org(&self, org: &str, query_params: Option<impl Into<MigrationsListForOrgParams>>) -> Result<Vec<Migration>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations", super::GITHUB_BASE_API_URL, org);
 
@@ -1903,19 +2037,19 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(MigrationsListForOrgError::Generic { code }),
+                code => Err(MigrationsListForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1929,7 +2063,7 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for list_repos_for_authenticated_user](https://docs.github.com/rest/migrations/users#list-repositories-for-a-user-migration)
     ///
     /// ---
-    pub async fn list_repos_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForAuthenticatedUserError> {
+    pub async fn list_repos_for_authenticated_user_async(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/migrations/{}/repositories", super::GITHUB_BASE_API_URL, migration_id);
 
@@ -1940,25 +2074,25 @@ impl<'api> Migrations<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsListReposForAuthenticatedUserError::Generic { code }),
+                404 => Err(MigrationsListReposForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsListReposForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -1973,7 +2107,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_for_authenticated_user(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForAuthenticatedUserError> {
+    pub fn list_repos_for_authenticated_user(&self, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForAuthenticatedUserParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/user/migrations/{}/repositories", super::GITHUB_BASE_API_URL, migration_id);
 
@@ -1990,20 +2124,20 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsListReposForAuthenticatedUserError::Generic { code }),
+                404 => Err(MigrationsListReposForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(MigrationsListReposForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2017,7 +2151,7 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for list_repos_for_org](https://docs.github.com/rest/migrations/orgs#list-repositories-in-an-organization-migration)
     ///
     /// ---
-    pub async fn list_repos_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForOrgError> {
+    pub async fn list_repos_for_org_async(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}/repositories", super::GITHUB_BASE_API_URL, org, migration_id);
 
@@ -2028,25 +2162,25 @@ impl<'api> Migrations<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsListReposForOrgError::Generic { code }),
+                404 => Err(MigrationsListReposForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsListReposForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2061,7 +2195,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repos_for_org(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, MigrationsListReposForOrgError> {
+    pub fn list_repos_for_org(&self, org: &str, migration_id: i32, query_params: Option<impl Into<MigrationsListReposForOrgParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/migrations/{}/repositories", super::GITHUB_BASE_API_URL, org, migration_id);
 
@@ -2078,20 +2212,20 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsListReposForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsListReposForOrgError::Generic { code }),
+                404 => Err(MigrationsListReposForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(MigrationsListReposForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2109,34 +2243,34 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author)
     ///
     /// ---
-    pub async fn map_commit_author_async(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, MigrationsMapCommitAuthorError> {
+    pub async fn map_commit_author_async(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import/authors/{}", super::GITHUB_BASE_API_URL, owner, repo, author_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchMigrationsMapCommitAuthor::from_json(body)?),
+            body: Some(C::from_json::<PatchMigrationsMapCommitAuthor>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsMapCommitAuthorError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(MigrationsMapCommitAuthorError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(MigrationsMapCommitAuthorError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsMapCommitAuthorError::Generic { code }),
+                422 => Err(MigrationsMapCommitAuthorError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(MigrationsMapCommitAuthorError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(MigrationsMapCommitAuthorError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsMapCommitAuthorError::Generic { code }.into()),
             }
         }
     }
@@ -2155,34 +2289,34 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn map_commit_author(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, MigrationsMapCommitAuthorError> {
+    pub fn map_commit_author(&self, owner: &str, repo: &str, author_id: i32, body: PatchMigrationsMapCommitAuthor) -> Result<PorterAuthor, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import/authors/{}", super::GITHUB_BASE_API_URL, owner, repo, author_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchMigrationsMapCommitAuthor::from_json(body)?),
+            body: Some(C::from_json::<PatchMigrationsMapCommitAuthor>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsMapCommitAuthorError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(MigrationsMapCommitAuthorError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(MigrationsMapCommitAuthorError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsMapCommitAuthorError::Generic { code }),
+                422 => Err(MigrationsMapCommitAuthorError::Status422(github_response.to_json()?).into()),
+                404 => Err(MigrationsMapCommitAuthorError::Status404(github_response.to_json()?).into()),
+                503 => Err(MigrationsMapCommitAuthorError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsMapCommitAuthorError::Generic { code }.into()),
             }
         }
     }
@@ -2203,33 +2337,33 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference)
     ///
     /// ---
-    pub async fn set_lfs_preference_async(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, MigrationsSetLfsPreferenceError> {
+    pub async fn set_lfs_preference_async(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import/lfs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchMigrationsSetLfsPreference::from_json(body)?),
+            body: Some(C::from_json::<PatchMigrationsSetLfsPreference>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsSetLfsPreferenceError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(MigrationsSetLfsPreferenceError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsSetLfsPreferenceError::Generic { code }),
+                422 => Err(MigrationsSetLfsPreferenceError::Status422(github_response.to_json_async().await?).into()),
+                503 => Err(MigrationsSetLfsPreferenceError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsSetLfsPreferenceError::Generic { code }.into()),
             }
         }
     }
@@ -2251,33 +2385,33 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_lfs_preference(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, MigrationsSetLfsPreferenceError> {
+    pub fn set_lfs_preference(&self, owner: &str, repo: &str, body: PatchMigrationsSetLfsPreference) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import/lfs", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchMigrationsSetLfsPreference::from_json(body)?),
+            body: Some(C::from_json::<PatchMigrationsSetLfsPreference>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsSetLfsPreferenceError::Status422(crate::adapters::to_json(github_response)?)),
-                503 => Err(MigrationsSetLfsPreferenceError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsSetLfsPreferenceError::Generic { code }),
+                422 => Err(MigrationsSetLfsPreferenceError::Status422(github_response.to_json()?).into()),
+                503 => Err(MigrationsSetLfsPreferenceError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsSetLfsPreferenceError::Generic { code }.into()),
             }
         }
     }
@@ -2291,35 +2425,35 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for start_for_authenticated_user](https://docs.github.com/rest/migrations/users#start-a-user-migration)
     ///
     /// ---
-    pub async fn start_for_authenticated_user_async(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, MigrationsStartForAuthenticatedUserError> {
+    pub async fn start_for_authenticated_user_async(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, AdapterError> {
 
         let request_uri = format!("{}/user/migrations", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostMigrationsStartForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostMigrationsStartForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(MigrationsStartForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsStartForAuthenticatedUserError::Generic { code }),
+                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(MigrationsStartForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsStartForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2334,35 +2468,35 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn start_for_authenticated_user(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, MigrationsStartForAuthenticatedUserError> {
+    pub fn start_for_authenticated_user(&self, body: PostMigrationsStartForAuthenticatedUser) -> Result<Migration, AdapterError> {
 
         let request_uri = format!("{}/user/migrations", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostMigrationsStartForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PostMigrationsStartForAuthenticatedUser>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(MigrationsStartForAuthenticatedUserError::Status304),
-                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsStartForAuthenticatedUserError::Generic { code }),
+                422 => Err(MigrationsStartForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                304 => Err(MigrationsStartForAuthenticatedUserError::Status304.into()),
+                403 => Err(MigrationsStartForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(MigrationsStartForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(MigrationsStartForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2376,33 +2510,33 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for start_for_org](https://docs.github.com/rest/migrations/orgs#start-an-organization-migration)
     ///
     /// ---
-    pub async fn start_for_org_async(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, MigrationsStartForOrgError> {
+    pub async fn start_for_org_async(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostMigrationsStartForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostMigrationsStartForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsStartForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(MigrationsStartForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsStartForOrgError::Generic { code }),
+                404 => Err(MigrationsStartForOrgError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(MigrationsStartForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsStartForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2417,33 +2551,33 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn start_for_org(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, MigrationsStartForOrgError> {
+    pub fn start_for_org(&self, org: &str, body: PostMigrationsStartForOrg) -> Result<Migration, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostMigrationsStartForOrg::from_json(body)?),
+            body: Some(C::from_json::<PostMigrationsStartForOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsStartForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(MigrationsStartForOrgError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsStartForOrgError::Generic { code }),
+                404 => Err(MigrationsStartForOrgError::Status404(github_response.to_json()?).into()),
+                422 => Err(MigrationsStartForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(MigrationsStartForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2462,34 +2596,34 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for start_import](https://docs.github.com/rest/migrations/source-imports#start-an-import)
     ///
     /// ---
-    pub async fn start_import_async(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, MigrationsStartImportError> {
+    pub async fn start_import_async(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutMigrationsStartImport::from_json(body)?),
+            body: Some(C::from_json::<PutMigrationsStartImport>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartImportError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(MigrationsStartImportError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(MigrationsStartImportError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsStartImportError::Generic { code }),
+                422 => Err(MigrationsStartImportError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(MigrationsStartImportError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(MigrationsStartImportError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsStartImportError::Generic { code }.into()),
             }
         }
     }
@@ -2509,34 +2643,34 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn start_import(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, MigrationsStartImportError> {
+    pub fn start_import(&self, owner: &str, repo: &str, body: PutMigrationsStartImport) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutMigrationsStartImport::from_json(body)?),
+            body: Some(C::from_json::<PutMigrationsStartImport>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(MigrationsStartImportError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(MigrationsStartImportError::Status404(crate::adapters::to_json(github_response)?)),
-                503 => Err(MigrationsStartImportError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsStartImportError::Generic { code }),
+                422 => Err(MigrationsStartImportError::Status422(github_response.to_json()?).into()),
+                404 => Err(MigrationsStartImportError::Status404(github_response.to_json()?).into()),
+                503 => Err(MigrationsStartImportError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsStartImportError::Generic { code }.into()),
             }
         }
     }
@@ -2550,35 +2684,35 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for unlock_repo_for_authenticated_user](https://docs.github.com/rest/migrations/users#unlock-a-user-repository)
     ///
     /// ---
-    pub async fn unlock_repo_for_authenticated_user_async(&self, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForAuthenticatedUserError> {
+    pub async fn unlock_repo_for_authenticated_user_async(&self, migration_id: i32, repo_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, migration_id, repo_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304),
-                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsUnlockRepoForAuthenticatedUserError::Generic { code }),
+                304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304.into()),
+                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsUnlockRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2593,7 +2727,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unlock_repo_for_authenticated_user(&self, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForAuthenticatedUserError> {
+    pub fn unlock_repo_for_authenticated_user(&self, migration_id: i32, repo_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, migration_id, repo_name);
 
@@ -2605,23 +2739,23 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304),
-                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsUnlockRepoForAuthenticatedUserError::Generic { code }),
+                304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304.into()),
+                404 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(MigrationsUnlockRepoForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -2635,32 +2769,32 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for unlock_repo_for_org](https://docs.github.com/rest/migrations/orgs#unlock-an-organization-repository)
     ///
     /// ---
-    pub async fn unlock_repo_for_org_async(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForOrgError> {
+    pub async fn unlock_repo_for_org_async(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, org, migration_id, repo_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsUnlockRepoForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsUnlockRepoForOrgError::Generic { code }),
+                404 => Err(MigrationsUnlockRepoForOrgError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsUnlockRepoForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2675,7 +2809,7 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unlock_repo_for_org(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), MigrationsUnlockRepoForOrgError> {
+    pub fn unlock_repo_for_org(&self, org: &str, migration_id: i32, repo_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/migrations/{}/repos/{}/lock", super::GITHUB_BASE_API_URL, org, migration_id, repo_name);
 
@@ -2687,20 +2821,20 @@ impl<'api> Migrations<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(MigrationsUnlockRepoForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsUnlockRepoForOrgError::Generic { code }),
+                404 => Err(MigrationsUnlockRepoForOrgError::Status404(github_response.to_json()?).into()),
+                code => Err(MigrationsUnlockRepoForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2722,32 +2856,32 @@ impl<'api> Migrations<'api> {
     /// [GitHub API docs for update_import](https://docs.github.com/rest/migrations/source-imports#update-an-import)
     ///
     /// ---
-    pub async fn update_import_async(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, MigrationsUpdateImportError> {
+    pub async fn update_import_async(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchMigrationsUpdateImport::from_json(body)?),
+            body: Some(C::from_json::<PatchMigrationsUpdateImport>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                503 => Err(MigrationsUpdateImportError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(MigrationsUpdateImportError::Generic { code }),
+                503 => Err(MigrationsUpdateImportError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(MigrationsUpdateImportError::Generic { code }.into()),
             }
         }
     }
@@ -2770,32 +2904,32 @@ impl<'api> Migrations<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_import(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, MigrationsUpdateImportError> {
+    pub fn update_import(&self, owner: &str, repo: &str, body: PatchMigrationsUpdateImport) -> Result<Import, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/import", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchMigrationsUpdateImport::from_json(body)?),
+            body: Some(C::from_json::<PatchMigrationsUpdateImport>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                503 => Err(MigrationsUpdateImportError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(MigrationsUpdateImportError::Generic { code }),
+                503 => Err(MigrationsUpdateImportError::Status503(github_response.to_json()?).into()),
+                code => Err(MigrationsUpdateImportError::Generic { code }.into()),
             }
         }
     }

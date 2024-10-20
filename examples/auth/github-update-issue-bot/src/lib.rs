@@ -5,16 +5,16 @@ mod utils;
 
 use cfg_if::cfg_if;
 use js_sys::Promise;
-use serde_json::value::Value;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 
-use roctogen::api::{self, apps, repos, issues};
+use roctogen::adapters::{wasm, Client};
+use roctogen::api::{self, apps, issues, repos};
 use roctogen::auth::Auth;
 use roctogen::models;
 
-use log::{debug, info, Level, trace};
+use log::{debug, info, trace, Level};
 
 use roctogen_common::jwt::{create_claim, create_token};
 
@@ -75,11 +75,13 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
     info!("starting....");
 
     let auth = auth_from_jwt(jwt_js, app_id_js).await?;
-    let apps = apps::new(&auth);
+    let client = wasm::Client::new(&auth).expect("Cannot create client");
+    let apps = apps::new(&client);
 
     let installations = apps
         .list_installations_async(None::<apps::AppsListInstallationsParams>)
-        .await.map_err(to_js_error)?;
+        .await
+        .map_err(to_js_error)?;
     debug!("installations: {:?}", installations);
 
     let installation_id =
@@ -93,7 +95,8 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
 
     let installation_token = apps
         .create_installation_access_token_async(*installation_id as i32, post_apps)
-        .await.map_err(to_js_error)?;
+        .await
+        .map_err(to_js_error)?;
     debug!("installation_token: {:?}", installation_token);
 
     let bearer = if let Some(token) = installation_token.token {
@@ -102,11 +105,13 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
         return Err(Error::new("Token not found on InstallationToken").into());
     };
 
-    let repos = repos::new(&Auth::None);
+    let client = wasm::Client::new(&Auth::None).expect("Cannot create client");
+    let repos = repos::new(&client);
     let per_page = api::PerPage::new(1);
     let commits = repos
         .list_commits_async("github", "rest-api-description", Some(&per_page))
-        .await.map_err(to_js_error)?;
+        .await
+        .map_err(to_js_error)?;
 
     trace!("commits: {:?}", commits);
 
@@ -114,7 +119,7 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
         return Err(Error::new("No commits found on remote repo").into());
     } else {
         let head = commits.into_iter().next().unwrap();
-        if let Some(sha) = head.sha {
+        if let Some(sha) = head.id {
             sha
         } else {
             return Err(Error::new("No sha found for latest head commit").into());
@@ -129,25 +134,34 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
     debug!("last_commit: {}", &last_commit);
 
     if &sha == &last_commit {
-        return Ok("No changes".into())
+        return Ok("No changes".into());
     }
 
     let commit_comparison = repos
-        .compare_commits_async("github", "rest-api-description", &format!("{}...{}", &last_commit, &sha), Some(&per_page))
+        .compare_commits_async(
+            "github",
+            "rest-api-description",
+            &format!("{}...{}", &last_commit, &sha),
+            Some(&per_page),
+        )
         .await
         .map_err(to_js_error)?;
 
     debug!("commit_comparison: {:?}", commit_comparison);
 
     let mut markdown = String::new();
-    if let models::CommitComparison{ commits: Some(commits), .. } = commit_comparison {
-
+    if let models::CommitComparison {
+        commits: Some(commits),
+        ..
+    } = commit_comparison
+    {
         markdown.push_str(&format!("Notify [rest-api-description](https://github.com/github/rest-api-description) changes [{}..{}](https://github.com/github/rest-api-description/compare/{}..{})\n", &last_commit[..8], &sha[..8], &last_commit, &sha));
         markdown.push_str("<details>\n");
         markdown.push_str("<summary>Commits</summary>\n\n");
 
         let pr_regex = regex::Regex::new(r"#(\d+)").map_err(to_js_error)?;
-        let branch_regex = regex::Regex::new(r"(github/)(openapi-update-[a-z0-9]{64})").map_err(to_js_error)?;
+        let branch_regex =
+            regex::Regex::new(r"(github/)(openapi-update-[a-z0-9]{64})").map_err(to_js_error)?;
 
         let mut iter = commits.into_iter();
         let mut cur = iter.next();
@@ -155,25 +169,30 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
         debug!("commit: {:?}", &cur);
 
         while let Some(models::Commit {
-            html_url: Some(html_url),
-            commit:
-                Some(models::CommitCommit {
-                    author:
-                        Some(models::AllOfcommitCommitAuthor {
-                            name: Some(author), ..
-                        }),
-                    message: Some(message),
-                    ..
-                }),
+            author: Some(models::Committer {
+                name: Some(author), ..
+            }),
+            message: Some(message),
             ..
         }) = cur
         {
             debug!("author: {}, message: {}, sha: {}", &author, &message, &sha);
 
-            let message = pr_regex.replace_all(&message, "[#$1](https://github.com/github/rest-api-description/pull/$1)");
-            let formatted_message = branch_regex.replace_all(&message, "[$2](https://github.com/github/rest-api-description/tree/$2)");
+            let message = pr_regex.replace_all(
+                &message,
+                "[#$1](https://github.com/github/rest-api-description/pull/$1)",
+            );
+            let formatted_message = branch_regex.replace_all(
+                &message,
+                "[$2](https://github.com/github/rest-api-description/tree/$2)",
+            );
 
-            markdown.push_str(&format!("  - [`{}`]({}) *{}*: {}\n", &sha[..8], &html_url, author, formatted_message));
+            markdown.push_str(&format!(
+                "  - [`{}`] *{}*: {}\n",
+                &sha[..8],
+                author,
+                formatted_message
+            ));
 
             cur = iter.next();
         }
@@ -186,7 +205,14 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
     if !markdown.is_empty() {
         info!("Posting markdown: {}", &markdown);
         let post_issues_create = models::PostIssuesCreate {
-            title: Some(format!("Notify rest-api-description changes {}..{}", &last_commit[..8], &sha[..8]).into()),
+            title: Some(
+                format!(
+                    "Notify rest-api-description changes {}..{}",
+                    &last_commit[..8],
+                    &sha[..8]
+                )
+                .into(),
+            ),
             body: Some(markdown),
             labels: Some(vec!["openapi".to_owned().into()]),
             assignees: Some(vec!["fussybeaver".to_owned()]),
@@ -194,24 +220,22 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
         };
 
         let auth = Auth::Bearer(bearer);
-        let issues = issues::new(&auth);
+        let client = wasm::Client::new(&auth).expect("Cannot create client");
+        let issues = issues::new(&client);
 
-        let issue = issues.create_async("fussybeaver", "roctogen", post_issues_create).await.map_err(to_js_error)?;
+        let issue = issues
+            .create_async("fussybeaver", "roctogen", post_issues_create)
+            .await
+            .map_err(to_js_error)?;
 
         info!("Issue created: {:?}", issue);
 
-        JsFuture::from(KV::put(
-            "last_commit",
-            &sha,
-        ))
-        .await?;
+        JsFuture::from(KV::put("last_commit", &sha)).await?;
 
         info!("Sha cached: {:?}", sha);
-
     } else {
         return Err(Error::new("Unable to generate text to create issue").into());
     }
 
     Ok("Ok".into())
-
 }

@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,118 +22,131 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Dependabot<'api> {
-    auth: &'api Auth
+pub struct Dependabot<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Dependabot {
-    Dependabot { auth }
+pub fn new<C: Client>(client: &C) -> Dependabot<C> where AdapterError: From<<C as Client>::Err> {
+    Dependabot { client }
 }
 
 /// Errors for the [Add selected repository to an organization secret](Dependabot::add_selected_repo_to_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotAddSelectedRepoToOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict when visibility type is not set to selected")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<DependabotAddSelectedRepoToOrgSecretError> for AdapterError {
+    fn from(err: DependabotAddSelectedRepoToOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotAddSelectedRepoToOrgSecretError::Status409 => (String::from("Conflict when visibility type is not set to selected"), 409),
+            DependabotAddSelectedRepoToOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update an organization secret](Dependabot::create_or_update_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotCreateOrUpdateOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when updating a secret")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotCreateOrUpdateOrgSecretError> for AdapterError {
+    fn from(err: DependabotCreateOrUpdateOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotCreateOrUpdateOrgSecretError::Status204 => (String::from("Response when updating a secret"), 204),
+            DependabotCreateOrUpdateOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create or update a repository secret](Dependabot::create_or_update_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotCreateOrUpdateRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when updating a secret")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<DependabotCreateOrUpdateRepoSecretError> for AdapterError {
+    fn from(err: DependabotCreateOrUpdateRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotCreateOrUpdateRepoSecretError::Status204 => (String::from("Response when updating a secret"), 204),
+            DependabotCreateOrUpdateRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete an organization secret](Dependabot::delete_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotDeleteOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotDeleteOrgSecretError> for AdapterError {
+    fn from(err: DependabotDeleteOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotDeleteOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a repository secret](Dependabot::delete_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotDeleteRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotDeleteRepoSecretError> for AdapterError {
+    fn from(err: DependabotDeleteRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotDeleteRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a Dependabot alert](Dependabot::get_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotGetAlertError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -143,89 +155,112 @@ pub enum DependabotGetAlertError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotGetAlertError> for AdapterError {
+    fn from(err: DependabotGetAlertError) -> Self {
+        let (description, status_code) = match err {
+            DependabotGetAlertError::Status304 => (String::from("Not modified"), 304),
+            DependabotGetAlertError::Status403(_) => (String::from("Forbidden"), 403),
+            DependabotGetAlertError::Status404(_) => (String::from("Resource not found"), 404),
+            DependabotGetAlertError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization public key](Dependabot::get_org_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotGetOrgPublicKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotGetOrgPublicKeyError> for AdapterError {
+    fn from(err: DependabotGetOrgPublicKeyError) -> Self {
+        let (description, status_code) = match err {
+            DependabotGetOrgPublicKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization secret](Dependabot::get_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotGetOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotGetOrgSecretError> for AdapterError {
+    fn from(err: DependabotGetOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotGetOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository public key](Dependabot::get_repo_public_key_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotGetRepoPublicKeyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotGetRepoPublicKeyError> for AdapterError {
+    fn from(err: DependabotGetRepoPublicKeyError) -> Self {
+        let (description, status_code) = match err {
+            DependabotGetRepoPublicKeyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a repository secret](Dependabot::get_repo_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotGetRepoSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotGetRepoSecretError> for AdapterError {
+    fn from(err: DependabotGetRepoSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotGetRepoSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List Dependabot alerts for an enterprise](Dependabot::list_alerts_for_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotListAlertsForEnterpriseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -236,21 +271,29 @@ pub enum DependabotListAlertsForEnterpriseError {
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotListAlertsForEnterpriseError> for AdapterError {
+    fn from(err: DependabotListAlertsForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            DependabotListAlertsForEnterpriseError::Status304 => (String::from("Not modified"), 304),
+            DependabotListAlertsForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            DependabotListAlertsForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            DependabotListAlertsForEnterpriseError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            DependabotListAlertsForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List Dependabot alerts for an organization](Dependabot::list_alerts_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotListAlertsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Bad Request")]
@@ -263,21 +306,30 @@ pub enum DependabotListAlertsForOrgError {
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotListAlertsForOrgError> for AdapterError {
+    fn from(err: DependabotListAlertsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            DependabotListAlertsForOrgError::Status304 => (String::from("Not modified"), 304),
+            DependabotListAlertsForOrgError::Status400(_) => (String::from("Bad Request"), 400),
+            DependabotListAlertsForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            DependabotListAlertsForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            DependabotListAlertsForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            DependabotListAlertsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List Dependabot alerts for a repository](Dependabot::list_alerts_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotListAlertsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Bad Request")]
@@ -292,106 +344,136 @@ pub enum DependabotListAlertsForRepoError {
     Generic { code: u16 },
 }
 
+impl From<DependabotListAlertsForRepoError> for AdapterError {
+    fn from(err: DependabotListAlertsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            DependabotListAlertsForRepoError::Status304 => (String::from("Not modified"), 304),
+            DependabotListAlertsForRepoError::Status400(_) => (String::from("Bad Request"), 400),
+            DependabotListAlertsForRepoError::Status403(_) => (String::from("Forbidden"), 403),
+            DependabotListAlertsForRepoError::Status404(_) => (String::from("Resource not found"), 404),
+            DependabotListAlertsForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            DependabotListAlertsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization secrets](Dependabot::list_org_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotListOrgSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotListOrgSecretsError> for AdapterError {
+    fn from(err: DependabotListOrgSecretsError) -> Self {
+        let (description, status_code) = match err {
+            DependabotListOrgSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository secrets](Dependabot::list_repo_secrets_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotListRepoSecretsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotListRepoSecretsError> for AdapterError {
+    fn from(err: DependabotListRepoSecretsError) -> Self {
+        let (description, status_code) = match err {
+            DependabotListRepoSecretsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List selected repositories for an organization secret](Dependabot::list_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotListSelectedReposForOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotListSelectedReposForOrgSecretError> for AdapterError {
+    fn from(err: DependabotListSelectedReposForOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotListSelectedReposForOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove selected repository from an organization secret](Dependabot::remove_selected_repo_from_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotRemoveSelectedRepoFromOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Conflict when visibility type not set to selected")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<DependabotRemoveSelectedRepoFromOrgSecretError> for AdapterError {
+    fn from(err: DependabotRemoveSelectedRepoFromOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotRemoveSelectedRepoFromOrgSecretError::Status409 => (String::from("Conflict when visibility type not set to selected"), 409),
+            DependabotRemoveSelectedRepoFromOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set selected repositories for an organization secret](Dependabot::set_selected_repos_for_org_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotSetSelectedReposForOrgSecretError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotSetSelectedReposForOrgSecretError> for AdapterError {
+    fn from(err: DependabotSetSelectedReposForOrgSecretError) -> Self {
+        let (description, status_code) = match err {
+            DependabotSetSelectedReposForOrgSecretError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a Dependabot alert](Dependabot::update_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependabotUpdateAlertError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Forbidden")]
@@ -404,6 +486,25 @@ pub enum DependabotUpdateAlertError {
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependabotUpdateAlertError> for AdapterError {
+    fn from(err: DependabotUpdateAlertError) -> Self {
+        let (description, status_code) = match err {
+            DependabotUpdateAlertError::Status400(_) => (String::from("Bad Request"), 400),
+            DependabotUpdateAlertError::Status403(_) => (String::from("Forbidden"), 403),
+            DependabotUpdateAlertError::Status404(_) => (String::from("Resource not found"), 404),
+            DependabotUpdateAlertError::Status409(_) => (String::from("Conflict"), 409),
+            DependabotUpdateAlertError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            DependabotUpdateAlertError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -1358,7 +1459,7 @@ impl<'enc> From<&'enc PerPage> for DependabotListSelectedReposForOrgSecretParams
     }
 }
 
-impl<'api> Dependabot<'api> {
+impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add selected repository to an organization secret
@@ -1372,32 +1473,32 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for add_selected_repo_to_org_secret](https://docs.github.com/rest/dependabot/secrets#add-selected-repository-to-an-organization-secret)
     ///
     /// ---
-    pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), DependabotAddSelectedRepoToOrgSecretError> {
+    pub async fn add_selected_repo_to_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409),
-                code => Err(DependabotAddSelectedRepoToOrgSecretError::Generic { code }),
+                409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409.into()),
+                code => Err(DependabotAddSelectedRepoToOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1416,7 +1517,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), DependabotAddSelectedRepoToOrgSecretError> {
+    pub fn add_selected_repo_to_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
@@ -1428,20 +1529,20 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409),
-                code => Err(DependabotAddSelectedRepoToOrgSecretError::Generic { code }),
+                409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409.into()),
+                code => Err(DependabotAddSelectedRepoToOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1458,32 +1559,32 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for create_or_update_org_secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-an-organization-secret)
     ///
     /// ---
-    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutDependabotCreateOrUpdateOrgSecret) -> Result<EmptyObject, DependabotCreateOrUpdateOrgSecretError> {
+    pub async fn create_or_update_org_secret_async(&self, org: &str, secret_name: &str, body: PutDependabotCreateOrUpdateOrgSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutDependabotCreateOrUpdateOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutDependabotCreateOrUpdateOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(DependabotCreateOrUpdateOrgSecretError::Status204),
-                code => Err(DependabotCreateOrUpdateOrgSecretError::Generic { code }),
+                204 => Err(DependabotCreateOrUpdateOrgSecretError::Status204.into()),
+                code => Err(DependabotCreateOrUpdateOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1501,32 +1602,32 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutDependabotCreateOrUpdateOrgSecret) -> Result<EmptyObject, DependabotCreateOrUpdateOrgSecretError> {
+    pub fn create_or_update_org_secret(&self, org: &str, secret_name: &str, body: PutDependabotCreateOrUpdateOrgSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutDependabotCreateOrUpdateOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutDependabotCreateOrUpdateOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(DependabotCreateOrUpdateOrgSecretError::Status204),
-                code => Err(DependabotCreateOrUpdateOrgSecretError::Generic { code }),
+                204 => Err(DependabotCreateOrUpdateOrgSecretError::Status204.into()),
+                code => Err(DependabotCreateOrUpdateOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1543,32 +1644,32 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for create_or_update_repo_secret](https://docs.github.com/rest/dependabot/secrets#create-or-update-a-repository-secret)
     ///
     /// ---
-    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutDependabotCreateOrUpdateRepoSecret) -> Result<EmptyObject, DependabotCreateOrUpdateRepoSecretError> {
+    pub async fn create_or_update_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str, body: PutDependabotCreateOrUpdateRepoSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutDependabotCreateOrUpdateRepoSecret::from_json(body)?),
+            body: Some(C::from_json::<PutDependabotCreateOrUpdateRepoSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(DependabotCreateOrUpdateRepoSecretError::Status204),
-                code => Err(DependabotCreateOrUpdateRepoSecretError::Generic { code }),
+                204 => Err(DependabotCreateOrUpdateRepoSecretError::Status204.into()),
+                code => Err(DependabotCreateOrUpdateRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1586,32 +1687,32 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutDependabotCreateOrUpdateRepoSecret) -> Result<EmptyObject, DependabotCreateOrUpdateRepoSecretError> {
+    pub fn create_or_update_repo_secret(&self, owner: &str, repo: &str, secret_name: &str, body: PutDependabotCreateOrUpdateRepoSecret) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutDependabotCreateOrUpdateRepoSecret::from_json(body)?),
+            body: Some(C::from_json::<PutDependabotCreateOrUpdateRepoSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(DependabotCreateOrUpdateRepoSecretError::Status204),
-                code => Err(DependabotCreateOrUpdateRepoSecretError::Generic { code }),
+                204 => Err(DependabotCreateOrUpdateRepoSecretError::Status204.into()),
+                code => Err(DependabotCreateOrUpdateRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1627,31 +1728,31 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for delete_org_secret](https://docs.github.com/rest/dependabot/secrets#delete-an-organization-secret)
     ///
     /// ---
-    pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), DependabotDeleteOrgSecretError> {
+    pub async fn delete_org_secret_async(&self, org: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotDeleteOrgSecretError::Generic { code }),
+                code => Err(DependabotDeleteOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1668,7 +1769,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), DependabotDeleteOrgSecretError> {
+    pub fn delete_org_secret(&self, org: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -1680,19 +1781,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotDeleteOrgSecretError::Generic { code }),
+                code => Err(DependabotDeleteOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1708,31 +1809,31 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for delete_repo_secret](https://docs.github.com/rest/dependabot/secrets#delete-a-repository-secret)
     ///
     /// ---
-    pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), DependabotDeleteRepoSecretError> {
+    pub async fn delete_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotDeleteRepoSecretError::Generic { code }),
+                code => Err(DependabotDeleteRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1749,7 +1850,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), DependabotDeleteRepoSecretError> {
+    pub fn delete_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -1761,19 +1862,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotDeleteRepoSecretError::Generic { code }),
+                code => Err(DependabotDeleteRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1787,34 +1888,34 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for get_alert](https://docs.github.com/rest/dependabot/alerts#get-a-dependabot-alert)
     ///
     /// ---
-    pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<DependabotAlert, DependabotGetAlertError> {
+    pub async fn get_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<DependabotAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotGetAlertError::Status304),
-                403 => Err(DependabotGetAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotGetAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(DependabotGetAlertError::Generic { code }),
+                304 => Err(DependabotGetAlertError::Status304.into()),
+                403 => Err(DependabotGetAlertError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(DependabotGetAlertError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(DependabotGetAlertError::Generic { code }.into()),
             }
         }
     }
@@ -1829,7 +1930,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<DependabotAlert, DependabotGetAlertError> {
+    pub fn get_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<DependabotAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
@@ -1841,22 +1942,22 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotGetAlertError::Status304),
-                403 => Err(DependabotGetAlertError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotGetAlertError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(DependabotGetAlertError::Generic { code }),
+                304 => Err(DependabotGetAlertError::Status304.into()),
+                403 => Err(DependabotGetAlertError::Status403(github_response.to_json()?).into()),
+                404 => Err(DependabotGetAlertError::Status404(github_response.to_json()?).into()),
+                code => Err(DependabotGetAlertError::Generic { code }.into()),
             }
         }
     }
@@ -1873,31 +1974,31 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for get_org_public_key](https://docs.github.com/rest/dependabot/secrets#get-an-organization-public-key)
     ///
     /// ---
-    pub async fn get_org_public_key_async(&self, org: &str) -> Result<DependabotPublicKey, DependabotGetOrgPublicKeyError> {
+    pub async fn get_org_public_key_async(&self, org: &str) -> Result<DependabotPublicKey, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/public-key", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetOrgPublicKeyError::Generic { code }),
+                code => Err(DependabotGetOrgPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -1915,7 +2016,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_public_key(&self, org: &str) -> Result<DependabotPublicKey, DependabotGetOrgPublicKeyError> {
+    pub fn get_org_public_key(&self, org: &str) -> Result<DependabotPublicKey, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/public-key", super::GITHUB_BASE_API_URL, org);
 
@@ -1927,19 +2028,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetOrgPublicKeyError::Generic { code }),
+                code => Err(DependabotGetOrgPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -1955,31 +2056,31 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for get_org_secret](https://docs.github.com/rest/dependabot/secrets#get-an-organization-secret)
     ///
     /// ---
-    pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<OrganizationDependabotSecret, DependabotGetOrgSecretError> {
+    pub async fn get_org_secret_async(&self, org: &str, secret_name: &str) -> Result<OrganizationDependabotSecret, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetOrgSecretError::Generic { code }),
+                code => Err(DependabotGetOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -1996,7 +2097,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<OrganizationDependabotSecret, DependabotGetOrgSecretError> {
+    pub fn get_org_secret(&self, org: &str, secret_name: &str) -> Result<OrganizationDependabotSecret, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -2008,19 +2109,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetOrgSecretError::Generic { code }),
+                code => Err(DependabotGetOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2038,31 +2139,31 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for get_repo_public_key](https://docs.github.com/rest/dependabot/secrets#get-a-repository-public-key)
     ///
     /// ---
-    pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<DependabotPublicKey, DependabotGetRepoPublicKeyError> {
+    pub async fn get_repo_public_key_async(&self, owner: &str, repo: &str) -> Result<DependabotPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetRepoPublicKeyError::Generic { code }),
+                code => Err(DependabotGetRepoPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -2081,7 +2182,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<DependabotPublicKey, DependabotGetRepoPublicKeyError> {
+    pub fn get_repo_public_key(&self, owner: &str, repo: &str) -> Result<DependabotPublicKey, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/public-key", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2093,19 +2194,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetRepoPublicKeyError::Generic { code }),
+                code => Err(DependabotGetRepoPublicKeyError::Generic { code }.into()),
             }
         }
     }
@@ -2121,31 +2222,31 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for get_repo_secret](https://docs.github.com/rest/dependabot/secrets#get-a-repository-secret)
     ///
     /// ---
-    pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<DependabotSecret, DependabotGetRepoSecretError> {
+    pub async fn get_repo_secret_async(&self, owner: &str, repo: &str, secret_name: &str) -> Result<DependabotSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetRepoSecretError::Generic { code }),
+                code => Err(DependabotGetRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2162,7 +2263,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<DependabotSecret, DependabotGetRepoSecretError> {
+    pub fn get_repo_secret(&self, owner: &str, repo: &str, secret_name: &str) -> Result<DependabotSecret, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/secrets/{}", super::GITHUB_BASE_API_URL, owner, repo, secret_name);
 
@@ -2174,19 +2275,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotGetRepoSecretError::Generic { code }),
+                code => Err(DependabotGetRepoSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2206,7 +2307,7 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for list_alerts_for_enterprise](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-an-enterprise)
     ///
     /// ---
-    pub async fn list_alerts_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<DependabotListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, DependabotListAlertsForEnterpriseError> {
+    pub async fn list_alerts_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<DependabotListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/dependabot/alerts", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -2217,28 +2318,28 @@ impl<'api> Dependabot<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotListAlertsForEnterpriseError::Status304),
-                403 => Err(DependabotListAlertsForEnterpriseError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotListAlertsForEnterpriseError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotListAlertsForEnterpriseError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(DependabotListAlertsForEnterpriseError::Generic { code }),
+                304 => Err(DependabotListAlertsForEnterpriseError::Status304.into()),
+                403 => Err(DependabotListAlertsForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(DependabotListAlertsForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(DependabotListAlertsForEnterpriseError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(DependabotListAlertsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -2259,7 +2360,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<DependabotListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, DependabotListAlertsForEnterpriseError> {
+    pub fn list_alerts_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<DependabotListAlertsForEnterpriseParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/enterprises/{}/dependabot/alerts", super::GITHUB_BASE_API_URL, enterprise);
 
@@ -2276,23 +2377,23 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotListAlertsForEnterpriseError::Status304),
-                403 => Err(DependabotListAlertsForEnterpriseError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotListAlertsForEnterpriseError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotListAlertsForEnterpriseError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(DependabotListAlertsForEnterpriseError::Generic { code }),
+                304 => Err(DependabotListAlertsForEnterpriseError::Status304.into()),
+                403 => Err(DependabotListAlertsForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(DependabotListAlertsForEnterpriseError::Status404(github_response.to_json()?).into()),
+                422 => Err(DependabotListAlertsForEnterpriseError::Status422(github_response.to_json()?).into()),
+                code => Err(DependabotListAlertsForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -2310,7 +2411,7 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for list_alerts_for_org](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-an-organization)
     ///
     /// ---
-    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<DependabotListAlertsForOrgParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, DependabotListAlertsForOrgError> {
+    pub async fn list_alerts_for_org_async(&self, org: &str, query_params: Option<impl Into<DependabotListAlertsForOrgParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/dependabot/alerts", super::GITHUB_BASE_API_URL, org);
 
@@ -2321,29 +2422,29 @@ impl<'api> Dependabot<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotListAlertsForOrgError::Status304),
-                400 => Err(DependabotListAlertsForOrgError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependabotListAlertsForOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotListAlertsForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotListAlertsForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(DependabotListAlertsForOrgError::Generic { code }),
+                304 => Err(DependabotListAlertsForOrgError::Status304.into()),
+                400 => Err(DependabotListAlertsForOrgError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(DependabotListAlertsForOrgError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(DependabotListAlertsForOrgError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(DependabotListAlertsForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(DependabotListAlertsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2362,7 +2463,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<DependabotListAlertsForOrgParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, DependabotListAlertsForOrgError> {
+    pub fn list_alerts_for_org(&self, org: &str, query_params: Option<impl Into<DependabotListAlertsForOrgParams<'api>>>) -> Result<Vec<DependabotAlertWithRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/dependabot/alerts", super::GITHUB_BASE_API_URL, org);
 
@@ -2379,24 +2480,24 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotListAlertsForOrgError::Status304),
-                400 => Err(DependabotListAlertsForOrgError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependabotListAlertsForOrgError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotListAlertsForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotListAlertsForOrgError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(DependabotListAlertsForOrgError::Generic { code }),
+                304 => Err(DependabotListAlertsForOrgError::Status304.into()),
+                400 => Err(DependabotListAlertsForOrgError::Status400(github_response.to_json()?).into()),
+                403 => Err(DependabotListAlertsForOrgError::Status403(github_response.to_json()?).into()),
+                404 => Err(DependabotListAlertsForOrgError::Status404(github_response.to_json()?).into()),
+                422 => Err(DependabotListAlertsForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(DependabotListAlertsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2410,7 +2511,7 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for list_alerts_for_repo](https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-a-repository)
     ///
     /// ---
-    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListAlertsForRepoParams<'api>>>) -> Result<Vec<DependabotAlert>, DependabotListAlertsForRepoError> {
+    pub async fn list_alerts_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListAlertsForRepoParams<'api>>>) -> Result<Vec<DependabotAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/dependabot/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2421,29 +2522,29 @@ impl<'api> Dependabot<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotListAlertsForRepoError::Status304),
-                400 => Err(DependabotListAlertsForRepoError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependabotListAlertsForRepoError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotListAlertsForRepoError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotListAlertsForRepoError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(DependabotListAlertsForRepoError::Generic { code }),
+                304 => Err(DependabotListAlertsForRepoError::Status304.into()),
+                400 => Err(DependabotListAlertsForRepoError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(DependabotListAlertsForRepoError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(DependabotListAlertsForRepoError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(DependabotListAlertsForRepoError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(DependabotListAlertsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2458,7 +2559,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListAlertsForRepoParams<'api>>>) -> Result<Vec<DependabotAlert>, DependabotListAlertsForRepoError> {
+    pub fn list_alerts_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListAlertsForRepoParams<'api>>>) -> Result<Vec<DependabotAlert>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/dependabot/alerts", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2475,24 +2576,24 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(DependabotListAlertsForRepoError::Status304),
-                400 => Err(DependabotListAlertsForRepoError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependabotListAlertsForRepoError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotListAlertsForRepoError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotListAlertsForRepoError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(DependabotListAlertsForRepoError::Generic { code }),
+                304 => Err(DependabotListAlertsForRepoError::Status304.into()),
+                400 => Err(DependabotListAlertsForRepoError::Status400(github_response.to_json()?).into()),
+                403 => Err(DependabotListAlertsForRepoError::Status403(github_response.to_json()?).into()),
+                404 => Err(DependabotListAlertsForRepoError::Status404(github_response.to_json()?).into()),
+                422 => Err(DependabotListAlertsForRepoError::Status422(github_response.to_json()?).into()),
+                code => Err(DependabotListAlertsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2509,7 +2610,7 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for list_org_secrets](https://docs.github.com/rest/dependabot/secrets#list-organization-secrets)
     ///
     /// ---
-    pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<DependabotListOrgSecretsParams>>) -> Result<GetDependabotListOrgSecretsResponse200, DependabotListOrgSecretsError> {
+    pub async fn list_org_secrets_async(&self, org: &str, query_params: Option<impl Into<DependabotListOrgSecretsParams>>) -> Result<GetDependabotListOrgSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/dependabot/secrets", super::GITHUB_BASE_API_URL, org);
 
@@ -2520,24 +2621,24 @@ impl<'api> Dependabot<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotListOrgSecretsError::Generic { code }),
+                code => Err(DependabotListOrgSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -2555,7 +2656,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<DependabotListOrgSecretsParams>>) -> Result<GetDependabotListOrgSecretsResponse200, DependabotListOrgSecretsError> {
+    pub fn list_org_secrets(&self, org: &str, query_params: Option<impl Into<DependabotListOrgSecretsParams>>) -> Result<GetDependabotListOrgSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/dependabot/secrets", super::GITHUB_BASE_API_URL, org);
 
@@ -2572,19 +2673,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotListOrgSecretsError::Generic { code }),
+                code => Err(DependabotListOrgSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -2601,7 +2702,7 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for list_repo_secrets](https://docs.github.com/rest/dependabot/secrets#list-repository-secrets)
     ///
     /// ---
-    pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListRepoSecretsParams>>) -> Result<GetDependabotListRepoSecretsResponse200, DependabotListRepoSecretsError> {
+    pub async fn list_repo_secrets_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListRepoSecretsParams>>) -> Result<GetDependabotListRepoSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/dependabot/secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2612,24 +2713,24 @@ impl<'api> Dependabot<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotListRepoSecretsError::Generic { code }),
+                code => Err(DependabotListRepoSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -2647,7 +2748,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListRepoSecretsParams>>) -> Result<GetDependabotListRepoSecretsResponse200, DependabotListRepoSecretsError> {
+    pub fn list_repo_secrets(&self, owner: &str, repo: &str, query_params: Option<impl Into<DependabotListRepoSecretsParams>>) -> Result<GetDependabotListRepoSecretsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/dependabot/secrets", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2664,19 +2765,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotListRepoSecretsError::Generic { code }),
+                code => Err(DependabotListRepoSecretsError::Generic { code }.into()),
             }
         }
     }
@@ -2693,7 +2794,7 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for list_selected_repos_for_org_secret](https://docs.github.com/rest/dependabot/secrets#list-selected-repositories-for-an-organization-secret)
     ///
     /// ---
-    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<DependabotListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, DependabotListSelectedReposForOrgSecretError> {
+    pub async fn list_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, query_params: Option<impl Into<DependabotListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -2704,24 +2805,24 @@ impl<'api> Dependabot<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotListSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(DependabotListSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2739,7 +2840,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<DependabotListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, DependabotListSelectedReposForOrgSecretError> {
+    pub fn list_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, query_params: Option<impl Into<DependabotListSelectedReposForOrgSecretParams>>) -> Result<GetCodespacesListRepositoriesForSecretForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
@@ -2756,19 +2857,19 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotListSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(DependabotListSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2786,32 +2887,32 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for remove_selected_repo_from_org_secret](https://docs.github.com/rest/dependabot/secrets#remove-selected-repository-from-an-organization-secret)
     ///
     /// ---
-    pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), DependabotRemoveSelectedRepoFromOrgSecretError> {
+    pub async fn remove_selected_repo_from_org_secret_async(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409),
-                code => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+                409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409.into()),
+                code => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2830,7 +2931,7 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), DependabotRemoveSelectedRepoFromOrgSecretError> {
+    pub fn remove_selected_repo_from_org_secret(&self, org: &str, secret_name: &str, repository_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories/{}", super::GITHUB_BASE_API_URL, org, secret_name, repository_id);
 
@@ -2842,20 +2943,20 @@ impl<'api> Dependabot<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409),
-                code => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Generic { code }),
+                409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409.into()),
+                code => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2873,31 +2974,31 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for set_selected_repos_for_org_secret](https://docs.github.com/rest/dependabot/secrets#set-selected-repositories-for-an-organization-secret)
     ///
     /// ---
-    pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutDependabotSetSelectedReposForOrgSecret) -> Result<(), DependabotSetSelectedReposForOrgSecretError> {
+    pub async fn set_selected_repos_for_org_secret_async(&self, org: &str, secret_name: &str, body: PutDependabotSetSelectedReposForOrgSecret) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutDependabotSetSelectedReposForOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutDependabotSetSelectedReposForOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2916,31 +3017,31 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutDependabotSetSelectedReposForOrgSecret) -> Result<(), DependabotSetSelectedReposForOrgSecretError> {
+    pub fn set_selected_repos_for_org_secret(&self, org: &str, secret_name: &str, body: PutDependabotSetSelectedReposForOrgSecret) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/dependabot/secrets/{}/repositories", super::GITHUB_BASE_API_URL, org, secret_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutDependabotSetSelectedReposForOrgSecret::from_json(body)?),
+            body: Some(C::from_json::<PutDependabotSetSelectedReposForOrgSecret>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }),
+                code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }.into()),
             }
         }
     }
@@ -2956,36 +3057,36 @@ impl<'api> Dependabot<'api> {
     /// [GitHub API docs for update_alert](https://docs.github.com/rest/dependabot/alerts#update-a-dependabot-alert)
     ///
     /// ---
-    pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchDependabotUpdateAlert) -> Result<DependabotAlert, DependabotUpdateAlertError> {
+    pub async fn update_alert_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchDependabotUpdateAlert) -> Result<DependabotAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchDependabotUpdateAlert::from_json(body)?),
+            body: Some(C::from_json::<PatchDependabotUpdateAlert>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(DependabotUpdateAlertError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependabotUpdateAlertError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(DependabotUpdateAlertError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(DependabotUpdateAlertError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(DependabotUpdateAlertError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(DependabotUpdateAlertError::Generic { code }),
+                400 => Err(DependabotUpdateAlertError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(DependabotUpdateAlertError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(DependabotUpdateAlertError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(DependabotUpdateAlertError::Status409(github_response.to_json_async().await?).into()),
+                422 => Err(DependabotUpdateAlertError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(DependabotUpdateAlertError::Generic { code }.into()),
             }
         }
     }
@@ -3002,36 +3103,36 @@ impl<'api> Dependabot<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchDependabotUpdateAlert) -> Result<DependabotAlert, DependabotUpdateAlertError> {
+    pub fn update_alert(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PatchDependabotUpdateAlert) -> Result<DependabotAlert, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependabot/alerts/{}", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchDependabotUpdateAlert::from_json(body)?),
+            body: Some(C::from_json::<PatchDependabotUpdateAlert>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(DependabotUpdateAlertError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependabotUpdateAlertError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(DependabotUpdateAlertError::Status404(crate::adapters::to_json(github_response)?)),
-                409 => Err(DependabotUpdateAlertError::Status409(crate::adapters::to_json(github_response)?)),
-                422 => Err(DependabotUpdateAlertError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(DependabotUpdateAlertError::Generic { code }),
+                400 => Err(DependabotUpdateAlertError::Status400(github_response.to_json()?).into()),
+                403 => Err(DependabotUpdateAlertError::Status403(github_response.to_json()?).into()),
+                404 => Err(DependabotUpdateAlertError::Status404(github_response.to_json()?).into()),
+                409 => Err(DependabotUpdateAlertError::Status409(github_response.to_json()?).into()),
+                422 => Err(DependabotUpdateAlertError::Status422(github_response.to_json()?).into()),
+                code => Err(DependabotUpdateAlertError::Generic { code }.into()),
             }
         }
     }

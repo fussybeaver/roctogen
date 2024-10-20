@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Search<'api> {
-    auth: &'api Auth
+pub struct Search<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Search {
-    Search { auth }
+pub fn new<C: Client>(client: &C) -> Search<C> where AdapterError: From<<C as Client>::Err> {
+    Search { client }
 }
 
 /// Errors for the [Search code](Search::code_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SearchCodeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Service unavailable")]
@@ -54,40 +43,53 @@ pub enum SearchCodeError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SearchCodeError> for AdapterError {
+    fn from(err: SearchCodeError) -> Self {
+        let (description, status_code) = match err {
+            SearchCodeError::Status304 => (String::from("Not modified"), 304),
+            SearchCodeError::Status503(_) => (String::from("Service unavailable"), 503),
+            SearchCodeError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SearchCodeError::Status403(_) => (String::from("Forbidden"), 403),
+            SearchCodeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Search commits](Search::commits_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SearchCommitsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<SearchCommitsError> for AdapterError {
+    fn from(err: SearchCommitsError) -> Self {
+        let (description, status_code) = match err {
+            SearchCommitsError::Status304 => (String::from("Not modified"), 304),
+            SearchCommitsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Search issues and pull requests](Search::issues_and_pull_requests_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SearchIssuesAndPullRequestsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Service unavailable")]
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -100,19 +102,27 @@ pub enum SearchIssuesAndPullRequestsError {
     Generic { code: u16 },
 }
 
+impl From<SearchIssuesAndPullRequestsError> for AdapterError {
+    fn from(err: SearchIssuesAndPullRequestsError) -> Self {
+        let (description, status_code) = match err {
+            SearchIssuesAndPullRequestsError::Status503(_) => (String::from("Service unavailable"), 503),
+            SearchIssuesAndPullRequestsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SearchIssuesAndPullRequestsError::Status304 => (String::from("Not modified"), 304),
+            SearchIssuesAndPullRequestsError::Status403(_) => (String::from("Forbidden"), 403),
+            SearchIssuesAndPullRequestsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Search labels](Search::labels_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SearchLabelsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -125,19 +135,27 @@ pub enum SearchLabelsError {
     Generic { code: u16 },
 }
 
+impl From<SearchLabelsError> for AdapterError {
+    fn from(err: SearchLabelsError) -> Self {
+        let (description, status_code) = match err {
+            SearchLabelsError::Status304 => (String::from("Not modified"), 304),
+            SearchLabelsError::Status404(_) => (String::from("Resource not found"), 404),
+            SearchLabelsError::Status403(_) => (String::from("Forbidden"), 403),
+            SearchLabelsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SearchLabelsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Search repositories](Search::repos_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SearchReposError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Service unavailable")]
     Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -146,40 +164,52 @@ pub enum SearchReposError {
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SearchReposError> for AdapterError {
+    fn from(err: SearchReposError) -> Self {
+        let (description, status_code) = match err {
+            SearchReposError::Status503(_) => (String::from("Service unavailable"), 503),
+            SearchReposError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SearchReposError::Status304 => (String::from("Not modified"), 304),
+            SearchReposError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Search topics](Search::topics_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SearchTopicsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<SearchTopicsError> for AdapterError {
+    fn from(err: SearchTopicsError) -> Self {
+        let (description, status_code) = match err {
+            SearchTopicsError::Status304 => (String::from("Not modified"), 304),
+            SearchTopicsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Search users](Search::users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SearchUsersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Service unavailable")]
@@ -188,6 +218,23 @@ pub enum SearchUsersError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SearchUsersError> for AdapterError {
+    fn from(err: SearchUsersError) -> Self {
+        let (description, status_code) = match err {
+            SearchUsersError::Status304 => (String::from("Not modified"), 304),
+            SearchUsersError::Status503(_) => (String::from("Service unavailable"), 503),
+            SearchUsersError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SearchUsersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -774,7 +821,7 @@ impl<'enc> From<&'enc PerPage> for SearchUsersParams<'enc> {
     }
 }
 
-impl<'api> Search<'api> {
+impl<'api, C: Client> Search<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Search code
@@ -803,7 +850,7 @@ impl<'api> Search<'api> {
     /// [GitHub API docs for code](https://docs.github.com/rest/search/search#search-code)
     ///
     /// ---
-    pub async fn code_async(&self, query_params: impl Into<SearchCodeParams<'api>>) -> Result<GetSearchCodeResponse200, SearchCodeError> {
+    pub async fn code_async(&self, query_params: impl Into<SearchCodeParams<'api>>) -> Result<GetSearchCodeResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/code", super::GITHUB_BASE_API_URL);
 
@@ -812,28 +859,28 @@ impl<'api> Search<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchCodeError::Status304),
-                503 => Err(SearchCodeError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SearchCodeError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(SearchCodeError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SearchCodeError::Generic { code }),
+                304 => Err(SearchCodeError::Status304.into()),
+                503 => Err(SearchCodeError::Status503(github_response.to_json_async().await?).into()),
+                422 => Err(SearchCodeError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(SearchCodeError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(SearchCodeError::Generic { code }.into()),
             }
         }
     }
@@ -867,7 +914,7 @@ impl<'api> Search<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn code(&self, query_params: impl Into<SearchCodeParams<'api>>) -> Result<GetSearchCodeResponse200, SearchCodeError> {
+    pub fn code(&self, query_params: impl Into<SearchCodeParams<'api>>) -> Result<GetSearchCodeResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/code", super::GITHUB_BASE_API_URL);
 
@@ -882,23 +929,23 @@ impl<'api> Search<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchCodeError::Status304),
-                503 => Err(SearchCodeError::Status503(crate::adapters::to_json(github_response)?)),
-                422 => Err(SearchCodeError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(SearchCodeError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(SearchCodeError::Generic { code }),
+                304 => Err(SearchCodeError::Status304.into()),
+                503 => Err(SearchCodeError::Status503(github_response.to_json()?).into()),
+                422 => Err(SearchCodeError::Status422(github_response.to_json()?).into()),
+                403 => Err(SearchCodeError::Status403(github_response.to_json()?).into()),
+                code => Err(SearchCodeError::Generic { code }.into()),
             }
         }
     }
@@ -919,7 +966,7 @@ impl<'api> Search<'api> {
     /// [GitHub API docs for commits](https://docs.github.com/rest/search/search#search-commits)
     ///
     /// ---
-    pub async fn commits_async(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, SearchCommitsError> {
+    pub async fn commits_async(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/commits", super::GITHUB_BASE_API_URL);
 
@@ -928,25 +975,25 @@ impl<'api> Search<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchCommitsError::Status304),
-                code => Err(SearchCommitsError::Generic { code }),
+                304 => Err(SearchCommitsError::Status304.into()),
+                code => Err(SearchCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -968,7 +1015,7 @@ impl<'api> Search<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn commits(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, SearchCommitsError> {
+    pub fn commits(&self, query_params: impl Into<SearchCommitsParams<'api>>) -> Result<GetSearchCommitsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/commits", super::GITHUB_BASE_API_URL);
 
@@ -983,20 +1030,20 @@ impl<'api> Search<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchCommitsError::Status304),
-                code => Err(SearchCommitsError::Generic { code }),
+                304 => Err(SearchCommitsError::Status304.into()),
+                code => Err(SearchCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -1022,7 +1069,7 @@ impl<'api> Search<'api> {
     /// [GitHub API docs for issues_and_pull_requests](https://docs.github.com/rest/search/search#search-issues-and-pull-requests)
     ///
     /// ---
-    pub async fn issues_and_pull_requests_async(&self, query_params: impl Into<SearchIssuesAndPullRequestsParams<'api>>) -> Result<GetSearchIssuesAndPullRequestsResponse200, SearchIssuesAndPullRequestsError> {
+    pub async fn issues_and_pull_requests_async(&self, query_params: impl Into<SearchIssuesAndPullRequestsParams<'api>>) -> Result<GetSearchIssuesAndPullRequestsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/issues", super::GITHUB_BASE_API_URL);
 
@@ -1031,28 +1078,28 @@ impl<'api> Search<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchIssuesAndPullRequestsError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SearchIssuesAndPullRequestsError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(SearchIssuesAndPullRequestsError::Status304),
-                403 => Err(SearchIssuesAndPullRequestsError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SearchIssuesAndPullRequestsError::Generic { code }),
+                503 => Err(SearchIssuesAndPullRequestsError::Status503(github_response.to_json_async().await?).into()),
+                422 => Err(SearchIssuesAndPullRequestsError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(SearchIssuesAndPullRequestsError::Status304.into()),
+                403 => Err(SearchIssuesAndPullRequestsError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(SearchIssuesAndPullRequestsError::Generic { code }.into()),
             }
         }
     }
@@ -1079,7 +1126,7 @@ impl<'api> Search<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn issues_and_pull_requests(&self, query_params: impl Into<SearchIssuesAndPullRequestsParams<'api>>) -> Result<GetSearchIssuesAndPullRequestsResponse200, SearchIssuesAndPullRequestsError> {
+    pub fn issues_and_pull_requests(&self, query_params: impl Into<SearchIssuesAndPullRequestsParams<'api>>) -> Result<GetSearchIssuesAndPullRequestsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/issues", super::GITHUB_BASE_API_URL);
 
@@ -1094,23 +1141,23 @@ impl<'api> Search<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchIssuesAndPullRequestsError::Status503(crate::adapters::to_json(github_response)?)),
-                422 => Err(SearchIssuesAndPullRequestsError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(SearchIssuesAndPullRequestsError::Status304),
-                403 => Err(SearchIssuesAndPullRequestsError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(SearchIssuesAndPullRequestsError::Generic { code }),
+                503 => Err(SearchIssuesAndPullRequestsError::Status503(github_response.to_json()?).into()),
+                422 => Err(SearchIssuesAndPullRequestsError::Status422(github_response.to_json()?).into()),
+                304 => Err(SearchIssuesAndPullRequestsError::Status304.into()),
+                403 => Err(SearchIssuesAndPullRequestsError::Status403(github_response.to_json()?).into()),
+                code => Err(SearchIssuesAndPullRequestsError::Generic { code }.into()),
             }
         }
     }
@@ -1132,7 +1179,7 @@ impl<'api> Search<'api> {
     /// [GitHub API docs for labels](https://docs.github.com/rest/search/search#search-labels)
     ///
     /// ---
-    pub async fn labels_async(&self, query_params: impl Into<SearchLabelsParams<'api>>) -> Result<GetSearchLabelsResponse200, SearchLabelsError> {
+    pub async fn labels_async(&self, query_params: impl Into<SearchLabelsParams<'api>>) -> Result<GetSearchLabelsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/labels", super::GITHUB_BASE_API_URL);
 
@@ -1141,28 +1188,28 @@ impl<'api> Search<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchLabelsError::Status304),
-                404 => Err(SearchLabelsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(SearchLabelsError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SearchLabelsError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SearchLabelsError::Generic { code }),
+                304 => Err(SearchLabelsError::Status304.into()),
+                404 => Err(SearchLabelsError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(SearchLabelsError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(SearchLabelsError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(SearchLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -1185,7 +1232,7 @@ impl<'api> Search<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn labels(&self, query_params: impl Into<SearchLabelsParams<'api>>) -> Result<GetSearchLabelsResponse200, SearchLabelsError> {
+    pub fn labels(&self, query_params: impl Into<SearchLabelsParams<'api>>) -> Result<GetSearchLabelsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/labels", super::GITHUB_BASE_API_URL);
 
@@ -1200,23 +1247,23 @@ impl<'api> Search<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchLabelsError::Status304),
-                404 => Err(SearchLabelsError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(SearchLabelsError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(SearchLabelsError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(SearchLabelsError::Generic { code }),
+                304 => Err(SearchLabelsError::Status304.into()),
+                404 => Err(SearchLabelsError::Status404(github_response.to_json()?).into()),
+                403 => Err(SearchLabelsError::Status403(github_response.to_json()?).into()),
+                422 => Err(SearchLabelsError::Status422(github_response.to_json()?).into()),
+                code => Err(SearchLabelsError::Generic { code }.into()),
             }
         }
     }
@@ -1238,7 +1285,7 @@ impl<'api> Search<'api> {
     /// [GitHub API docs for repos](https://docs.github.com/rest/search/search#search-repositories)
     ///
     /// ---
-    pub async fn repos_async(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, SearchReposError> {
+    pub async fn repos_async(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/repositories", super::GITHUB_BASE_API_URL);
 
@@ -1247,27 +1294,27 @@ impl<'api> Search<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchReposError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SearchReposError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(SearchReposError::Status304),
-                code => Err(SearchReposError::Generic { code }),
+                503 => Err(SearchReposError::Status503(github_response.to_json_async().await?).into()),
+                422 => Err(SearchReposError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(SearchReposError::Status304.into()),
+                code => Err(SearchReposError::Generic { code }.into()),
             }
         }
     }
@@ -1290,7 +1337,7 @@ impl<'api> Search<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn repos(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, SearchReposError> {
+    pub fn repos(&self, query_params: impl Into<SearchReposParams<'api>>) -> Result<GetSearchReposResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/repositories", super::GITHUB_BASE_API_URL);
 
@@ -1305,22 +1352,22 @@ impl<'api> Search<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                503 => Err(SearchReposError::Status503(crate::adapters::to_json(github_response)?)),
-                422 => Err(SearchReposError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(SearchReposError::Status304),
-                code => Err(SearchReposError::Generic { code }),
+                503 => Err(SearchReposError::Status503(github_response.to_json()?).into()),
+                422 => Err(SearchReposError::Status422(github_response.to_json()?).into()),
+                304 => Err(SearchReposError::Status304.into()),
+                code => Err(SearchReposError::Generic { code }.into()),
             }
         }
     }
@@ -1342,7 +1389,7 @@ impl<'api> Search<'api> {
     /// [GitHub API docs for topics](https://docs.github.com/rest/search/search#search-topics)
     ///
     /// ---
-    pub async fn topics_async(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, SearchTopicsError> {
+    pub async fn topics_async(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/topics", super::GITHUB_BASE_API_URL);
 
@@ -1351,25 +1398,25 @@ impl<'api> Search<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchTopicsError::Status304),
-                code => Err(SearchTopicsError::Generic { code }),
+                304 => Err(SearchTopicsError::Status304.into()),
+                code => Err(SearchTopicsError::Generic { code }.into()),
             }
         }
     }
@@ -1392,7 +1439,7 @@ impl<'api> Search<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn topics(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, SearchTopicsError> {
+    pub fn topics(&self, query_params: impl Into<SearchTopicsParams<'api>>) -> Result<GetSearchTopicsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/topics", super::GITHUB_BASE_API_URL);
 
@@ -1407,20 +1454,20 @@ impl<'api> Search<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchTopicsError::Status304),
-                code => Err(SearchTopicsError::Generic { code }),
+                304 => Err(SearchTopicsError::Status304.into()),
+                code => Err(SearchTopicsError::Generic { code }.into()),
             }
         }
     }
@@ -1444,7 +1491,7 @@ impl<'api> Search<'api> {
     /// [GitHub API docs for users](https://docs.github.com/rest/search/search#search-users)
     ///
     /// ---
-    pub async fn users_async(&self, query_params: impl Into<SearchUsersParams<'api>>) -> Result<GetSearchUsersResponse200, SearchUsersError> {
+    pub async fn users_async(&self, query_params: impl Into<SearchUsersParams<'api>>) -> Result<GetSearchUsersResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/users", super::GITHUB_BASE_API_URL);
 
@@ -1453,27 +1500,27 @@ impl<'api> Search<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchUsersError::Status304),
-                503 => Err(SearchUsersError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SearchUsersError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SearchUsersError::Generic { code }),
+                304 => Err(SearchUsersError::Status304.into()),
+                503 => Err(SearchUsersError::Status503(github_response.to_json_async().await?).into()),
+                422 => Err(SearchUsersError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(SearchUsersError::Generic { code }.into()),
             }
         }
     }
@@ -1498,7 +1545,7 @@ impl<'api> Search<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn users(&self, query_params: impl Into<SearchUsersParams<'api>>) -> Result<GetSearchUsersResponse200, SearchUsersError> {
+    pub fn users(&self, query_params: impl Into<SearchUsersParams<'api>>) -> Result<GetSearchUsersResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/search/users", super::GITHUB_BASE_API_URL);
 
@@ -1513,22 +1560,22 @@ impl<'api> Search<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(SearchUsersError::Status304),
-                503 => Err(SearchUsersError::Status503(crate::adapters::to_json(github_response)?)),
-                422 => Err(SearchUsersError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(SearchUsersError::Generic { code }),
+                304 => Err(SearchUsersError::Status304.into()),
+                503 => Err(SearchUsersError::Status503(github_response.to_json()?).into()),
+                422 => Err(SearchUsersError::Status422(github_response.to_json()?).into()),
+                code => Err(SearchUsersError::Generic { code }.into()),
             }
         }
     }

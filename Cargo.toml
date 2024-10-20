@@ -9,7 +9,14 @@ repository = "https://github.com/fussybeaver/roctogen"
 documentation = "https://docs.rs/roctogen"
 readme = "README.md"
 keywords = ["github"]
-edition = "2018"
+edition = "2021"
+
+[workspace]
+members = [
+  "examples/auth/*",
+  "examples/min-req-adapter",
+]
+exclude = ["codegen/**"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -17,14 +24,15 @@ path = "src/lib.rs"
 
 [features]
 default = []
+reqwest = ["dep:reqwest", "dep:bytes"]
 
 # Activate mock base url
 mock = []
 
-[dependencies]
-base64 = "0.13"
+[workspace.dependencies]
+base64 = "0.22"
 chrono = { version = "0.4", features = ["serde"] }
-http = "0.2.3"
+http = "1.1"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = {version = "1.0"}
@@ -32,18 +40,37 @@ serde_urlencoded = { version = "0.7" }
 thiserror = "1"
 log = "0.4"
 
-# isahc 
-isahc = { version = "1.1.0", optional = true, features = ["json"] }
+# wasm
+cfg-if = { version = "1" }
+wasm-bindgen = { version = "0.2.95", features = ["serde-serialize"] }
+wasm-bindgen-futures = { version = "0.4" }
+console_error_panic_hook = { version = "0.1.1" }
+wee_alloc = { version = "0.4.2" }
+js-sys = { version = "0.3" }
+web-sys = { version = "0.3", features = [ 'Headers', 'Request', 'RequestInit', 'Response', 'ServiceWorkerGlobalScope', 'Window', 'console' ] }
+console_log = { version = "1", features = ["color"] }
+
+[dependencies]
+base64.workspace = true
+chrono.workspace = true
+http.workspace = true
+serde.workspace = true
+serde_derive.workspace = true
+serde_json.workspace = true
+serde_urlencoded.workspace = true
+thiserror.workspace = true
+log.workspace = true
+bytes = { version = "1", optional = true }
 
 # reqwest
-reqwest = { version = "0.11.2", optional = true, features = ["json"] }
+reqwest = { version = "0.12", optional = true, features = [] }
 
 # ureq
-ureq = { version = "2.1.0", optional = true, features = ["json"] }
+ureq = { version = "3.0.0-rc2", optional = true, features = ["json"] }
 
 # wasm 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-cfg-if = { version = "0.1.2" }
+cfg-if = { version = "1" }
 wasm-bindgen = { version = "0.2.95", features = ["serde-serialize"] }
 wasm-bindgen-futures = { version = "0.4" }
 console_error_panic_hook = { version = "0.1.1" }
@@ -63,40 +90,16 @@ features = [
 ]
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
-wasm-bindgen-test = "0.3.0"
-console_log = { version = "0.2", features = ["color"] }
+wasm-bindgen-test = "0.3.45"
+console_log = { workspace = true, features = ["color"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-futures-lite = { version = "1.11" }
-futures-io = { version = "0.3.13" }
-futures-core = { version = "0.3.13" }
+futures-lite = { version = "2.3" }
+futures-io = { version = "0.3" }
+futures-core = { version = "0.3" }
 tokio = { version = "1.2", default-features = false, features = ["macros", "rt-multi-thread"] }
-env_logger = "0.8"
+env_logger = "0.11"
 
 [package.metadata.docs.rs]
-features = [
-  "ant-man",
-  "baptiste",
-  "cloak",
-  "comfort-fade",
-  "corsair",
-  "dorian",
-  "flash",
-  "groot",
-  "inertia",
-  "london",
-  "luke-cage",
-  "lydian",
-  "mercy",
-  "mockingbird",
-  "nebula",
-  "scarlet-witch",
-  "squirrel-girl",
-  "starfox",
-  "surtur",
-  "switcheroo",
-  "wyandotte",
-  "zzzax"
-]
 default-target = "x86_64-unknown-linux-gnu"
 targets = ["wasm32-unknown-unknown"]

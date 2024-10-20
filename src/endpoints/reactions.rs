@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,111 +22,125 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Reactions<'api> {
-    auth: &'api Auth
+pub struct Reactions<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Reactions {
-    Reactions { auth }
+pub fn new<C: Client>(client: &C) -> Reactions<C> where AdapterError: From<<C as Client>::Err> {
+    Reactions { client }
 }
 
 /// Errors for the [Create reaction for a commit comment](Reactions::create_for_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForCommitCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsCreateForCommitCommentError> for AdapterError {
+    fn from(err: ReactionsCreateForCommitCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForCommitCommentError::Status201(_) => (String::from("Reaction created"), 201),
+            ReactionsCreateForCommitCommentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReactionsCreateForCommitCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create reaction for an issue](Reactions::create_for_issue_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForIssueError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status201(Reaction),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsCreateForIssueError> for AdapterError {
+    fn from(err: ReactionsCreateForIssueError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForIssueError::Status201(_) => (String::from("Response"), 201),
+            ReactionsCreateForIssueError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReactionsCreateForIssueError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create reaction for an issue comment](Reactions::create_for_issue_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForIssueCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsCreateForIssueCommentError> for AdapterError {
+    fn from(err: ReactionsCreateForIssueCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForIssueCommentError::Status201(_) => (String::from("Reaction created"), 201),
+            ReactionsCreateForIssueCommentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReactionsCreateForIssueCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create reaction for a pull request review comment](Reactions::create_for_pull_request_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForPullRequestReviewCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsCreateForPullRequestReviewCommentError> for AdapterError {
+    fn from(err: ReactionsCreateForPullRequestReviewCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForPullRequestReviewCommentError::Status201(_) => (String::from("Reaction created"), 201),
+            ReactionsCreateForPullRequestReviewCommentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReactionsCreateForPullRequestReviewCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create reaction for a release](Reactions::create_for_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Reaction created")]
     Status201(Reaction),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -136,229 +149,286 @@ pub enum ReactionsCreateForReleaseError {
     Generic { code: u16 },
 }
 
+impl From<ReactionsCreateForReleaseError> for AdapterError {
+    fn from(err: ReactionsCreateForReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForReleaseError::Status201(_) => (String::from("Reaction created"), 201),
+            ReactionsCreateForReleaseError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ReactionsCreateForReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create reaction for a team discussion comment](Reactions::create_for_team_discussion_comment_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForTeamDiscussionCommentInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status201(Reaction),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsCreateForTeamDiscussionCommentInOrgError> for AdapterError {
+    fn from(err: ReactionsCreateForTeamDiscussionCommentInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(_) => (String::from("Response"), 201),
+            ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create reaction for a team discussion comment (Legacy)](Reactions::create_for_team_discussion_comment_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForTeamDiscussionCommentLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsCreateForTeamDiscussionCommentLegacyError> for AdapterError {
+    fn from(err: ReactionsCreateForTeamDiscussionCommentLegacyError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create reaction for a team discussion](Reactions::create_for_team_discussion_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForTeamDiscussionInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status201(Reaction),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReactionsCreateForTeamDiscussionInOrgError> for AdapterError {
+    fn from(err: ReactionsCreateForTeamDiscussionInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForTeamDiscussionInOrgError::Status201(_) => (String::from("Response"), 201),
+            ReactionsCreateForTeamDiscussionInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create reaction for a team discussion (Legacy)](Reactions::create_for_team_discussion_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsCreateForTeamDiscussionLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsCreateForTeamDiscussionLegacyError> for AdapterError {
+    fn from(err: ReactionsCreateForTeamDiscussionLegacyError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsCreateForTeamDiscussionLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a commit comment reaction](Reactions::delete_for_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForCommitCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsDeleteForCommitCommentError> for AdapterError {
+    fn from(err: ReactionsDeleteForCommitCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsDeleteForCommitCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an issue reaction](Reactions::delete_for_issue_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForIssueError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsDeleteForIssueError> for AdapterError {
+    fn from(err: ReactionsDeleteForIssueError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsDeleteForIssueError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete an issue comment reaction](Reactions::delete_for_issue_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForIssueCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsDeleteForIssueCommentError> for AdapterError {
+    fn from(err: ReactionsDeleteForIssueCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsDeleteForIssueCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a pull request comment reaction](Reactions::delete_for_pull_request_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForPullRequestCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsDeleteForPullRequestCommentError> for AdapterError {
+    fn from(err: ReactionsDeleteForPullRequestCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsDeleteForPullRequestCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a release reaction](Reactions::delete_for_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsDeleteForReleaseError> for AdapterError {
+    fn from(err: ReactionsDeleteForReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsDeleteForReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete team discussion reaction](Reactions::delete_for_team_discussion_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForTeamDiscussionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsDeleteForTeamDiscussionError> for AdapterError {
+    fn from(err: ReactionsDeleteForTeamDiscussionError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsDeleteForTeamDiscussionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete team discussion comment reaction](Reactions::delete_for_team_discussion_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsDeleteForTeamDiscussionCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsDeleteForTeamDiscussionCommentError> for AdapterError {
+    fn from(err: ReactionsDeleteForTeamDiscussionCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsDeleteForTeamDiscussionCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List reactions for a commit comment](Reactions::list_for_commit_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForCommitCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReactionsListForCommitCommentError> for AdapterError {
+    fn from(err: ReactionsListForCommitCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForCommitCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReactionsListForCommitCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List reactions for an issue](Reactions::list_for_issue_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForIssueError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Gone")]
@@ -367,129 +437,176 @@ pub enum ReactionsListForIssueError {
     Generic { code: u16 },
 }
 
+impl From<ReactionsListForIssueError> for AdapterError {
+    fn from(err: ReactionsListForIssueError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForIssueError::Status404(_) => (String::from("Resource not found"), 404),
+            ReactionsListForIssueError::Status410(_) => (String::from("Gone"), 410),
+            ReactionsListForIssueError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List reactions for an issue comment](Reactions::list_for_issue_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForIssueCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsListForIssueCommentError> for AdapterError {
+    fn from(err: ReactionsListForIssueCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForIssueCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReactionsListForIssueCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List reactions for a pull request review comment](Reactions::list_for_pull_request_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForPullRequestReviewCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsListForPullRequestReviewCommentError> for AdapterError {
+    fn from(err: ReactionsListForPullRequestReviewCommentError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForPullRequestReviewCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            ReactionsListForPullRequestReviewCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List reactions for a release](Reactions::list_for_release_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForReleaseError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ReactionsListForReleaseError> for AdapterError {
+    fn from(err: ReactionsListForReleaseError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForReleaseError::Status404(_) => (String::from("Resource not found"), 404),
+            ReactionsListForReleaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List reactions for a team discussion comment](Reactions::list_for_team_discussion_comment_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForTeamDiscussionCommentInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsListForTeamDiscussionCommentInOrgError> for AdapterError {
+    fn from(err: ReactionsListForTeamDiscussionCommentInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForTeamDiscussionCommentInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List reactions for a team discussion comment (Legacy)](Reactions::list_for_team_discussion_comment_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForTeamDiscussionCommentLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsListForTeamDiscussionCommentLegacyError> for AdapterError {
+    fn from(err: ReactionsListForTeamDiscussionCommentLegacyError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForTeamDiscussionCommentLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List reactions for a team discussion](Reactions::list_for_team_discussion_in_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForTeamDiscussionInOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsListForTeamDiscussionInOrgError> for AdapterError {
+    fn from(err: ReactionsListForTeamDiscussionInOrgError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForTeamDiscussionInOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List reactions for a team discussion (Legacy)](Reactions::list_for_team_discussion_legacy_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReactionsListForTeamDiscussionLegacyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ReactionsListForTeamDiscussionLegacyError> for AdapterError {
+    fn from(err: ReactionsListForTeamDiscussionLegacyError) -> Self {
+        let (description, status_code) = match err {
+            ReactionsListForTeamDiscussionLegacyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -971,7 +1088,7 @@ impl<'enc> From<&'enc PerPage> for ReactionsListForTeamDiscussionLegacyParams<'e
     }
 }
 
-impl<'api> Reactions<'api> {
+impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Create reaction for a commit comment
@@ -981,33 +1098,33 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_commit_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-commit-comment)
     ///
     /// ---
-    pub async fn create_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
+    pub async fn create_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForCommitComment) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForCommitComment::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForCommitComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
+                201 => Err(ReactionsCreateForCommitCommentError::Status201(github_response.to_json_async().await?).into()),
+                422 => Err(ReactionsCreateForCommitCommentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsCreateForCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1022,33 +1139,33 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForCommitComment) -> Result<Reaction, ReactionsCreateForCommitCommentError> {
+    pub fn create_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForCommitComment) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForCommitComment::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForCommitComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForCommitCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForCommitCommentError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsCreateForCommitCommentError::Generic { code }),
+                201 => Err(ReactionsCreateForCommitCommentError::Status201(github_response.to_json()?).into()),
+                422 => Err(ReactionsCreateForCommitCommentError::Status422(github_response.to_json()?).into()),
+                code => Err(ReactionsCreateForCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1062,33 +1179,33 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_issue](https://docs.github.com/rest/reactions/reactions#create-reaction-for-an-issue)
     ///
     /// ---
-    pub async fn create_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, ReactionsCreateForIssueError> {
+    pub async fn create_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForIssue::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForIssue>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsCreateForIssueError::Generic { code }),
+                201 => Err(ReactionsCreateForIssueError::Status201(github_response.to_json_async().await?).into()),
+                422 => Err(ReactionsCreateForIssueError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsCreateForIssueError::Generic { code }.into()),
             }
         }
     }
@@ -1103,33 +1220,33 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_issue(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, ReactionsCreateForIssueError> {
+    pub fn create_for_issue(&self, owner: &str, repo: &str, issue_number: i32, body: PostReactionsCreateForIssue) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForIssue::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForIssue>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForIssueError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsCreateForIssueError::Generic { code }),
+                201 => Err(ReactionsCreateForIssueError::Status201(github_response.to_json()?).into()),
+                422 => Err(ReactionsCreateForIssueError::Status422(github_response.to_json()?).into()),
+                code => Err(ReactionsCreateForIssueError::Generic { code }.into()),
             }
         }
     }
@@ -1143,33 +1260,33 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_issue_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-an-issue-comment)
     ///
     /// ---
-    pub async fn create_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
+    pub async fn create_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForIssueComment) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForIssueComment::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForIssueComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
+                201 => Err(ReactionsCreateForIssueCommentError::Status201(github_response.to_json_async().await?).into()),
+                422 => Err(ReactionsCreateForIssueCommentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsCreateForIssueCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1184,33 +1301,33 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForIssueComment) -> Result<Reaction, ReactionsCreateForIssueCommentError> {
+    pub fn create_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForIssueComment) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForIssueComment::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForIssueComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForIssueCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForIssueCommentError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsCreateForIssueCommentError::Generic { code }),
+                201 => Err(ReactionsCreateForIssueCommentError::Status201(github_response.to_json()?).into()),
+                422 => Err(ReactionsCreateForIssueCommentError::Status422(github_response.to_json()?).into()),
+                code => Err(ReactionsCreateForIssueCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1224,33 +1341,33 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_pull_request_review_comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-pull-request-review-comment)
     ///
     /// ---
-    pub async fn create_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
+    pub async fn create_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForPullRequestReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForPullRequestReviewComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
+                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(github_response.to_json_async().await?).into()),
+                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1265,33 +1382,33 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, ReactionsCreateForPullRequestReviewCommentError> {
+    pub fn create_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PostReactionsCreateForPullRequestReviewComment) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForPullRequestReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForPullRequestReviewComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }),
+                201 => Err(ReactionsCreateForPullRequestReviewCommentError::Status201(github_response.to_json()?).into()),
+                422 => Err(ReactionsCreateForPullRequestReviewCommentError::Status422(github_response.to_json()?).into()),
+                code => Err(ReactionsCreateForPullRequestReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1305,33 +1422,33 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_release](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-release)
     ///
     /// ---
-    pub async fn create_for_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, ReactionsCreateForReleaseError> {
+    pub async fn create_for_release_async(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForRelease::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForRelease>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsCreateForReleaseError::Generic { code }),
+                201 => Err(ReactionsCreateForReleaseError::Status201(github_response.to_json_async().await?).into()),
+                422 => Err(ReactionsCreateForReleaseError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsCreateForReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -1346,33 +1463,33 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_release(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, ReactionsCreateForReleaseError> {
+    pub fn create_for_release(&self, owner: &str, repo: &str, release_id: i32, body: PostReactionsCreateForRelease) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForRelease::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForRelease>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForReleaseError::Status201(crate::adapters::to_json(github_response)?)),
-                422 => Err(ReactionsCreateForReleaseError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsCreateForReleaseError::Generic { code }),
+                201 => Err(ReactionsCreateForReleaseError::Status201(github_response.to_json()?).into()),
+                422 => Err(ReactionsCreateForReleaseError::Status422(github_response.to_json()?).into()),
+                code => Err(ReactionsCreateForReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -1393,32 +1510,32 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_team_discussion_comment_in_org](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)
     ///
     /// ---
-    pub async fn create_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentInOrgError> {
+    pub async fn create_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionCommentInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionCommentInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
+                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1440,32 +1557,32 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_team_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentInOrgError> {
+    pub fn create_for_team_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentInOrg) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionCommentInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionCommentInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }),
+                201 => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Status201(github_response.to_json()?).into()),
+                code => Err(ReactionsCreateForTeamDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1486,31 +1603,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_team_discussion_comment_legacy](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment-legacy)
     ///
     /// ---
-    pub async fn create_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentLegacyError> {
+    pub async fn create_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionCommentLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionCommentLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }),
+                code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -1532,31 +1649,31 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_team_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionCommentLegacyError> {
+    pub fn create_for_team_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, body: PostReactionsCreateForTeamDiscussionCommentLegacy) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionCommentLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionCommentLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }),
+                code => Err(ReactionsCreateForTeamDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -1577,32 +1694,32 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_team_discussion_in_org](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion)
     ///
     /// ---
-    pub async fn create_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionInOrgError> {
+    pub async fn create_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
+                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1624,32 +1741,32 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_team_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, ReactionsCreateForTeamDiscussionInOrgError> {
+    pub fn create_for_team_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionInOrg) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionInOrg::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionInOrg>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }),
+                201 => Err(ReactionsCreateForTeamDiscussionInOrgError::Status201(github_response.to_json()?).into()),
+                code => Err(ReactionsCreateForTeamDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -1670,31 +1787,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for create_for_team_discussion_legacy](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-legacy)
     ///
     /// ---
-    pub async fn create_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionLegacyError> {
+    pub async fn create_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }),
+                code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -1716,31 +1833,31 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_for_team_discussion_legacy(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, ReactionsCreateForTeamDiscussionLegacyError> {
+    pub fn create_for_team_discussion_legacy(&self, team_id: i32, discussion_number: i32, body: PostReactionsCreateForTeamDiscussionLegacy) -> Result<Reaction, AdapterError> {
 
         let request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostReactionsCreateForTeamDiscussionLegacy::from_json(body)?),
+            body: Some(C::from_json::<PostReactionsCreateForTeamDiscussionLegacy>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }),
+                code => Err(ReactionsCreateForTeamDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -1757,31 +1874,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for delete_for_commit_comment](https://docs.github.com/rest/reactions/reactions#delete-a-commit-comment-reaction)
     ///
     /// ---
-    pub async fn delete_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
+    pub async fn delete_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForCommitCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1799,7 +1916,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForCommitCommentError> {
+    pub fn delete_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1811,19 +1928,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForCommitCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1840,31 +1957,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for delete_for_issue](https://docs.github.com/rest/reactions/reactions#delete-an-issue-reaction)
     ///
     /// ---
-    pub async fn delete_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueError> {
+    pub async fn delete_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, reaction_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForIssueError::Generic { code }),
+                code => Err(ReactionsDeleteForIssueError::Generic { code }.into()),
             }
         }
     }
@@ -1882,7 +1999,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_issue(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueError> {
+    pub fn delete_for_issue(&self, owner: &str, repo: &str, issue_number: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, issue_number, reaction_id);
 
@@ -1894,19 +2011,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForIssueError::Generic { code }),
+                code => Err(ReactionsDeleteForIssueError::Generic { code }.into()),
             }
         }
     }
@@ -1923,31 +2040,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for delete_for_issue_comment](https://docs.github.com/rest/reactions/reactions#delete-an-issue-comment-reaction)
     ///
     /// ---
-    pub async fn delete_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
+    pub async fn delete_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForIssueCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForIssueCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1965,7 +2082,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForIssueCommentError> {
+    pub fn delete_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -1977,19 +2094,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForIssueCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForIssueCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2006,31 +2123,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for delete_for_pull_request_comment](https://docs.github.com/rest/reactions/reactions#delete-a-pull-request-comment-reaction)
     ///
     /// ---
-    pub async fn delete_for_pull_request_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
+    pub async fn delete_for_pull_request_comment_async(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2048,7 +2165,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_pull_request_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), ReactionsDeleteForPullRequestCommentError> {
+    pub fn delete_for_pull_request_comment(&self, owner: &str, repo: &str, comment_id: i64, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id, reaction_id);
 
@@ -2060,19 +2177,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2089,31 +2206,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for delete_for_release](https://docs.github.com/rest/reactions/reactions#delete-a-release-reaction)
     ///
     /// ---
-    pub async fn delete_for_release_async(&self, owner: &str, repo: &str, release_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForReleaseError> {
+    pub async fn delete_for_release_async(&self, owner: &str, repo: &str, release_id: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id, reaction_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForReleaseError::Generic { code }),
+                code => Err(ReactionsDeleteForReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -2131,7 +2248,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_release(&self, owner: &str, repo: &str, release_id: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForReleaseError> {
+    pub fn delete_for_release(&self, owner: &str, repo: &str, release_id: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/releases/{}/reactions/{}", super::GITHUB_BASE_API_URL, owner, repo, release_id, reaction_id);
 
@@ -2143,19 +2260,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForReleaseError::Generic { code }),
+                code => Err(ReactionsDeleteForReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -2174,31 +2291,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for delete_for_team_discussion](https://docs.github.com/rest/reactions/reactions#delete-team-discussion-reaction)
     ///
     /// ---
-    pub async fn delete_for_team_discussion_async(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionError> {
+    pub async fn delete_for_team_discussion_async(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, reaction_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }),
+                code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }.into()),
             }
         }
     }
@@ -2218,7 +2335,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_team_discussion(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionError> {
+    pub fn delete_for_team_discussion(&self, org: &str, team_slug: &str, discussion_number: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, reaction_id);
 
@@ -2230,19 +2347,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }),
+                code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }.into()),
             }
         }
     }
@@ -2261,31 +2378,31 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for delete_for_team_discussion_comment](https://docs.github.com/rest/reactions/reactions#delete-team-discussion-comment-reaction)
     ///
     /// ---
-    pub async fn delete_for_team_discussion_comment_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionCommentError> {
+    pub async fn delete_for_team_discussion_comment_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number, reaction_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2305,7 +2422,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_for_team_discussion_comment(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), ReactionsDeleteForTeamDiscussionCommentError> {
+    pub fn delete_for_team_discussion_comment(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, reaction_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions/{}", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number, reaction_id);
 
@@ -2317,19 +2434,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }),
+                code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2343,7 +2460,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_commit_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-commit-comment)
     ///
     /// ---
-    pub async fn list_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
+    pub async fn list_for_commit_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2354,25 +2471,25 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsListForCommitCommentError::Generic { code }),
+                404 => Err(ReactionsListForCommitCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsListForCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2387,7 +2504,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForCommitCommentError> {
+    pub fn list_for_commit_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForCommitCommentParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2404,20 +2521,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForCommitCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsListForCommitCommentError::Generic { code }),
+                404 => Err(ReactionsListForCommitCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReactionsListForCommitCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2431,7 +2548,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_issue](https://docs.github.com/rest/reactions/reactions#list-reactions-for-an-issue)
     ///
     /// ---
-    pub async fn list_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueError> {
+    pub async fn list_for_issue_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -2442,26 +2559,26 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsListForIssueError::Generic { code }),
+                404 => Err(ReactionsListForIssueError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(ReactionsListForIssueError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsListForIssueError::Generic { code }.into()),
             }
         }
     }
@@ -2476,7 +2593,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_issue(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueError> {
+    pub fn list_for_issue(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<ReactionsListForIssueParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
 
@@ -2493,21 +2610,21 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueError::Status404(crate::adapters::to_json(github_response)?)),
-                410 => Err(ReactionsListForIssueError::Status410(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsListForIssueError::Generic { code }),
+                404 => Err(ReactionsListForIssueError::Status404(github_response.to_json()?).into()),
+                410 => Err(ReactionsListForIssueError::Status410(github_response.to_json()?).into()),
+                code => Err(ReactionsListForIssueError::Generic { code }.into()),
             }
         }
     }
@@ -2521,7 +2638,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_issue_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-an-issue-comment)
     ///
     /// ---
-    pub async fn list_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
+    pub async fn list_for_issue_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2532,25 +2649,25 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsListForIssueCommentError::Generic { code }),
+                404 => Err(ReactionsListForIssueCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsListForIssueCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2565,7 +2682,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForIssueCommentError> {
+    pub fn list_for_issue_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForIssueCommentParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/issues/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2582,20 +2699,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForIssueCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsListForIssueCommentError::Generic { code }),
+                404 => Err(ReactionsListForIssueCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReactionsListForIssueCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2609,7 +2726,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_pull_request_review_comment](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-pull-request-review-comment)
     ///
     /// ---
-    pub async fn list_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
+    pub async fn list_for_pull_request_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2620,25 +2737,25 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
+                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2653,7 +2770,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForPullRequestReviewCommentError> {
+    pub fn list_for_pull_request_review_comment(&self, owner: &str, repo: &str, comment_id: i64, query_params: Option<impl Into<ReactionsListForPullRequestReviewCommentParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2670,20 +2787,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }),
+                404 => Err(ReactionsListForPullRequestReviewCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(ReactionsListForPullRequestReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2697,7 +2814,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_release](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-release)
     ///
     /// ---
-    pub async fn list_for_release_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReactionsListForReleaseParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForReleaseError> {
+    pub async fn list_for_release_async(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReactionsListForReleaseParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -2708,25 +2825,25 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForReleaseError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ReactionsListForReleaseError::Generic { code }),
+                404 => Err(ReactionsListForReleaseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ReactionsListForReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -2741,7 +2858,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_release(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReactionsListForReleaseParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForReleaseError> {
+    pub fn list_for_release(&self, owner: &str, repo: &str, release_id: i32, query_params: Option<impl Into<ReactionsListForReleaseParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/releases/{}/reactions", super::GITHUB_BASE_API_URL, owner, repo, release_id);
 
@@ -2758,20 +2875,20 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ReactionsListForReleaseError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(ReactionsListForReleaseError::Generic { code }),
+                404 => Err(ReactionsListForReleaseError::Status404(github_response.to_json()?).into()),
+                code => Err(ReactionsListForReleaseError::Generic { code }.into()),
             }
         }
     }
@@ -2790,7 +2907,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_team_discussion_comment_in_org](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment)
     ///
     /// ---
-    pub async fn list_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentInOrgError> {
+    pub async fn list_for_team_discussion_comment_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
@@ -2801,24 +2918,24 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2838,7 +2955,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_team_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentInOrgError> {
+    pub fn list_for_team_discussion_comment_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentInOrgParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number, comment_number);
 
@@ -2855,19 +2972,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionCommentInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -2886,7 +3003,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_team_discussion_comment_legacy](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment-legacy)
     ///
     /// ---
-    pub async fn list_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentLegacyError> {
+    pub async fn list_for_team_discussion_comment_legacy_async(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
@@ -2897,24 +3014,24 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2934,7 +3051,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_team_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionCommentLegacyError> {
+    pub fn list_for_team_discussion_comment_legacy(&self, team_id: i32, discussion_number: i32, comment_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionCommentLegacyParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/comments/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number, comment_number);
 
@@ -2951,19 +3068,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionCommentLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -2982,7 +3099,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_team_discussion_in_org](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion)
     ///
     /// ---
-    pub async fn list_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionInOrgError> {
+    pub async fn list_for_team_discussion_in_org_async(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
@@ -2993,24 +3110,24 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3030,7 +3147,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_team_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionInOrgError> {
+    pub fn list_for_team_discussion_in_org(&self, org: &str, team_slug: &str, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionInOrgParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, org, team_slug, discussion_number);
 
@@ -3047,19 +3164,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionInOrgError::Generic { code }.into()),
             }
         }
     }
@@ -3078,7 +3195,7 @@ impl<'api> Reactions<'api> {
     /// [GitHub API docs for list_for_team_discussion_legacy](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-legacy)
     ///
     /// ---
-    pub async fn list_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionLegacyError> {
+    pub async fn list_for_team_discussion_legacy_async(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
@@ -3089,24 +3206,24 @@ impl<'api> Reactions<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }
@@ -3126,7 +3243,7 @@ impl<'api> Reactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_team_discussion_legacy(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, ReactionsListForTeamDiscussionLegacyError> {
+    pub fn list_for_team_discussion_legacy(&self, team_id: i32, discussion_number: i32, query_params: Option<impl Into<ReactionsListForTeamDiscussionLegacyParams<'api>>>) -> Result<Vec<Reaction>, AdapterError> {
 
         let mut request_uri = format!("{}/teams/{}/discussions/{}/reactions", super::GITHUB_BASE_API_URL, team_id, discussion_number);
 
@@ -3143,19 +3260,19 @@ impl<'api> Reactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }),
+                code => Err(ReactionsListForTeamDiscussionLegacyError::Generic { code }.into()),
             }
         }
     }

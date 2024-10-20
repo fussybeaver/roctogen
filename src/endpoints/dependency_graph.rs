@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,44 +22,38 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct DependencyGraph<'api> {
-    auth: &'api Auth
+pub struct DependencyGraph<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> DependencyGraph {
-    DependencyGraph { auth }
+pub fn new<C: Client>(client: &C) -> DependencyGraph<C> where AdapterError: From<<C as Client>::Err> {
+    DependencyGraph { client }
 }
 
 /// Errors for the [Create a snapshot of dependencies for a repository](DependencyGraph::create_repository_snapshot_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependencyGraphCreateRepositorySnapshotError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependencyGraphCreateRepositorySnapshotError> for AdapterError {
+    fn from(err: DependencyGraphCreateRepositorySnapshotError) -> Self {
+        let (description, status_code) = match err {
+            DependencyGraphCreateRepositorySnapshotError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a diff of the dependencies between commits](DependencyGraph::diff_range_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependencyGraphDiffRangeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Response if GitHub Advanced Security is not enabled for this repository")]
@@ -69,25 +62,47 @@ pub enum DependencyGraphDiffRangeError {
     Generic { code: u16 },
 }
 
+impl From<DependencyGraphDiffRangeError> for AdapterError {
+    fn from(err: DependencyGraphDiffRangeError) -> Self {
+        let (description, status_code) = match err {
+            DependencyGraphDiffRangeError::Status404(_) => (String::from("Resource not found"), 404),
+            DependencyGraphDiffRangeError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            DependencyGraphDiffRangeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Export a software bill of materials (SBOM) for a repository.](DependencyGraph::export_sbom_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum DependencyGraphExportSbomError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<DependencyGraphExportSbomError> for AdapterError {
+    fn from(err: DependencyGraphExportSbomError) -> Self {
+        let (description, status_code) = match err {
+            DependencyGraphExportSbomError::Status404(_) => (String::from("Resource not found"), 404),
+            DependencyGraphExportSbomError::Status403(_) => (String::from("Forbidden"), 403),
+            DependencyGraphExportSbomError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -112,7 +127,7 @@ impl<'req> DependencyGraphDiffRangeParams<'req> {
 }
 
 
-impl<'api> DependencyGraph<'api> {
+impl<'api, C: Client> DependencyGraph<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Create a snapshot of dependencies for a repository
@@ -126,31 +141,31 @@ impl<'api> DependencyGraph<'api> {
     /// [GitHub API docs for create_repository_snapshot](https://docs.github.com/rest/dependency-graph/dependency-submission#create-a-snapshot-of-dependencies-for-a-repository)
     ///
     /// ---
-    pub async fn create_repository_snapshot_async(&self, owner: &str, repo: &str, body: PostDependencyGraphCreateRepositorySnapshot) -> Result<PostDependencyGraphCreateRepositorySnapshotResponse201, DependencyGraphCreateRepositorySnapshotError> {
+    pub async fn create_repository_snapshot_async(&self, owner: &str, repo: &str, body: PostDependencyGraphCreateRepositorySnapshot) -> Result<PostDependencyGraphCreateRepositorySnapshotResponse201, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependency-graph/snapshots", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostDependencyGraphCreateRepositorySnapshot::from_json(body)?),
+            body: Some(C::from_json::<PostDependencyGraphCreateRepositorySnapshot>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(DependencyGraphCreateRepositorySnapshotError::Generic { code }),
+                code => Err(DependencyGraphCreateRepositorySnapshotError::Generic { code }.into()),
             }
         }
     }
@@ -169,31 +184,31 @@ impl<'api> DependencyGraph<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_repository_snapshot(&self, owner: &str, repo: &str, body: PostDependencyGraphCreateRepositorySnapshot) -> Result<PostDependencyGraphCreateRepositorySnapshotResponse201, DependencyGraphCreateRepositorySnapshotError> {
+    pub fn create_repository_snapshot(&self, owner: &str, repo: &str, body: PostDependencyGraphCreateRepositorySnapshot) -> Result<PostDependencyGraphCreateRepositorySnapshotResponse201, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependency-graph/snapshots", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostDependencyGraphCreateRepositorySnapshot::from_json(body)?),
+            body: Some(C::from_json::<PostDependencyGraphCreateRepositorySnapshot>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(DependencyGraphCreateRepositorySnapshotError::Generic { code }),
+                code => Err(DependencyGraphCreateRepositorySnapshotError::Generic { code }.into()),
             }
         }
     }
@@ -207,7 +222,7 @@ impl<'api> DependencyGraph<'api> {
     /// [GitHub API docs for diff_range](https://docs.github.com/rest/dependency-graph/dependency-review#get-a-diff-of-the-dependencies-between-commits)
     ///
     /// ---
-    pub async fn diff_range_async(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<DependencyGraphDiffRangeParams<'api>>>) -> Result<DependencyGraphDiff, DependencyGraphDiffRangeError> {
+    pub async fn diff_range_async(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<DependencyGraphDiffRangeParams<'api>>>) -> Result<DependencyGraphDiff, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/dependency-graph/compare/{}", super::GITHUB_BASE_API_URL, owner, repo, basehead);
 
@@ -218,26 +233,26 @@ impl<'api> DependencyGraph<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphDiffRangeError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependencyGraphDiffRangeError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(DependencyGraphDiffRangeError::Generic { code }),
+                404 => Err(DependencyGraphDiffRangeError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(DependencyGraphDiffRangeError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(DependencyGraphDiffRangeError::Generic { code }.into()),
             }
         }
     }
@@ -252,7 +267,7 @@ impl<'api> DependencyGraph<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn diff_range(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<DependencyGraphDiffRangeParams<'api>>>) -> Result<DependencyGraphDiff, DependencyGraphDiffRangeError> {
+    pub fn diff_range(&self, owner: &str, repo: &str, basehead: &str, query_params: Option<impl Into<DependencyGraphDiffRangeParams<'api>>>) -> Result<DependencyGraphDiff, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/dependency-graph/compare/{}", super::GITHUB_BASE_API_URL, owner, repo, basehead);
 
@@ -269,21 +284,21 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphDiffRangeError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependencyGraphDiffRangeError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(DependencyGraphDiffRangeError::Generic { code }),
+                404 => Err(DependencyGraphDiffRangeError::Status404(github_response.to_json()?).into()),
+                403 => Err(DependencyGraphDiffRangeError::Status403(github_response.to_json()?).into()),
+                code => Err(DependencyGraphDiffRangeError::Generic { code }.into()),
             }
         }
     }
@@ -297,33 +312,33 @@ impl<'api> DependencyGraph<'api> {
     /// [GitHub API docs for export_sbom](https://docs.github.com/rest/dependency-graph/sboms#export-a-software-bill-of-materials-sbom-for-a-repository)
     ///
     /// ---
-    pub async fn export_sbom_async(&self, owner: &str, repo: &str) -> Result<DependencyGraphSpdxSbom, DependencyGraphExportSbomError> {
+    pub async fn export_sbom_async(&self, owner: &str, repo: &str) -> Result<DependencyGraphSpdxSbom, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependency-graph/sbom", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphExportSbomError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(DependencyGraphExportSbomError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(DependencyGraphExportSbomError::Generic { code }),
+                404 => Err(DependencyGraphExportSbomError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(DependencyGraphExportSbomError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(DependencyGraphExportSbomError::Generic { code }.into()),
             }
         }
     }
@@ -338,7 +353,7 @@ impl<'api> DependencyGraph<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn export_sbom(&self, owner: &str, repo: &str) -> Result<DependencyGraphSpdxSbom, DependencyGraphExportSbomError> {
+    pub fn export_sbom(&self, owner: &str, repo: &str) -> Result<DependencyGraphSpdxSbom, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/dependency-graph/sbom", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -350,21 +365,21 @@ impl<'api> DependencyGraph<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(DependencyGraphExportSbomError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(DependencyGraphExportSbomError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(DependencyGraphExportSbomError::Generic { code }),
+                404 => Err(DependencyGraphExportSbomError::Status404(github_response.to_json()?).into()),
+                403 => Err(DependencyGraphExportSbomError::Status403(github_response.to_json()?).into()),
+                code => Err(DependencyGraphExportSbomError::Generic { code }.into()),
             }
         }
     }

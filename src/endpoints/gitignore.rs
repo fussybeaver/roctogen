@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,55 +22,65 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Gitignore<'api> {
-    auth: &'api Auth
+pub struct Gitignore<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Gitignore {
-    Gitignore { auth }
+pub fn new<C: Client>(client: &C) -> Gitignore<C> where AdapterError: From<<C as Client>::Err> {
+    Gitignore { client }
 }
 
 /// Errors for the [Get all gitignore templates](Gitignore::get_all_templates_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitignoreGetAllTemplatesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GitignoreGetAllTemplatesError> for AdapterError {
+    fn from(err: GitignoreGetAllTemplatesError) -> Self {
+        let (description, status_code) = match err {
+            GitignoreGetAllTemplatesError::Status304 => (String::from("Not modified"), 304),
+            GitignoreGetAllTemplatesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a gitignore template](Gitignore::get_template_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GitignoreGetTemplateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<GitignoreGetTemplateError> for AdapterError {
+    fn from(err: GitignoreGetTemplateError) -> Self {
+        let (description, status_code) = match err {
+            GitignoreGetTemplateError::Status304 => (String::from("Not modified"), 304),
+            GitignoreGetTemplateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
 
 
-impl<'api> Gitignore<'api> {
+
+impl<'api, C: Client> Gitignore<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get all gitignore templates
@@ -81,32 +90,32 @@ impl<'api> Gitignore<'api> {
     /// [GitHub API docs for get_all_templates](https://docs.github.com/rest/gitignore/gitignore#get-all-gitignore-templates)
     ///
     /// ---
-    pub async fn get_all_templates_async(&self) -> Result<Vec<String>, GitignoreGetAllTemplatesError> {
+    pub async fn get_all_templates_async(&self) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/gitignore/templates", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GitignoreGetAllTemplatesError::Status304),
-                code => Err(GitignoreGetAllTemplatesError::Generic { code }),
+                304 => Err(GitignoreGetAllTemplatesError::Status304.into()),
+                code => Err(GitignoreGetAllTemplatesError::Generic { code }.into()),
             }
         }
     }
@@ -121,7 +130,7 @@ impl<'api> Gitignore<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_templates(&self) -> Result<Vec<String>, GitignoreGetAllTemplatesError> {
+    pub fn get_all_templates(&self) -> Result<Vec<String>, AdapterError> {
 
         let request_uri = format!("{}/gitignore/templates", super::GITHUB_BASE_API_URL);
 
@@ -133,20 +142,20 @@ impl<'api> Gitignore<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GitignoreGetAllTemplatesError::Status304),
-                code => Err(GitignoreGetAllTemplatesError::Generic { code }),
+                304 => Err(GitignoreGetAllTemplatesError::Status304.into()),
+                code => Err(GitignoreGetAllTemplatesError::Generic { code }.into()),
             }
         }
     }
@@ -164,32 +173,32 @@ impl<'api> Gitignore<'api> {
     /// [GitHub API docs for get_template](https://docs.github.com/rest/gitignore/gitignore#get-a-gitignore-template)
     ///
     /// ---
-    pub async fn get_template_async(&self, name: &str) -> Result<GitignoreTemplate, GitignoreGetTemplateError> {
+    pub async fn get_template_async(&self, name: &str) -> Result<GitignoreTemplate, AdapterError> {
 
         let request_uri = format!("{}/gitignore/templates/{}", super::GITHUB_BASE_API_URL, name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GitignoreGetTemplateError::Status304),
-                code => Err(GitignoreGetTemplateError::Generic { code }),
+                304 => Err(GitignoreGetTemplateError::Status304.into()),
+                code => Err(GitignoreGetTemplateError::Generic { code }.into()),
             }
         }
     }
@@ -208,7 +217,7 @@ impl<'api> Gitignore<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_template(&self, name: &str) -> Result<GitignoreTemplate, GitignoreGetTemplateError> {
+    pub fn get_template(&self, name: &str) -> Result<GitignoreTemplate, AdapterError> {
 
         let request_uri = format!("{}/gitignore/templates/{}", super::GITHUB_BASE_API_URL, name);
 
@@ -220,20 +229,20 @@ impl<'api> Gitignore<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GitignoreGetTemplateError::Status304),
-                code => Err(GitignoreGetTemplateError::Generic { code }),
+                304 => Err(GitignoreGetTemplateError::Status304.into()),
+                code => Err(GitignoreGetTemplateError::Generic { code }.into()),
             }
         }
     }

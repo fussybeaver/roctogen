@@ -1,0 +1,13 @@
+[package]
+name = "min-req-adapter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+minreq = "2"
+thiserror.workspace = true
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+base64.workspace = true
+roctogen = { path = "../../" }

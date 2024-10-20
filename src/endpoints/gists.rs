@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Gists<'api> {
-    auth: &'api Auth
+pub struct Gists<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Gists {
-    Gists { auth }
+pub fn new<C: Client>(client: &C) -> Gists<C> where AdapterError: From<<C as Client>::Err> {
+    Gists { client }
 }
 
 /// Errors for the [Check if a gist is starred](Gists::check_is_starred_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsCheckIsStarredError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if gist is not starred")]
     Status404(HashMap<String, Value>),
     #[error("Not modified")]
@@ -54,19 +43,26 @@ pub enum GistsCheckIsStarredError {
     Generic { code: u16 },
 }
 
+impl From<GistsCheckIsStarredError> for AdapterError {
+    fn from(err: GistsCheckIsStarredError) -> Self {
+        let (description, status_code) = match err {
+            GistsCheckIsStarredError::Status404(_) => (String::from("Not Found if gist is not starred"), 404),
+            GistsCheckIsStarredError::Status304 => (String::from("Not modified"), 304),
+            GistsCheckIsStarredError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsCheckIsStarredError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a gist](Gists::create_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsCreateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -77,21 +73,29 @@ pub enum GistsCreateError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsCreateError> for AdapterError {
+    fn from(err: GistsCreateError) -> Self {
+        let (description, status_code) = match err {
+            GistsCreateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GistsCreateError::Status304 => (String::from("Not modified"), 304),
+            GistsCreateError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsCreateError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsCreateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a gist comment](Gists::create_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsCreateCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -100,21 +104,28 @@ pub enum GistsCreateCommentError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsCreateCommentError> for AdapterError {
+    fn from(err: GistsCreateCommentError) -> Self {
+        let (description, status_code) = match err {
+            GistsCreateCommentError::Status304 => (String::from("Not modified"), 304),
+            GistsCreateCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsCreateCommentError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsCreateCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a gist](Gists::delete_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsDeleteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -123,21 +134,28 @@ pub enum GistsDeleteError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsDeleteError> for AdapterError {
+    fn from(err: GistsDeleteError) -> Self {
+        let (description, status_code) = match err {
+            GistsDeleteError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsDeleteError::Status304 => (String::from("Not modified"), 304),
+            GistsDeleteError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsDeleteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a gist comment](Gists::delete_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsDeleteCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -146,21 +164,28 @@ pub enum GistsDeleteCommentError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsDeleteCommentError> for AdapterError {
+    fn from(err: GistsDeleteCommentError) -> Self {
+        let (description, status_code) = match err {
+            GistsDeleteCommentError::Status304 => (String::from("Not modified"), 304),
+            GistsDeleteCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsDeleteCommentError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsDeleteCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Fork a gist](Gists::fork_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsForkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -171,21 +196,29 @@ pub enum GistsForkError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsForkError> for AdapterError {
+    fn from(err: GistsForkError) -> Self {
+        let (description, status_code) = match err {
+            GistsForkError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsForkError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GistsForkError::Status304 => (String::from("Not modified"), 304),
+            GistsForkError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsForkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a gist](Gists::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden Gist")]
     Status403(GetGistsGetCommentResponse403),
     #[error("Resource not found")]
@@ -194,21 +227,28 @@ pub enum GistsGetError {
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsGetError> for AdapterError {
+    fn from(err: GistsGetError) -> Self {
+        let (description, status_code) = match err {
+            GistsGetError::Status403(_) => (String::from("Forbidden Gist"), 403),
+            GistsGetError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsGetError::Status304 => (String::from("Not modified"), 304),
+            GistsGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a gist comment](Gists::get_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsGetCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -219,19 +259,26 @@ pub enum GistsGetCommentError {
     Generic { code: u16 },
 }
 
+impl From<GistsGetCommentError> for AdapterError {
+    fn from(err: GistsGetCommentError) -> Self {
+        let (description, status_code) = match err {
+            GistsGetCommentError::Status304 => (String::from("Not modified"), 304),
+            GistsGetCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsGetCommentError::Status403(_) => (String::from("Forbidden Gist"), 403),
+            GistsGetCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a gist revision](Gists::get_revision_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsGetRevisionError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -240,42 +287,55 @@ pub enum GistsGetRevisionError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsGetRevisionError> for AdapterError {
+    fn from(err: GistsGetRevisionError) -> Self {
+        let (description, status_code) = match err {
+            GistsGetRevisionError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GistsGetRevisionError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsGetRevisionError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsGetRevisionError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List gists for the authenticated user](Gists::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsListError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsListError> for AdapterError {
+    fn from(err: GistsListError) -> Self {
+        let (description, status_code) = match err {
+            GistsListError::Status304 => (String::from("Not modified"), 304),
+            GistsListError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsListError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List gist comments](Gists::list_comments_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsListCommentsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -284,21 +344,28 @@ pub enum GistsListCommentsError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsListCommentsError> for AdapterError {
+    fn from(err: GistsListCommentsError) -> Self {
+        let (description, status_code) = match err {
+            GistsListCommentsError::Status304 => (String::from("Not modified"), 304),
+            GistsListCommentsError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsListCommentsError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsListCommentsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List gist commits](Gists::list_commits_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsListCommitsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -307,40 +374,52 @@ pub enum GistsListCommitsError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsListCommitsError> for AdapterError {
+    fn from(err: GistsListCommitsError) -> Self {
+        let (description, status_code) = match err {
+            GistsListCommitsError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsListCommitsError::Status304 => (String::from("Not modified"), 304),
+            GistsListCommitsError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsListCommitsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List gists for a user](Gists::list_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsListForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<GistsListForUserError> for AdapterError {
+    fn from(err: GistsListForUserError) -> Self {
+        let (description, status_code) = match err {
+            GistsListForUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GistsListForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List gist forks](Gists::list_forks_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsListForksError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -351,19 +430,26 @@ pub enum GistsListForksError {
     Generic { code: u16 },
 }
 
+impl From<GistsListForksError> for AdapterError {
+    fn from(err: GistsListForksError) -> Self {
+        let (description, status_code) = match err {
+            GistsListForksError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsListForksError::Status304 => (String::from("Not modified"), 304),
+            GistsListForksError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsListForksError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List public gists](Gists::list_public_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsListPublicError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Not modified")]
@@ -374,19 +460,26 @@ pub enum GistsListPublicError {
     Generic { code: u16 },
 }
 
+impl From<GistsListPublicError> for AdapterError {
+    fn from(err: GistsListPublicError) -> Self {
+        let (description, status_code) = match err {
+            GistsListPublicError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GistsListPublicError::Status304 => (String::from("Not modified"), 304),
+            GistsListPublicError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsListPublicError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List starred gists](Gists::list_starred_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsListStarredError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Requires authentication")]
     Status401(BasicError),
     #[error("Not modified")]
@@ -397,19 +490,26 @@ pub enum GistsListStarredError {
     Generic { code: u16 },
 }
 
+impl From<GistsListStarredError> for AdapterError {
+    fn from(err: GistsListStarredError) -> Self {
+        let (description, status_code) = match err {
+            GistsListStarredError::Status401(_) => (String::from("Requires authentication"), 401),
+            GistsListStarredError::Status304 => (String::from("Not modified"), 304),
+            GistsListStarredError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsListStarredError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Star a gist](Gists::star_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsStarError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Not modified")]
@@ -418,21 +518,28 @@ pub enum GistsStarError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsStarError> for AdapterError {
+    fn from(err: GistsStarError) -> Self {
+        let (description, status_code) = match err {
+            GistsStarError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsStarError::Status304 => (String::from("Not modified"), 304),
+            GistsStarError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsStarError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Unstar a gist](Gists::unstar_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsUnstarError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -443,19 +550,26 @@ pub enum GistsUnstarError {
     Generic { code: u16 },
 }
 
+impl From<GistsUnstarError> for AdapterError {
+    fn from(err: GistsUnstarError) -> Self {
+        let (description, status_code) = match err {
+            GistsUnstarError::Status304 => (String::from("Not modified"), 304),
+            GistsUnstarError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsUnstarError::Status403(_) => (String::from("Forbidden"), 403),
+            GistsUnstarError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a gist](Gists::update_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsUpdateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -464,23 +578,44 @@ pub enum GistsUpdateError {
     Generic { code: u16 },
 }
 
+impl From<GistsUpdateError> for AdapterError {
+    fn from(err: GistsUpdateError) -> Self {
+        let (description, status_code) = match err {
+            GistsUpdateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            GistsUpdateError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsUpdateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a gist comment](Gists::update_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum GistsUpdateCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<GistsUpdateCommentError> for AdapterError {
+    fn from(err: GistsUpdateCommentError) -> Self {
+        let (description, status_code) = match err {
+            GistsUpdateCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            GistsUpdateCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -817,7 +952,7 @@ impl<'enc> From<&'enc PerPage> for GistsListStarredParams {
     }
 }
 
-impl<'api> Gists<'api> {
+impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Check if a gist is starred
@@ -825,34 +960,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for check_is_starred](https://docs.github.com/rest/gists/gists#check-if-a-gist-is-starred)
     ///
     /// ---
-    pub async fn check_is_starred_async(&self, gist_id: &str) -> Result<(), GistsCheckIsStarredError> {
+    pub async fn check_is_starred_async(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/star", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsCheckIsStarredError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsCheckIsStarredError::Status304),
-                403 => Err(GistsCheckIsStarredError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsCheckIsStarredError::Generic { code }),
+                404 => Err(GistsCheckIsStarredError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(GistsCheckIsStarredError::Status304.into()),
+                403 => Err(GistsCheckIsStarredError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsCheckIsStarredError::Generic { code }.into()),
             }
         }
     }
@@ -865,7 +1000,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_is_starred(&self, gist_id: &str) -> Result<(), GistsCheckIsStarredError> {
+    pub fn check_is_starred(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/star", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -877,22 +1012,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsCheckIsStarredError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsCheckIsStarredError::Status304),
-                403 => Err(GistsCheckIsStarredError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsCheckIsStarredError::Generic { code }),
+                404 => Err(GistsCheckIsStarredError::Status404(github_response.to_json()?).into()),
+                304 => Err(GistsCheckIsStarredError::Status304.into()),
+                403 => Err(GistsCheckIsStarredError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsCheckIsStarredError::Generic { code }.into()),
             }
         }
     }
@@ -909,35 +1044,35 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for create](https://docs.github.com/rest/gists/gists#create-a-gist)
     ///
     /// ---
-    pub async fn create_async(&self, body: PostGistsCreate) -> Result<GistSimple, GistsCreateError> {
+    pub async fn create_async(&self, body: PostGistsCreate) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGistsCreate::from_json(body)?),
+            body: Some(C::from_json::<PostGistsCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsCreateError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsCreateError::Status304),
-                404 => Err(GistsCreateError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(GistsCreateError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsCreateError::Generic { code }),
+                422 => Err(GistsCreateError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(GistsCreateError::Status304.into()),
+                404 => Err(GistsCreateError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GistsCreateError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsCreateError::Generic { code }.into()),
             }
         }
     }
@@ -955,35 +1090,35 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create(&self, body: PostGistsCreate) -> Result<GistSimple, GistsCreateError> {
+    pub fn create(&self, body: PostGistsCreate) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGistsCreate::from_json(body)?),
+            body: Some(C::from_json::<PostGistsCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsCreateError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsCreateError::Status304),
-                404 => Err(GistsCreateError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(GistsCreateError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsCreateError::Generic { code }),
+                422 => Err(GistsCreateError::Status422(github_response.to_json()?).into()),
+                304 => Err(GistsCreateError::Status304.into()),
+                404 => Err(GistsCreateError::Status404(github_response.to_json()?).into()),
+                403 => Err(GistsCreateError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsCreateError::Generic { code }.into()),
             }
         }
     }
@@ -1002,34 +1137,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for create_comment](https://docs.github.com/rest/gists/comments#create-a-gist-comment)
     ///
     /// ---
-    pub async fn create_comment_async(&self, gist_id: &str, body: PostGistsCreateComment) -> Result<GistComment, GistsCreateCommentError> {
+    pub async fn create_comment_async(&self, gist_id: &str, body: PostGistsCreateComment) -> Result<GistComment, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGistsCreateComment::from_json(body)?),
+            body: Some(C::from_json::<PostGistsCreateComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsCreateCommentError::Status304),
-                404 => Err(GistsCreateCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(GistsCreateCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsCreateCommentError::Generic { code }),
+                304 => Err(GistsCreateCommentError::Status304.into()),
+                404 => Err(GistsCreateCommentError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GistsCreateCommentError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsCreateCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1049,34 +1184,34 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_comment(&self, gist_id: &str, body: PostGistsCreateComment) -> Result<GistComment, GistsCreateCommentError> {
+    pub fn create_comment(&self, gist_id: &str, body: PostGistsCreateComment) -> Result<GistComment, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostGistsCreateComment::from_json(body)?),
+            body: Some(C::from_json::<PostGistsCreateComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsCreateCommentError::Status304),
-                404 => Err(GistsCreateCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(GistsCreateCommentError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsCreateCommentError::Generic { code }),
+                304 => Err(GistsCreateCommentError::Status304.into()),
+                404 => Err(GistsCreateCommentError::Status404(github_response.to_json()?).into()),
+                403 => Err(GistsCreateCommentError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsCreateCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1088,34 +1223,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for delete](https://docs.github.com/rest/gists/gists#delete-a-gist)
     ///
     /// ---
-    pub async fn delete_async(&self, gist_id: &str) -> Result<(), GistsDeleteError> {
+    pub async fn delete_async(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsDeleteError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsDeleteError::Status304),
-                403 => Err(GistsDeleteError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsDeleteError::Generic { code }),
+                404 => Err(GistsDeleteError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(GistsDeleteError::Status304.into()),
+                403 => Err(GistsDeleteError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -1128,7 +1263,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete(&self, gist_id: &str) -> Result<(), GistsDeleteError> {
+    pub fn delete(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1140,22 +1275,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsDeleteError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsDeleteError::Status304),
-                403 => Err(GistsDeleteError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsDeleteError::Generic { code }),
+                404 => Err(GistsDeleteError::Status404(github_response.to_json()?).into()),
+                304 => Err(GistsDeleteError::Status304.into()),
+                403 => Err(GistsDeleteError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -1167,34 +1302,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for delete_comment](https://docs.github.com/rest/gists/comments#delete-a-gist-comment)
     ///
     /// ---
-    pub async fn delete_comment_async(&self, gist_id: &str, comment_id: i64) -> Result<(), GistsDeleteCommentError> {
+    pub async fn delete_comment_async(&self, gist_id: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsDeleteCommentError::Status304),
-                404 => Err(GistsDeleteCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(GistsDeleteCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsDeleteCommentError::Generic { code }),
+                304 => Err(GistsDeleteCommentError::Status304.into()),
+                404 => Err(GistsDeleteCommentError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GistsDeleteCommentError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsDeleteCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1207,7 +1342,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_comment(&self, gist_id: &str, comment_id: i64) -> Result<(), GistsDeleteCommentError> {
+    pub fn delete_comment(&self, gist_id: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
@@ -1219,22 +1354,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsDeleteCommentError::Status304),
-                404 => Err(GistsDeleteCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(GistsDeleteCommentError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsDeleteCommentError::Generic { code }),
+                304 => Err(GistsDeleteCommentError::Status304.into()),
+                404 => Err(GistsDeleteCommentError::Status404(github_response.to_json()?).into()),
+                403 => Err(GistsDeleteCommentError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsDeleteCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1246,35 +1381,35 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for fork](https://docs.github.com/rest/gists/gists#fork-a-gist)
     ///
     /// ---
-    pub async fn fork_async(&self, gist_id: &str) -> Result<BaseGist, GistsForkError> {
+    pub async fn fork_async(&self, gist_id: &str) -> Result<BaseGist, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/forks", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsForkError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(GistsForkError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsForkError::Status304),
-                403 => Err(GistsForkError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsForkError::Generic { code }),
+                404 => Err(GistsForkError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(GistsForkError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(GistsForkError::Status304.into()),
+                403 => Err(GistsForkError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsForkError::Generic { code }.into()),
             }
         }
     }
@@ -1287,7 +1422,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn fork(&self, gist_id: &str) -> Result<BaseGist, GistsForkError> {
+    pub fn fork(&self, gist_id: &str) -> Result<BaseGist, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/forks", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1299,23 +1434,23 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsForkError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(GistsForkError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsForkError::Status304),
-                403 => Err(GistsForkError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsForkError::Generic { code }),
+                404 => Err(GistsForkError::Status404(github_response.to_json()?).into()),
+                422 => Err(GistsForkError::Status422(github_response.to_json()?).into()),
+                304 => Err(GistsForkError::Status304.into()),
+                403 => Err(GistsForkError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsForkError::Generic { code }.into()),
             }
         }
     }
@@ -1334,34 +1469,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for get](https://docs.github.com/rest/gists/gists#get-a-gist)
     ///
     /// ---
-    pub async fn get_async(&self, gist_id: &str) -> Result<GistSimple, GistsGetError> {
+    pub async fn get_async(&self, gist_id: &str) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists/{}", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(GistsGetError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(GistsGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsGetError::Status304),
-                code => Err(GistsGetError::Generic { code }),
+                403 => Err(GistsGetError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(GistsGetError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(GistsGetError::Status304.into()),
+                code => Err(GistsGetError::Generic { code }.into()),
             }
         }
     }
@@ -1381,7 +1516,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, gist_id: &str) -> Result<GistSimple, GistsGetError> {
+    pub fn get(&self, gist_id: &str) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists/{}", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1393,22 +1528,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(GistsGetError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(GistsGetError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsGetError::Status304),
-                code => Err(GistsGetError::Generic { code }),
+                403 => Err(GistsGetError::Status403(github_response.to_json()?).into()),
+                404 => Err(GistsGetError::Status404(github_response.to_json()?).into()),
+                304 => Err(GistsGetError::Status304.into()),
+                code => Err(GistsGetError::Generic { code }.into()),
             }
         }
     }
@@ -1427,34 +1562,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for get_comment](https://docs.github.com/rest/gists/comments#get-a-gist-comment)
     ///
     /// ---
-    pub async fn get_comment_async(&self, gist_id: &str, comment_id: i64) -> Result<GistComment, GistsGetCommentError> {
+    pub async fn get_comment_async(&self, gist_id: &str, comment_id: i64) -> Result<GistComment, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsGetCommentError::Status304),
-                404 => Err(GistsGetCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(GistsGetCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsGetCommentError::Generic { code }),
+                304 => Err(GistsGetCommentError::Status304.into()),
+                404 => Err(GistsGetCommentError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GistsGetCommentError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsGetCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1474,7 +1609,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_comment(&self, gist_id: &str, comment_id: i64) -> Result<GistComment, GistsGetCommentError> {
+    pub fn get_comment(&self, gist_id: &str, comment_id: i64) -> Result<GistComment, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
@@ -1486,22 +1621,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsGetCommentError::Status304),
-                404 => Err(GistsGetCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(GistsGetCommentError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsGetCommentError::Generic { code }),
+                304 => Err(GistsGetCommentError::Status304.into()),
+                404 => Err(GistsGetCommentError::Status404(github_response.to_json()?).into()),
+                403 => Err(GistsGetCommentError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsGetCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1520,34 +1655,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for get_revision](https://docs.github.com/rest/gists/gists#get-a-gist-revision)
     ///
     /// ---
-    pub async fn get_revision_async(&self, gist_id: &str, sha: &str) -> Result<GistSimple, GistsGetRevisionError> {
+    pub async fn get_revision_async(&self, gist_id: &str, sha: &str) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/{}", super::GITHUB_BASE_API_URL, gist_id, sha);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsGetRevisionError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(GistsGetRevisionError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(GistsGetRevisionError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsGetRevisionError::Generic { code }),
+                422 => Err(GistsGetRevisionError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(GistsGetRevisionError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GistsGetRevisionError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsGetRevisionError::Generic { code }.into()),
             }
         }
     }
@@ -1567,7 +1702,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_revision(&self, gist_id: &str, sha: &str) -> Result<GistSimple, GistsGetRevisionError> {
+    pub fn get_revision(&self, gist_id: &str, sha: &str) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/{}", super::GITHUB_BASE_API_URL, gist_id, sha);
 
@@ -1579,22 +1714,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsGetRevisionError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(GistsGetRevisionError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(GistsGetRevisionError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsGetRevisionError::Generic { code }),
+                422 => Err(GistsGetRevisionError::Status422(github_response.to_json()?).into()),
+                404 => Err(GistsGetRevisionError::Status404(github_response.to_json()?).into()),
+                403 => Err(GistsGetRevisionError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsGetRevisionError::Generic { code }.into()),
             }
         }
     }
@@ -1608,7 +1743,7 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for list](https://docs.github.com/rest/gists/gists#list-gists-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_async(&self, query_params: Option<impl Into<GistsListParams>>) -> Result<Vec<BaseGist>, GistsListError> {
+    pub async fn list_async(&self, query_params: Option<impl Into<GistsListParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/gists", super::GITHUB_BASE_API_URL);
 
@@ -1619,26 +1754,26 @@ impl<'api> Gists<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsListError::Status304),
-                403 => Err(GistsListError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsListError::Generic { code }),
+                304 => Err(GistsListError::Status304.into()),
+                403 => Err(GistsListError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsListError::Generic { code }.into()),
             }
         }
     }
@@ -1653,7 +1788,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list(&self, query_params: Option<impl Into<GistsListParams>>) -> Result<Vec<BaseGist>, GistsListError> {
+    pub fn list(&self, query_params: Option<impl Into<GistsListParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/gists", super::GITHUB_BASE_API_URL);
 
@@ -1670,21 +1805,21 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsListError::Status304),
-                403 => Err(GistsListError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsListError::Generic { code }),
+                304 => Err(GistsListError::Status304.into()),
+                403 => Err(GistsListError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsListError::Generic { code }.into()),
             }
         }
     }
@@ -1703,7 +1838,7 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for list_comments](https://docs.github.com/rest/gists/comments#list-gist-comments)
     ///
     /// ---
-    pub async fn list_comments_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommentsParams>>) -> Result<Vec<GistComment>, GistsListCommentsError> {
+    pub async fn list_comments_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommentsParams>>) -> Result<Vec<GistComment>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/{}/comments", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1714,27 +1849,27 @@ impl<'api> Gists<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsListCommentsError::Status304),
-                404 => Err(GistsListCommentsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(GistsListCommentsError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsListCommentsError::Generic { code }),
+                304 => Err(GistsListCommentsError::Status304.into()),
+                404 => Err(GistsListCommentsError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GistsListCommentsError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsListCommentsError::Generic { code }.into()),
             }
         }
     }
@@ -1754,7 +1889,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_comments(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommentsParams>>) -> Result<Vec<GistComment>, GistsListCommentsError> {
+    pub fn list_comments(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommentsParams>>) -> Result<Vec<GistComment>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/{}/comments", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1771,22 +1906,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsListCommentsError::Status304),
-                404 => Err(GistsListCommentsError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(GistsListCommentsError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsListCommentsError::Generic { code }),
+                304 => Err(GistsListCommentsError::Status304.into()),
+                404 => Err(GistsListCommentsError::Status404(github_response.to_json()?).into()),
+                403 => Err(GistsListCommentsError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsListCommentsError::Generic { code }.into()),
             }
         }
     }
@@ -1798,7 +1933,7 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/gists/gists#list-gist-commits)
     ///
     /// ---
-    pub async fn list_commits_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, GistsListCommitsError> {
+    pub async fn list_commits_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/{}/commits", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1809,27 +1944,27 @@ impl<'api> Gists<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListCommitsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsListCommitsError::Status304),
-                403 => Err(GistsListCommitsError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsListCommitsError::Generic { code }),
+                404 => Err(GistsListCommitsError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(GistsListCommitsError::Status304.into()),
+                403 => Err(GistsListCommitsError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsListCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -1842,7 +1977,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_commits(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, GistsListCommitsError> {
+    pub fn list_commits(&self, gist_id: &str, query_params: Option<impl Into<GistsListCommitsParams>>) -> Result<Vec<GistCommit>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/{}/commits", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1859,22 +1994,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListCommitsError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsListCommitsError::Status304),
-                403 => Err(GistsListCommitsError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsListCommitsError::Generic { code }),
+                404 => Err(GistsListCommitsError::Status404(github_response.to_json()?).into()),
+                304 => Err(GistsListCommitsError::Status304.into()),
+                403 => Err(GistsListCommitsError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsListCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -1888,7 +2023,7 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/gists/gists#list-gists-for-a-user)
     ///
     /// ---
-    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
+    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/gists", super::GITHUB_BASE_API_URL, username);
 
@@ -1899,25 +2034,25 @@ impl<'api> Gists<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListForUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsListForUserError::Generic { code }),
+                422 => Err(GistsListForUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(GistsListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1932,7 +2067,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams>>) -> Result<Vec<BaseGist>, GistsListForUserError> {
+    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<GistsListForUserParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/gists", super::GITHUB_BASE_API_URL, username);
 
@@ -1949,20 +2084,20 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListForUserError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsListForUserError::Generic { code }),
+                422 => Err(GistsListForUserError::Status422(github_response.to_json()?).into()),
+                code => Err(GistsListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -1974,7 +2109,7 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for list_forks](https://docs.github.com/rest/gists/gists#list-gist-forks)
     ///
     /// ---
-    pub async fn list_forks_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, GistsListForksError> {
+    pub async fn list_forks_async(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/{}/forks", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -1985,27 +2120,27 @@ impl<'api> Gists<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListForksError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsListForksError::Status304),
-                403 => Err(GistsListForksError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsListForksError::Generic { code }),
+                404 => Err(GistsListForksError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(GistsListForksError::Status304.into()),
+                403 => Err(GistsListForksError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsListForksError::Generic { code }.into()),
             }
         }
     }
@@ -2018,7 +2153,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_forks(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, GistsListForksError> {
+    pub fn list_forks(&self, gist_id: &str, query_params: Option<impl Into<GistsListForksParams>>) -> Result<Vec<GistSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/{}/forks", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -2035,22 +2170,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsListForksError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsListForksError::Status304),
-                403 => Err(GistsListForksError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsListForksError::Generic { code }),
+                404 => Err(GistsListForksError::Status404(github_response.to_json()?).into()),
+                304 => Err(GistsListForksError::Status304.into()),
+                403 => Err(GistsListForksError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsListForksError::Generic { code }.into()),
             }
         }
     }
@@ -2066,7 +2201,7 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for list_public](https://docs.github.com/rest/gists/gists#list-public-gists)
     ///
     /// ---
-    pub async fn list_public_async(&self, query_params: Option<impl Into<GistsListPublicParams>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
+    pub async fn list_public_async(&self, query_params: Option<impl Into<GistsListPublicParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/public", super::GITHUB_BASE_API_URL);
 
@@ -2077,27 +2212,27 @@ impl<'api> Gists<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListPublicError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsListPublicError::Status304),
-                403 => Err(GistsListPublicError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsListPublicError::Generic { code }),
+                422 => Err(GistsListPublicError::Status422(github_response.to_json_async().await?).into()),
+                304 => Err(GistsListPublicError::Status304.into()),
+                403 => Err(GistsListPublicError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsListPublicError::Generic { code }.into()),
             }
         }
     }
@@ -2114,7 +2249,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public(&self, query_params: Option<impl Into<GistsListPublicParams>>) -> Result<Vec<BaseGist>, GistsListPublicError> {
+    pub fn list_public(&self, query_params: Option<impl Into<GistsListPublicParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/public", super::GITHUB_BASE_API_URL);
 
@@ -2131,22 +2266,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsListPublicError::Status422(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsListPublicError::Status304),
-                403 => Err(GistsListPublicError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsListPublicError::Generic { code }),
+                422 => Err(GistsListPublicError::Status422(github_response.to_json()?).into()),
+                304 => Err(GistsListPublicError::Status304.into()),
+                403 => Err(GistsListPublicError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsListPublicError::Generic { code }.into()),
             }
         }
     }
@@ -2160,7 +2295,7 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for list_starred](https://docs.github.com/rest/gists/gists#list-starred-gists)
     ///
     /// ---
-    pub async fn list_starred_async(&self, query_params: Option<impl Into<GistsListStarredParams>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
+    pub async fn list_starred_async(&self, query_params: Option<impl Into<GistsListStarredParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/starred", super::GITHUB_BASE_API_URL);
 
@@ -2171,27 +2306,27 @@ impl<'api> Gists<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                401 => Err(GistsListStarredError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsListStarredError::Status304),
-                403 => Err(GistsListStarredError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsListStarredError::Generic { code }),
+                401 => Err(GistsListStarredError::Status401(github_response.to_json_async().await?).into()),
+                304 => Err(GistsListStarredError::Status304.into()),
+                403 => Err(GistsListStarredError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsListStarredError::Generic { code }.into()),
             }
         }
     }
@@ -2206,7 +2341,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_starred(&self, query_params: Option<impl Into<GistsListStarredParams>>) -> Result<Vec<BaseGist>, GistsListStarredError> {
+    pub fn list_starred(&self, query_params: Option<impl Into<GistsListStarredParams>>) -> Result<Vec<BaseGist>, AdapterError> {
 
         let mut request_uri = format!("{}/gists/starred", super::GITHUB_BASE_API_URL);
 
@@ -2223,22 +2358,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                401 => Err(GistsListStarredError::Status401(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsListStarredError::Status304),
-                403 => Err(GistsListStarredError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsListStarredError::Generic { code }),
+                401 => Err(GistsListStarredError::Status401(github_response.to_json()?).into()),
+                304 => Err(GistsListStarredError::Status304.into()),
+                403 => Err(GistsListStarredError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsListStarredError::Generic { code }.into()),
             }
         }
     }
@@ -2252,34 +2387,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for star](https://docs.github.com/rest/gists/gists#star-a-gist)
     ///
     /// ---
-    pub async fn star_async(&self, gist_id: &str) -> Result<(), GistsStarError> {
+    pub async fn star_async(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/star", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsStarError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                304 => Err(GistsStarError::Status304),
-                403 => Err(GistsStarError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsStarError::Generic { code }),
+                404 => Err(GistsStarError::Status404(github_response.to_json_async().await?).into()),
+                304 => Err(GistsStarError::Status304.into()),
+                403 => Err(GistsStarError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsStarError::Generic { code }.into()),
             }
         }
     }
@@ -2294,7 +2429,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn star(&self, gist_id: &str) -> Result<(), GistsStarError> {
+    pub fn star(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/star", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -2306,22 +2441,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsStarError::Status404(crate::adapters::to_json(github_response)?)),
-                304 => Err(GistsStarError::Status304),
-                403 => Err(GistsStarError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsStarError::Generic { code }),
+                404 => Err(GistsStarError::Status404(github_response.to_json()?).into()),
+                304 => Err(GistsStarError::Status304.into()),
+                403 => Err(GistsStarError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsStarError::Generic { code }.into()),
             }
         }
     }
@@ -2333,34 +2468,34 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for unstar](https://docs.github.com/rest/gists/gists#unstar-a-gist)
     ///
     /// ---
-    pub async fn unstar_async(&self, gist_id: &str) -> Result<(), GistsUnstarError> {
+    pub async fn unstar_async(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/star", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsUnstarError::Status304),
-                404 => Err(GistsUnstarError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(GistsUnstarError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsUnstarError::Generic { code }),
+                304 => Err(GistsUnstarError::Status304.into()),
+                404 => Err(GistsUnstarError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(GistsUnstarError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(GistsUnstarError::Generic { code }.into()),
             }
         }
     }
@@ -2373,7 +2508,7 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unstar(&self, gist_id: &str) -> Result<(), GistsUnstarError> {
+    pub fn unstar(&self, gist_id: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/gists/{}/star", super::GITHUB_BASE_API_URL, gist_id);
 
@@ -2385,22 +2520,22 @@ impl<'api> Gists<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(GistsUnstarError::Status304),
-                404 => Err(GistsUnstarError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(GistsUnstarError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsUnstarError::Generic { code }),
+                304 => Err(GistsUnstarError::Status304.into()),
+                404 => Err(GistsUnstarError::Status404(github_response.to_json()?).into()),
+                403 => Err(GistsUnstarError::Status403(github_response.to_json()?).into()),
+                code => Err(GistsUnstarError::Generic { code }.into()),
             }
         }
     }
@@ -2423,33 +2558,33 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for update](https://docs.github.com/rest/gists/gists#update-a-gist)
     ///
     /// ---
-    pub async fn update_async(&self, gist_id: &str, body: PatchGistsUpdate) -> Result<GistSimple, GistsUpdateError> {
+    pub async fn update_async(&self, gist_id: &str, body: PatchGistsUpdate) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists/{}", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchGistsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchGistsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(GistsUpdateError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsUpdateError::Generic { code }),
+                422 => Err(GistsUpdateError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(GistsUpdateError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(GistsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -2473,33 +2608,33 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update(&self, gist_id: &str, body: PatchGistsUpdate) -> Result<GistSimple, GistsUpdateError> {
+    pub fn update(&self, gist_id: &str, body: PatchGistsUpdate) -> Result<GistSimple, AdapterError> {
 
         let request_uri = format!("{}/gists/{}", super::GITHUB_BASE_API_URL, gist_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchGistsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchGistsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(GistsUpdateError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(GistsUpdateError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsUpdateError::Generic { code }),
+                422 => Err(GistsUpdateError::Status422(github_response.to_json()?).into()),
+                404 => Err(GistsUpdateError::Status404(github_response.to_json()?).into()),
+                code => Err(GistsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -2518,32 +2653,32 @@ impl<'api> Gists<'api> {
     /// [GitHub API docs for update_comment](https://docs.github.com/rest/gists/comments#update-a-gist-comment)
     ///
     /// ---
-    pub async fn update_comment_async(&self, gist_id: &str, comment_id: i64, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {
+    pub async fn update_comment_async(&self, gist_id: &str, comment_id: i64, body: PatchGistsUpdateComment) -> Result<GistComment, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchGistsUpdateComment::from_json(body)?),
+            body: Some(C::from_json::<PatchGistsUpdateComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsUpdateCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(GistsUpdateCommentError::Generic { code }),
+                404 => Err(GistsUpdateCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(GistsUpdateCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2563,32 +2698,32 @@ impl<'api> Gists<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_comment(&self, gist_id: &str, comment_id: i64, body: PatchGistsUpdateComment) -> Result<GistComment, GistsUpdateCommentError> {
+    pub fn update_comment(&self, gist_id: &str, comment_id: i64, body: PatchGistsUpdateComment) -> Result<GistComment, AdapterError> {
 
         let request_uri = format!("{}/gists/{}/comments/{}", super::GITHUB_BASE_API_URL, gist_id, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchGistsUpdateComment::from_json(body)?),
+            body: Some(C::from_json::<PatchGistsUpdateComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(GistsUpdateCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(GistsUpdateCommentError::Generic { code }),
+                404 => Err(GistsUpdateCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(GistsUpdateCommentError::Generic { code }.into()),
             }
         }
     }

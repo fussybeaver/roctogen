@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,27 +22,17 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct SecurityAdvisories<'api> {
-    auth: &'api Auth
+pub struct SecurityAdvisories<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> SecurityAdvisories {
-    SecurityAdvisories { auth }
+pub fn new<C: Client>(client: &C) -> SecurityAdvisories<C> where AdapterError: From<<C as Client>::Err> {
+    SecurityAdvisories { client }
 }
 
 /// Errors for the [Create a temporary private fork](SecurityAdvisories::create_fork_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesCreateForkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -54,21 +43,29 @@ pub enum SecurityAdvisoriesCreateForkError {
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SecurityAdvisoriesCreateForkError> for AdapterError {
+    fn from(err: SecurityAdvisoriesCreateForkError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesCreateForkError::Status400(_) => (String::from("Bad Request"), 400),
+            SecurityAdvisoriesCreateForkError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SecurityAdvisoriesCreateForkError::Status403(_) => (String::from("Forbidden"), 403),
+            SecurityAdvisoriesCreateForkError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesCreateForkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Privately report a security vulnerability](SecurityAdvisories::create_private_vulnerability_report_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesCreatePrivateVulnerabilityReportError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -77,21 +74,28 @@ pub enum SecurityAdvisoriesCreatePrivateVulnerabilityReportError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SecurityAdvisoriesCreatePrivateVulnerabilityReportError> for AdapterError {
+    fn from(err: SecurityAdvisoriesCreatePrivateVulnerabilityReportError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(_) => (String::from("Forbidden"), 403),
+            SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a repository security advisory](SecurityAdvisories::create_repository_advisory_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesCreateRepositoryAdvisoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -102,19 +106,26 @@ pub enum SecurityAdvisoriesCreateRepositoryAdvisoryError {
     Generic { code: u16 },
 }
 
+impl From<SecurityAdvisoriesCreateRepositoryAdvisoryError> for AdapterError {
+    fn from(err: SecurityAdvisoriesCreateRepositoryAdvisoryError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(_) => (String::from("Forbidden"), 403),
+            SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SecurityAdvisoriesCreateRepositoryAdvisoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Request a CVE for a repository security advisory](SecurityAdvisories::create_repository_advisory_cve_request_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Forbidden")]
@@ -127,38 +138,51 @@ pub enum SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError {
     Generic { code: u16 },
 }
 
+impl From<SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError> for AdapterError {
+    fn from(err: SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(_) => (String::from("Bad Request"), 400),
+            SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(_) => (String::from("Forbidden"), 403),
+            SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a global security advisory](SecurityAdvisories::get_global_advisory_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesGetGlobalAdvisoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<SecurityAdvisoriesGetGlobalAdvisoryError> for AdapterError {
+    fn from(err: SecurityAdvisoriesGetGlobalAdvisoryError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesGetGlobalAdvisoryError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesGetGlobalAdvisoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a repository security advisory](SecurityAdvisories::get_repository_advisory_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesGetRepositoryAdvisoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -167,19 +191,25 @@ pub enum SecurityAdvisoriesGetRepositoryAdvisoryError {
     Generic { code: u16 },
 }
 
+impl From<SecurityAdvisoriesGetRepositoryAdvisoryError> for AdapterError {
+    fn from(err: SecurityAdvisoriesGetRepositoryAdvisoryError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(_) => (String::from("Forbidden"), 403),
+            SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesGetRepositoryAdvisoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List global security advisories](SecurityAdvisories::list_global_advisories_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesListGlobalAdvisoriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Too many requests")]
     Status429(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -188,40 +218,52 @@ pub enum SecurityAdvisoriesListGlobalAdvisoriesError {
     Generic { code: u16 },
 }
 
+impl From<SecurityAdvisoriesListGlobalAdvisoriesError> for AdapterError {
+    fn from(err: SecurityAdvisoriesListGlobalAdvisoriesError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesListGlobalAdvisoriesError::Status429(_) => (String::from("Too many requests"), 429),
+            SecurityAdvisoriesListGlobalAdvisoriesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SecurityAdvisoriesListGlobalAdvisoriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List repository security advisories for an organization](SecurityAdvisories::list_org_repository_advisories_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesListOrgRepositoryAdvisoriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SecurityAdvisoriesListOrgRepositoryAdvisoriesError> for AdapterError {
+    fn from(err: SecurityAdvisoriesListOrgRepositoryAdvisoriesError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(_) => (String::from("Bad Request"), 400),
+            SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repository security advisories](SecurityAdvisories::list_repository_advisories_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesListRepositoryAdvisoriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Resource not found")]
@@ -230,19 +272,25 @@ pub enum SecurityAdvisoriesListRepositoryAdvisoriesError {
     Generic { code: u16 },
 }
 
+impl From<SecurityAdvisoriesListRepositoryAdvisoriesError> for AdapterError {
+    fn from(err: SecurityAdvisoriesListRepositoryAdvisoriesError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(_) => (String::from("Bad Request"), 400),
+            SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesListRepositoryAdvisoriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a repository security advisory](SecurityAdvisories::update_repository_advisory_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecurityAdvisoriesUpdateRepositoryAdvisoryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -251,6 +299,23 @@ pub enum SecurityAdvisoriesUpdateRepositoryAdvisoryError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<SecurityAdvisoriesUpdateRepositoryAdvisoryError> for AdapterError {
+    fn from(err: SecurityAdvisoriesUpdateRepositoryAdvisoryError) -> Self {
+        let (description, status_code) = match err {
+            SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(_) => (String::from("Forbidden"), 403),
+            SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(_) => (String::from("Resource not found"), 404),
+            SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            SecurityAdvisoriesUpdateRepositoryAdvisoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -924,7 +989,7 @@ impl<'req> SecurityAdvisoriesListRepositoryAdvisoriesParams<'req> {
 }
 
 
-impl<'api> SecurityAdvisories<'api> {
+impl<'api, C: Client> SecurityAdvisories<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Create a temporary private fork
@@ -937,35 +1002,35 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for create_fork](https://docs.github.com/rest/security-advisories/repository-advisories#create-a-temporary-private-fork)
     ///
     /// ---
-    pub async fn create_fork_async(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<FullRepository, SecurityAdvisoriesCreateForkError> {
+    pub async fn create_fork_async(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}/forks", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateForkError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreateForkError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(SecurityAdvisoriesCreateForkError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreateForkError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesCreateForkError::Generic { code }),
+                400 => Err(SecurityAdvisoriesCreateForkError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(SecurityAdvisoriesCreateForkError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(SecurityAdvisoriesCreateForkError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesCreateForkError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesCreateForkError::Generic { code }.into()),
             }
         }
     }
@@ -983,7 +1048,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_fork(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<FullRepository, SecurityAdvisoriesCreateForkError> {
+    pub fn create_fork(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<FullRepository, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}/forks", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
@@ -995,23 +1060,23 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateForkError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreateForkError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(SecurityAdvisoriesCreateForkError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreateForkError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesCreateForkError::Generic { code }),
+                400 => Err(SecurityAdvisoriesCreateForkError::Status400(github_response.to_json()?).into()),
+                422 => Err(SecurityAdvisoriesCreateForkError::Status422(github_response.to_json()?).into()),
+                403 => Err(SecurityAdvisoriesCreateForkError::Status403(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesCreateForkError::Status404(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesCreateForkError::Generic { code }.into()),
             }
         }
     }
@@ -1026,34 +1091,34 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for create_private_vulnerability_report](https://docs.github.com/rest/security-advisories/repository-advisories#privately-report-a-security-vulnerability)
     ///
     /// ---
-    pub async fn create_private_vulnerability_report_async(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreatePrivateVulnerabilityReport) -> Result<RepositoryAdvisory, SecurityAdvisoriesCreatePrivateVulnerabilityReportError> {
+    pub async fn create_private_vulnerability_report_async(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreatePrivateVulnerabilityReport) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/reports", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostSecurityAdvisoriesCreatePrivateVulnerabilityReport::from_json(body)?),
+            body: Some(C::from_json::<PostSecurityAdvisoriesCreatePrivateVulnerabilityReport>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Generic { code }),
+                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Generic { code }.into()),
             }
         }
     }
@@ -1069,34 +1134,34 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_private_vulnerability_report(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreatePrivateVulnerabilityReport) -> Result<RepositoryAdvisory, SecurityAdvisoriesCreatePrivateVulnerabilityReportError> {
+    pub fn create_private_vulnerability_report(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreatePrivateVulnerabilityReport) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/reports", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostSecurityAdvisoriesCreatePrivateVulnerabilityReport::from_json(body)?),
+            body: Some(C::from_json::<PostSecurityAdvisoriesCreatePrivateVulnerabilityReport>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Generic { code }),
+                403 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status403(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status404(github_response.to_json()?).into()),
+                422 => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Status422(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesCreatePrivateVulnerabilityReportError::Generic { code }.into()),
             }
         }
     }
@@ -1114,34 +1179,34 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for create_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#create-a-repository-security-advisory)
     ///
     /// ---
-    pub async fn create_repository_advisory_async(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreateRepositoryAdvisory) -> Result<RepositoryAdvisory, SecurityAdvisoriesCreateRepositoryAdvisoryError> {
+    pub async fn create_repository_advisory_async(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreateRepositoryAdvisory) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostSecurityAdvisoriesCreateRepositoryAdvisory::from_json(body)?),
+            body: Some(C::from_json::<PostSecurityAdvisoriesCreateRepositoryAdvisory>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Generic { code }),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Generic { code }.into()),
             }
         }
     }
@@ -1160,34 +1225,34 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_repository_advisory(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreateRepositoryAdvisory) -> Result<RepositoryAdvisory, SecurityAdvisoriesCreateRepositoryAdvisoryError> {
+    pub fn create_repository_advisory(&self, owner: &str, repo: &str, body: PostSecurityAdvisoriesCreateRepositoryAdvisory) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostSecurityAdvisoriesCreateRepositoryAdvisory::from_json(body)?),
+            body: Some(C::from_json::<PostSecurityAdvisoriesCreateRepositoryAdvisory>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Generic { code }),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status403(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status404(github_response.to_json()?).into()),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Status422(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryError::Generic { code }.into()),
             }
         }
     }
@@ -1207,35 +1272,35 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for create_repository_advisory_cve_request](https://docs.github.com/rest/security-advisories/repository-advisories#request-a-cve-for-a-repository-security-advisory)
     ///
     /// ---
-    pub async fn create_repository_advisory_cve_request_async(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<HashMap<String, Value>, SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError> {
+    pub async fn create_repository_advisory_cve_request_async(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}/cve", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Generic { code }),
+                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Generic { code }.into()),
             }
         }
     }
@@ -1256,7 +1321,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_repository_advisory_cve_request(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<HashMap<String, Value>, SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError> {
+    pub fn create_repository_advisory_cve_request(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}/cve", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
@@ -1268,23 +1333,23 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(crate::adapters::to_json(github_response)?)),
-                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Generic { code }),
+                400 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status400(github_response.to_json()?).into()),
+                403 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status403(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status404(github_response.to_json()?).into()),
+                422 => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Status422(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesCreateRepositoryAdvisoryCveRequestError::Generic { code }.into()),
             }
         }
     }
@@ -1298,32 +1363,32 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for get_global_advisory](https://docs.github.com/rest/security-advisories/global-advisories#get-a-global-security-advisory)
     ///
     /// ---
-    pub async fn get_global_advisory_async(&self, ghsa_id: &str) -> Result<GlobalAdvisory, SecurityAdvisoriesGetGlobalAdvisoryError> {
+    pub async fn get_global_advisory_async(&self, ghsa_id: &str) -> Result<GlobalAdvisory, AdapterError> {
 
         let request_uri = format!("{}/advisories/{}", super::GITHUB_BASE_API_URL, ghsa_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Generic { code }),
+                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Generic { code }.into()),
             }
         }
     }
@@ -1338,7 +1403,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_global_advisory(&self, ghsa_id: &str) -> Result<GlobalAdvisory, SecurityAdvisoriesGetGlobalAdvisoryError> {
+    pub fn get_global_advisory(&self, ghsa_id: &str) -> Result<GlobalAdvisory, AdapterError> {
 
         let request_uri = format!("{}/advisories/{}", super::GITHUB_BASE_API_URL, ghsa_id);
 
@@ -1350,20 +1415,20 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Generic { code }),
+                404 => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Status404(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesGetGlobalAdvisoryError::Generic { code }.into()),
             }
         }
     }
@@ -1384,33 +1449,33 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for get_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#get-a-repository-security-advisory)
     ///
     /// ---
-    pub async fn get_repository_advisory_async(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<RepositoryAdvisory, SecurityAdvisoriesGetRepositoryAdvisoryError> {
+    pub async fn get_repository_advisory_async(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Generic { code }),
+                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Generic { code }.into()),
             }
         }
     }
@@ -1432,7 +1497,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_repository_advisory(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<RepositoryAdvisory, SecurityAdvisoriesGetRepositoryAdvisoryError> {
+    pub fn get_repository_advisory(&self, owner: &str, repo: &str, ghsa_id: &str) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
@@ -1444,21 +1509,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Generic { code }),
+                403 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status403(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Status404(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesGetRepositoryAdvisoryError::Generic { code }.into()),
             }
         }
     }
@@ -1474,7 +1539,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for list_global_advisories](https://docs.github.com/rest/security-advisories/global-advisories#list-global-security-advisories)
     ///
     /// ---
-    pub async fn list_global_advisories_async(&self, query_params: Option<impl Into<SecurityAdvisoriesListGlobalAdvisoriesParams<'api>>>) -> Result<Vec<GlobalAdvisory>, SecurityAdvisoriesListGlobalAdvisoriesError> {
+    pub async fn list_global_advisories_async(&self, query_params: Option<impl Into<SecurityAdvisoriesListGlobalAdvisoriesParams<'api>>>) -> Result<Vec<GlobalAdvisory>, AdapterError> {
 
         let mut request_uri = format!("{}/advisories", super::GITHUB_BASE_API_URL);
 
@@ -1485,26 +1550,26 @@ impl<'api> SecurityAdvisories<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Generic { code }),
+                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(github_response.to_json_async().await?).into()),
+                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Generic { code }.into()),
             }
         }
     }
@@ -1521,7 +1586,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_global_advisories(&self, query_params: Option<impl Into<SecurityAdvisoriesListGlobalAdvisoriesParams<'api>>>) -> Result<Vec<GlobalAdvisory>, SecurityAdvisoriesListGlobalAdvisoriesError> {
+    pub fn list_global_advisories(&self, query_params: Option<impl Into<SecurityAdvisoriesListGlobalAdvisoriesParams<'api>>>) -> Result<Vec<GlobalAdvisory>, AdapterError> {
 
         let mut request_uri = format!("{}/advisories", super::GITHUB_BASE_API_URL);
 
@@ -1538,21 +1603,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Generic { code }),
+                429 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status429(github_response.to_json()?).into()),
+                422 => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Status422(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesListGlobalAdvisoriesError::Generic { code }.into()),
             }
         }
     }
@@ -1570,7 +1635,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for list_org_repository_advisories](https://docs.github.com/rest/security-advisories/repository-advisories#list-repository-security-advisories-for-an-organization)
     ///
     /// ---
-    pub async fn list_org_repository_advisories_async(&self, org: &str, query_params: Option<impl Into<SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, SecurityAdvisoriesListOrgRepositoryAdvisoriesError> {
+    pub async fn list_org_repository_advisories_async(&self, org: &str, query_params: Option<impl Into<SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/security-advisories", super::GITHUB_BASE_API_URL, org);
 
@@ -1581,26 +1646,26 @@ impl<'api> SecurityAdvisories<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Generic { code }),
+                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Generic { code }.into()),
             }
         }
     }
@@ -1619,7 +1684,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_repository_advisories(&self, org: &str, query_params: Option<impl Into<SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, SecurityAdvisoriesListOrgRepositoryAdvisoriesError> {
+    pub fn list_org_repository_advisories(&self, org: &str, query_params: Option<impl Into<SecurityAdvisoriesListOrgRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/security-advisories", super::GITHUB_BASE_API_URL, org);
 
@@ -1636,21 +1701,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Generic { code }),
+                400 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status400(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Status404(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesListOrgRepositoryAdvisoriesError::Generic { code }.into()),
             }
         }
     }
@@ -1668,7 +1733,7 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for list_repository_advisories](https://docs.github.com/rest/security-advisories/repository-advisories#list-repository-security-advisories)
     ///
     /// ---
-    pub async fn list_repository_advisories_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecurityAdvisoriesListRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, SecurityAdvisoriesListRepositoryAdvisoriesError> {
+    pub async fn list_repository_advisories_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecurityAdvisoriesListRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/security-advisories", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1679,26 +1744,26 @@ impl<'api> SecurityAdvisories<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Generic { code }),
+                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Generic { code }.into()),
             }
         }
     }
@@ -1717,7 +1782,7 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_repository_advisories(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecurityAdvisoriesListRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, SecurityAdvisoriesListRepositoryAdvisoriesError> {
+    pub fn list_repository_advisories(&self, owner: &str, repo: &str, query_params: Option<impl Into<SecurityAdvisoriesListRepositoryAdvisoriesParams<'api>>>) -> Result<Vec<RepositoryAdvisory>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/security-advisories", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -1734,21 +1799,21 @@ impl<'api> SecurityAdvisories<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Generic { code }),
+                400 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status400(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Status404(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesListRepositoryAdvisoriesError::Generic { code }.into()),
             }
         }
     }
@@ -1767,34 +1832,34 @@ impl<'api> SecurityAdvisories<'api> {
     /// [GitHub API docs for update_repository_advisory](https://docs.github.com/rest/security-advisories/repository-advisories#update-a-repository-security-advisory)
     ///
     /// ---
-    pub async fn update_repository_advisory_async(&self, owner: &str, repo: &str, ghsa_id: &str, body: PatchSecurityAdvisoriesUpdateRepositoryAdvisory) -> Result<RepositoryAdvisory, SecurityAdvisoriesUpdateRepositoryAdvisoryError> {
+    pub async fn update_repository_advisory_async(&self, owner: &str, repo: &str, ghsa_id: &str, body: PatchSecurityAdvisoriesUpdateRepositoryAdvisory) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchSecurityAdvisoriesUpdateRepositoryAdvisory::from_json(body)?),
+            body: Some(C::from_json::<PatchSecurityAdvisoriesUpdateRepositoryAdvisory>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Generic { code }),
+                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Generic { code }.into()),
             }
         }
     }
@@ -1814,34 +1879,34 @@ impl<'api> SecurityAdvisories<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_repository_advisory(&self, owner: &str, repo: &str, ghsa_id: &str, body: PatchSecurityAdvisoriesUpdateRepositoryAdvisory) -> Result<RepositoryAdvisory, SecurityAdvisoriesUpdateRepositoryAdvisoryError> {
+    pub fn update_repository_advisory(&self, owner: &str, repo: &str, ghsa_id: &str, body: PatchSecurityAdvisoriesUpdateRepositoryAdvisory) -> Result<RepositoryAdvisory, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/security-advisories/{}", super::GITHUB_BASE_API_URL, owner, repo, ghsa_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchSecurityAdvisoriesUpdateRepositoryAdvisory::from_json(body)?),
+            body: Some(C::from_json::<PatchSecurityAdvisoriesUpdateRepositoryAdvisory>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Generic { code }),
+                403 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status403(github_response.to_json()?).into()),
+                404 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status404(github_response.to_json()?).into()),
+                422 => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Status422(github_response.to_json()?).into()),
+                code => Err(SecurityAdvisoriesUpdateRepositoryAdvisoryError::Generic { code }.into()),
             }
         }
     }

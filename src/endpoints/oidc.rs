@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,44 +22,38 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Oidc<'api> {
-    auth: &'api Auth
+pub struct Oidc<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Oidc {
-    Oidc { auth }
+pub fn new<C: Client>(client: &C) -> Oidc<C> where AdapterError: From<<C as Client>::Err> {
+    Oidc { client }
 }
 
 /// Errors for the [Get the customization template for an OIDC subject claim for an organization](Oidc::get_oidc_custom_sub_template_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OidcGetOidcCustomSubTemplateForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OidcGetOidcCustomSubTemplateForOrgError> for AdapterError {
+    fn from(err: OidcGetOidcCustomSubTemplateForOrgError) -> Self {
+        let (description, status_code) = match err {
+            OidcGetOidcCustomSubTemplateForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set the customization template for an OIDC subject claim for an organization](Oidc::update_oidc_custom_sub_template_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OidcUpdateOidcCustomSubTemplateForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -69,9 +62,25 @@ pub enum OidcUpdateOidcCustomSubTemplateForOrgError {
     Generic { code: u16 },
 }
 
+impl From<OidcUpdateOidcCustomSubTemplateForOrgError> for AdapterError {
+    fn from(err: OidcUpdateOidcCustomSubTemplateForOrgError) -> Self {
+        let (description, status_code) = match err {
+            OidcUpdateOidcCustomSubTemplateForOrgError::Status404(_) => (String::from("Resource not found"), 404),
+            OidcUpdateOidcCustomSubTemplateForOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            OidcUpdateOidcCustomSubTemplateForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
 
 
-impl<'api> Oidc<'api> {
+
+impl<'api, C: Client> Oidc<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get the customization template for an OIDC subject claim for an organization
@@ -83,31 +92,31 @@ impl<'api> Oidc<'api> {
     /// [GitHub API docs for get_oidc_custom_sub_template_for_org](https://docs.github.com/rest/actions/oidc#get-the-customization-template-for-an-oidc-subject-claim-for-an-organization)
     ///
     /// ---
-    pub async fn get_oidc_custom_sub_template_for_org_async(&self, org: &str) -> Result<OidcCustomSub, OidcGetOidcCustomSubTemplateForOrgError> {
+    pub async fn get_oidc_custom_sub_template_for_org_async(&self, org: &str) -> Result<OidcCustomSub, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OidcGetOidcCustomSubTemplateForOrgError::Generic { code }),
+                code => Err(OidcGetOidcCustomSubTemplateForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -124,7 +133,7 @@ impl<'api> Oidc<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_oidc_custom_sub_template_for_org(&self, org: &str) -> Result<OidcCustomSub, OidcGetOidcCustomSubTemplateForOrgError> {
+    pub fn get_oidc_custom_sub_template_for_org(&self, org: &str) -> Result<OidcCustomSub, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, org);
 
@@ -136,19 +145,19 @@ impl<'api> Oidc<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OidcGetOidcCustomSubTemplateForOrgError::Generic { code }),
+                code => Err(OidcGetOidcCustomSubTemplateForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -164,33 +173,33 @@ impl<'api> Oidc<'api> {
     /// [GitHub API docs for update_oidc_custom_sub_template_for_org](https://docs.github.com/rest/actions/oidc#set-the-customization-template-for-an-oidc-subject-claim-for-an-organization)
     ///
     /// ---
-    pub async fn update_oidc_custom_sub_template_for_org_async(&self, org: &str, body: OidcCustomSub) -> Result<EmptyObject, OidcUpdateOidcCustomSubTemplateForOrgError> {
+    pub async fn update_oidc_custom_sub_template_for_org_async(&self, org: &str, body: OidcCustomSub) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(OidcCustomSub::from_json(body)?),
+            body: Some(C::from_json::<OidcCustomSub>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Generic { code }),
+                404 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -207,33 +216,33 @@ impl<'api> Oidc<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_oidc_custom_sub_template_for_org(&self, org: &str, body: OidcCustomSub) -> Result<EmptyObject, OidcUpdateOidcCustomSubTemplateForOrgError> {
+    pub fn update_oidc_custom_sub_template_for_org(&self, org: &str, body: OidcCustomSub) -> Result<EmptyObject, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/actions/oidc/customization/sub", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(OidcCustomSub::from_json(body)?),
+            body: Some(C::from_json::<OidcCustomSub>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Generic { code }),
+                404 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status404(github_response.to_json()?).into()),
+                403 => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Status403(github_response.to_json()?).into()),
+                code => Err(OidcUpdateOidcCustomSubTemplateForOrgError::Generic { code }.into()),
             }
         }
     }

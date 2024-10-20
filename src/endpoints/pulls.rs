@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,86 +22,92 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Pulls<'api> {
-    auth: &'api Auth
+pub struct Pulls<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Pulls {
-    Pulls { auth }
+pub fn new<C: Client>(client: &C) -> Pulls<C> where AdapterError: From<<C as Client>::Err> {
+    Pulls { client }
 }
 
 /// Errors for the [Check if a pull request has been merged](Pulls::check_if_merged_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsCheckIfMergedError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if pull request has not been merged")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<PullsCheckIfMergedError> for AdapterError {
+    fn from(err: PullsCheckIfMergedError) -> Self {
+        let (description, status_code) = match err {
+            PullsCheckIfMergedError::Status404 => (String::from("Not Found if pull request has not been merged"), 404),
+            PullsCheckIfMergedError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a pull request](Pulls::create_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsCreateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsCreateError> for AdapterError {
+    fn from(err: PullsCreateError) -> Self {
+        let (description, status_code) = match err {
+            PullsCreateError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsCreateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsCreateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create a reply for a review comment](Pulls::create_reply_for_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsCreateReplyForReviewCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<PullsCreateReplyForReviewCommentError> for AdapterError {
+    fn from(err: PullsCreateReplyForReviewCommentError) -> Self {
+        let (description, status_code) = match err {
+            PullsCreateReplyForReviewCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsCreateReplyForReviewCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a review for a pull request](Pulls::create_review_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsCreateReviewError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Forbidden")]
@@ -111,19 +116,25 @@ pub enum PullsCreateReviewError {
     Generic { code: u16 },
 }
 
+impl From<PullsCreateReviewError> for AdapterError {
+    fn from(err: PullsCreateReviewError) -> Self {
+        let (description, status_code) = match err {
+            PullsCreateReviewError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsCreateReviewError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsCreateReviewError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a review comment for a pull request](Pulls::create_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsCreateReviewCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
@@ -132,59 +143,76 @@ pub enum PullsCreateReviewCommentError {
     Generic { code: u16 },
 }
 
+impl From<PullsCreateReviewCommentError> for AdapterError {
+    fn from(err: PullsCreateReviewCommentError) -> Self {
+        let (description, status_code) = match err {
+            PullsCreateReviewCommentError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsCreateReviewCommentError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsCreateReviewCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete a pending review for a pull request](Pulls::delete_pending_review_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsDeletePendingReviewError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsDeletePendingReviewError> for AdapterError {
+    fn from(err: PullsDeletePendingReviewError) -> Self {
+        let (description, status_code) = match err {
+            PullsDeletePendingReviewError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsDeletePendingReviewError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsDeletePendingReviewError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Delete a review comment for a pull request](Pulls::delete_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsDeleteReviewCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<PullsDeleteReviewCommentError> for AdapterError {
+    fn from(err: PullsDeleteReviewCommentError) -> Self {
+        let (description, status_code) = match err {
+            PullsDeleteReviewCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsDeleteReviewCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Dismiss a review for a pull request](Pulls::dismiss_review_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsDismissReviewError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -193,19 +221,25 @@ pub enum PullsDismissReviewError {
     Generic { code: u16 },
 }
 
+impl From<PullsDismissReviewError> for AdapterError {
+    fn from(err: PullsDismissReviewError) -> Self {
+        let (description, status_code) = match err {
+            PullsDismissReviewError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsDismissReviewError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsDismissReviewError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a pull request](Pulls::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Resource not found")]
@@ -220,57 +254,76 @@ pub enum PullsGetError {
     Generic { code: u16 },
 }
 
+impl From<PullsGetError> for AdapterError {
+    fn from(err: PullsGetError) -> Self {
+        let (description, status_code) = match err {
+            PullsGetError::Status304 => (String::from("Not modified"), 304),
+            PullsGetError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsGetError::Status406(_) => (String::from("Unacceptable"), 406),
+            PullsGetError::Status500(_) => (String::from("Internal Error"), 500),
+            PullsGetError::Status503(_) => (String::from("Service unavailable"), 503),
+            PullsGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a review for a pull request](Pulls::get_review_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsGetReviewError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsGetReviewError> for AdapterError {
+    fn from(err: PullsGetReviewError) -> Self {
+        let (description, status_code) = match err {
+            PullsGetReviewError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsGetReviewError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a review comment for a pull request](Pulls::get_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsGetReviewCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<PullsGetReviewCommentError> for AdapterError {
+    fn from(err: PullsGetReviewCommentError) -> Self {
+        let (description, status_code) = match err {
+            PullsGetReviewCommentError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsGetReviewCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List pull requests](Pulls::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -279,55 +332,70 @@ pub enum PullsListError {
     Generic { code: u16 },
 }
 
+impl From<PullsListError> for AdapterError {
+    fn from(err: PullsListError) -> Self {
+        let (description, status_code) = match err {
+            PullsListError::Status304 => (String::from("Not modified"), 304),
+            PullsListError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsListError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List comments for a pull request review](Pulls::list_comments_for_review_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListCommentsForReviewError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<PullsListCommentsForReviewError> for AdapterError {
+    fn from(err: PullsListCommentsForReviewError) -> Self {
+        let (description, status_code) = match err {
+            PullsListCommentsForReviewError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsListCommentsForReviewError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List commits on a pull request](Pulls::list_commits_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListCommitsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsListCommitsError> for AdapterError {
+    fn from(err: PullsListCommitsError) -> Self {
+        let (description, status_code) = match err {
+            PullsListCommitsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List pull requests files](Pulls::list_files_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListFilesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Internal Error")]
@@ -338,87 +406,110 @@ pub enum PullsListFilesError {
     Generic { code: u16 },
 }
 
+impl From<PullsListFilesError> for AdapterError {
+    fn from(err: PullsListFilesError) -> Self {
+        let (description, status_code) = match err {
+            PullsListFilesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsListFilesError::Status500(_) => (String::from("Internal Error"), 500),
+            PullsListFilesError::Status503(_) => (String::from("Service unavailable"), 503),
+            PullsListFilesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get all requested reviewers for a pull request](Pulls::list_requested_reviewers_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListRequestedReviewersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsListRequestedReviewersError> for AdapterError {
+    fn from(err: PullsListRequestedReviewersError) -> Self {
+        let (description, status_code) = match err {
+            PullsListRequestedReviewersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List review comments on a pull request](Pulls::list_review_comments_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListReviewCommentsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsListReviewCommentsError> for AdapterError {
+    fn from(err: PullsListReviewCommentsError) -> Self {
+        let (description, status_code) = match err {
+            PullsListReviewCommentsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List review comments in a repository](Pulls::list_review_comments_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListReviewCommentsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsListReviewCommentsForRepoError> for AdapterError {
+    fn from(err: PullsListReviewCommentsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            PullsListReviewCommentsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List reviews for a pull request](Pulls::list_reviews_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsListReviewsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsListReviewsError> for AdapterError {
+    fn from(err: PullsListReviewsError) -> Self {
+        let (description, status_code) = match err {
+            PullsListReviewsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Merge a pull request](Pulls::merge_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsMergeError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Method Not Allowed if merge cannot be performed")]
     Status405(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Conflict if sha was provided and pull request head did not match")]
@@ -433,38 +524,52 @@ pub enum PullsMergeError {
     Generic { code: u16 },
 }
 
+impl From<PullsMergeError> for AdapterError {
+    fn from(err: PullsMergeError) -> Self {
+        let (description, status_code) = match err {
+            PullsMergeError::Status405(_) => (String::from("Method Not Allowed if merge cannot be performed"), 405),
+            PullsMergeError::Status409(_) => (String::from("Conflict if sha was provided and pull request head did not match"), 409),
+            PullsMergeError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsMergeError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsMergeError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsMergeError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove requested reviewers from a pull request](Pulls::remove_requested_reviewers_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsRemoveRequestedReviewersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<PullsRemoveRequestedReviewersError> for AdapterError {
+    fn from(err: PullsRemoveRequestedReviewersError) -> Self {
+        let (description, status_code) = match err {
+            PullsRemoveRequestedReviewersError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsRemoveRequestedReviewersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Request reviewers for a pull request](Pulls::request_reviewers_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsRequestReviewersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Unprocessable Entity if user is not a collaborator")]
     Status422,
     #[error("Forbidden")]
@@ -473,19 +578,25 @@ pub enum PullsRequestReviewersError {
     Generic { code: u16 },
 }
 
+impl From<PullsRequestReviewersError> for AdapterError {
+    fn from(err: PullsRequestReviewersError) -> Self {
+        let (description, status_code) = match err {
+            PullsRequestReviewersError::Status422 => (String::from("Unprocessable Entity if user is not a collaborator"), 422),
+            PullsRequestReviewersError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsRequestReviewersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Submit a review for a pull request](Pulls::submit_review_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsSubmitReviewError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -496,40 +607,53 @@ pub enum PullsSubmitReviewError {
     Generic { code: u16 },
 }
 
+impl From<PullsSubmitReviewError> for AdapterError {
+    fn from(err: PullsSubmitReviewError) -> Self {
+        let (description, status_code) = match err {
+            PullsSubmitReviewError::Status404(_) => (String::from("Resource not found"), 404),
+            PullsSubmitReviewError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsSubmitReviewError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsSubmitReviewError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a pull request](Pulls::update_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsUpdateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsUpdateError> for AdapterError {
+    fn from(err: PullsUpdateError) -> Self {
+        let (description, status_code) = match err {
+            PullsUpdateError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsUpdateError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsUpdateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update a pull request branch](Pulls::update_branch_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsUpdateBranchError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
@@ -538,40 +662,65 @@ pub enum PullsUpdateBranchError {
     Generic { code: u16 },
 }
 
+impl From<PullsUpdateBranchError> for AdapterError {
+    fn from(err: PullsUpdateBranchError) -> Self {
+        let (description, status_code) = match err {
+            PullsUpdateBranchError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsUpdateBranchError::Status403(_) => (String::from("Forbidden"), 403),
+            PullsUpdateBranchError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a review for a pull request](Pulls::update_review_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsUpdateReviewError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<PullsUpdateReviewError> for AdapterError {
+    fn from(err: PullsUpdateReviewError) -> Self {
+        let (description, status_code) = match err {
+            PullsUpdateReviewError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            PullsUpdateReviewError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a review comment for a pull request](Pulls::update_review_comment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum PullsUpdateReviewCommentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<PullsUpdateReviewCommentError> for AdapterError {
+    fn from(err: PullsUpdateReviewCommentError) -> Self {
+        let (description, status_code) = match err {
+            PullsUpdateReviewCommentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -1031,7 +1180,7 @@ impl<'enc> From<&'enc PerPage> for PullsListReviewsParams {
     }
 }
 
-impl<'api> Pulls<'api> {
+impl<'api, C: Client> Pulls<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Check if a pull request has been merged
@@ -1041,32 +1190,32 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for check_if_merged](https://docs.github.com/rest/pulls/pulls#check-if-a-pull-request-has-been-merged)
     ///
     /// ---
-    pub async fn check_if_merged_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<(), PullsCheckIfMergedError> {
+    pub async fn check_if_merged_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/merge", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsCheckIfMergedError::Status404),
-                code => Err(PullsCheckIfMergedError::Generic { code }),
+                404 => Err(PullsCheckIfMergedError::Status404.into()),
+                code => Err(PullsCheckIfMergedError::Generic { code }.into()),
             }
         }
     }
@@ -1081,7 +1230,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_if_merged(&self, owner: &str, repo: &str, pull_number: i32) -> Result<(), PullsCheckIfMergedError> {
+    pub fn check_if_merged(&self, owner: &str, repo: &str, pull_number: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/merge", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -1093,20 +1242,20 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsCheckIfMergedError::Status404),
-                code => Err(PullsCheckIfMergedError::Generic { code }),
+                404 => Err(PullsCheckIfMergedError::Status404.into()),
+                code => Err(PullsCheckIfMergedError::Generic { code }.into()),
             }
         }
     }
@@ -1131,33 +1280,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for create](https://docs.github.com/rest/pulls/pulls#create-a-pull-request)
     ///
     /// ---
-    pub async fn create_async(&self, owner: &str, repo: &str, body: PostPullsCreate) -> Result<PullRequest, PullsCreateError> {
+    pub async fn create_async(&self, owner: &str, repo: &str, body: PostPullsCreate) -> Result<PullRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreate::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(PullsCreateError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(PullsCreateError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsCreateError::Generic { code }),
+                403 => Err(PullsCreateError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(PullsCreateError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(PullsCreateError::Generic { code }.into()),
             }
         }
     }
@@ -1183,33 +1332,33 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create(&self, owner: &str, repo: &str, body: PostPullsCreate) -> Result<PullRequest, PullsCreateError> {
+    pub fn create(&self, owner: &str, repo: &str, body: PostPullsCreate) -> Result<PullRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreate::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreate>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(PullsCreateError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(PullsCreateError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsCreateError::Generic { code }),
+                403 => Err(PullsCreateError::Status403(github_response.to_json()?).into()),
+                422 => Err(PullsCreateError::Status422(github_response.to_json()?).into()),
+                code => Err(PullsCreateError::Generic { code }.into()),
             }
         }
     }
@@ -1233,32 +1382,32 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for create_reply_for_review_comment](https://docs.github.com/rest/pulls/comments#create-a-reply-for-a-review-comment)
     ///
     /// ---
-    pub async fn create_reply_for_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i64, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, PullsCreateReplyForReviewCommentError> {
+    pub async fn create_reply_for_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i64, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments/{}/replies", super::GITHUB_BASE_API_URL, owner, repo, pull_number, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreateReplyForReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreateReplyForReviewComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsCreateReplyForReviewCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsCreateReplyForReviewCommentError::Generic { code }),
+                404 => Err(PullsCreateReplyForReviewCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(PullsCreateReplyForReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1283,32 +1432,32 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_reply_for_review_comment(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i64, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, PullsCreateReplyForReviewCommentError> {
+    pub fn create_reply_for_review_comment(&self, owner: &str, repo: &str, pull_number: i32, comment_id: i64, body: PostPullsCreateReplyForReviewComment) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments/{}/replies", super::GITHUB_BASE_API_URL, owner, repo, pull_number, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreateReplyForReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreateReplyForReviewComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsCreateReplyForReviewCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsCreateReplyForReviewCommentError::Generic { code }),
+                404 => Err(PullsCreateReplyForReviewCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(PullsCreateReplyForReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1338,33 +1487,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for create_review](https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request)
     ///
     /// ---
-    pub async fn create_review_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReview) -> Result<PullRequestReview, PullsCreateReviewError> {
+    pub async fn create_review_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreateReview::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreateReview>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsCreateReviewError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(PullsCreateReviewError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsCreateReviewError::Generic { code }),
+                422 => Err(PullsCreateReviewError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(PullsCreateReviewError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(PullsCreateReviewError::Generic { code }.into()),
             }
         }
     }
@@ -1395,33 +1544,33 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_review(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReview) -> Result<PullRequestReview, PullsCreateReviewError> {
+    pub fn create_review(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreateReview::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreateReview>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsCreateReviewError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(PullsCreateReviewError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsCreateReviewError::Generic { code }),
+                422 => Err(PullsCreateReviewError::Status422(github_response.to_json()?).into()),
+                403 => Err(PullsCreateReviewError::Status403(github_response.to_json()?).into()),
+                code => Err(PullsCreateReviewError::Generic { code }.into()),
             }
         }
     }
@@ -1449,33 +1598,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for create_review_comment](https://docs.github.com/rest/pulls/comments#create-a-review-comment-for-a-pull-request)
     ///
     /// ---
-    pub async fn create_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReviewComment) -> Result<PullRequestReviewComment, PullsCreateReviewCommentError> {
+    pub async fn create_review_comment_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReviewComment) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreateReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreateReviewComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsCreateReviewCommentError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(PullsCreateReviewCommentError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsCreateReviewCommentError::Generic { code }),
+                422 => Err(PullsCreateReviewCommentError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(PullsCreateReviewCommentError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(PullsCreateReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1504,33 +1653,33 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_review_comment(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReviewComment) -> Result<PullRequestReviewComment, PullsCreateReviewCommentError> {
+    pub fn create_review_comment(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsCreateReviewComment) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsCreateReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PostPullsCreateReviewComment>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsCreateReviewCommentError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(PullsCreateReviewCommentError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsCreateReviewCommentError::Generic { code }),
+                422 => Err(PullsCreateReviewCommentError::Status422(github_response.to_json()?).into()),
+                403 => Err(PullsCreateReviewCommentError::Status403(github_response.to_json()?).into()),
+                code => Err(PullsCreateReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1551,33 +1700,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for delete_pending_review](https://docs.github.com/rest/pulls/reviews#delete-a-pending-review-for-a-pull-request)
     ///
     /// ---
-    pub async fn delete_pending_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsDeletePendingReviewError> {
+    pub async fn delete_pending_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsDeletePendingReviewError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(PullsDeletePendingReviewError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsDeletePendingReviewError::Generic { code }),
+                422 => Err(PullsDeletePendingReviewError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(PullsDeletePendingReviewError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(PullsDeletePendingReviewError::Generic { code }.into()),
             }
         }
     }
@@ -1599,7 +1748,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_pending_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsDeletePendingReviewError> {
+    pub fn delete_pending_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
@@ -1611,21 +1760,21 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsDeletePendingReviewError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(PullsDeletePendingReviewError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsDeletePendingReviewError::Generic { code }),
+                422 => Err(PullsDeletePendingReviewError::Status422(github_response.to_json()?).into()),
+                404 => Err(PullsDeletePendingReviewError::Status404(github_response.to_json()?).into()),
+                code => Err(PullsDeletePendingReviewError::Generic { code }.into()),
             }
         }
     }
@@ -1639,32 +1788,32 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for delete_review_comment](https://docs.github.com/rest/pulls/comments#delete-a-review-comment-for-a-pull-request)
     ///
     /// ---
-    pub async fn delete_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), PullsDeleteReviewCommentError> {
+    pub async fn delete_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsDeleteReviewCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsDeleteReviewCommentError::Generic { code }),
+                404 => Err(PullsDeleteReviewCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(PullsDeleteReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1679,7 +1828,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_review_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), PullsDeleteReviewCommentError> {
+    pub fn delete_review_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -1691,20 +1840,20 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsDeleteReviewCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsDeleteReviewCommentError::Generic { code }),
+                404 => Err(PullsDeleteReviewCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(PullsDeleteReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -1728,33 +1877,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for dismiss_review](https://docs.github.com/rest/pulls/reviews#dismiss-a-review-for-a-pull-request)
     ///
     /// ---
-    pub async fn dismiss_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsDismissReview) -> Result<PullRequestReview, PullsDismissReviewError> {
+    pub async fn dismiss_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsDismissReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}/dismissals", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsDismissReview::from_json(body)?),
+            body: Some(C::from_json::<PutPullsDismissReview>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsDismissReviewError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(PullsDismissReviewError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsDismissReviewError::Generic { code }),
+                404 => Err(PullsDismissReviewError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(PullsDismissReviewError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(PullsDismissReviewError::Generic { code }.into()),
             }
         }
     }
@@ -1779,33 +1928,33 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn dismiss_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsDismissReview) -> Result<PullRequestReview, PullsDismissReviewError> {
+    pub fn dismiss_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsDismissReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}/dismissals", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsDismissReview::from_json(body)?),
+            body: Some(C::from_json::<PutPullsDismissReview>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsDismissReviewError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(PullsDismissReviewError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsDismissReviewError::Generic { code }),
+                404 => Err(PullsDismissReviewError::Status404(github_response.to_json()?).into()),
+                422 => Err(PullsDismissReviewError::Status422(github_response.to_json()?).into()),
+                code => Err(PullsDismissReviewError::Generic { code }.into()),
             }
         }
     }
@@ -1841,36 +1990,36 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for get](https://docs.github.com/rest/pulls/pulls#get-a-pull-request)
     ///
     /// ---
-    pub async fn get_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequest, PullsGetError> {
+    pub async fn get_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(PullsGetError::Status304),
-                404 => Err(PullsGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                406 => Err(PullsGetError::Status406(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(PullsGetError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(PullsGetError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsGetError::Generic { code }),
+                304 => Err(PullsGetError::Status304.into()),
+                404 => Err(PullsGetError::Status404(github_response.to_json_async().await?).into()),
+                406 => Err(PullsGetError::Status406(github_response.to_json_async().await?).into()),
+                500 => Err(PullsGetError::Status500(github_response.to_json_async().await?).into()),
+                503 => Err(PullsGetError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(PullsGetError::Generic { code }.into()),
             }
         }
     }
@@ -1907,7 +2056,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequest, PullsGetError> {
+    pub fn get(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -1919,24 +2068,24 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(PullsGetError::Status304),
-                404 => Err(PullsGetError::Status404(crate::adapters::to_json(github_response)?)),
-                406 => Err(PullsGetError::Status406(crate::adapters::to_json(github_response)?)),
-                500 => Err(PullsGetError::Status500(crate::adapters::to_json(github_response)?)),
-                503 => Err(PullsGetError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsGetError::Generic { code }),
+                304 => Err(PullsGetError::Status304.into()),
+                404 => Err(PullsGetError::Status404(github_response.to_json()?).into()),
+                406 => Err(PullsGetError::Status406(github_response.to_json()?).into()),
+                500 => Err(PullsGetError::Status500(github_response.to_json()?).into()),
+                503 => Err(PullsGetError::Status503(github_response.to_json()?).into()),
+                code => Err(PullsGetError::Generic { code }.into()),
             }
         }
     }
@@ -1957,32 +2106,32 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for get_review](https://docs.github.com/rest/pulls/reviews#get-a-review-for-a-pull-request)
     ///
     /// ---
-    pub async fn get_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsGetReviewError> {
+    pub async fn get_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsGetReviewError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsGetReviewError::Generic { code }),
+                404 => Err(PullsGetReviewError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(PullsGetReviewError::Generic { code }.into()),
             }
         }
     }
@@ -2004,7 +2153,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, PullsGetReviewError> {
+    pub fn get_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
@@ -2016,20 +2165,20 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsGetReviewError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsGetReviewError::Generic { code }),
+                404 => Err(PullsGetReviewError::Status404(github_response.to_json()?).into()),
+                code => Err(PullsGetReviewError::Generic { code }.into()),
             }
         }
     }
@@ -2050,32 +2199,32 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for get_review_comment](https://docs.github.com/rest/pulls/comments#get-a-review-comment-for-a-pull-request)
     ///
     /// ---
-    pub async fn get_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
+    pub async fn get_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsGetReviewCommentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsGetReviewCommentError::Generic { code }),
+                404 => Err(PullsGetReviewCommentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(PullsGetReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2097,7 +2246,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_review_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<PullRequestReviewComment, PullsGetReviewCommentError> {
+    pub fn get_review_comment(&self, owner: &str, repo: &str, comment_id: i64) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
@@ -2109,20 +2258,20 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsGetReviewCommentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsGetReviewCommentError::Generic { code }),
+                404 => Err(PullsGetReviewCommentError::Status404(github_response.to_json()?).into()),
+                code => Err(PullsGetReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -2149,7 +2298,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list](https://docs.github.com/rest/pulls/pulls#list-pull-requests)
     ///
     /// ---
-    pub async fn list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListParams<'api>>>) -> Result<Vec<PullRequestSimple>, PullsListError> {
+    pub async fn list_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListParams<'api>>>) -> Result<Vec<PullRequestSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2160,26 +2309,26 @@ impl<'api> Pulls<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(PullsListError::Status304),
-                422 => Err(PullsListError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsListError::Generic { code }),
+                304 => Err(PullsListError::Status304.into()),
+                422 => Err(PullsListError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(PullsListError::Generic { code }.into()),
             }
         }
     }
@@ -2207,7 +2356,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListParams<'api>>>) -> Result<Vec<PullRequestSimple>, PullsListError> {
+    pub fn list(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListParams<'api>>>) -> Result<Vec<PullRequestSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2224,21 +2373,21 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(PullsListError::Status304),
-                422 => Err(PullsListError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsListError::Generic { code }),
+                304 => Err(PullsListError::Status304.into()),
+                422 => Err(PullsListError::Status422(github_response.to_json()?).into()),
+                code => Err(PullsListError::Generic { code }.into()),
             }
         }
     }
@@ -2259,7 +2408,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_comments_for_review](https://docs.github.com/rest/pulls/reviews#list-comments-for-a-pull-request-review)
     ///
     /// ---
-    pub async fn list_comments_for_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, query_params: Option<impl Into<PullsListCommentsForReviewParams>>) -> Result<Vec<ReviewComment>, PullsListCommentsForReviewError> {
+    pub async fn list_comments_for_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, query_params: Option<impl Into<PullsListCommentsForReviewParams>>) -> Result<Vec<ReviewComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
@@ -2270,25 +2419,25 @@ impl<'api> Pulls<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsListCommentsForReviewError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsListCommentsForReviewError::Generic { code }),
+                404 => Err(PullsListCommentsForReviewError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(PullsListCommentsForReviewError::Generic { code }.into()),
             }
         }
     }
@@ -2310,7 +2459,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_comments_for_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, query_params: Option<impl Into<PullsListCommentsForReviewParams>>) -> Result<Vec<ReviewComment>, PullsListCommentsForReviewError> {
+    pub fn list_comments_for_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, query_params: Option<impl Into<PullsListCommentsForReviewParams>>) -> Result<Vec<ReviewComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
@@ -2327,20 +2476,20 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsListCommentsForReviewError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsListCommentsForReviewError::Generic { code }),
+                404 => Err(PullsListCommentsForReviewError::Status404(github_response.to_json()?).into()),
+                code => Err(PullsListCommentsForReviewError::Generic { code }.into()),
             }
         }
     }
@@ -2363,7 +2512,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_commits](https://docs.github.com/rest/pulls/pulls#list-commits-on-a-pull-request)
     ///
     /// ---
-    pub async fn list_commits_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListCommitsParams>>) -> Result<Vec<Commit>, PullsListCommitsError> {
+    pub async fn list_commits_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListCommitsParams>>) -> Result<Vec<Commit>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/commits", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2374,24 +2523,24 @@ impl<'api> Pulls<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListCommitsError::Generic { code }),
+                code => Err(PullsListCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -2415,7 +2564,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_commits(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListCommitsParams>>) -> Result<Vec<Commit>, PullsListCommitsError> {
+    pub fn list_commits(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListCommitsParams>>) -> Result<Vec<Commit>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/commits", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2432,19 +2581,19 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListCommitsError::Generic { code }),
+                code => Err(PullsListCommitsError::Generic { code }.into()),
             }
         }
     }
@@ -2468,7 +2617,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_files](https://docs.github.com/rest/pulls/pulls#list-pull-requests-files)
     ///
     /// ---
-    pub async fn list_files_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListFilesParams>>) -> Result<Vec<DiffEntry>, PullsListFilesError> {
+    pub async fn list_files_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListFilesParams>>) -> Result<Vec<DiffEntry>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/files", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2479,27 +2628,27 @@ impl<'api> Pulls<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsListFilesError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                500 => Err(PullsListFilesError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                503 => Err(PullsListFilesError::Status503(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsListFilesError::Generic { code }),
+                422 => Err(PullsListFilesError::Status422(github_response.to_json_async().await?).into()),
+                500 => Err(PullsListFilesError::Status500(github_response.to_json_async().await?).into()),
+                503 => Err(PullsListFilesError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(PullsListFilesError::Generic { code }.into()),
             }
         }
     }
@@ -2524,7 +2673,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_files(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListFilesParams>>) -> Result<Vec<DiffEntry>, PullsListFilesError> {
+    pub fn list_files(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListFilesParams>>) -> Result<Vec<DiffEntry>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/files", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2541,22 +2690,22 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsListFilesError::Status422(crate::adapters::to_json(github_response)?)),
-                500 => Err(PullsListFilesError::Status500(crate::adapters::to_json(github_response)?)),
-                503 => Err(PullsListFilesError::Status503(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsListFilesError::Generic { code }),
+                422 => Err(PullsListFilesError::Status422(github_response.to_json()?).into()),
+                500 => Err(PullsListFilesError::Status500(github_response.to_json()?).into()),
+                503 => Err(PullsListFilesError::Status503(github_response.to_json()?).into()),
+                code => Err(PullsListFilesError::Generic { code }.into()),
             }
         }
     }
@@ -2570,31 +2719,31 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#get-all-requested-reviewers-for-a-pull-request)
     ///
     /// ---
-    pub async fn list_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequestReviewRequest, PullsListRequestedReviewersError> {
+    pub async fn list_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequestReviewRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListRequestedReviewersError::Generic { code }),
+                code => Err(PullsListRequestedReviewersError::Generic { code }.into()),
             }
         }
     }
@@ -2609,7 +2758,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequestReviewRequest, PullsListRequestedReviewersError> {
+    pub fn list_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32) -> Result<PullRequestReviewRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2621,19 +2770,19 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListRequestedReviewersError::Generic { code }),
+                code => Err(PullsListRequestedReviewersError::Generic { code }.into()),
             }
         }
     }
@@ -2655,7 +2804,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_review_comments](https://docs.github.com/rest/pulls/comments#list-review-comments-on-a-pull-request)
     ///
     /// ---
-    pub async fn list_review_comments_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsError> {
+    pub async fn list_review_comments_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2666,24 +2815,24 @@ impl<'api> Pulls<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListReviewCommentsError::Generic { code }),
+                code => Err(PullsListReviewCommentsError::Generic { code }.into()),
             }
         }
     }
@@ -2706,7 +2855,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_review_comments(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsError> {
+    pub fn list_review_comments(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewCommentsParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/comments", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2723,19 +2872,19 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListReviewCommentsError::Generic { code }),
+                code => Err(PullsListReviewCommentsError::Generic { code }.into()),
             }
         }
     }
@@ -2757,7 +2906,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_review_comments_for_repo](https://docs.github.com/rest/pulls/comments#list-review-comments-in-a-repository)
     ///
     /// ---
-    pub async fn list_review_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsForRepoError> {
+    pub async fn list_review_comments_for_repo_async(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2768,24 +2917,24 @@ impl<'api> Pulls<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListReviewCommentsForRepoError::Generic { code }),
+                code => Err(PullsListReviewCommentsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2808,7 +2957,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_review_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, PullsListReviewCommentsForRepoError> {
+    pub fn list_review_comments_for_repo(&self, owner: &str, repo: &str, query_params: Option<impl Into<PullsListReviewCommentsForRepoParams<'api>>>) -> Result<Vec<PullRequestReviewComment>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/comments", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -2825,19 +2974,19 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListReviewCommentsForRepoError::Generic { code }),
+                code => Err(PullsListReviewCommentsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -2858,7 +3007,7 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for list_reviews](https://docs.github.com/rest/pulls/reviews#list-reviews-for-a-pull-request)
     ///
     /// ---
-    pub async fn list_reviews_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewsParams>>) -> Result<Vec<PullRequestReview>, PullsListReviewsError> {
+    pub async fn list_reviews_async(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewsParams>>) -> Result<Vec<PullRequestReview>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2869,24 +3018,24 @@ impl<'api> Pulls<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListReviewsError::Generic { code }),
+                code => Err(PullsListReviewsError::Generic { code }.into()),
             }
         }
     }
@@ -2908,7 +3057,7 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_reviews(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewsParams>>) -> Result<Vec<PullRequestReview>, PullsListReviewsError> {
+    pub fn list_reviews(&self, owner: &str, repo: &str, pull_number: i32, query_params: Option<impl Into<PullsListReviewsParams>>) -> Result<Vec<PullRequestReview>, AdapterError> {
 
         let mut request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
@@ -2925,19 +3074,19 @@ impl<'api> Pulls<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsListReviewsError::Generic { code }),
+                code => Err(PullsListReviewsError::Generic { code }.into()),
             }
         }
     }
@@ -2952,36 +3101,36 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for merge](https://docs.github.com/rest/pulls/pulls#merge-a-pull-request)
     ///
     /// ---
-    pub async fn merge_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsMerge) -> Result<PullRequestMergeResult, PullsMergeError> {
+    pub async fn merge_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsMerge) -> Result<PullRequestMergeResult, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/merge", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsMerge::from_json(body)?),
+            body: Some(C::from_json::<PutPullsMerge>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                405 => Err(PullsMergeError::Status405(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(PullsMergeError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(PullsMergeError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(PullsMergeError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(PullsMergeError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsMergeError::Generic { code }),
+                405 => Err(PullsMergeError::Status405(github_response.to_json_async().await?).into()),
+                409 => Err(PullsMergeError::Status409(github_response.to_json_async().await?).into()),
+                422 => Err(PullsMergeError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(PullsMergeError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(PullsMergeError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(PullsMergeError::Generic { code }.into()),
             }
         }
     }
@@ -2997,36 +3146,36 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn merge(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsMerge) -> Result<PullRequestMergeResult, PullsMergeError> {
+    pub fn merge(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsMerge) -> Result<PullRequestMergeResult, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/merge", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsMerge::from_json(body)?),
+            body: Some(C::from_json::<PutPullsMerge>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                405 => Err(PullsMergeError::Status405(crate::adapters::to_json(github_response)?)),
-                409 => Err(PullsMergeError::Status409(crate::adapters::to_json(github_response)?)),
-                422 => Err(PullsMergeError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(PullsMergeError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(PullsMergeError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsMergeError::Generic { code }),
+                405 => Err(PullsMergeError::Status405(github_response.to_json()?).into()),
+                409 => Err(PullsMergeError::Status409(github_response.to_json()?).into()),
+                422 => Err(PullsMergeError::Status422(github_response.to_json()?).into()),
+                403 => Err(PullsMergeError::Status403(github_response.to_json()?).into()),
+                404 => Err(PullsMergeError::Status404(github_response.to_json()?).into()),
+                code => Err(PullsMergeError::Generic { code }.into()),
             }
         }
     }
@@ -3040,32 +3189,32 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for remove_requested_reviewers](https://docs.github.com/rest/pulls/review-requests#remove-requested-reviewers-from-a-pull-request)
     ///
     /// ---
-    pub async fn remove_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<PullRequestSimple, PullsRemoveRequestedReviewersError> {
+    pub async fn remove_requested_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<PullRequestSimple, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeletePullsRemoveRequestedReviewers::from_json(body)?),
+            body: Some(C::from_json::<DeletePullsRemoveRequestedReviewers>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsRemoveRequestedReviewersError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsRemoveRequestedReviewersError::Generic { code }),
+                422 => Err(PullsRemoveRequestedReviewersError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(PullsRemoveRequestedReviewersError::Generic { code }.into()),
             }
         }
     }
@@ -3080,32 +3229,32 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<PullRequestSimple, PullsRemoveRequestedReviewersError> {
+    pub fn remove_requested_reviewers(&self, owner: &str, repo: &str, pull_number: i32, body: DeletePullsRemoveRequestedReviewers) -> Result<PullRequestSimple, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(DeletePullsRemoveRequestedReviewers::from_json(body)?),
+            body: Some(C::from_json::<DeletePullsRemoveRequestedReviewers>(body)?),
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsRemoveRequestedReviewersError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsRemoveRequestedReviewersError::Generic { code }),
+                422 => Err(PullsRemoveRequestedReviewersError::Status422(github_response.to_json()?).into()),
+                code => Err(PullsRemoveRequestedReviewersError::Generic { code }.into()),
             }
         }
     }
@@ -3120,33 +3269,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for request_reviewers](https://docs.github.com/rest/pulls/review-requests#request-reviewers-for-a-pull-request)
     ///
     /// ---
-    pub async fn request_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsRequestReviewers) -> Result<PullRequestSimple, PullsRequestReviewersError> {
+    pub async fn request_reviewers_async(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsRequestReviewers) -> Result<PullRequestSimple, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsRequestReviewers::from_json(body)?),
+            body: Some(C::from_json::<PostPullsRequestReviewers>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsRequestReviewersError::Status422),
-                403 => Err(PullsRequestReviewersError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsRequestReviewersError::Generic { code }),
+                422 => Err(PullsRequestReviewersError::Status422.into()),
+                403 => Err(PullsRequestReviewersError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(PullsRequestReviewersError::Generic { code }.into()),
             }
         }
     }
@@ -3162,33 +3311,33 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn request_reviewers(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsRequestReviewers) -> Result<PullRequestSimple, PullsRequestReviewersError> {
+    pub fn request_reviewers(&self, owner: &str, repo: &str, pull_number: i32, body: PostPullsRequestReviewers) -> Result<PullRequestSimple, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/requested_reviewers", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsRequestReviewers::from_json(body)?),
+            body: Some(C::from_json::<PostPullsRequestReviewers>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsRequestReviewersError::Status422),
-                403 => Err(PullsRequestReviewersError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsRequestReviewersError::Generic { code }),
+                422 => Err(PullsRequestReviewersError::Status422.into()),
+                403 => Err(PullsRequestReviewersError::Status403(github_response.to_json()?).into()),
+                code => Err(PullsRequestReviewersError::Generic { code }.into()),
             }
         }
     }
@@ -3209,34 +3358,34 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for submit_review](https://docs.github.com/rest/pulls/reviews#submit-a-review-for-a-pull-request)
     ///
     /// ---
-    pub async fn submit_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PostPullsSubmitReview) -> Result<PullRequestReview, PullsSubmitReviewError> {
+    pub async fn submit_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PostPullsSubmitReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}/events", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsSubmitReview::from_json(body)?),
+            body: Some(C::from_json::<PostPullsSubmitReview>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsSubmitReviewError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(PullsSubmitReviewError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(PullsSubmitReviewError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsSubmitReviewError::Generic { code }),
+                404 => Err(PullsSubmitReviewError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(PullsSubmitReviewError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(PullsSubmitReviewError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(PullsSubmitReviewError::Generic { code }.into()),
             }
         }
     }
@@ -3258,34 +3407,34 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn submit_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PostPullsSubmitReview) -> Result<PullRequestReview, PullsSubmitReviewError> {
+    pub fn submit_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PostPullsSubmitReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}/events", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostPullsSubmitReview::from_json(body)?),
+            body: Some(C::from_json::<PostPullsSubmitReview>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(PullsSubmitReviewError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(PullsSubmitReviewError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(PullsSubmitReviewError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsSubmitReviewError::Generic { code }),
+                404 => Err(PullsSubmitReviewError::Status404(github_response.to_json()?).into()),
+                422 => Err(PullsSubmitReviewError::Status422(github_response.to_json()?).into()),
+                403 => Err(PullsSubmitReviewError::Status403(github_response.to_json()?).into()),
+                code => Err(PullsSubmitReviewError::Generic { code }.into()),
             }
         }
     }
@@ -3308,33 +3457,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for update](https://docs.github.com/rest/pulls/pulls#update-a-pull-request)
     ///
     /// ---
-    pub async fn update_async(&self, owner: &str, repo: &str, pull_number: i32, body: PatchPullsUpdate) -> Result<PullRequest, PullsUpdateError> {
+    pub async fn update_async(&self, owner: &str, repo: &str, pull_number: i32, body: PatchPullsUpdate) -> Result<PullRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchPullsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchPullsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(PullsUpdateError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsUpdateError::Generic { code }),
+                422 => Err(PullsUpdateError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(PullsUpdateError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(PullsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -3358,33 +3507,33 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update(&self, owner: &str, repo: &str, pull_number: i32, body: PatchPullsUpdate) -> Result<PullRequest, PullsUpdateError> {
+    pub fn update(&self, owner: &str, repo: &str, pull_number: i32, body: PatchPullsUpdate) -> Result<PullRequest, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchPullsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchPullsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsUpdateError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(PullsUpdateError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsUpdateError::Generic { code }),
+                422 => Err(PullsUpdateError::Status422(github_response.to_json()?).into()),
+                403 => Err(PullsUpdateError::Status403(github_response.to_json()?).into()),
+                code => Err(PullsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -3399,33 +3548,33 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for update_branch](https://docs.github.com/rest/pulls/pulls#update-a-pull-request-branch)
     ///
     /// ---
-    pub async fn update_branch_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsUpdateBranch) -> Result<PutPullsUpdateBranchResponse202, PullsUpdateBranchError> {
+    pub async fn update_branch_async(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsUpdateBranch) -> Result<PutPullsUpdateBranchResponse202, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/update-branch", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsUpdateBranch::from_json(body)?),
+            body: Some(C::from_json::<PutPullsUpdateBranch>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsUpdateBranchError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(PullsUpdateBranchError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsUpdateBranchError::Generic { code }),
+                422 => Err(PullsUpdateBranchError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(PullsUpdateBranchError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(PullsUpdateBranchError::Generic { code }.into()),
             }
         }
     }
@@ -3441,33 +3590,33 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_branch(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsUpdateBranch) -> Result<PutPullsUpdateBranchResponse202, PullsUpdateBranchError> {
+    pub fn update_branch(&self, owner: &str, repo: &str, pull_number: i32, body: PutPullsUpdateBranch) -> Result<PutPullsUpdateBranchResponse202, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/update-branch", super::GITHUB_BASE_API_URL, owner, repo, pull_number);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsUpdateBranch::from_json(body)?),
+            body: Some(C::from_json::<PutPullsUpdateBranch>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsUpdateBranchError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(PullsUpdateBranchError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsUpdateBranchError::Generic { code }),
+                422 => Err(PullsUpdateBranchError::Status422(github_response.to_json()?).into()),
+                403 => Err(PullsUpdateBranchError::Status403(github_response.to_json()?).into()),
+                code => Err(PullsUpdateBranchError::Generic { code }.into()),
             }
         }
     }
@@ -3488,32 +3637,32 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for update_review](https://docs.github.com/rest/pulls/reviews#update-a-review-for-a-pull-request)
     ///
     /// ---
-    pub async fn update_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsUpdateReview) -> Result<PullRequestReview, PullsUpdateReviewError> {
+    pub async fn update_review_async(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsUpdateReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsUpdateReview::from_json(body)?),
+            body: Some(C::from_json::<PutPullsUpdateReview>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsUpdateReviewError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(PullsUpdateReviewError::Generic { code }),
+                422 => Err(PullsUpdateReviewError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(PullsUpdateReviewError::Generic { code }.into()),
             }
         }
     }
@@ -3535,32 +3684,32 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsUpdateReview) -> Result<PullRequestReview, PullsUpdateReviewError> {
+    pub fn update_review(&self, owner: &str, repo: &str, pull_number: i32, review_id: i32, body: PutPullsUpdateReview) -> Result<PullRequestReview, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/{}/reviews/{}", super::GITHUB_BASE_API_URL, owner, repo, pull_number, review_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutPullsUpdateReview::from_json(body)?),
+            body: Some(C::from_json::<PutPullsUpdateReview>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(PullsUpdateReviewError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(PullsUpdateReviewError::Generic { code }),
+                422 => Err(PullsUpdateReviewError::Status422(github_response.to_json()?).into()),
+                code => Err(PullsUpdateReviewError::Generic { code }.into()),
             }
         }
     }
@@ -3581,31 +3730,31 @@ impl<'api> Pulls<'api> {
     /// [GitHub API docs for update_review_comment](https://docs.github.com/rest/pulls/comments#update-a-review-comment-for-a-pull-request)
     ///
     /// ---
-    pub async fn update_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
+    pub async fn update_review_comment_async(&self, owner: &str, repo: &str, comment_id: i64, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PatchPullsUpdateReviewComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsUpdateReviewCommentError::Generic { code }),
+                code => Err(PullsUpdateReviewCommentError::Generic { code }.into()),
             }
         }
     }
@@ -3627,31 +3776,31 @@ impl<'api> Pulls<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_review_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, PullsUpdateReviewCommentError> {
+    pub fn update_review_comment(&self, owner: &str, repo: &str, comment_id: i64, body: PatchPullsUpdateReviewComment) -> Result<PullRequestReviewComment, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/pulls/comments/{}", super::GITHUB_BASE_API_URL, owner, repo, comment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchPullsUpdateReviewComment::from_json(body)?),
+            body: Some(C::from_json::<PatchPullsUpdateReviewComment>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(PullsUpdateReviewCommentError::Generic { code }),
+                code => Err(PullsUpdateReviewCommentError::Generic { code }.into()),
             }
         }
     }

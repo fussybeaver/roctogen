@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,120 +22,147 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Classroom<'api> {
-    auth: &'api Auth
+pub struct Classroom<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Classroom {
-    Classroom { auth }
+pub fn new<C: Client>(client: &C) -> Classroom<C> where AdapterError: From<<C as Client>::Err> {
+    Classroom { client }
 }
 
 /// Errors for the [Get a classroom](Classroom::get_a_classroom_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ClassroomGetAClassroomError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ClassroomGetAClassroomError> for AdapterError {
+    fn from(err: ClassroomGetAClassroomError) -> Self {
+        let (description, status_code) = match err {
+            ClassroomGetAClassroomError::Status404(_) => (String::from("Resource not found"), 404),
+            ClassroomGetAClassroomError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an assignment](Classroom::get_an_assignment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ClassroomGetAnAssignmentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ClassroomGetAnAssignmentError> for AdapterError {
+    fn from(err: ClassroomGetAnAssignmentError) -> Self {
+        let (description, status_code) = match err {
+            ClassroomGetAnAssignmentError::Status404(_) => (String::from("Resource not found"), 404),
+            ClassroomGetAnAssignmentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get assignment grades](Classroom::get_assignment_grades_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ClassroomGetAssignmentGradesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<ClassroomGetAssignmentGradesError> for AdapterError {
+    fn from(err: ClassroomGetAssignmentGradesError) -> Self {
+        let (description, status_code) = match err {
+            ClassroomGetAssignmentGradesError::Status404(_) => (String::from("Resource not found"), 404),
+            ClassroomGetAssignmentGradesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List accepted assignments for an assignment](Classroom::list_accepted_assignments_for_an_assignment_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ClassroomListAcceptedAssignmentsForAnAssignmentError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ClassroomListAcceptedAssignmentsForAnAssignmentError> for AdapterError {
+    fn from(err: ClassroomListAcceptedAssignmentsForAnAssignmentError) -> Self {
+        let (description, status_code) = match err {
+            ClassroomListAcceptedAssignmentsForAnAssignmentError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List assignments for a classroom](Classroom::list_assignments_for_a_classroom_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ClassroomListAssignmentsForAClassroomError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ClassroomListAssignmentsForAClassroomError> for AdapterError {
+    fn from(err: ClassroomListAssignmentsForAClassroomError) -> Self {
+        let (description, status_code) = match err {
+            ClassroomListAssignmentsForAClassroomError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List classrooms](Classroom::list_classrooms_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ClassroomListClassroomsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<ClassroomListClassroomsError> for AdapterError {
+    fn from(err: ClassroomListClassroomsError) -> Self {
+        let (description, status_code) = match err {
+            ClassroomListClassroomsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -261,7 +287,7 @@ impl<'enc> From<&'enc PerPage> for ClassroomListClassroomsParams {
     }
 }
 
-impl<'api> Classroom<'api> {
+impl<'api, C: Client> Classroom<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get a classroom
@@ -271,32 +297,32 @@ impl<'api> Classroom<'api> {
     /// [GitHub API docs for get_a_classroom](https://docs.github.com/rest/classroom/classroom#get-a-classroom)
     ///
     /// ---
-    pub async fn get_a_classroom_async(&self, classroom_id: i32) -> Result<crate::models::Classroom, ClassroomGetAClassroomError> {
+    pub async fn get_a_classroom_async(&self, classroom_id: i32) -> Result<crate::models::Classroom, AdapterError> {
 
         let request_uri = format!("{}/classrooms/{}", super::GITHUB_BASE_API_URL, classroom_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ClassroomGetAClassroomError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ClassroomGetAClassroomError::Generic { code }),
+                404 => Err(ClassroomGetAClassroomError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ClassroomGetAClassroomError::Generic { code }.into()),
             }
         }
     }
@@ -311,7 +337,7 @@ impl<'api> Classroom<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_a_classroom(&self, classroom_id: i32) -> Result<crate::models::Classroom, ClassroomGetAClassroomError> {
+    pub fn get_a_classroom(&self, classroom_id: i32) -> Result<crate::models::Classroom, AdapterError> {
 
         let request_uri = format!("{}/classrooms/{}", super::GITHUB_BASE_API_URL, classroom_id);
 
@@ -323,20 +349,20 @@ impl<'api> Classroom<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ClassroomGetAClassroomError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(ClassroomGetAClassroomError::Generic { code }),
+                404 => Err(ClassroomGetAClassroomError::Status404(github_response.to_json()?).into()),
+                code => Err(ClassroomGetAClassroomError::Generic { code }.into()),
             }
         }
     }
@@ -350,32 +376,32 @@ impl<'api> Classroom<'api> {
     /// [GitHub API docs for get_an_assignment](https://docs.github.com/rest/classroom/classroom#get-an-assignment)
     ///
     /// ---
-    pub async fn get_an_assignment_async(&self, assignment_id: i32) -> Result<ClassroomAssignment, ClassroomGetAnAssignmentError> {
+    pub async fn get_an_assignment_async(&self, assignment_id: i32) -> Result<ClassroomAssignment, AdapterError> {
 
         let request_uri = format!("{}/assignments/{}", super::GITHUB_BASE_API_URL, assignment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ClassroomGetAnAssignmentError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ClassroomGetAnAssignmentError::Generic { code }),
+                404 => Err(ClassroomGetAnAssignmentError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ClassroomGetAnAssignmentError::Generic { code }.into()),
             }
         }
     }
@@ -390,7 +416,7 @@ impl<'api> Classroom<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_an_assignment(&self, assignment_id: i32) -> Result<ClassroomAssignment, ClassroomGetAnAssignmentError> {
+    pub fn get_an_assignment(&self, assignment_id: i32) -> Result<ClassroomAssignment, AdapterError> {
 
         let request_uri = format!("{}/assignments/{}", super::GITHUB_BASE_API_URL, assignment_id);
 
@@ -402,20 +428,20 @@ impl<'api> Classroom<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ClassroomGetAnAssignmentError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(ClassroomGetAnAssignmentError::Generic { code }),
+                404 => Err(ClassroomGetAnAssignmentError::Status404(github_response.to_json()?).into()),
+                code => Err(ClassroomGetAnAssignmentError::Generic { code }.into()),
             }
         }
     }
@@ -429,32 +455,32 @@ impl<'api> Classroom<'api> {
     /// [GitHub API docs for get_assignment_grades](https://docs.github.com/rest/classroom/classroom#get-assignment-grades)
     ///
     /// ---
-    pub async fn get_assignment_grades_async(&self, assignment_id: i32) -> Result<Vec<ClassroomAssignmentGrade>, ClassroomGetAssignmentGradesError> {
+    pub async fn get_assignment_grades_async(&self, assignment_id: i32) -> Result<Vec<ClassroomAssignmentGrade>, AdapterError> {
 
         let request_uri = format!("{}/assignments/{}/grades", super::GITHUB_BASE_API_URL, assignment_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(ClassroomGetAssignmentGradesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(ClassroomGetAssignmentGradesError::Generic { code }),
+                404 => Err(ClassroomGetAssignmentGradesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(ClassroomGetAssignmentGradesError::Generic { code }.into()),
             }
         }
     }
@@ -469,7 +495,7 @@ impl<'api> Classroom<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_assignment_grades(&self, assignment_id: i32) -> Result<Vec<ClassroomAssignmentGrade>, ClassroomGetAssignmentGradesError> {
+    pub fn get_assignment_grades(&self, assignment_id: i32) -> Result<Vec<ClassroomAssignmentGrade>, AdapterError> {
 
         let request_uri = format!("{}/assignments/{}/grades", super::GITHUB_BASE_API_URL, assignment_id);
 
@@ -481,20 +507,20 @@ impl<'api> Classroom<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(ClassroomGetAssignmentGradesError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(ClassroomGetAssignmentGradesError::Generic { code }),
+                404 => Err(ClassroomGetAssignmentGradesError::Status404(github_response.to_json()?).into()),
+                code => Err(ClassroomGetAssignmentGradesError::Generic { code }.into()),
             }
         }
     }
@@ -508,7 +534,7 @@ impl<'api> Classroom<'api> {
     /// [GitHub API docs for list_accepted_assignments_for_an_assignment](https://docs.github.com/rest/classroom/classroom#list-accepted-assignments-for-an-assignment)
     ///
     /// ---
-    pub async fn list_accepted_assignments_for_an_assignment_async(&self, assignment_id: i32, query_params: Option<impl Into<ClassroomListAcceptedAssignmentsForAnAssignmentParams>>) -> Result<Vec<ClassroomAcceptedAssignment>, ClassroomListAcceptedAssignmentsForAnAssignmentError> {
+    pub async fn list_accepted_assignments_for_an_assignment_async(&self, assignment_id: i32, query_params: Option<impl Into<ClassroomListAcceptedAssignmentsForAnAssignmentParams>>) -> Result<Vec<ClassroomAcceptedAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/assignments/{}/accepted_assignments", super::GITHUB_BASE_API_URL, assignment_id);
 
@@ -519,24 +545,24 @@ impl<'api> Classroom<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ClassroomListAcceptedAssignmentsForAnAssignmentError::Generic { code }),
+                code => Err(ClassroomListAcceptedAssignmentsForAnAssignmentError::Generic { code }.into()),
             }
         }
     }
@@ -551,7 +577,7 @@ impl<'api> Classroom<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_accepted_assignments_for_an_assignment(&self, assignment_id: i32, query_params: Option<impl Into<ClassroomListAcceptedAssignmentsForAnAssignmentParams>>) -> Result<Vec<ClassroomAcceptedAssignment>, ClassroomListAcceptedAssignmentsForAnAssignmentError> {
+    pub fn list_accepted_assignments_for_an_assignment(&self, assignment_id: i32, query_params: Option<impl Into<ClassroomListAcceptedAssignmentsForAnAssignmentParams>>) -> Result<Vec<ClassroomAcceptedAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/assignments/{}/accepted_assignments", super::GITHUB_BASE_API_URL, assignment_id);
 
@@ -568,19 +594,19 @@ impl<'api> Classroom<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ClassroomListAcceptedAssignmentsForAnAssignmentError::Generic { code }),
+                code => Err(ClassroomListAcceptedAssignmentsForAnAssignmentError::Generic { code }.into()),
             }
         }
     }
@@ -594,7 +620,7 @@ impl<'api> Classroom<'api> {
     /// [GitHub API docs for list_assignments_for_a_classroom](https://docs.github.com/rest/classroom/classroom#list-assignments-for-a-classroom)
     ///
     /// ---
-    pub async fn list_assignments_for_a_classroom_async(&self, classroom_id: i32, query_params: Option<impl Into<ClassroomListAssignmentsForAClassroomParams>>) -> Result<Vec<SimpleClassroomAssignment>, ClassroomListAssignmentsForAClassroomError> {
+    pub async fn list_assignments_for_a_classroom_async(&self, classroom_id: i32, query_params: Option<impl Into<ClassroomListAssignmentsForAClassroomParams>>) -> Result<Vec<SimpleClassroomAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/classrooms/{}/assignments", super::GITHUB_BASE_API_URL, classroom_id);
 
@@ -605,24 +631,24 @@ impl<'api> Classroom<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ClassroomListAssignmentsForAClassroomError::Generic { code }),
+                code => Err(ClassroomListAssignmentsForAClassroomError::Generic { code }.into()),
             }
         }
     }
@@ -637,7 +663,7 @@ impl<'api> Classroom<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_assignments_for_a_classroom(&self, classroom_id: i32, query_params: Option<impl Into<ClassroomListAssignmentsForAClassroomParams>>) -> Result<Vec<SimpleClassroomAssignment>, ClassroomListAssignmentsForAClassroomError> {
+    pub fn list_assignments_for_a_classroom(&self, classroom_id: i32, query_params: Option<impl Into<ClassroomListAssignmentsForAClassroomParams>>) -> Result<Vec<SimpleClassroomAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/classrooms/{}/assignments", super::GITHUB_BASE_API_URL, classroom_id);
 
@@ -654,19 +680,19 @@ impl<'api> Classroom<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ClassroomListAssignmentsForAClassroomError::Generic { code }),
+                code => Err(ClassroomListAssignmentsForAClassroomError::Generic { code }.into()),
             }
         }
     }
@@ -680,7 +706,7 @@ impl<'api> Classroom<'api> {
     /// [GitHub API docs for list_classrooms](https://docs.github.com/rest/classroom/classroom#list-classrooms)
     ///
     /// ---
-    pub async fn list_classrooms_async(&self, query_params: Option<impl Into<ClassroomListClassroomsParams>>) -> Result<Vec<SimpleClassroom>, ClassroomListClassroomsError> {
+    pub async fn list_classrooms_async(&self, query_params: Option<impl Into<ClassroomListClassroomsParams>>) -> Result<Vec<SimpleClassroom>, AdapterError> {
 
         let mut request_uri = format!("{}/classrooms", super::GITHUB_BASE_API_URL);
 
@@ -691,24 +717,24 @@ impl<'api> Classroom<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(ClassroomListClassroomsError::Generic { code }),
+                code => Err(ClassroomListClassroomsError::Generic { code }.into()),
             }
         }
     }
@@ -723,7 +749,7 @@ impl<'api> Classroom<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_classrooms(&self, query_params: Option<impl Into<ClassroomListClassroomsParams>>) -> Result<Vec<SimpleClassroom>, ClassroomListClassroomsError> {
+    pub fn list_classrooms(&self, query_params: Option<impl Into<ClassroomListClassroomsParams>>) -> Result<Vec<SimpleClassroom>, AdapterError> {
 
         let mut request_uri = format!("{}/classrooms", super::GITHUB_BASE_API_URL);
 
@@ -740,19 +766,19 @@ impl<'api> Classroom<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(ClassroomListClassroomsError::Generic { code }),
+                code => Err(ClassroomListClassroomsError::Generic { code }.into()),
             }
         }
     }

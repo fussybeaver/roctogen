@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,180 +22,221 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Interactions<'api> {
-    auth: &'api Auth
+pub struct Interactions<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Interactions {
-    Interactions { auth }
+pub fn new<C: Client>(client: &C) -> Interactions<C> where AdapterError: From<<C as Client>::Err> {
+    Interactions { client }
 }
 
 /// Errors for the [Get interaction restrictions for your public repositories](Interactions::get_restrictions_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsGetRestrictionsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response when there are no restrictions")]
     Status204,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<InteractionsGetRestrictionsForAuthenticatedUserError> for AdapterError {
+    fn from(err: InteractionsGetRestrictionsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsGetRestrictionsForAuthenticatedUserError::Status204 => (String::from("Response when there are no restrictions"), 204),
+            InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get interaction restrictions for an organization](Interactions::get_restrictions_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsGetRestrictionsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<InteractionsGetRestrictionsForOrgError> for AdapterError {
+    fn from(err: InteractionsGetRestrictionsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsGetRestrictionsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get interaction restrictions for a repository](Interactions::get_restrictions_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsGetRestrictionsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<InteractionsGetRestrictionsForRepoError> for AdapterError {
+    fn from(err: InteractionsGetRestrictionsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsGetRestrictionsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove interaction restrictions from your public repositories](Interactions::remove_restrictions_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsRemoveRestrictionsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<InteractionsRemoveRestrictionsForAuthenticatedUserError> for AdapterError {
+    fn from(err: InteractionsRemoveRestrictionsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove interaction restrictions for an organization](Interactions::remove_restrictions_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsRemoveRestrictionsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<InteractionsRemoveRestrictionsForOrgError> for AdapterError {
+    fn from(err: InteractionsRemoveRestrictionsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsRemoveRestrictionsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove interaction restrictions for a repository](Interactions::remove_restrictions_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsRemoveRestrictionsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<InteractionsRemoveRestrictionsForRepoError> for AdapterError {
+    fn from(err: InteractionsRemoveRestrictionsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsRemoveRestrictionsForRepoError::Status409 => (String::from("Response"), 409),
+            InteractionsRemoveRestrictionsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set interaction restrictions for your public repositories](Interactions::set_restrictions_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsSetRestrictionsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<InteractionsSetRestrictionsForAuthenticatedUserError> for AdapterError {
+    fn from(err: InteractionsSetRestrictionsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsSetRestrictionsForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            InteractionsSetRestrictionsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set interaction restrictions for an organization](Interactions::set_restrictions_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsSetRestrictionsForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<InteractionsSetRestrictionsForOrgError> for AdapterError {
+    fn from(err: InteractionsSetRestrictionsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsSetRestrictionsForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            InteractionsSetRestrictionsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set interaction restrictions for a repository](Interactions::set_restrictions_for_repo_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum InteractionsSetRestrictionsForRepoError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response")]
     Status409,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<InteractionsSetRestrictionsForRepoError> for AdapterError {
+    fn from(err: InteractionsSetRestrictionsForRepoError) -> Self {
+        let (description, status_code) = match err {
+            InteractionsSetRestrictionsForRepoError::Status409 => (String::from("Response"), 409),
+            InteractionsSetRestrictionsForRepoError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
 
 
-impl<'api> Interactions<'api> {
+
+impl<'api, C: Client> Interactions<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Get interaction restrictions for your public repositories
@@ -206,32 +246,32 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for get_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#get-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
-    pub async fn get_restrictions_for_authenticated_user_async(&self) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForAuthenticatedUserError> {
+    pub async fn get_restrictions_for_authenticated_user_async(&self) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Status204),
-                code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }),
+                204 => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Status204.into()),
+                code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -246,7 +286,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_restrictions_for_authenticated_user(&self) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForAuthenticatedUserError> {
+    pub fn get_restrictions_for_authenticated_user(&self) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
@@ -258,20 +298,20 @@ impl<'api> Interactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Status204),
-                code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }),
+                204 => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Status204.into()),
+                code => Err(InteractionsGetRestrictionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -285,31 +325,31 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for get_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#get-interaction-restrictions-for-an-organization)
     ///
     /// ---
-    pub async fn get_restrictions_for_org_async(&self, org: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForOrgError> {
+    pub async fn get_restrictions_for_org_async(&self, org: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsGetRestrictionsForOrgError::Generic { code }),
+                code => Err(InteractionsGetRestrictionsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -324,7 +364,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_restrictions_for_org(&self, org: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForOrgError> {
+    pub fn get_restrictions_for_org(&self, org: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
@@ -336,19 +376,19 @@ impl<'api> Interactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsGetRestrictionsForOrgError::Generic { code }),
+                code => Err(InteractionsGetRestrictionsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -362,31 +402,31 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for get_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#get-interaction-restrictions-for-a-repository)
     ///
     /// ---
-    pub async fn get_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForRepoError> {
+    pub async fn get_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsGetRestrictionsForRepoError::Generic { code }),
+                code => Err(InteractionsGetRestrictionsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -401,7 +441,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_restrictions_for_repo(&self, owner: &str, repo: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, InteractionsGetRestrictionsForRepoError> {
+    pub fn get_restrictions_for_repo(&self, owner: &str, repo: &str) -> Result<GetInteractionsGetRestrictionsForAuthenticatedUserResponse200, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -413,19 +453,19 @@ impl<'api> Interactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsGetRestrictionsForRepoError::Generic { code }),
+                code => Err(InteractionsGetRestrictionsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -439,31 +479,31 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for remove_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#remove-interaction-restrictions-from-your-public-repositories)
     ///
     /// ---
-    pub async fn remove_restrictions_for_authenticated_user_async(&self) -> Result<(), InteractionsRemoveRestrictionsForAuthenticatedUserError> {
+    pub async fn remove_restrictions_for_authenticated_user_async(&self) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }),
+                code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -478,7 +518,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_restrictions_for_authenticated_user(&self) -> Result<(), InteractionsRemoveRestrictionsForAuthenticatedUserError> {
+    pub fn remove_restrictions_for_authenticated_user(&self) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
@@ -490,19 +530,19 @@ impl<'api> Interactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }),
+                code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -516,31 +556,31 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for remove_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#remove-interaction-restrictions-for-an-organization)
     ///
     /// ---
-    pub async fn remove_restrictions_for_org_async(&self, org: &str) -> Result<(), InteractionsRemoveRestrictionsForOrgError> {
+    pub async fn remove_restrictions_for_org_async(&self, org: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }),
+                code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -555,7 +595,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_restrictions_for_org(&self, org: &str) -> Result<(), InteractionsRemoveRestrictionsForOrgError> {
+    pub fn remove_restrictions_for_org(&self, org: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
@@ -567,19 +607,19 @@ impl<'api> Interactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }),
+                code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -593,32 +633,32 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for remove_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#remove-interaction-restrictions-for-a-repository)
     ///
     /// ---
-    pub async fn remove_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<(), InteractionsRemoveRestrictionsForRepoError> {
+    pub async fn remove_restrictions_for_repo_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409),
-                code => Err(InteractionsRemoveRestrictionsForRepoError::Generic { code }),
+                409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409.into()),
+                code => Err(InteractionsRemoveRestrictionsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -633,7 +673,7 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_restrictions_for_repo(&self, owner: &str, repo: &str) -> Result<(), InteractionsRemoveRestrictionsForRepoError> {
+    pub fn remove_restrictions_for_repo(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 
@@ -645,20 +685,20 @@ impl<'api> Interactions<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409),
-                code => Err(InteractionsRemoveRestrictionsForRepoError::Generic { code }),
+                409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409.into()),
+                code => Err(InteractionsRemoveRestrictionsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -672,32 +712,32 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for set_restrictions_for_authenticated_user](https://docs.github.com/rest/interactions/user#set-interaction-restrictions-for-your-public-repositories)
     ///
     /// ---
-    pub async fn set_restrictions_for_authenticated_user_async(&self, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForAuthenticatedUserError> {
+    pub async fn set_restrictions_for_authenticated_user_async(&self, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, AdapterError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutInteractionsSetRestrictionsForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutInteractionsSetRestrictionsForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Generic { code }),
+                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -712,32 +752,32 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_restrictions_for_authenticated_user(&self, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForAuthenticatedUserError> {
+    pub fn set_restrictions_for_authenticated_user(&self, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, AdapterError> {
 
         let request_uri = format!("{}/user/interaction-limits", super::GITHUB_BASE_API_URL);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutInteractionsSetRestrictionsForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutInteractionsSetRestrictionsForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Generic { code }),
+                422 => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(InteractionsSetRestrictionsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -751,32 +791,32 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for set_restrictions_for_org](https://docs.github.com/rest/interactions/orgs#set-interaction-restrictions-for-an-organization)
     ///
     /// ---
-    pub async fn set_restrictions_for_org_async(&self, org: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForOrgError> {
+    pub async fn set_restrictions_for_org_async(&self, org: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutInteractionsSetRestrictionsForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutInteractionsSetRestrictionsForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(InteractionsSetRestrictionsForOrgError::Generic { code }),
+                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(InteractionsSetRestrictionsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -791,32 +831,32 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_restrictions_for_org(&self, org: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForOrgError> {
+    pub fn set_restrictions_for_org(&self, org: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/interaction-limits", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutInteractionsSetRestrictionsForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutInteractionsSetRestrictionsForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(InteractionsSetRestrictionsForOrgError::Generic { code }),
+                422 => Err(InteractionsSetRestrictionsForOrgError::Status422(github_response.to_json()?).into()),
+                code => Err(InteractionsSetRestrictionsForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -830,32 +870,32 @@ impl<'api> Interactions<'api> {
     /// [GitHub API docs for set_restrictions_for_repo](https://docs.github.com/rest/interactions/repos#set-interaction-restrictions-for-a-repository)
     ///
     /// ---
-    pub async fn set_restrictions_for_repo_async(&self, owner: &str, repo: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForRepoError> {
+    pub async fn set_restrictions_for_repo_async(&self, owner: &str, repo: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutInteractionsSetRestrictionsForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutInteractionsSetRestrictionsForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                409 => Err(InteractionsSetRestrictionsForRepoError::Status409),
-                code => Err(InteractionsSetRestrictionsForRepoError::Generic { code }),
+                409 => Err(InteractionsSetRestrictionsForRepoError::Status409.into()),
+                code => Err(InteractionsSetRestrictionsForRepoError::Generic { code }.into()),
             }
         }
     }
@@ -870,32 +910,32 @@ impl<'api> Interactions<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_restrictions_for_repo(&self, owner: &str, repo: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, InteractionsSetRestrictionsForRepoError> {
+    pub fn set_restrictions_for_repo(&self, owner: &str, repo: &str, body: PutInteractionsSetRestrictionsForAuthenticatedUser) -> Result<InteractionLimitResponse, AdapterError> {
 
         let request_uri = format!("{}/repos/{}/{}/interaction-limits", super::GITHUB_BASE_API_URL, owner, repo);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutInteractionsSetRestrictionsForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PutInteractionsSetRestrictionsForAuthenticatedUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                409 => Err(InteractionsSetRestrictionsForRepoError::Status409),
-                code => Err(InteractionsSetRestrictionsForRepoError::Generic { code }),
+                409 => Err(InteractionsSetRestrictionsForRepoError::Status409.into()),
+                code => Err(InteractionsSetRestrictionsForRepoError::Generic { code }.into()),
             }
         }
     }

@@ -14,8 +14,7 @@
 
 use serde::Deserialize;
 
-use crate::adapters::{AdapterError, FromJson, GitHubRequest, GitHubRequestBuilder, GitHubResponseExt};
-use crate::auth::Auth;
+use crate::adapters::{AdapterError, Client, GitHubRequest, GitHubResponseExt};
 use crate::models::*;
 
 use super::PerPage;
@@ -23,44 +22,38 @@ use super::PerPage;
 use std::collections::HashMap;
 use serde_json::value::Value;
 
-pub struct Orgs<'api> {
-    auth: &'api Auth
+pub struct Orgs<'api, C: Client> where AdapterError: From<<C as Client>::Err> {
+    client: &'api C
 }
 
-pub fn new(auth: &Auth) -> Orgs {
-    Orgs { auth }
+pub fn new<C: Client>(client: &C) -> Orgs<C> where AdapterError: From<<C as Client>::Err> {
+    Orgs { client }
 }
 
 /// Errors for the [Add a security manager team](Orgs::add_security_manager_team_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsAddSecurityManagerTeamError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsAddSecurityManagerTeamError> for AdapterError {
+    fn from(err: OrgsAddSecurityManagerTeamError) -> Self {
+        let (description, status_code) = match err {
+            OrgsAddSecurityManagerTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Assign an organization role to a team](Orgs::assign_team_to_org_role_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsAssignTeamToOrgRoleError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if the organization, team or role does not exist.")]
     Status404,
     #[error("Response if the organization roles feature is not enabled for the organization, or validation failed.")]
@@ -69,19 +62,25 @@ pub enum OrgsAssignTeamToOrgRoleError {
     Generic { code: u16 },
 }
 
+impl From<OrgsAssignTeamToOrgRoleError> for AdapterError {
+    fn from(err: OrgsAssignTeamToOrgRoleError) -> Self {
+        let (description, status_code) = match err {
+            OrgsAssignTeamToOrgRoleError::Status404 => (String::from("Response if the organization, team or role does not exist."), 404),
+            OrgsAssignTeamToOrgRoleError::Status422 => (String::from("Response if the organization roles feature is not enabled for the organization, or validation failed."), 422),
+            OrgsAssignTeamToOrgRoleError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Assign an organization role to a user](Orgs::assign_user_to_org_role_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsAssignUserToOrgRoleError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if the organization, user or role does not exist.")]
     Status404,
     #[error("Response if the organization roles feature is not enabled enabled for the organization, the validation failed, or the user is not an organization member.")]
@@ -90,38 +89,49 @@ pub enum OrgsAssignUserToOrgRoleError {
     Generic { code: u16 },
 }
 
+impl From<OrgsAssignUserToOrgRoleError> for AdapterError {
+    fn from(err: OrgsAssignUserToOrgRoleError) -> Self {
+        let (description, status_code) = match err {
+            OrgsAssignUserToOrgRoleError::Status404 => (String::from("Response if the organization, user or role does not exist."), 404),
+            OrgsAssignUserToOrgRoleError::Status422 => (String::from("Response if the organization roles feature is not enabled enabled for the organization, the validation failed, or the user is not an organization member."), 422),
+            OrgsAssignUserToOrgRoleError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Block a user from an organization](Orgs::block_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsBlockUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsBlockUserError> for AdapterError {
+    fn from(err: OrgsBlockUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsBlockUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsBlockUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Cancel an organization invitation](Orgs::cancel_invitation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCancelInvitationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -130,38 +140,49 @@ pub enum OrgsCancelInvitationError {
     Generic { code: u16 },
 }
 
+impl From<OrgsCancelInvitationError> for AdapterError {
+    fn from(err: OrgsCancelInvitationError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCancelInvitationError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsCancelInvitationError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsCancelInvitationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a user is blocked by an organization](Orgs::check_blocked_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCheckBlockedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("If the user is not blocked")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsCheckBlockedUserError> for AdapterError {
+    fn from(err: OrgsCheckBlockedUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCheckBlockedUserError::Status404(_) => (String::from("If the user is not blocked"), 404),
+            OrgsCheckBlockedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check organization membership for a user](Orgs::check_membership_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCheckMembershipForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if requester is not an organization member")]
     Status302,
     #[error("Not Found if requester is an organization member and user is not a member")]
@@ -170,38 +191,49 @@ pub enum OrgsCheckMembershipForUserError {
     Generic { code: u16 },
 }
 
+impl From<OrgsCheckMembershipForUserError> for AdapterError {
+    fn from(err: OrgsCheckMembershipForUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCheckMembershipForUserError::Status302 => (String::from("Response if requester is not an organization member"), 302),
+            OrgsCheckMembershipForUserError::Status404 => (String::from("Not Found if requester is an organization member and user is not a member"), 404),
+            OrgsCheckMembershipForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check public organization membership for a user](Orgs::check_public_membership_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCheckPublicMembershipForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not Found if user is not a public member")]
     Status404,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsCheckPublicMembershipForUserError> for AdapterError {
+    fn from(err: OrgsCheckPublicMembershipForUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCheckPublicMembershipForUserError::Status404 => (String::from("Not Found if user is not a public member"), 404),
+            OrgsCheckPublicMembershipForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Convert an organization member to outside collaborator](Orgs::convert_member_to_outside_collaborator_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsConvertMemberToOutsideCollaboratorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("User was converted")]
     Status204,
     #[error("Forbidden if user is the last owner of the organization, not a member of the organization, or if the enterprise enforces a policy for inviting outside collaborators. For more information, see \"[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories).\"")]
@@ -212,61 +244,80 @@ pub enum OrgsConvertMemberToOutsideCollaboratorError {
     Generic { code: u16 },
 }
 
+impl From<OrgsConvertMemberToOutsideCollaboratorError> for AdapterError {
+    fn from(err: OrgsConvertMemberToOutsideCollaboratorError) -> Self {
+        let (description, status_code) = match err {
+            OrgsConvertMemberToOutsideCollaboratorError::Status204 => (String::from("User was converted"), 204),
+            OrgsConvertMemberToOutsideCollaboratorError::Status403 => (String::from("Forbidden if user is the last owner of the organization, not a member of the organization, or if the enterprise enforces a policy for inviting outside collaborators. For more information, see \"[Enforcing repository management policies in your enterprise](https://docs.github.com/admin/policies/enforcing-policies-for-your-enterprise/enforcing-repository-management-policies-in-your-enterprise#enforcing-a-policy-for-inviting-outside-collaborators-to-repositories).\""), 403),
+            OrgsConvertMemberToOutsideCollaboratorError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsConvertMemberToOutsideCollaboratorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an organization invitation](Orgs::create_invitation_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCreateInvitationError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsCreateInvitationError> for AdapterError {
+    fn from(err: OrgsCreateInvitationError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCreateInvitationError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsCreateInvitationError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsCreateInvitationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create or update custom properties for an organization](Orgs::create_or_update_custom_properties_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCreateOrUpdateCustomPropertiesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsCreateOrUpdateCustomPropertiesError> for AdapterError {
+    fn from(err: OrgsCreateOrUpdateCustomPropertiesError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCreateOrUpdateCustomPropertiesError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsCreateOrUpdateCustomPropertiesError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsCreateOrUpdateCustomPropertiesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create or update custom property values for organization repositories](Orgs::create_or_update_custom_properties_values_for_repos_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCreateOrUpdateCustomPropertiesValuesForReposError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -275,21 +326,28 @@ pub enum OrgsCreateOrUpdateCustomPropertiesValuesForReposError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsCreateOrUpdateCustomPropertiesValuesForReposError> for AdapterError {
+    fn from(err: OrgsCreateOrUpdateCustomPropertiesValuesForReposError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Create or update a custom property for an organization](Orgs::create_or_update_custom_property_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCreateOrUpdateCustomPropertyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -298,19 +356,25 @@ pub enum OrgsCreateOrUpdateCustomPropertyError {
     Generic { code: u16 },
 }
 
+impl From<OrgsCreateOrUpdateCustomPropertyError> for AdapterError {
+    fn from(err: OrgsCreateOrUpdateCustomPropertyError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCreateOrUpdateCustomPropertyError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsCreateOrUpdateCustomPropertyError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsCreateOrUpdateCustomPropertyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create an organization webhook](Orgs::create_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsCreateWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -319,19 +383,25 @@ pub enum OrgsCreateWebhookError {
     Generic { code: u16 },
 }
 
+impl From<OrgsCreateWebhookError> for AdapterError {
+    fn from(err: OrgsCreateWebhookError) -> Self {
+        let (description, status_code) = match err {
+            OrgsCreateWebhookError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsCreateWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsCreateWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete an organization](Orgs::delete_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsDeleteError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
@@ -340,348 +410,442 @@ pub enum OrgsDeleteError {
     Generic { code: u16 },
 }
 
+impl From<OrgsDeleteError> for AdapterError {
+    fn from(err: OrgsDeleteError) -> Self {
+        let (description, status_code) = match err {
+            OrgsDeleteError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsDeleteError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsDeleteError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Delete an organization webhook](Orgs::delete_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsDeleteWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsDeleteWebhookError> for AdapterError {
+    fn from(err: OrgsDeleteWebhookError) -> Self {
+        let (description, status_code) = match err {
+            OrgsDeleteWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsDeleteWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Enable or disable a security feature for an organization](Orgs::enable_or_disable_security_product_on_all_org_repos_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsEnableOrDisableSecurityProductOnAllOrgReposError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("The action could not be taken due to an in progress enablement, or a policy is preventing enablement")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsEnableOrDisableSecurityProductOnAllOrgReposError> for AdapterError {
+    fn from(err: OrgsEnableOrDisableSecurityProductOnAllOrgReposError) -> Self {
+        let (description, status_code) = match err {
+            OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422 => (String::from("The action could not be taken due to an in progress enablement, or a policy is preventing enablement"), 422),
+            OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get an organization](Orgs::get_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetError> for AdapterError {
+    fn from(err: OrgsGetError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsGetError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get all custom properties for an organization](Orgs::get_all_custom_properties_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetAllCustomPropertiesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetAllCustomPropertiesError> for AdapterError {
+    fn from(err: OrgsGetAllCustomPropertiesError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetAllCustomPropertiesError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsGetAllCustomPropertiesError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsGetAllCustomPropertiesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a custom property for an organization](Orgs::get_custom_property_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetCustomPropertyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetCustomPropertyError> for AdapterError {
+    fn from(err: OrgsGetCustomPropertyError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetCustomPropertyError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsGetCustomPropertyError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsGetCustomPropertyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization membership for the authenticated user](Orgs::get_membership_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetMembershipForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetMembershipForAuthenticatedUserError> for AdapterError {
+    fn from(err: OrgsGetMembershipForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetMembershipForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsGetMembershipForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsGetMembershipForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get organization membership for a user](Orgs::get_membership_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetMembershipForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetMembershipForUserError> for AdapterError {
+    fn from(err: OrgsGetMembershipForUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetMembershipForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsGetMembershipForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsGetMembershipForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization role](Orgs::get_org_role_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetOrgRoleError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetOrgRoleError> for AdapterError {
+    fn from(err: OrgsGetOrgRoleError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetOrgRoleError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsGetOrgRoleError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsGetOrgRoleError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get an organization webhook](Orgs::get_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetWebhookError> for AdapterError {
+    fn from(err: OrgsGetWebhookError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsGetWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a webhook configuration for an organization](Orgs::get_webhook_config_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetWebhookConfigForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetWebhookConfigForOrgError> for AdapterError {
+    fn from(err: OrgsGetWebhookConfigForOrgError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetWebhookConfigForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Get a webhook delivery for an organization webhook](Orgs::get_webhook_delivery_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetWebhookDeliveryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsGetWebhookDeliveryError> for AdapterError {
+    fn from(err: OrgsGetWebhookDeliveryError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetWebhookDeliveryError::Status400(_) => (String::from("Bad Request"), 400),
+            OrgsGetWebhookDeliveryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsGetWebhookDeliveryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organizations](Orgs::list_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListError> for AdapterError {
+    fn from(err: OrgsListError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListError::Status304 => (String::from("Not modified"), 304),
+            OrgsListError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List app installations for an organization](Orgs::list_app_installations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListAppInstallationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListAppInstallationsError> for AdapterError {
+    fn from(err: OrgsListAppInstallationsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListAppInstallationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List attestations](Orgs::list_attestations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListAttestationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListAttestationsError> for AdapterError {
+    fn from(err: OrgsListAttestationsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListAttestationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List users blocked by an organization](Orgs::list_blocked_users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListBlockedUsersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListBlockedUsersError> for AdapterError {
+    fn from(err: OrgsListBlockedUsersError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListBlockedUsersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List custom property values for organization repositories](Orgs::list_custom_properties_values_for_repos_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListCustomPropertiesValuesForReposError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListCustomPropertiesValuesForReposError> for AdapterError {
+    fn from(err: OrgsListCustomPropertiesValuesForReposError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListCustomPropertiesValuesForReposError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsListCustomPropertiesValuesForReposError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListCustomPropertiesValuesForReposError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List failed organization invitations](Orgs::list_failed_invitations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListFailedInvitationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListFailedInvitationsError> for AdapterError {
+    fn from(err: OrgsListFailedInvitationsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListFailedInvitationsError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListFailedInvitationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organizations for the authenticated user](Orgs::list_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -690,76 +854,97 @@ pub enum OrgsListForAuthenticatedUserError {
     Status401(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListForAuthenticatedUserError> for AdapterError {
+    fn from(err: OrgsListForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            OrgsListForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsListForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            OrgsListForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organizations for a user](Orgs::list_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListForUserError> for AdapterError {
+    fn from(err: OrgsListForUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organization invitation teams](Orgs::list_invitation_teams_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListInvitationTeamsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsListInvitationTeamsError> for AdapterError {
+    fn from(err: OrgsListInvitationTeamsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListInvitationTeamsError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListInvitationTeamsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization members](Orgs::list_members_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListMembersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsListMembersError> for AdapterError {
+    fn from(err: OrgsListMembersError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListMembersError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsListMembersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List organization memberships for the authenticated user](Orgs::list_memberships_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListMembershipsForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Not modified")]
     Status304,
     #[error("Forbidden")]
@@ -772,40 +957,54 @@ pub enum OrgsListMembershipsForAuthenticatedUserError {
     Generic { code: u16 },
 }
 
+impl From<OrgsListMembershipsForAuthenticatedUserError> for AdapterError {
+    fn from(err: OrgsListMembershipsForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListMembershipsForAuthenticatedUserError::Status304 => (String::from("Not modified"), 304),
+            OrgsListMembershipsForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsListMembershipsForAuthenticatedUserError::Status401(_) => (String::from("Requires authentication"), 401),
+            OrgsListMembershipsForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsListMembershipsForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List teams that are assigned to an organization role](Orgs::list_org_role_teams_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListOrgRoleTeamsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if the organization or role does not exist.")]
     Status404,
     #[error("Response if the organization roles feature is not enabled or validation failed.")]
     Status422,
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListOrgRoleTeamsError> for AdapterError {
+    fn from(err: OrgsListOrgRoleTeamsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListOrgRoleTeamsError::Status404 => (String::from("Response if the organization or role does not exist."), 404),
+            OrgsListOrgRoleTeamsError::Status422 => (String::from("Response if the organization roles feature is not enabled or validation failed."), 422),
+            OrgsListOrgRoleTeamsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List users that are assigned to an organization role](Orgs::list_org_role_users_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListOrgRoleUsersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Response if the organization or role does not exist.")]
     Status404,
     #[error("Response if the organization roles feature is not enabled or validation failed.")]
@@ -814,57 +1013,73 @@ pub enum OrgsListOrgRoleUsersError {
     Generic { code: u16 },
 }
 
+impl From<OrgsListOrgRoleUsersError> for AdapterError {
+    fn from(err: OrgsListOrgRoleUsersError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListOrgRoleUsersError::Status404 => (String::from("Response if the organization or role does not exist."), 404),
+            OrgsListOrgRoleUsersError::Status422 => (String::from("Response if the organization roles feature is not enabled or validation failed."), 422),
+            OrgsListOrgRoleUsersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get all organization roles for an organization](Orgs::list_org_roles_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListOrgRolesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListOrgRolesError> for AdapterError {
+    fn from(err: OrgsListOrgRolesError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListOrgRolesError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListOrgRolesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsListOrgRolesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List outside collaborators for an organization](Orgs::list_outside_collaborators_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListOutsideCollaboratorsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListOutsideCollaboratorsError> for AdapterError {
+    fn from(err: OrgsListOutsideCollaboratorsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListOutsideCollaboratorsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories a fine-grained personal access token has access to](Orgs::list_pat_grant_repositories_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListPatGrantRepositoriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Resource not found")]
@@ -873,21 +1088,28 @@ pub enum OrgsListPatGrantRepositoriesError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListPatGrantRepositoriesError> for AdapterError {
+    fn from(err: OrgsListPatGrantRepositoriesError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListPatGrantRepositoriesError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsListPatGrantRepositoriesError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListPatGrantRepositoriesError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsListPatGrantRepositoriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List repositories requested to be accessed by a fine-grained personal access token](Orgs::list_pat_grant_request_repositories_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListPatGrantRequestRepositoriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Resource not found")]
@@ -896,21 +1118,28 @@ pub enum OrgsListPatGrantRequestRepositoriesError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListPatGrantRequestRepositoriesError> for AdapterError {
+    fn from(err: OrgsListPatGrantRequestRepositoriesError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListPatGrantRequestRepositoriesError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsListPatGrantRequestRepositoriesError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListPatGrantRequestRepositoriesError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsListPatGrantRequestRepositoriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List requests to access organization resources with fine-grained personal access tokens](Orgs::list_pat_grant_requests_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListPatGrantRequestsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -921,21 +1150,29 @@ pub enum OrgsListPatGrantRequestsError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListPatGrantRequestsError> for AdapterError {
+    fn from(err: OrgsListPatGrantRequestsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListPatGrantRequestsError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsListPatGrantRequestsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsListPatGrantRequestsError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListPatGrantRequestsError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsListPatGrantRequestsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List fine-grained personal access tokens with access to organization resources](Orgs::list_pat_grants_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListPatGrantsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -948,131 +1185,168 @@ pub enum OrgsListPatGrantsError {
     Generic { code: u16 },
 }
 
+impl From<OrgsListPatGrantsError> for AdapterError {
+    fn from(err: OrgsListPatGrantsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListPatGrantsError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsListPatGrantsError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsListPatGrantsError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListPatGrantsError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsListPatGrantsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List pending organization invitations](Orgs::list_pending_invitations_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListPendingInvitationsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListPendingInvitationsError> for AdapterError {
+    fn from(err: OrgsListPendingInvitationsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListPendingInvitationsError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListPendingInvitationsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List public organization members](Orgs::list_public_members_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListPublicMembersError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListPublicMembersError> for AdapterError {
+    fn from(err: OrgsListPublicMembersError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListPublicMembersError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List security manager teams](Orgs::list_security_manager_teams_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListSecurityManagerTeamsError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListSecurityManagerTeamsError> for AdapterError {
+    fn from(err: OrgsListSecurityManagerTeamsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListSecurityManagerTeamsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List deliveries for an organization webhook](Orgs::list_webhook_deliveries_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListWebhookDeliveriesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListWebhookDeliveriesError> for AdapterError {
+    fn from(err: OrgsListWebhookDeliveriesError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListWebhookDeliveriesError::Status400(_) => (String::from("Bad Request"), 400),
+            OrgsListWebhookDeliveriesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsListWebhookDeliveriesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [List organization webhooks](Orgs::list_webhooks_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsListWebhooksError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsListWebhooksError> for AdapterError {
+    fn from(err: OrgsListWebhooksError) -> Self {
+        let (description, status_code) = match err {
+            OrgsListWebhooksError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsListWebhooksError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Ping an organization webhook](Orgs::ping_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsPingWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsPingWebhookError> for AdapterError {
+    fn from(err: OrgsPingWebhookError) -> Self {
+        let (description, status_code) = match err {
+            OrgsPingWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsPingWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Redeliver a delivery for an organization webhook](Orgs::redeliver_webhook_delivery_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRedeliverWebhookDeliveryError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Bad Request")]
     Status400(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -1081,59 +1355,76 @@ pub enum OrgsRedeliverWebhookDeliveryError {
     Generic { code: u16 },
 }
 
+impl From<OrgsRedeliverWebhookDeliveryError> for AdapterError {
+    fn from(err: OrgsRedeliverWebhookDeliveryError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRedeliverWebhookDeliveryError::Status400(_) => (String::from("Bad Request"), 400),
+            OrgsRedeliverWebhookDeliveryError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsRedeliverWebhookDeliveryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove a custom property for an organization](Orgs::remove_custom_property_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRemoveCustomPropertyError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
     Status404(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsRemoveCustomPropertyError> for AdapterError {
+    fn from(err: OrgsRemoveCustomPropertyError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRemoveCustomPropertyError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsRemoveCustomPropertyError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsRemoveCustomPropertyError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove an organization member](Orgs::remove_member_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRemoveMemberError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsRemoveMemberError> for AdapterError {
+    fn from(err: OrgsRemoveMemberError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRemoveMemberError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsRemoveMemberError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove organization membership for a user](Orgs::remove_membership_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRemoveMembershipForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -1142,72 +1433,91 @@ pub enum OrgsRemoveMembershipForUserError {
     Generic { code: u16 },
 }
 
+impl From<OrgsRemoveMembershipForUserError> for AdapterError {
+    fn from(err: OrgsRemoveMembershipForUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRemoveMembershipForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsRemoveMembershipForUserError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsRemoveMembershipForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove outside collaborator from an organization](Orgs::remove_outside_collaborator_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRemoveOutsideCollaboratorError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Unprocessable Entity if user is a member of the organization")]
     Status422(PutTeamsAddOrUpdateProjectPermissionsLegacyResponse403),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsRemoveOutsideCollaboratorError> for AdapterError {
+    fn from(err: OrgsRemoveOutsideCollaboratorError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRemoveOutsideCollaboratorError::Status422(_) => (String::from("Unprocessable Entity if user is a member of the organization"), 422),
+            OrgsRemoveOutsideCollaboratorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove public organization membership for the authenticated user](Orgs::remove_public_membership_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRemovePublicMembershipForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsRemovePublicMembershipForAuthenticatedUserError> for AdapterError {
+    fn from(err: OrgsRemovePublicMembershipForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove a security manager team](Orgs::remove_security_manager_team_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRemoveSecurityManagerTeamError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsRemoveSecurityManagerTeamError> for AdapterError {
+    fn from(err: OrgsRemoveSecurityManagerTeamError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRemoveSecurityManagerTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Review a request to access organization resources with a fine-grained personal access token](Orgs::review_pat_grant_request_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsReviewPatGrantRequestError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -1218,21 +1528,29 @@ pub enum OrgsReviewPatGrantRequestError {
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsReviewPatGrantRequestError> for AdapterError {
+    fn from(err: OrgsReviewPatGrantRequestError) -> Self {
+        let (description, status_code) = match err {
+            OrgsReviewPatGrantRequestError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsReviewPatGrantRequestError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsReviewPatGrantRequestError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsReviewPatGrantRequestError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsReviewPatGrantRequestError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Review requests to access organization resources with fine-grained personal access tokens](Orgs::review_pat_grant_requests_in_bulk_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsReviewPatGrantRequestsInBulkError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
@@ -1245,87 +1563,111 @@ pub enum OrgsReviewPatGrantRequestsInBulkError {
     Generic { code: u16 },
 }
 
+impl From<OrgsReviewPatGrantRequestsInBulkError> for AdapterError {
+    fn from(err: OrgsReviewPatGrantRequestsInBulkError) -> Self {
+        let (description, status_code) = match err {
+            OrgsReviewPatGrantRequestsInBulkError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsReviewPatGrantRequestsInBulkError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsReviewPatGrantRequestsInBulkError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsReviewPatGrantRequestsInBulkError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsReviewPatGrantRequestsInBulkError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Remove all organization roles for a team](Orgs::revoke_all_org_roles_team_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRevokeAllOrgRolesTeamError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsRevokeAllOrgRolesTeamError> for AdapterError {
+    fn from(err: OrgsRevokeAllOrgRolesTeamError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRevokeAllOrgRolesTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove all organization roles for a user](Orgs::revoke_all_org_roles_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRevokeAllOrgRolesUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsRevokeAllOrgRolesUserError> for AdapterError {
+    fn from(err: OrgsRevokeAllOrgRolesUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRevokeAllOrgRolesUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove an organization role from a team](Orgs::revoke_org_role_team_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRevokeOrgRoleTeamError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsRevokeOrgRoleTeamError> for AdapterError {
+    fn from(err: OrgsRevokeOrgRoleTeamError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRevokeOrgRoleTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Remove an organization role from a user](Orgs::revoke_org_role_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsRevokeOrgRoleUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsRevokeOrgRoleUserError> for AdapterError {
+    fn from(err: OrgsRevokeOrgRoleUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsRevokeOrgRoleUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Set organization membership for a user](Orgs::set_membership_for_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsSetMembershipForUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Forbidden")]
@@ -1334,55 +1676,70 @@ pub enum OrgsSetMembershipForUserError {
     Generic { code: u16 },
 }
 
+impl From<OrgsSetMembershipForUserError> for AdapterError {
+    fn from(err: OrgsSetMembershipForUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsSetMembershipForUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsSetMembershipForUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsSetMembershipForUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Set public organization membership for the authenticated user](Orgs::set_public_membership_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsSetPublicMembershipForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
 
+impl From<OrgsSetPublicMembershipForAuthenticatedUserError> for AdapterError {
+    fn from(err: OrgsSetPublicMembershipForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsSetPublicMembershipForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsSetPublicMembershipForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Unblock a user from an organization](Orgs::unblock_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsUnblockUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsUnblockUserError> for AdapterError {
+    fn from(err: OrgsUnblockUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsUnblockUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update an organization](Orgs::update_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsUpdateError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed")]
     Status422(PostProjectsCreateCardResponse422),
     #[error("Conflict")]
@@ -1391,19 +1748,25 @@ pub enum OrgsUpdateError {
     Generic { code: u16 },
 }
 
+impl From<OrgsUpdateError> for AdapterError {
+    fn from(err: OrgsUpdateError) -> Self {
+        let (description, status_code) = match err {
+            OrgsUpdateError::Status422(_) => (String::from("Validation failed"), 422),
+            OrgsUpdateError::Status409(_) => (String::from("Conflict"), 409),
+            OrgsUpdateError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an organization membership for the authenticated user](Orgs::update_membership_for_authenticated_user_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsUpdateMembershipForAuthenticatedUserError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Forbidden")]
     Status403(BasicError),
     #[error("Resource not found")]
@@ -1412,21 +1775,28 @@ pub enum OrgsUpdateMembershipForAuthenticatedUserError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsUpdateMembershipForAuthenticatedUserError> for AdapterError {
+    fn from(err: OrgsUpdateMembershipForAuthenticatedUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsUpdateMembershipForAuthenticatedUserError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsUpdateMembershipForAuthenticatedUserError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsUpdateMembershipForAuthenticatedUserError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsUpdateMembershipForAuthenticatedUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update the access a fine-grained personal access token has to organization resources](Orgs::update_pat_access_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsUpdatePatAccessError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Resource not found")]
@@ -1437,21 +1807,29 @@ pub enum OrgsUpdatePatAccessError {
     Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsUpdatePatAccessError> for AdapterError {
+    fn from(err: OrgsUpdatePatAccessError) -> Self {
+        let (description, status_code) = match err {
+            OrgsUpdatePatAccessError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsUpdatePatAccessError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsUpdatePatAccessError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsUpdatePatAccessError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsUpdatePatAccessError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 /// Errors for the [Update the access to organization resources via fine-grained personal access tokens](Orgs::update_pat_accesses_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsUpdatePatAccessesError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Internal Error")]
     Status500(BasicError),
     #[error("Resource not found")]
@@ -1464,19 +1842,27 @@ pub enum OrgsUpdatePatAccessesError {
     Generic { code: u16 },
 }
 
+impl From<OrgsUpdatePatAccessesError> for AdapterError {
+    fn from(err: OrgsUpdatePatAccessesError) -> Self {
+        let (description, status_code) = match err {
+            OrgsUpdatePatAccessesError::Status500(_) => (String::from("Internal Error"), 500),
+            OrgsUpdatePatAccessesError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsUpdatePatAccessesError::Status403(_) => (String::from("Forbidden"), 403),
+            OrgsUpdatePatAccessesError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsUpdatePatAccessesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an organization webhook](Orgs::update_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsUpdateWebhookError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationError),
     #[error("Resource not found")]
@@ -1485,21 +1871,41 @@ pub enum OrgsUpdateWebhookError {
     Generic { code: u16 },
 }
 
+impl From<OrgsUpdateWebhookError> for AdapterError {
+    fn from(err: OrgsUpdateWebhookError) -> Self {
+        let (description, status_code) = match err {
+            OrgsUpdateWebhookError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            OrgsUpdateWebhookError::Status404(_) => (String::from("Resource not found"), 404),
+            OrgsUpdateWebhookError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a webhook configuration for an organization](Orgs::update_webhook_config_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsUpdateWebhookConfigForOrgError {
-    #[error(transparent)]
-    AdapterError(#[from] AdapterError),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
-    #[error(transparent)]
-    SerdeUrl(#[from] serde_urlencoded::ser::Error),
-
-
-    // -- endpoint errors
-
     #[error("Status code: {}", code)]
     Generic { code: u16 },
+}
+
+impl From<OrgsUpdateWebhookConfigForOrgError> for AdapterError {
+    fn from(err: OrgsUpdateWebhookConfigForOrgError) -> Self {
+        let (description, status_code) = match err {
+            OrgsUpdateWebhookConfigForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
 }
 
 
@@ -2744,7 +3150,7 @@ impl<'enc> From<&'enc PerPage> for OrgsListWebhooksParams {
     }
 }
 
-impl<'api> Orgs<'api> {
+impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
     /// # Add a security manager team
@@ -2758,31 +3164,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for add_security_manager_team](https://docs.github.com/rest/orgs/security-managers#add-a-security-manager-team)
     ///
     /// ---
-    pub async fn add_security_manager_team_async(&self, org: &str, team_slug: &str) -> Result<(), OrgsAddSecurityManagerTeamError> {
+    pub async fn add_security_manager_team_async(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsAddSecurityManagerTeamError::Generic { code }),
+                code => Err(OrgsAddSecurityManagerTeamError::Generic { code }.into()),
             }
         }
     }
@@ -2801,7 +3207,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_security_manager_team(&self, org: &str, team_slug: &str) -> Result<(), OrgsAddSecurityManagerTeamError> {
+    pub fn add_security_manager_team(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -2813,19 +3219,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsAddSecurityManagerTeamError::Generic { code }),
+                code => Err(OrgsAddSecurityManagerTeamError::Generic { code }.into()),
             }
         }
     }
@@ -2843,33 +3249,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for assign_team_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-team)
     ///
     /// ---
-    pub async fn assign_team_to_org_role_async(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsAssignTeamToOrgRoleError> {
+    pub async fn assign_team_to_org_role_async(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsAssignTeamToOrgRoleError::Status404),
-                422 => Err(OrgsAssignTeamToOrgRoleError::Status422),
-                code => Err(OrgsAssignTeamToOrgRoleError::Generic { code }),
+                404 => Err(OrgsAssignTeamToOrgRoleError::Status404.into()),
+                422 => Err(OrgsAssignTeamToOrgRoleError::Status422.into()),
+                code => Err(OrgsAssignTeamToOrgRoleError::Generic { code }.into()),
             }
         }
     }
@@ -2888,7 +3294,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn assign_team_to_org_role(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsAssignTeamToOrgRoleError> {
+    pub fn assign_team_to_org_role(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
 
@@ -2900,21 +3306,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsAssignTeamToOrgRoleError::Status404),
-                422 => Err(OrgsAssignTeamToOrgRoleError::Status422),
-                code => Err(OrgsAssignTeamToOrgRoleError::Generic { code }),
+                404 => Err(OrgsAssignTeamToOrgRoleError::Status404.into()),
+                422 => Err(OrgsAssignTeamToOrgRoleError::Status422.into()),
+                code => Err(OrgsAssignTeamToOrgRoleError::Generic { code }.into()),
             }
         }
     }
@@ -2932,33 +3338,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for assign_user_to_org_role](https://docs.github.com/rest/orgs/organization-roles#assign-an-organization-role-to-a-user)
     ///
     /// ---
-    pub async fn assign_user_to_org_role_async(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsAssignUserToOrgRoleError> {
+    pub async fn assign_user_to_org_role_async(&self, org: &str, username: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsAssignUserToOrgRoleError::Status404),
-                422 => Err(OrgsAssignUserToOrgRoleError::Status422),
-                code => Err(OrgsAssignUserToOrgRoleError::Generic { code }),
+                404 => Err(OrgsAssignUserToOrgRoleError::Status404.into()),
+                422 => Err(OrgsAssignUserToOrgRoleError::Status422.into()),
+                code => Err(OrgsAssignUserToOrgRoleError::Generic { code }.into()),
             }
         }
     }
@@ -2977,7 +3383,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn assign_user_to_org_role(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsAssignUserToOrgRoleError> {
+    pub fn assign_user_to_org_role(&self, org: &str, username: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
 
@@ -2989,21 +3395,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsAssignUserToOrgRoleError::Status404),
-                422 => Err(OrgsAssignUserToOrgRoleError::Status422),
-                code => Err(OrgsAssignUserToOrgRoleError::Generic { code }),
+                404 => Err(OrgsAssignUserToOrgRoleError::Status404.into()),
+                422 => Err(OrgsAssignUserToOrgRoleError::Status422.into()),
+                code => Err(OrgsAssignUserToOrgRoleError::Generic { code }.into()),
             }
         }
     }
@@ -3017,32 +3423,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for block_user](https://docs.github.com/rest/orgs/blocking#block-a-user-from-an-organization)
     ///
     /// ---
-    pub async fn block_user_async(&self, org: &str, username: &str) -> Result<(), OrgsBlockUserError> {
+    pub async fn block_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/blocks/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsBlockUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsBlockUserError::Generic { code }),
+                422 => Err(OrgsBlockUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsBlockUserError::Generic { code }.into()),
             }
         }
     }
@@ -3057,7 +3463,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn block_user(&self, org: &str, username: &str) -> Result<(), OrgsBlockUserError> {
+    pub fn block_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/blocks/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -3069,20 +3475,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsBlockUserError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsBlockUserError::Generic { code }),
+                422 => Err(OrgsBlockUserError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsBlockUserError::Generic { code }.into()),
             }
         }
     }
@@ -3098,33 +3504,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for cancel_invitation](https://docs.github.com/rest/orgs/members#cancel-an-organization-invitation)
     ///
     /// ---
-    pub async fn cancel_invitation_async(&self, org: &str, invitation_id: i32) -> Result<(), OrgsCancelInvitationError> {
+    pub async fn cancel_invitation_async(&self, org: &str, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/invitations/{}", super::GITHUB_BASE_API_URL, org, invitation_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCancelInvitationError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsCancelInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsCancelInvitationError::Generic { code }),
+                422 => Err(OrgsCancelInvitationError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsCancelInvitationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsCancelInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -3141,7 +3547,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_invitation(&self, org: &str, invitation_id: i32) -> Result<(), OrgsCancelInvitationError> {
+    pub fn cancel_invitation(&self, org: &str, invitation_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/invitations/{}", super::GITHUB_BASE_API_URL, org, invitation_id);
 
@@ -3153,21 +3559,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCancelInvitationError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsCancelInvitationError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsCancelInvitationError::Generic { code }),
+                422 => Err(OrgsCancelInvitationError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsCancelInvitationError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsCancelInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -3181,32 +3587,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for check_blocked_user](https://docs.github.com/rest/orgs/blocking#check-if-a-user-is-blocked-by-an-organization)
     ///
     /// ---
-    pub async fn check_blocked_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckBlockedUserError> {
+    pub async fn check_blocked_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/blocks/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsCheckBlockedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsCheckBlockedUserError::Generic { code }),
+                404 => Err(OrgsCheckBlockedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsCheckBlockedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3221,7 +3627,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_blocked_user(&self, org: &str, username: &str) -> Result<(), OrgsCheckBlockedUserError> {
+    pub fn check_blocked_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/blocks/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -3233,20 +3639,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsCheckBlockedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsCheckBlockedUserError::Generic { code }),
+                404 => Err(OrgsCheckBlockedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsCheckBlockedUserError::Generic { code }.into()),
             }
         }
     }
@@ -3260,33 +3666,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for check_membership_for_user](https://docs.github.com/rest/orgs/members#check-organization-membership-for-a-user)
     ///
     /// ---
-    pub async fn check_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckMembershipForUserError> {
+    pub async fn check_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                302 => Err(OrgsCheckMembershipForUserError::Status302),
-                404 => Err(OrgsCheckMembershipForUserError::Status404),
-                code => Err(OrgsCheckMembershipForUserError::Generic { code }),
+                302 => Err(OrgsCheckMembershipForUserError::Status302.into()),
+                404 => Err(OrgsCheckMembershipForUserError::Status404.into()),
+                code => Err(OrgsCheckMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3301,7 +3707,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_membership_for_user(&self, org: &str, username: &str) -> Result<(), OrgsCheckMembershipForUserError> {
+    pub fn check_membership_for_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -3313,21 +3719,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                302 => Err(OrgsCheckMembershipForUserError::Status302),
-                404 => Err(OrgsCheckMembershipForUserError::Status404),
-                code => Err(OrgsCheckMembershipForUserError::Generic { code }),
+                302 => Err(OrgsCheckMembershipForUserError::Status302.into()),
+                404 => Err(OrgsCheckMembershipForUserError::Status404.into()),
+                code => Err(OrgsCheckMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3341,32 +3747,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for check_public_membership_for_user](https://docs.github.com/rest/orgs/members#check-public-organization-membership-for-a-user)
     ///
     /// ---
-    pub async fn check_public_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsCheckPublicMembershipForUserError> {
+    pub async fn check_public_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/public_members/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsCheckPublicMembershipForUserError::Status404),
-                code => Err(OrgsCheckPublicMembershipForUserError::Generic { code }),
+                404 => Err(OrgsCheckPublicMembershipForUserError::Status404.into()),
+                code => Err(OrgsCheckPublicMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3381,7 +3787,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn check_public_membership_for_user(&self, org: &str, username: &str) -> Result<(), OrgsCheckPublicMembershipForUserError> {
+    pub fn check_public_membership_for_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/public_members/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -3393,20 +3799,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsCheckPublicMembershipForUserError::Status404),
-                code => Err(OrgsCheckPublicMembershipForUserError::Generic { code }),
+                404 => Err(OrgsCheckPublicMembershipForUserError::Status404.into()),
+                code => Err(OrgsCheckPublicMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -3420,34 +3826,34 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for convert_member_to_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#convert-an-organization-member-to-outside-collaborator)
     ///
     /// ---
-    pub async fn convert_member_to_outside_collaborator_async(&self, org: &str, username: &str, body: PutOrgsConvertMemberToOutsideCollaborator) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
+    pub async fn convert_member_to_outside_collaborator_async(&self, org: &str, username: &str, body: PutOrgsConvertMemberToOutsideCollaborator) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOrgsConvertMemberToOutsideCollaborator::from_json(body)?),
+            body: Some(C::from_json::<PutOrgsConvertMemberToOutsideCollaborator>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204),
-                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403),
-                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }),
+                204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204.into()),
+                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403.into()),
+                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -3462,34 +3868,34 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn convert_member_to_outside_collaborator(&self, org: &str, username: &str, body: PutOrgsConvertMemberToOutsideCollaborator) -> Result<HashMap<String, Value>, OrgsConvertMemberToOutsideCollaboratorError> {
+    pub fn convert_member_to_outside_collaborator(&self, org: &str, username: &str, body: PutOrgsConvertMemberToOutsideCollaborator) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOrgsConvertMemberToOutsideCollaborator::from_json(body)?),
+            body: Some(C::from_json::<PutOrgsConvertMemberToOutsideCollaborator>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204),
-                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403),
-                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }),
+                204 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status204.into()),
+                403 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status403.into()),
+                404 => Err(OrgsConvertMemberToOutsideCollaboratorError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsConvertMemberToOutsideCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -3506,33 +3912,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for create_invitation](https://docs.github.com/rest/orgs/members#create-an-organization-invitation)
     ///
     /// ---
-    pub async fn create_invitation_async(&self, org: &str, body: PostOrgsCreateInvitation) -> Result<OrganizationInvitation, OrgsCreateInvitationError> {
+    pub async fn create_invitation_async(&self, org: &str, body: PostOrgsCreateInvitation) -> Result<OrganizationInvitation, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/invitations", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsCreateInvitation::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsCreateInvitation>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateInvitationError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsCreateInvitationError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsCreateInvitationError::Generic { code }),
+                422 => Err(OrgsCreateInvitationError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsCreateInvitationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsCreateInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -3550,33 +3956,33 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_invitation(&self, org: &str, body: PostOrgsCreateInvitation) -> Result<OrganizationInvitation, OrgsCreateInvitationError> {
+    pub fn create_invitation(&self, org: &str, body: PostOrgsCreateInvitation) -> Result<OrganizationInvitation, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/invitations", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsCreateInvitation::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsCreateInvitation>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateInvitationError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsCreateInvitationError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsCreateInvitationError::Generic { code }),
+                422 => Err(OrgsCreateInvitationError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsCreateInvitationError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsCreateInvitationError::Generic { code }.into()),
             }
         }
     }
@@ -3594,33 +4000,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for create_or_update_custom_properties](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization)
     ///
     /// ---
-    pub async fn create_or_update_custom_properties_async(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomProperties) -> Result<Vec<CustomProperty>, OrgsCreateOrUpdateCustomPropertiesError> {
+    pub async fn create_or_update_custom_properties_async(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomProperties) -> Result<Vec<CustomProperty>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsCreateOrUpdateCustomProperties::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsCreateOrUpdateCustomProperties>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsCreateOrUpdateCustomPropertiesError::Generic { code }),
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesError::Generic { code }.into()),
             }
         }
     }
@@ -3639,33 +4045,33 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_custom_properties(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomProperties) -> Result<Vec<CustomProperty>, OrgsCreateOrUpdateCustomPropertiesError> {
+    pub fn create_or_update_custom_properties(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomProperties) -> Result<Vec<CustomProperty>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsCreateOrUpdateCustomProperties::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsCreateOrUpdateCustomProperties>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsCreateOrUpdateCustomPropertiesError::Generic { code }),
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesError::Generic { code }.into()),
             }
         }
     }
@@ -3688,34 +4094,34 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for create_or_update_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-property-values-for-organization-repositories)
     ///
     /// ---
-    pub async fn create_or_update_custom_properties_values_for_repos_async(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos) -> Result<(), OrgsCreateOrUpdateCustomPropertiesValuesForReposError> {
+    pub async fn create_or_update_custom_properties_values_for_repos_async(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Generic { code }),
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Generic { code }.into()),
             }
         }
     }
@@ -3739,34 +4145,34 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_custom_properties_values_for_repos(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos) -> Result<(), OrgsCreateOrUpdateCustomPropertiesValuesForReposError> {
+    pub fn create_or_update_custom_properties_values_for_repos(&self, org: &str, body: PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsCreateOrUpdateCustomPropertiesValuesForRepos>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Generic { code }),
+                403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status404(github_response.to_json()?).into()),
+                422 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Generic { code }.into()),
             }
         }
     }
@@ -3784,33 +4190,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for create_or_update_custom_property](https://docs.github.com/rest/orgs/custom-properties#create-or-update-a-custom-property-for-an-organization)
     ///
     /// ---
-    pub async fn create_or_update_custom_property_async(&self, org: &str, custom_property_name: &str, body: PutOrgsCreateOrUpdateCustomProperty) -> Result<CustomProperty, OrgsCreateOrUpdateCustomPropertyError> {
+    pub async fn create_or_update_custom_property_async(&self, org: &str, custom_property_name: &str, body: PutOrgsCreateOrUpdateCustomProperty) -> Result<CustomProperty, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOrgsCreateOrUpdateCustomProperty::from_json(body)?),
+            body: Some(C::from_json::<PutOrgsCreateOrUpdateCustomProperty>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsCreateOrUpdateCustomPropertyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsCreateOrUpdateCustomPropertyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsCreateOrUpdateCustomPropertyError::Generic { code }),
+                403 => Err(OrgsCreateOrUpdateCustomPropertyError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsCreateOrUpdateCustomPropertyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsCreateOrUpdateCustomPropertyError::Generic { code }.into()),
             }
         }
     }
@@ -3829,33 +4235,33 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_or_update_custom_property(&self, org: &str, custom_property_name: &str, body: PutOrgsCreateOrUpdateCustomProperty) -> Result<CustomProperty, OrgsCreateOrUpdateCustomPropertyError> {
+    pub fn create_or_update_custom_property(&self, org: &str, custom_property_name: &str, body: PutOrgsCreateOrUpdateCustomProperty) -> Result<CustomProperty, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOrgsCreateOrUpdateCustomProperty::from_json(body)?),
+            body: Some(C::from_json::<PutOrgsCreateOrUpdateCustomProperty>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsCreateOrUpdateCustomPropertyError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsCreateOrUpdateCustomPropertyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsCreateOrUpdateCustomPropertyError::Generic { code }),
+                403 => Err(OrgsCreateOrUpdateCustomPropertyError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsCreateOrUpdateCustomPropertyError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsCreateOrUpdateCustomPropertyError::Generic { code }.into()),
             }
         }
     }
@@ -3874,33 +4280,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for create_webhook](https://docs.github.com/rest/orgs/webhooks#create-an-organization-webhook)
     ///
     /// ---
-    pub async fn create_webhook_async(&self, org: &str, body: PostOrgsCreateWebhook) -> Result<OrgHook, OrgsCreateWebhookError> {
+    pub async fn create_webhook_async(&self, org: &str, body: PostOrgsCreateWebhook) -> Result<OrgHook, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsCreateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsCreateWebhook>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateWebhookError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsCreateWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsCreateWebhookError::Generic { code }),
+                422 => Err(OrgsCreateWebhookError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsCreateWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsCreateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -3920,33 +4326,33 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn create_webhook(&self, org: &str, body: PostOrgsCreateWebhook) -> Result<OrgHook, OrgsCreateWebhookError> {
+    pub fn create_webhook(&self, org: &str, body: PostOrgsCreateWebhook) -> Result<OrgHook, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsCreateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsCreateWebhook>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsCreateWebhookError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsCreateWebhookError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsCreateWebhookError::Generic { code }),
+                422 => Err(OrgsCreateWebhookError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsCreateWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsCreateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -3966,33 +4372,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for delete](https://docs.github.com/rest/orgs/orgs#delete-an-organization)
     ///
     /// ---
-    pub async fn delete_async(&self, org: &str) -> Result<HashMap<String, Value>, OrgsDeleteError> {
+    pub async fn delete_async(&self, org: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsDeleteError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsDeleteError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsDeleteError::Generic { code }),
+                404 => Err(OrgsDeleteError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsDeleteError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -4013,7 +4419,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete(&self, org: &str) -> Result<HashMap<String, Value>, OrgsDeleteError> {
+    pub fn delete(&self, org: &str) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
@@ -4025,21 +4431,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsDeleteError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsDeleteError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsDeleteError::Generic { code }),
+                404 => Err(OrgsDeleteError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsDeleteError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsDeleteError::Generic { code }.into()),
             }
         }
     }
@@ -4056,32 +4462,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/orgs/webhooks#delete-an-organization-webhook)
     ///
     /// ---
-    pub async fn delete_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), OrgsDeleteWebhookError> {
+    pub async fn delete_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsDeleteWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsDeleteWebhookError::Generic { code }),
+                404 => Err(OrgsDeleteWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsDeleteWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -4099,7 +4505,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn delete_webhook(&self, org: &str, hook_id: i32) -> Result<(), OrgsDeleteWebhookError> {
+    pub fn delete_webhook(&self, org: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}", super::GITHUB_BASE_API_URL, org, hook_id);
 
@@ -4111,20 +4517,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsDeleteWebhookError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsDeleteWebhookError::Generic { code }),
+                404 => Err(OrgsDeleteWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsDeleteWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -4145,32 +4551,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for enable_or_disable_security_product_on_all_org_repos](https://docs.github.com/rest/orgs/orgs#enable-or-disable-a-security-feature-for-an-organization)
     ///
     /// ---
-    pub async fn enable_or_disable_security_product_on_all_org_repos_async(&self, org: &str, security_product: &str, enablement: &str, body: PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos) -> Result<(), OrgsEnableOrDisableSecurityProductOnAllOrgReposError> {
+    pub async fn enable_or_disable_security_product_on_all_org_repos_async(&self, org: &str, security_product: &str, enablement: &str, body: PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/{}/{}", super::GITHUB_BASE_API_URL, org, security_product, enablement);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422),
-                code => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Generic { code }),
+                422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422.into()),
+                code => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Generic { code }.into()),
             }
         }
     }
@@ -4192,32 +4598,32 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn enable_or_disable_security_product_on_all_org_repos(&self, org: &str, security_product: &str, enablement: &str, body: PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos) -> Result<(), OrgsEnableOrDisableSecurityProductOnAllOrgReposError> {
+    pub fn enable_or_disable_security_product_on_all_org_repos(&self, org: &str, security_product: &str, enablement: &str, body: PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/{}/{}", super::GITHUB_BASE_API_URL, org, security_product, enablement);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsEnableOrDisableSecurityProductOnAllOrgRepos>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422),
-                code => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Generic { code }),
+                422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422.into()),
+                code => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Generic { code }.into()),
             }
         }
     }
@@ -4239,32 +4645,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get](https://docs.github.com/rest/orgs/orgs#get-an-organization)
     ///
     /// ---
-    pub async fn get_async(&self, org: &str) -> Result<OrganizationFull, OrgsGetError> {
+    pub async fn get_async(&self, org: &str) -> Result<OrganizationFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetError::Generic { code }),
+                404 => Err(OrgsGetError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetError::Generic { code }.into()),
             }
         }
     }
@@ -4287,7 +4693,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get(&self, org: &str) -> Result<OrganizationFull, OrgsGetError> {
+    pub fn get(&self, org: &str) -> Result<OrganizationFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
@@ -4299,20 +4705,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetError::Generic { code }),
+                404 => Err(OrgsGetError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsGetError::Generic { code }.into()),
             }
         }
     }
@@ -4327,33 +4733,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_all_custom_properties](https://docs.github.com/rest/orgs/custom-properties#get-all-custom-properties-for-an-organization)
     ///
     /// ---
-    pub async fn get_all_custom_properties_async(&self, org: &str) -> Result<Vec<CustomProperty>, OrgsGetAllCustomPropertiesError> {
+    pub async fn get_all_custom_properties_async(&self, org: &str) -> Result<Vec<CustomProperty>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetAllCustomPropertiesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsGetAllCustomPropertiesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetAllCustomPropertiesError::Generic { code }),
+                403 => Err(OrgsGetAllCustomPropertiesError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsGetAllCustomPropertiesError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetAllCustomPropertiesError::Generic { code }.into()),
             }
         }
     }
@@ -4369,7 +4775,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_all_custom_properties(&self, org: &str) -> Result<Vec<CustomProperty>, OrgsGetAllCustomPropertiesError> {
+    pub fn get_all_custom_properties(&self, org: &str) -> Result<Vec<CustomProperty>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema", super::GITHUB_BASE_API_URL, org);
 
@@ -4381,21 +4787,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetAllCustomPropertiesError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsGetAllCustomPropertiesError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetAllCustomPropertiesError::Generic { code }),
+                403 => Err(OrgsGetAllCustomPropertiesError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsGetAllCustomPropertiesError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsGetAllCustomPropertiesError::Generic { code }.into()),
             }
         }
     }
@@ -4410,33 +4816,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_custom_property](https://docs.github.com/rest/orgs/custom-properties#get-a-custom-property-for-an-organization)
     ///
     /// ---
-    pub async fn get_custom_property_async(&self, org: &str, custom_property_name: &str) -> Result<CustomProperty, OrgsGetCustomPropertyError> {
+    pub async fn get_custom_property_async(&self, org: &str, custom_property_name: &str) -> Result<CustomProperty, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetCustomPropertyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsGetCustomPropertyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetCustomPropertyError::Generic { code }),
+                403 => Err(OrgsGetCustomPropertyError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsGetCustomPropertyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetCustomPropertyError::Generic { code }.into()),
             }
         }
     }
@@ -4452,7 +4858,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_custom_property(&self, org: &str, custom_property_name: &str) -> Result<CustomProperty, OrgsGetCustomPropertyError> {
+    pub fn get_custom_property(&self, org: &str, custom_property_name: &str) -> Result<CustomProperty, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
 
@@ -4464,21 +4870,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetCustomPropertyError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsGetCustomPropertyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetCustomPropertyError::Generic { code }),
+                403 => Err(OrgsGetCustomPropertyError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsGetCustomPropertyError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsGetCustomPropertyError::Generic { code }.into()),
             }
         }
     }
@@ -4492,33 +4898,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#get-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn get_membership_for_authenticated_user_async(&self, org: &str) -> Result<OrgMembership, OrgsGetMembershipForAuthenticatedUserError> {
+    pub async fn get_membership_for_authenticated_user_async(&self, org: &str) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/user/memberships/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetMembershipForAuthenticatedUserError::Generic { code }),
+                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4533,7 +4939,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_membership_for_authenticated_user(&self, org: &str) -> Result<OrgMembership, OrgsGetMembershipForAuthenticatedUserError> {
+    pub fn get_membership_for_authenticated_user(&self, org: &str) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/user/memberships/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
@@ -4545,21 +4951,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetMembershipForAuthenticatedUserError::Generic { code }),
+                403 => Err(OrgsGetMembershipForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsGetMembershipForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsGetMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -4573,33 +4979,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_membership_for_user](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user)
     ///
     /// ---
-    pub async fn get_membership_for_user_async(&self, org: &str, username: &str) -> Result<OrgMembership, OrgsGetMembershipForUserError> {
+    pub async fn get_membership_for_user_async(&self, org: &str, username: &str) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetMembershipForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsGetMembershipForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetMembershipForUserError::Generic { code }),
+                404 => Err(OrgsGetMembershipForUserError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsGetMembershipForUserError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4614,7 +5020,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_membership_for_user(&self, org: &str, username: &str) -> Result<OrgMembership, OrgsGetMembershipForUserError> {
+    pub fn get_membership_for_user(&self, org: &str, username: &str) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -4626,21 +5032,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetMembershipForUserError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsGetMembershipForUserError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetMembershipForUserError::Generic { code }),
+                404 => Err(OrgsGetMembershipForUserError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsGetMembershipForUserError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsGetMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -4661,33 +5067,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_org_role](https://docs.github.com/rest/orgs/organization-roles#get-an-organization-role)
     ///
     /// ---
-    pub async fn get_org_role_async(&self, org: &str, role_id: i32) -> Result<OrganizationRole, OrgsGetOrgRoleError> {
+    pub async fn get_org_role_async(&self, org: &str, role_id: i32) -> Result<OrganizationRole, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/{}", super::GITHUB_BASE_API_URL, org, role_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetOrgRoleError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsGetOrgRoleError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetOrgRoleError::Generic { code }),
+                404 => Err(OrgsGetOrgRoleError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsGetOrgRoleError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetOrgRoleError::Generic { code }.into()),
             }
         }
     }
@@ -4709,7 +5115,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_org_role(&self, org: &str, role_id: i32) -> Result<OrganizationRole, OrgsGetOrgRoleError> {
+    pub fn get_org_role(&self, org: &str, role_id: i32) -> Result<OrganizationRole, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/{}", super::GITHUB_BASE_API_URL, org, role_id);
 
@@ -4721,21 +5127,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetOrgRoleError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsGetOrgRoleError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetOrgRoleError::Generic { code }),
+                404 => Err(OrgsGetOrgRoleError::Status404(github_response.to_json()?).into()),
+                422 => Err(OrgsGetOrgRoleError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsGetOrgRoleError::Generic { code }.into()),
             }
         }
     }
@@ -4755,32 +5161,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_webhook](https://docs.github.com/rest/orgs/webhooks#get-an-organization-webhook)
     ///
     /// ---
-    pub async fn get_webhook_async(&self, org: &str, hook_id: i32) -> Result<OrgHook, OrgsGetWebhookError> {
+    pub async fn get_webhook_async(&self, org: &str, hook_id: i32) -> Result<OrgHook, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetWebhookError::Generic { code }),
+                404 => Err(OrgsGetWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -4801,7 +5207,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook(&self, org: &str, hook_id: i32) -> Result<OrgHook, OrgsGetWebhookError> {
+    pub fn get_webhook(&self, org: &str, hook_id: i32) -> Result<OrgHook, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}", super::GITHUB_BASE_API_URL, org, hook_id);
 
@@ -4813,20 +5219,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsGetWebhookError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetWebhookError::Generic { code }),
+                404 => Err(OrgsGetWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsGetWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -4845,31 +5251,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-configuration-for-an-organization)
     ///
     /// ---
-    pub async fn get_webhook_config_for_org_async(&self, org: &str, hook_id: i32) -> Result<WebhookConfig, OrgsGetWebhookConfigForOrgError> {
+    pub async fn get_webhook_config_for_org_async(&self, org: &str, hook_id: i32) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsGetWebhookConfigForOrgError::Generic { code }),
+                code => Err(OrgsGetWebhookConfigForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4889,7 +5295,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook_config_for_org(&self, org: &str, hook_id: i32) -> Result<WebhookConfig, OrgsGetWebhookConfigForOrgError> {
+    pub fn get_webhook_config_for_org(&self, org: &str, hook_id: i32) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, org, hook_id);
 
@@ -4901,19 +5307,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsGetWebhookConfigForOrgError::Generic { code }),
+                code => Err(OrgsGetWebhookConfigForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -4932,33 +5338,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for get_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#get-a-webhook-delivery-for-an-organization-webhook)
     ///
     /// ---
-    pub async fn get_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, OrgsGetWebhookDeliveryError> {
+    pub async fn get_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(OrgsGetWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsGetWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsGetWebhookDeliveryError::Generic { code }),
+                400 => Err(OrgsGetWebhookDeliveryError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsGetWebhookDeliveryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsGetWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -4978,7 +5384,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn get_webhook_delivery(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, OrgsGetWebhookDeliveryError> {
+    pub fn get_webhook_delivery(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HookDelivery, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
 
@@ -4990,21 +5396,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(OrgsGetWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsGetWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsGetWebhookDeliveryError::Generic { code }),
+                400 => Err(OrgsGetWebhookDeliveryError::Status400(github_response.to_json()?).into()),
+                422 => Err(OrgsGetWebhookDeliveryError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsGetWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -5021,7 +5427,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list](https://docs.github.com/rest/orgs/orgs#list-organizations)
     ///
     /// ---
-    pub async fn list_async(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, OrgsListError> {
+    pub async fn list_async(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/organizations", super::GITHUB_BASE_API_URL);
 
@@ -5032,25 +5438,25 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(OrgsListError::Status304),
-                code => Err(OrgsListError::Generic { code }),
+                304 => Err(OrgsListError::Status304.into()),
+                code => Err(OrgsListError::Generic { code }.into()),
             }
         }
     }
@@ -5068,7 +5474,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, OrgsListError> {
+    pub fn list(&self, query_params: Option<impl Into<OrgsListParams>>) -> Result<Vec<OrganizationSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/organizations", super::GITHUB_BASE_API_URL);
 
@@ -5085,20 +5491,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(OrgsListError::Status304),
-                code => Err(OrgsListError::Generic { code }),
+                304 => Err(OrgsListError::Status304.into()),
+                code => Err(OrgsListError::Generic { code }.into()),
             }
         }
     }
@@ -5117,7 +5523,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_app_installations](https://docs.github.com/rest/orgs/orgs#list-app-installations-for-an-organization)
     ///
     /// ---
-    pub async fn list_app_installations_async(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, OrgsListAppInstallationsError> {
+    pub async fn list_app_installations_async(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/installations", super::GITHUB_BASE_API_URL, org);
 
@@ -5128,24 +5534,24 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListAppInstallationsError::Generic { code }),
+                code => Err(OrgsListAppInstallationsError::Generic { code }.into()),
             }
         }
     }
@@ -5165,7 +5571,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_app_installations(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, OrgsListAppInstallationsError> {
+    pub fn list_app_installations(&self, org: &str, query_params: Option<impl Into<OrgsListAppInstallationsParams>>) -> Result<GetAppsListInstallationsForAuthenticatedUserResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/installations", super::GITHUB_BASE_API_URL, org);
 
@@ -5182,19 +5588,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListAppInstallationsError::Generic { code }),
+                code => Err(OrgsListAppInstallationsError::Generic { code }.into()),
             }
         }
     }
@@ -5212,7 +5618,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_attestations](https://docs.github.com/rest/orgs/orgs#list-attestations)
     ///
     /// ---
-    pub async fn list_attestations_async(&self, org: &str, subject_digest: &str, query_params: Option<impl Into<OrgsListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, OrgsListAttestationsError> {
+    pub async fn list_attestations_async(&self, org: &str, subject_digest: &str, query_params: Option<impl Into<OrgsListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/attestations/{}", super::GITHUB_BASE_API_URL, org, subject_digest);
 
@@ -5223,24 +5629,24 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListAttestationsError::Generic { code }),
+                code => Err(OrgsListAttestationsError::Generic { code }.into()),
             }
         }
     }
@@ -5259,7 +5665,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_attestations(&self, org: &str, subject_digest: &str, query_params: Option<impl Into<OrgsListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, OrgsListAttestationsError> {
+    pub fn list_attestations(&self, org: &str, subject_digest: &str, query_params: Option<impl Into<OrgsListAttestationsParams<'api>>>) -> Result<GetReposListAttestationsResponse200, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/attestations/{}", super::GITHUB_BASE_API_URL, org, subject_digest);
 
@@ -5276,19 +5682,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListAttestationsError::Generic { code }),
+                code => Err(OrgsListAttestationsError::Generic { code }.into()),
             }
         }
     }
@@ -5302,7 +5708,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_blocked_users](https://docs.github.com/rest/orgs/blocking#list-users-blocked-by-an-organization)
     ///
     /// ---
-    pub async fn list_blocked_users_async(&self, org: &str, query_params: Option<impl Into<OrgsListBlockedUsersParams>>) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
+    pub async fn list_blocked_users_async(&self, org: &str, query_params: Option<impl Into<OrgsListBlockedUsersParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/blocks", super::GITHUB_BASE_API_URL, org);
 
@@ -5313,24 +5719,24 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListBlockedUsersError::Generic { code }),
+                code => Err(OrgsListBlockedUsersError::Generic { code }.into()),
             }
         }
     }
@@ -5345,7 +5751,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_blocked_users(&self, org: &str, query_params: Option<impl Into<OrgsListBlockedUsersParams>>) -> Result<Vec<SimpleUser>, OrgsListBlockedUsersError> {
+    pub fn list_blocked_users(&self, org: &str, query_params: Option<impl Into<OrgsListBlockedUsersParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/blocks", super::GITHUB_BASE_API_URL, org);
 
@@ -5362,19 +5768,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListBlockedUsersError::Generic { code }),
+                code => Err(OrgsListBlockedUsersError::Generic { code }.into()),
             }
         }
     }
@@ -5389,7 +5795,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_custom_properties_values_for_repos](https://docs.github.com/rest/orgs/custom-properties#list-custom-property-values-for-organization-repositories)
     ///
     /// ---
-    pub async fn list_custom_properties_values_for_repos_async(&self, org: &str, query_params: Option<impl Into<OrgsListCustomPropertiesValuesForReposParams<'api>>>) -> Result<Vec<OrgRepoCustomPropertyValues>, OrgsListCustomPropertiesValuesForReposError> {
+    pub async fn list_custom_properties_values_for_repos_async(&self, org: &str, query_params: Option<impl Into<OrgsListCustomPropertiesValuesForReposParams<'api>>>) -> Result<Vec<OrgRepoCustomPropertyValues>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
 
@@ -5400,26 +5806,26 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsListCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsListCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListCustomPropertiesValuesForReposError::Generic { code }),
+                403 => Err(OrgsListCustomPropertiesValuesForReposError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsListCustomPropertiesValuesForReposError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListCustomPropertiesValuesForReposError::Generic { code }.into()),
             }
         }
     }
@@ -5435,7 +5841,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_custom_properties_values_for_repos(&self, org: &str, query_params: Option<impl Into<OrgsListCustomPropertiesValuesForReposParams<'api>>>) -> Result<Vec<OrgRepoCustomPropertyValues>, OrgsListCustomPropertiesValuesForReposError> {
+    pub fn list_custom_properties_values_for_repos(&self, org: &str, query_params: Option<impl Into<OrgsListCustomPropertiesValuesForReposParams<'api>>>) -> Result<Vec<OrgRepoCustomPropertyValues>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/properties/values", super::GITHUB_BASE_API_URL, org);
 
@@ -5452,21 +5858,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsListCustomPropertiesValuesForReposError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsListCustomPropertiesValuesForReposError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListCustomPropertiesValuesForReposError::Generic { code }),
+                403 => Err(OrgsListCustomPropertiesValuesForReposError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsListCustomPropertiesValuesForReposError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsListCustomPropertiesValuesForReposError::Generic { code }.into()),
             }
         }
     }
@@ -5480,7 +5886,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_failed_invitations](https://docs.github.com/rest/orgs/members#list-failed-organization-invitations)
     ///
     /// ---
-    pub async fn list_failed_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListFailedInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListFailedInvitationsError> {
+    pub async fn list_failed_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListFailedInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/failed_invitations", super::GITHUB_BASE_API_URL, org);
 
@@ -5491,25 +5897,25 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListFailedInvitationsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListFailedInvitationsError::Generic { code }),
+                404 => Err(OrgsListFailedInvitationsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListFailedInvitationsError::Generic { code }.into()),
             }
         }
     }
@@ -5524,7 +5930,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_failed_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListFailedInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, OrgsListFailedInvitationsError> {
+    pub fn list_failed_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListFailedInvitationsParams>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/failed_invitations", super::GITHUB_BASE_API_URL, org);
 
@@ -5541,20 +5947,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListFailedInvitationsError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListFailedInvitationsError::Generic { code }),
+                404 => Err(OrgsListFailedInvitationsError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsListFailedInvitationsError::Generic { code }.into()),
             }
         }
     }
@@ -5570,7 +5976,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForAuthenticatedUserError> {
+    pub async fn list_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/user/orgs", super::GITHUB_BASE_API_URL);
 
@@ -5581,27 +5987,27 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(OrgsListForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(OrgsListForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListForAuthenticatedUserError::Generic { code }),
+                304 => Err(OrgsListForAuthenticatedUserError::Status304.into()),
+                403 => Err(OrgsListForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(OrgsListForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5618,7 +6024,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForAuthenticatedUserError> {
+    pub fn list_for_authenticated_user(&self, query_params: Option<impl Into<OrgsListForAuthenticatedUserParams>>) -> Result<Vec<OrganizationSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/user/orgs", super::GITHUB_BASE_API_URL);
 
@@ -5635,22 +6041,22 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(OrgsListForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(OrgsListForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListForAuthenticatedUserError::Generic { code }),
+                304 => Err(OrgsListForAuthenticatedUserError::Status304.into()),
+                403 => Err(OrgsListForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(OrgsListForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                code => Err(OrgsListForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5666,7 +6072,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-a-user)
     ///
     /// ---
-    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForUserError> {
+    pub async fn list_for_user_async(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/orgs", super::GITHUB_BASE_API_URL, username);
 
@@ -5677,24 +6083,24 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListForUserError::Generic { code }),
+                code => Err(OrgsListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -5711,7 +6117,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, OrgsListForUserError> {
+    pub fn list_for_user(&self, username: &str, query_params: Option<impl Into<OrgsListForUserParams>>) -> Result<Vec<OrganizationSimple>, AdapterError> {
 
         let mut request_uri = format!("{}/users/{}/orgs", super::GITHUB_BASE_API_URL, username);
 
@@ -5728,19 +6134,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListForUserError::Generic { code }),
+                code => Err(OrgsListForUserError::Generic { code }.into()),
             }
         }
     }
@@ -5754,7 +6160,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_invitation_teams](https://docs.github.com/rest/orgs/members#list-organization-invitation-teams)
     ///
     /// ---
-    pub async fn list_invitation_teams_async(&self, org: &str, invitation_id: i32, query_params: Option<impl Into<OrgsListInvitationTeamsParams>>) -> Result<Vec<Team>, OrgsListInvitationTeamsError> {
+    pub async fn list_invitation_teams_async(&self, org: &str, invitation_id: i32, query_params: Option<impl Into<OrgsListInvitationTeamsParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/invitations/{}/teams", super::GITHUB_BASE_API_URL, org, invitation_id);
 
@@ -5765,25 +6171,25 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListInvitationTeamsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListInvitationTeamsError::Generic { code }),
+                404 => Err(OrgsListInvitationTeamsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListInvitationTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -5798,7 +6204,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_invitation_teams(&self, org: &str, invitation_id: i32, query_params: Option<impl Into<OrgsListInvitationTeamsParams>>) -> Result<Vec<Team>, OrgsListInvitationTeamsError> {
+    pub fn list_invitation_teams(&self, org: &str, invitation_id: i32, query_params: Option<impl Into<OrgsListInvitationTeamsParams>>) -> Result<Vec<Team>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/invitations/{}/teams", super::GITHUB_BASE_API_URL, org, invitation_id);
 
@@ -5815,20 +6221,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListInvitationTeamsError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListInvitationTeamsError::Generic { code }),
+                404 => Err(OrgsListInvitationTeamsError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsListInvitationTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -5842,7 +6248,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_members](https://docs.github.com/rest/orgs/members#list-organization-members)
     ///
     /// ---
-    pub async fn list_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListMembersParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListMembersError> {
+    pub async fn list_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListMembersParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/members", super::GITHUB_BASE_API_URL, org);
 
@@ -5853,25 +6259,25 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsListMembersError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListMembersError::Generic { code }),
+                422 => Err(OrgsListMembersError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListMembersError::Generic { code }.into()),
             }
         }
     }
@@ -5886,7 +6292,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_members(&self, org: &str, query_params: Option<impl Into<OrgsListMembersParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListMembersError> {
+    pub fn list_members(&self, org: &str, query_params: Option<impl Into<OrgsListMembersParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/members", super::GITHUB_BASE_API_URL, org);
 
@@ -5903,20 +6309,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsListMembersError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListMembersError::Generic { code }),
+                422 => Err(OrgsListMembersError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsListMembersError::Generic { code }.into()),
             }
         }
     }
@@ -5930,7 +6336,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_memberships_for_authenticated_user](https://docs.github.com/rest/orgs/members#list-organization-memberships-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn list_memberships_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListMembershipsForAuthenticatedUserParams<'api>>>) -> Result<Vec<OrgMembership>, OrgsListMembershipsForAuthenticatedUserError> {
+    pub async fn list_memberships_for_authenticated_user_async(&self, query_params: Option<impl Into<OrgsListMembershipsForAuthenticatedUserParams<'api>>>) -> Result<Vec<OrgMembership>, AdapterError> {
 
         let mut request_uri = format!("{}/user/memberships/orgs", super::GITHUB_BASE_API_URL);
 
@@ -5941,28 +6347,28 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                304 => Err(OrgsListMembershipsForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListMembershipsForAuthenticatedUserError::Generic { code }),
+                304 => Err(OrgsListMembershipsForAuthenticatedUserError::Status304.into()),
+                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListMembershipsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -5977,7 +6383,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_memberships_for_authenticated_user(&self, query_params: Option<impl Into<OrgsListMembershipsForAuthenticatedUserParams<'api>>>) -> Result<Vec<OrgMembership>, OrgsListMembershipsForAuthenticatedUserError> {
+    pub fn list_memberships_for_authenticated_user(&self, query_params: Option<impl Into<OrgsListMembershipsForAuthenticatedUserParams<'api>>>) -> Result<Vec<OrgMembership>, AdapterError> {
 
         let mut request_uri = format!("{}/user/memberships/orgs", super::GITHUB_BASE_API_URL);
 
@@ -5994,23 +6400,23 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                304 => Err(OrgsListMembershipsForAuthenticatedUserError::Status304),
-                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListMembershipsForAuthenticatedUserError::Generic { code }),
+                304 => Err(OrgsListMembershipsForAuthenticatedUserError::Status304.into()),
+                403 => Err(OrgsListMembershipsForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                401 => Err(OrgsListMembershipsForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
+                422 => Err(OrgsListMembershipsForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsListMembershipsForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -6028,7 +6434,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_org_role_teams](https://docs.github.com/rest/orgs/organization-roles#list-teams-that-are-assigned-to-an-organization-role)
     ///
     /// ---
-    pub async fn list_org_role_teams_async(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleTeamsParams>>) -> Result<Vec<TeamRoleAssignment>, OrgsListOrgRoleTeamsError> {
+    pub async fn list_org_role_teams_async(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleTeamsParams>>) -> Result<Vec<TeamRoleAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/teams", super::GITHUB_BASE_API_URL, org, role_id);
 
@@ -6039,26 +6445,26 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListOrgRoleTeamsError::Status404),
-                422 => Err(OrgsListOrgRoleTeamsError::Status422),
-                code => Err(OrgsListOrgRoleTeamsError::Generic { code }),
+                404 => Err(OrgsListOrgRoleTeamsError::Status404.into()),
+                422 => Err(OrgsListOrgRoleTeamsError::Status422.into()),
+                code => Err(OrgsListOrgRoleTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -6077,7 +6483,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_role_teams(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleTeamsParams>>) -> Result<Vec<TeamRoleAssignment>, OrgsListOrgRoleTeamsError> {
+    pub fn list_org_role_teams(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleTeamsParams>>) -> Result<Vec<TeamRoleAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/teams", super::GITHUB_BASE_API_URL, org, role_id);
 
@@ -6094,21 +6500,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListOrgRoleTeamsError::Status404),
-                422 => Err(OrgsListOrgRoleTeamsError::Status422),
-                code => Err(OrgsListOrgRoleTeamsError::Generic { code }),
+                404 => Err(OrgsListOrgRoleTeamsError::Status404.into()),
+                422 => Err(OrgsListOrgRoleTeamsError::Status422.into()),
+                code => Err(OrgsListOrgRoleTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -6126,7 +6532,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_org_role_users](https://docs.github.com/rest/orgs/organization-roles#list-users-that-are-assigned-to-an-organization-role)
     ///
     /// ---
-    pub async fn list_org_role_users_async(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleUsersParams>>) -> Result<Vec<UserRoleAssignment>, OrgsListOrgRoleUsersError> {
+    pub async fn list_org_role_users_async(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleUsersParams>>) -> Result<Vec<UserRoleAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/users", super::GITHUB_BASE_API_URL, org, role_id);
 
@@ -6137,26 +6543,26 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListOrgRoleUsersError::Status404),
-                422 => Err(OrgsListOrgRoleUsersError::Status422),
-                code => Err(OrgsListOrgRoleUsersError::Generic { code }),
+                404 => Err(OrgsListOrgRoleUsersError::Status404.into()),
+                422 => Err(OrgsListOrgRoleUsersError::Status422.into()),
+                code => Err(OrgsListOrgRoleUsersError::Generic { code }.into()),
             }
         }
     }
@@ -6175,7 +6581,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_role_users(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleUsersParams>>) -> Result<Vec<UserRoleAssignment>, OrgsListOrgRoleUsersError> {
+    pub fn list_org_role_users(&self, org: &str, role_id: i32, query_params: Option<impl Into<OrgsListOrgRoleUsersParams>>) -> Result<Vec<UserRoleAssignment>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/organization-roles/{}/users", super::GITHUB_BASE_API_URL, org, role_id);
 
@@ -6192,21 +6598,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListOrgRoleUsersError::Status404),
-                422 => Err(OrgsListOrgRoleUsersError::Status422),
-                code => Err(OrgsListOrgRoleUsersError::Generic { code }),
+                404 => Err(OrgsListOrgRoleUsersError::Status404.into()),
+                422 => Err(OrgsListOrgRoleUsersError::Status422.into()),
+                code => Err(OrgsListOrgRoleUsersError::Generic { code }.into()),
             }
         }
     }
@@ -6227,33 +6633,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_org_roles](https://docs.github.com/rest/orgs/organization-roles#get-all-organization-roles-for-an-organization)
     ///
     /// ---
-    pub async fn list_org_roles_async(&self, org: &str) -> Result<GetOrgsListOrgRolesResponse200, OrgsListOrgRolesError> {
+    pub async fn list_org_roles_async(&self, org: &str) -> Result<GetOrgsListOrgRolesResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListOrgRolesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsListOrgRolesError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListOrgRolesError::Generic { code }),
+                404 => Err(OrgsListOrgRolesError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsListOrgRolesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListOrgRolesError::Generic { code }.into()),
             }
         }
     }
@@ -6275,7 +6681,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_org_roles(&self, org: &str) -> Result<GetOrgsListOrgRolesResponse200, OrgsListOrgRolesError> {
+    pub fn list_org_roles(&self, org: &str) -> Result<GetOrgsListOrgRolesResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles", super::GITHUB_BASE_API_URL, org);
 
@@ -6287,21 +6693,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListOrgRolesError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsListOrgRolesError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListOrgRolesError::Generic { code }),
+                404 => Err(OrgsListOrgRolesError::Status404(github_response.to_json()?).into()),
+                422 => Err(OrgsListOrgRolesError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsListOrgRolesError::Generic { code }.into()),
             }
         }
     }
@@ -6315,7 +6721,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_outside_collaborators](https://docs.github.com/rest/orgs/outside-collaborators#list-outside-collaborators-for-an-organization)
     ///
     /// ---
-    pub async fn list_outside_collaborators_async(&self, org: &str, query_params: Option<impl Into<OrgsListOutsideCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListOutsideCollaboratorsError> {
+    pub async fn list_outside_collaborators_async(&self, org: &str, query_params: Option<impl Into<OrgsListOutsideCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/outside_collaborators", super::GITHUB_BASE_API_URL, org);
 
@@ -6326,24 +6732,24 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListOutsideCollaboratorsError::Generic { code }),
+                code => Err(OrgsListOutsideCollaboratorsError::Generic { code }.into()),
             }
         }
     }
@@ -6358,7 +6764,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_outside_collaborators(&self, org: &str, query_params: Option<impl Into<OrgsListOutsideCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, OrgsListOutsideCollaboratorsError> {
+    pub fn list_outside_collaborators(&self, org: &str, query_params: Option<impl Into<OrgsListOutsideCollaboratorsParams<'api>>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/outside_collaborators", super::GITHUB_BASE_API_URL, org);
 
@@ -6375,19 +6781,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListOutsideCollaboratorsError::Generic { code }),
+                code => Err(OrgsListOutsideCollaboratorsError::Generic { code }.into()),
             }
         }
     }
@@ -6403,7 +6809,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_pat_grant_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-a-fine-grained-personal-access-token-has-access-to)
     ///
     /// ---
-    pub async fn list_pat_grant_repositories_async(&self, org: &str, pat_id: i32, query_params: Option<impl Into<OrgsListPatGrantRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRepositoriesError> {
+    pub async fn list_pat_grant_repositories_async(&self, org: &str, pat_id: i32, query_params: Option<impl Into<OrgsListPatGrantRepositoriesParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-tokens/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_id);
 
@@ -6414,27 +6820,27 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantRepositoriesError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsListPatGrantRepositoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsListPatGrantRepositoriesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListPatGrantRepositoriesError::Generic { code }),
+                500 => Err(OrgsListPatGrantRepositoriesError::Status500(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsListPatGrantRepositoriesError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsListPatGrantRepositoriesError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListPatGrantRepositoriesError::Generic { code }.into()),
             }
         }
     }
@@ -6451,7 +6857,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pat_grant_repositories(&self, org: &str, pat_id: i32, query_params: Option<impl Into<OrgsListPatGrantRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRepositoriesError> {
+    pub fn list_pat_grant_repositories(&self, org: &str, pat_id: i32, query_params: Option<impl Into<OrgsListPatGrantRepositoriesParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-tokens/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_id);
 
@@ -6468,22 +6874,22 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantRepositoriesError::Status500(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsListPatGrantRepositoriesError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsListPatGrantRepositoriesError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListPatGrantRepositoriesError::Generic { code }),
+                500 => Err(OrgsListPatGrantRepositoriesError::Status500(github_response.to_json()?).into()),
+                404 => Err(OrgsListPatGrantRepositoriesError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsListPatGrantRepositoriesError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsListPatGrantRepositoriesError::Generic { code }.into()),
             }
         }
     }
@@ -6499,7 +6905,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_pat_grant_request_repositories](https://docs.github.com/rest/orgs/personal-access-tokens#list-repositories-requested-to-be-accessed-by-a-fine-grained-personal-access-token)
     ///
     /// ---
-    pub async fn list_pat_grant_request_repositories_async(&self, org: &str, pat_request_id: i32, query_params: Option<impl Into<OrgsListPatGrantRequestRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRequestRepositoriesError> {
+    pub async fn list_pat_grant_request_repositories_async(&self, org: &str, pat_request_id: i32, query_params: Option<impl Into<OrgsListPatGrantRequestRepositoriesParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_request_id);
 
@@ -6510,27 +6916,27 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantRequestRepositoriesError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsListPatGrantRequestRepositoriesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsListPatGrantRequestRepositoriesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListPatGrantRequestRepositoriesError::Generic { code }),
+                500 => Err(OrgsListPatGrantRequestRepositoriesError::Status500(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsListPatGrantRequestRepositoriesError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsListPatGrantRequestRepositoriesError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListPatGrantRequestRepositoriesError::Generic { code }.into()),
             }
         }
     }
@@ -6547,7 +6953,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pat_grant_request_repositories(&self, org: &str, pat_request_id: i32, query_params: Option<impl Into<OrgsListPatGrantRequestRepositoriesParams>>) -> Result<Vec<MinimalRepository>, OrgsListPatGrantRequestRepositoriesError> {
+    pub fn list_pat_grant_request_repositories(&self, org: &str, pat_request_id: i32, query_params: Option<impl Into<OrgsListPatGrantRequestRepositoriesParams>>) -> Result<Vec<MinimalRepository>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}/repositories", super::GITHUB_BASE_API_URL, org, pat_request_id);
 
@@ -6564,22 +6970,22 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantRequestRepositoriesError::Status500(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsListPatGrantRequestRepositoriesError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsListPatGrantRequestRepositoriesError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListPatGrantRequestRepositoriesError::Generic { code }),
+                500 => Err(OrgsListPatGrantRequestRepositoriesError::Status500(github_response.to_json()?).into()),
+                404 => Err(OrgsListPatGrantRequestRepositoriesError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsListPatGrantRequestRepositoriesError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsListPatGrantRequestRepositoriesError::Generic { code }.into()),
             }
         }
     }
@@ -6595,7 +7001,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_pat_grant_requests](https://docs.github.com/rest/orgs/personal-access-tokens#list-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
     ///
     /// ---
-    pub async fn list_pat_grant_requests_async(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantRequestsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrantRequest>, OrgsListPatGrantRequestsError> {
+    pub async fn list_pat_grant_requests_async(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantRequestsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrantRequest>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
 
@@ -6606,28 +7012,28 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantRequestsError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsListPatGrantRequestsError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsListPatGrantRequestsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsListPatGrantRequestsError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListPatGrantRequestsError::Generic { code }),
+                500 => Err(OrgsListPatGrantRequestsError::Status500(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsListPatGrantRequestsError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsListPatGrantRequestsError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsListPatGrantRequestsError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListPatGrantRequestsError::Generic { code }.into()),
             }
         }
     }
@@ -6644,7 +7050,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pat_grant_requests(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantRequestsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrantRequest>, OrgsListPatGrantRequestsError> {
+    pub fn list_pat_grant_requests(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantRequestsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrantRequest>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
 
@@ -6661,23 +7067,23 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantRequestsError::Status500(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsListPatGrantRequestsError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsListPatGrantRequestsError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsListPatGrantRequestsError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListPatGrantRequestsError::Generic { code }),
+                500 => Err(OrgsListPatGrantRequestsError::Status500(github_response.to_json()?).into()),
+                422 => Err(OrgsListPatGrantRequestsError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsListPatGrantRequestsError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsListPatGrantRequestsError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsListPatGrantRequestsError::Generic { code }.into()),
             }
         }
     }
@@ -6693,7 +7099,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_pat_grants](https://docs.github.com/rest/orgs/personal-access-tokens#list-fine-grained-personal-access-tokens-with-access-to-organization-resources)
     ///
     /// ---
-    pub async fn list_pat_grants_async(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrant>, OrgsListPatGrantsError> {
+    pub async fn list_pat_grants_async(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrant>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
 
@@ -6704,28 +7110,28 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantsError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsListPatGrantsError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsListPatGrantsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsListPatGrantsError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListPatGrantsError::Generic { code }),
+                500 => Err(OrgsListPatGrantsError::Status500(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsListPatGrantsError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsListPatGrantsError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsListPatGrantsError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListPatGrantsError::Generic { code }.into()),
             }
         }
     }
@@ -6742,7 +7148,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pat_grants(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrant>, OrgsListPatGrantsError> {
+    pub fn list_pat_grants(&self, org: &str, query_params: Option<impl Into<OrgsListPatGrantsParams<'api>>>) -> Result<Vec<OrganizationProgrammaticAccessGrant>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
 
@@ -6759,23 +7165,23 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsListPatGrantsError::Status500(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsListPatGrantsError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsListPatGrantsError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsListPatGrantsError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListPatGrantsError::Generic { code }),
+                500 => Err(OrgsListPatGrantsError::Status500(github_response.to_json()?).into()),
+                422 => Err(OrgsListPatGrantsError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsListPatGrantsError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsListPatGrantsError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsListPatGrantsError::Generic { code }.into()),
             }
         }
     }
@@ -6792,7 +7198,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_pending_invitations](https://docs.github.com/rest/orgs/members#list-pending-organization-invitations)
     ///
     /// ---
-    pub async fn list_pending_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams<'api>>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
+    pub async fn list_pending_invitations_async(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams<'api>>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/invitations", super::GITHUB_BASE_API_URL, org);
 
@@ -6803,25 +7209,25 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListPendingInvitationsError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListPendingInvitationsError::Generic { code }),
+                404 => Err(OrgsListPendingInvitationsError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListPendingInvitationsError::Generic { code }.into()),
             }
         }
     }
@@ -6839,7 +7245,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_pending_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams<'api>>>) -> Result<Vec<OrganizationInvitation>, OrgsListPendingInvitationsError> {
+    pub fn list_pending_invitations(&self, org: &str, query_params: Option<impl Into<OrgsListPendingInvitationsParams<'api>>>) -> Result<Vec<OrganizationInvitation>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/invitations", super::GITHUB_BASE_API_URL, org);
 
@@ -6856,20 +7262,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListPendingInvitationsError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListPendingInvitationsError::Generic { code }),
+                404 => Err(OrgsListPendingInvitationsError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsListPendingInvitationsError::Generic { code }.into()),
             }
         }
     }
@@ -6883,7 +7289,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_public_members](https://docs.github.com/rest/orgs/members#list-public-organization-members)
     ///
     /// ---
-    pub async fn list_public_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListPublicMembersParams>>) -> Result<Vec<SimpleUser>, OrgsListPublicMembersError> {
+    pub async fn list_public_members_async(&self, org: &str, query_params: Option<impl Into<OrgsListPublicMembersParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/public_members", super::GITHUB_BASE_API_URL, org);
 
@@ -6894,24 +7300,24 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListPublicMembersError::Generic { code }),
+                code => Err(OrgsListPublicMembersError::Generic { code }.into()),
             }
         }
     }
@@ -6926,7 +7332,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_public_members(&self, org: &str, query_params: Option<impl Into<OrgsListPublicMembersParams>>) -> Result<Vec<SimpleUser>, OrgsListPublicMembersError> {
+    pub fn list_public_members(&self, org: &str, query_params: Option<impl Into<OrgsListPublicMembersParams>>) -> Result<Vec<SimpleUser>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/public_members", super::GITHUB_BASE_API_URL, org);
 
@@ -6943,19 +7349,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListPublicMembersError::Generic { code }),
+                code => Err(OrgsListPublicMembersError::Generic { code }.into()),
             }
         }
     }
@@ -6973,31 +7379,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_security_manager_teams](https://docs.github.com/rest/orgs/security-managers#list-security-manager-teams)
     ///
     /// ---
-    pub async fn list_security_manager_teams_async(&self, org: &str) -> Result<Vec<TeamSimple>, OrgsListSecurityManagerTeamsError> {
+    pub async fn list_security_manager_teams_async(&self, org: &str) -> Result<Vec<TeamSimple>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/security-managers", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListSecurityManagerTeamsError::Generic { code }),
+                code => Err(OrgsListSecurityManagerTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -7016,7 +7422,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_security_manager_teams(&self, org: &str) -> Result<Vec<TeamSimple>, OrgsListSecurityManagerTeamsError> {
+    pub fn list_security_manager_teams(&self, org: &str) -> Result<Vec<TeamSimple>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/security-managers", super::GITHUB_BASE_API_URL, org);
 
@@ -7028,19 +7434,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsListSecurityManagerTeamsError::Generic { code }),
+                code => Err(OrgsListSecurityManagerTeamsError::Generic { code }.into()),
             }
         }
     }
@@ -7059,7 +7465,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_webhook_deliveries](https://docs.github.com/rest/orgs/webhooks#list-deliveries-for-an-organization-webhook)
     ///
     /// ---
-    pub async fn list_webhook_deliveries_async(&self, org: &str, hook_id: i32, query_params: Option<impl Into<OrgsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, OrgsListWebhookDeliveriesError> {
+    pub async fn list_webhook_deliveries_async(&self, org: &str, hook_id: i32, query_params: Option<impl Into<OrgsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, org, hook_id);
 
@@ -7070,26 +7476,26 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(OrgsListWebhookDeliveriesError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsListWebhookDeliveriesError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListWebhookDeliveriesError::Generic { code }),
+                400 => Err(OrgsListWebhookDeliveriesError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsListWebhookDeliveriesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListWebhookDeliveriesError::Generic { code }.into()),
             }
         }
     }
@@ -7109,7 +7515,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_webhook_deliveries(&self, org: &str, hook_id: i32, query_params: Option<impl Into<OrgsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, OrgsListWebhookDeliveriesError> {
+    pub fn list_webhook_deliveries(&self, org: &str, hook_id: i32, query_params: Option<impl Into<OrgsListWebhookDeliveriesParams<'api>>>) -> Result<Vec<HookDeliveryItem>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/hooks/{}/deliveries", super::GITHUB_BASE_API_URL, org, hook_id);
 
@@ -7126,21 +7532,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(OrgsListWebhookDeliveriesError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsListWebhookDeliveriesError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListWebhookDeliveriesError::Generic { code }),
+                400 => Err(OrgsListWebhookDeliveriesError::Status400(github_response.to_json()?).into()),
+                422 => Err(OrgsListWebhookDeliveriesError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsListWebhookDeliveriesError::Generic { code }.into()),
             }
         }
     }
@@ -7157,7 +7563,7 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for list_webhooks](https://docs.github.com/rest/orgs/webhooks#list-organization-webhooks)
     ///
     /// ---
-    pub async fn list_webhooks_async(&self, org: &str, query_params: Option<impl Into<OrgsListWebhooksParams>>) -> Result<Vec<OrgHook>, OrgsListWebhooksError> {
+    pub async fn list_webhooks_async(&self, org: &str, query_params: Option<impl Into<OrgsListWebhooksParams>>) -> Result<Vec<OrgHook>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/hooks", super::GITHUB_BASE_API_URL, org);
 
@@ -7168,25 +7574,25 @@ impl<'api> Orgs<'api> {
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "GET",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListWebhooksError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsListWebhooksError::Generic { code }),
+                404 => Err(OrgsListWebhooksError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsListWebhooksError::Generic { code }.into()),
             }
         }
     }
@@ -7204,7 +7610,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn list_webhooks(&self, org: &str, query_params: Option<impl Into<OrgsListWebhooksParams>>) -> Result<Vec<OrgHook>, OrgsListWebhooksError> {
+    pub fn list_webhooks(&self, org: &str, query_params: Option<impl Into<OrgsListWebhooksParams>>) -> Result<Vec<OrgHook>, AdapterError> {
 
         let mut request_uri = format!("{}/orgs/{}/hooks", super::GITHUB_BASE_API_URL, org);
 
@@ -7221,20 +7627,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsListWebhooksError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsListWebhooksError::Generic { code }),
+                404 => Err(OrgsListWebhooksError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsListWebhooksError::Generic { code }.into()),
             }
         }
     }
@@ -7254,32 +7660,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for ping_webhook](https://docs.github.com/rest/orgs/webhooks#ping-an-organization-webhook)
     ///
     /// ---
-    pub async fn ping_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), OrgsPingWebhookError> {
+    pub async fn ping_webhook_async(&self, org: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/pings", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsPingWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsPingWebhookError::Generic { code }),
+                404 => Err(OrgsPingWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsPingWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -7300,7 +7706,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn ping_webhook(&self, org: &str, hook_id: i32) -> Result<(), OrgsPingWebhookError> {
+    pub fn ping_webhook(&self, org: &str, hook_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/pings", super::GITHUB_BASE_API_URL, org, hook_id);
 
@@ -7312,20 +7718,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                404 => Err(OrgsPingWebhookError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsPingWebhookError::Generic { code }),
+                404 => Err(OrgsPingWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsPingWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -7344,33 +7750,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for redeliver_webhook_delivery](https://docs.github.com/rest/orgs/webhooks#redeliver-a-delivery-for-an-organization-webhook)
     ///
     /// ---
-    pub async fn redeliver_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, OrgsRedeliverWebhookDeliveryError> {
+    pub async fn redeliver_webhook_delivery_async(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                400 => Err(OrgsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsRedeliverWebhookDeliveryError::Generic { code }),
+                400 => Err(OrgsRedeliverWebhookDeliveryError::Status400(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsRedeliverWebhookDeliveryError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsRedeliverWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -7390,7 +7796,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn redeliver_webhook_delivery(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, OrgsRedeliverWebhookDeliveryError> {
+    pub fn redeliver_webhook_delivery(&self, org: &str, hook_id: i32, delivery_id: i32) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/deliveries/{}/attempts", super::GITHUB_BASE_API_URL, org, hook_id, delivery_id);
 
@@ -7402,21 +7808,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                400 => Err(OrgsRedeliverWebhookDeliveryError::Status400(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsRedeliverWebhookDeliveryError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsRedeliverWebhookDeliveryError::Generic { code }),
+                400 => Err(OrgsRedeliverWebhookDeliveryError::Status400(github_response.to_json()?).into()),
+                422 => Err(OrgsRedeliverWebhookDeliveryError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsRedeliverWebhookDeliveryError::Generic { code }.into()),
             }
         }
     }
@@ -7434,33 +7840,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for remove_custom_property](https://docs.github.com/rest/orgs/custom-properties#remove-a-custom-property-for-an-organization)
     ///
     /// ---
-    pub async fn remove_custom_property_async(&self, org: &str, custom_property_name: &str) -> Result<(), OrgsRemoveCustomPropertyError> {
+    pub async fn remove_custom_property_async(&self, org: &str, custom_property_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveCustomPropertyError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsRemoveCustomPropertyError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsRemoveCustomPropertyError::Generic { code }),
+                403 => Err(OrgsRemoveCustomPropertyError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsRemoveCustomPropertyError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsRemoveCustomPropertyError::Generic { code }.into()),
             }
         }
     }
@@ -7479,7 +7885,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_custom_property(&self, org: &str, custom_property_name: &str) -> Result<(), OrgsRemoveCustomPropertyError> {
+    pub fn remove_custom_property(&self, org: &str, custom_property_name: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/properties/schema/{}", super::GITHUB_BASE_API_URL, org, custom_property_name);
 
@@ -7491,21 +7897,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveCustomPropertyError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsRemoveCustomPropertyError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsRemoveCustomPropertyError::Generic { code }),
+                403 => Err(OrgsRemoveCustomPropertyError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsRemoveCustomPropertyError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsRemoveCustomPropertyError::Generic { code }.into()),
             }
         }
     }
@@ -7519,32 +7925,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for remove_member](https://docs.github.com/rest/orgs/members#remove-an-organization-member)
     ///
     /// ---
-    pub async fn remove_member_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMemberError> {
+    pub async fn remove_member_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMemberError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsRemoveMemberError::Generic { code }),
+                403 => Err(OrgsRemoveMemberError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsRemoveMemberError::Generic { code }.into()),
             }
         }
     }
@@ -7559,7 +7965,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_member(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMemberError> {
+    pub fn remove_member(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/members/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -7571,20 +7977,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMemberError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsRemoveMemberError::Generic { code }),
+                403 => Err(OrgsRemoveMemberError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsRemoveMemberError::Generic { code }.into()),
             }
         }
     }
@@ -7600,33 +8006,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for remove_membership_for_user](https://docs.github.com/rest/orgs/members#remove-organization-membership-for-a-user)
     ///
     /// ---
-    pub async fn remove_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMembershipForUserError> {
+    pub async fn remove_membership_for_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMembershipForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsRemoveMembershipForUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsRemoveMembershipForUserError::Generic { code }),
+                403 => Err(OrgsRemoveMembershipForUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsRemoveMembershipForUserError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsRemoveMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -7643,7 +8049,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_membership_for_user(&self, org: &str, username: &str) -> Result<(), OrgsRemoveMembershipForUserError> {
+    pub fn remove_membership_for_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -7655,21 +8061,21 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsRemoveMembershipForUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsRemoveMembershipForUserError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsRemoveMembershipForUserError::Generic { code }),
+                403 => Err(OrgsRemoveMembershipForUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsRemoveMembershipForUserError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsRemoveMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -7683,32 +8089,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for remove_outside_collaborator](https://docs.github.com/rest/orgs/outside-collaborators#remove-outside-collaborator-from-an-organization)
     ///
     /// ---
-    pub async fn remove_outside_collaborator_async(&self, org: &str, username: &str) -> Result<(), OrgsRemoveOutsideCollaboratorError> {
+    pub async fn remove_outside_collaborator_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsRemoveOutsideCollaboratorError::Generic { code }),
+                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsRemoveOutsideCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -7723,7 +8129,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_outside_collaborator(&self, org: &str, username: &str) -> Result<(), OrgsRemoveOutsideCollaboratorError> {
+    pub fn remove_outside_collaborator(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/outside_collaborators/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -7735,20 +8141,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsRemoveOutsideCollaboratorError::Generic { code }),
+                422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsRemoveOutsideCollaboratorError::Generic { code }.into()),
             }
         }
     }
@@ -7762,31 +8168,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for remove_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#remove-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn remove_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRemovePublicMembershipForAuthenticatedUserError> {
+    pub async fn remove_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/public_members/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }),
+                code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -7801,7 +8207,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_public_membership_for_authenticated_user(&self, org: &str, username: &str) -> Result<(), OrgsRemovePublicMembershipForAuthenticatedUserError> {
+    pub fn remove_public_membership_for_authenticated_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/public_members/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -7813,19 +8219,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }),
+                code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -7843,31 +8249,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for remove_security_manager_team](https://docs.github.com/rest/orgs/security-managers#remove-a-security-manager-team)
     ///
     /// ---
-    pub async fn remove_security_manager_team_async(&self, org: &str, team_slug: &str) -> Result<(), OrgsRemoveSecurityManagerTeamError> {
+    pub async fn remove_security_manager_team_async(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }),
+                code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }.into()),
             }
         }
     }
@@ -7886,7 +8292,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn remove_security_manager_team(&self, org: &str, team_slug: &str) -> Result<(), OrgsRemoveSecurityManagerTeamError> {
+    pub fn remove_security_manager_team(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/security-managers/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -7898,19 +8304,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }),
+                code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }.into()),
             }
         }
     }
@@ -7926,35 +8332,35 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for review_pat_grant_request](https://docs.github.com/rest/orgs/personal-access-tokens#review-a-request-to-access-organization-resources-with-a-fine-grained-personal-access-token)
     ///
     /// ---
-    pub async fn review_pat_grant_request_async(&self, org: &str, pat_request_id: i32, body: PostOrgsReviewPatGrantRequest) -> Result<(), OrgsReviewPatGrantRequestError> {
+    pub async fn review_pat_grant_request_async(&self, org: &str, pat_request_id: i32, body: PostOrgsReviewPatGrantRequest) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}", super::GITHUB_BASE_API_URL, org, pat_request_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsReviewPatGrantRequest::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsReviewPatGrantRequest>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsReviewPatGrantRequestError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsReviewPatGrantRequestError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsReviewPatGrantRequestError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsReviewPatGrantRequestError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsReviewPatGrantRequestError::Generic { code }),
+                500 => Err(OrgsReviewPatGrantRequestError::Status500(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsReviewPatGrantRequestError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsReviewPatGrantRequestError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsReviewPatGrantRequestError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsReviewPatGrantRequestError::Generic { code }.into()),
             }
         }
     }
@@ -7971,35 +8377,35 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn review_pat_grant_request(&self, org: &str, pat_request_id: i32, body: PostOrgsReviewPatGrantRequest) -> Result<(), OrgsReviewPatGrantRequestError> {
+    pub fn review_pat_grant_request(&self, org: &str, pat_request_id: i32, body: PostOrgsReviewPatGrantRequest) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-token-requests/{}", super::GITHUB_BASE_API_URL, org, pat_request_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsReviewPatGrantRequest::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsReviewPatGrantRequest>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsReviewPatGrantRequestError::Status500(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsReviewPatGrantRequestError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsReviewPatGrantRequestError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsReviewPatGrantRequestError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsReviewPatGrantRequestError::Generic { code }),
+                500 => Err(OrgsReviewPatGrantRequestError::Status500(github_response.to_json()?).into()),
+                422 => Err(OrgsReviewPatGrantRequestError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsReviewPatGrantRequestError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsReviewPatGrantRequestError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsReviewPatGrantRequestError::Generic { code }.into()),
             }
         }
     }
@@ -8015,35 +8421,35 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for review_pat_grant_requests_in_bulk](https://docs.github.com/rest/orgs/personal-access-tokens#review-requests-to-access-organization-resources-with-fine-grained-personal-access-tokens)
     ///
     /// ---
-    pub async fn review_pat_grant_requests_in_bulk_async(&self, org: &str, body: PostOrgsReviewPatGrantRequestsInBulk) -> Result<HashMap<String, Value>, OrgsReviewPatGrantRequestsInBulkError> {
+    pub async fn review_pat_grant_requests_in_bulk_async(&self, org: &str, body: PostOrgsReviewPatGrantRequestsInBulk) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsReviewPatGrantRequestsInBulk::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsReviewPatGrantRequestsInBulk>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsReviewPatGrantRequestsInBulkError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsReviewPatGrantRequestsInBulkError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsReviewPatGrantRequestsInBulkError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsReviewPatGrantRequestsInBulkError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsReviewPatGrantRequestsInBulkError::Generic { code }),
+                500 => Err(OrgsReviewPatGrantRequestsInBulkError::Status500(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsReviewPatGrantRequestsInBulkError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsReviewPatGrantRequestsInBulkError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsReviewPatGrantRequestsInBulkError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsReviewPatGrantRequestsInBulkError::Generic { code }.into()),
             }
         }
     }
@@ -8060,35 +8466,35 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn review_pat_grant_requests_in_bulk(&self, org: &str, body: PostOrgsReviewPatGrantRequestsInBulk) -> Result<HashMap<String, Value>, OrgsReviewPatGrantRequestsInBulkError> {
+    pub fn review_pat_grant_requests_in_bulk(&self, org: &str, body: PostOrgsReviewPatGrantRequestsInBulk) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-token-requests", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsReviewPatGrantRequestsInBulk::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsReviewPatGrantRequestsInBulk>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsReviewPatGrantRequestsInBulkError::Status500(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsReviewPatGrantRequestsInBulkError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsReviewPatGrantRequestsInBulkError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsReviewPatGrantRequestsInBulkError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsReviewPatGrantRequestsInBulkError::Generic { code }),
+                500 => Err(OrgsReviewPatGrantRequestsInBulkError::Status500(github_response.to_json()?).into()),
+                422 => Err(OrgsReviewPatGrantRequestsInBulkError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsReviewPatGrantRequestsInBulkError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsReviewPatGrantRequestsInBulkError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsReviewPatGrantRequestsInBulkError::Generic { code }.into()),
             }
         }
     }
@@ -8106,31 +8512,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for revoke_all_org_roles_team](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-team)
     ///
     /// ---
-    pub async fn revoke_all_org_roles_team_async(&self, org: &str, team_slug: &str) -> Result<(), OrgsRevokeAllOrgRolesTeamError> {
+    pub async fn revoke_all_org_roles_team_async(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }),
+                code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }.into()),
             }
         }
     }
@@ -8149,7 +8555,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn revoke_all_org_roles_team(&self, org: &str, team_slug: &str) -> Result<(), OrgsRevokeAllOrgRolesTeamError> {
+    pub fn revoke_all_org_roles_team(&self, org: &str, team_slug: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}", super::GITHUB_BASE_API_URL, org, team_slug);
 
@@ -8161,19 +8567,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }),
+                code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }.into()),
             }
         }
     }
@@ -8191,31 +8597,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for revoke_all_org_roles_user](https://docs.github.com/rest/orgs/organization-roles#remove-all-organization-roles-for-a-user)
     ///
     /// ---
-    pub async fn revoke_all_org_roles_user_async(&self, org: &str, username: &str) -> Result<(), OrgsRevokeAllOrgRolesUserError> {
+    pub async fn revoke_all_org_roles_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/users/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }),
+                code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }.into()),
             }
         }
     }
@@ -8234,7 +8640,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn revoke_all_org_roles_user(&self, org: &str, username: &str) -> Result<(), OrgsRevokeAllOrgRolesUserError> {
+    pub fn revoke_all_org_roles_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/users/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -8246,19 +8652,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }),
+                code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }.into()),
             }
         }
     }
@@ -8276,31 +8682,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for revoke_org_role_team](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-team)
     ///
     /// ---
-    pub async fn revoke_org_role_team_async(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleTeamError> {
+    pub async fn revoke_org_role_team_async(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }),
+                code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }.into()),
             }
         }
     }
@@ -8319,7 +8725,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn revoke_org_role_team(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleTeamError> {
+    pub fn revoke_org_role_team(&self, org: &str, team_slug: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/teams/{}/{}", super::GITHUB_BASE_API_URL, org, team_slug, role_id);
 
@@ -8331,19 +8737,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }),
+                code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }.into()),
             }
         }
     }
@@ -8361,31 +8767,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for revoke_org_role_user](https://docs.github.com/rest/orgs/organization-roles#remove-an-organization-role-from-a-user)
     ///
     /// ---
-    pub async fn revoke_org_role_user_async(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleUserError> {
+    pub async fn revoke_org_role_user_async(&self, org: &str, username: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeOrgRoleUserError::Generic { code }),
+                code => Err(OrgsRevokeOrgRoleUserError::Generic { code }.into()),
             }
         }
     }
@@ -8404,7 +8810,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn revoke_org_role_user(&self, org: &str, username: &str, role_id: i32) -> Result<(), OrgsRevokeOrgRoleUserError> {
+    pub fn revoke_org_role_user(&self, org: &str, username: &str, role_id: i32) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/organization-roles/users/{}/{}", super::GITHUB_BASE_API_URL, org, username, role_id);
 
@@ -8416,19 +8822,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsRevokeOrgRoleUserError::Generic { code }),
+                code => Err(OrgsRevokeOrgRoleUserError::Generic { code }.into()),
             }
         }
     }
@@ -8450,33 +8856,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for set_membership_for_user](https://docs.github.com/rest/orgs/members#set-organization-membership-for-a-user)
     ///
     /// ---
-    pub async fn set_membership_for_user_async(&self, org: &str, username: &str, body: PutOrgsSetMembershipForUser) -> Result<OrgMembership, OrgsSetMembershipForUserError> {
+    pub async fn set_membership_for_user_async(&self, org: &str, username: &str, body: PutOrgsSetMembershipForUser) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOrgsSetMembershipForUser::from_json(body)?),
+            body: Some(C::from_json::<PutOrgsSetMembershipForUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsSetMembershipForUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsSetMembershipForUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsSetMembershipForUserError::Generic { code }),
+                422 => Err(OrgsSetMembershipForUserError::Status422(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsSetMembershipForUserError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsSetMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -8499,33 +8905,33 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_membership_for_user(&self, org: &str, username: &str, body: PutOrgsSetMembershipForUser) -> Result<OrgMembership, OrgsSetMembershipForUserError> {
+    pub fn set_membership_for_user(&self, org: &str, username: &str, body: PutOrgsSetMembershipForUser) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/memberships/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PutOrgsSetMembershipForUser::from_json(body)?),
+            body: Some(C::from_json::<PutOrgsSetMembershipForUser>(body)?),
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsSetMembershipForUserError::Status422(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsSetMembershipForUserError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsSetMembershipForUserError::Generic { code }),
+                422 => Err(OrgsSetMembershipForUserError::Status422(github_response.to_json()?).into()),
+                403 => Err(OrgsSetMembershipForUserError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsSetMembershipForUserError::Generic { code }.into()),
             }
         }
     }
@@ -8541,32 +8947,32 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for set_public_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#set-public-organization-membership-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn set_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), OrgsSetPublicMembershipForAuthenticatedUserError> {
+    pub async fn set_public_membership_for_authenticated_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/public_members/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "PUT",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Generic { code }),
+                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                code => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -8583,7 +8989,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_public_membership_for_authenticated_user(&self, org: &str, username: &str) -> Result<(), OrgsSetPublicMembershipForAuthenticatedUserError> {
+    pub fn set_public_membership_for_authenticated_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/public_members/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -8595,20 +9001,20 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Generic { code }),
+                403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                code => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -8622,31 +9028,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for unblock_user](https://docs.github.com/rest/orgs/blocking#unblock-a-user-from-an-organization)
     ///
     /// ---
-    pub async fn unblock_user_async(&self, org: &str, username: &str) -> Result<(), OrgsUnblockUserError> {
+    pub async fn unblock_user_async(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/blocks/{}", super::GITHUB_BASE_API_URL, org, username);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: None,
+            body: None::<C::Body>,
             method: "DELETE",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsUnblockUserError::Generic { code }),
+                code => Err(OrgsUnblockUserError::Generic { code }.into()),
             }
         }
     }
@@ -8661,7 +9067,7 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn unblock_user(&self, org: &str, username: &str) -> Result<(), OrgsUnblockUserError> {
+    pub fn unblock_user(&self, org: &str, username: &str) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/blocks/{}", super::GITHUB_BASE_API_URL, org, username);
 
@@ -8673,19 +9079,19 @@ impl<'api> Orgs<'api> {
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsUnblockUserError::Generic { code }),
+                code => Err(OrgsUnblockUserError::Generic { code }.into()),
             }
         }
     }
@@ -8709,33 +9115,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for update](https://docs.github.com/rest/orgs/orgs#update-an-organization)
     ///
     /// ---
-    pub async fn update_async(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, OrgsUpdateError> {
+    pub async fn update_async(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                409 => Err(OrgsUpdateError::Status409(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsUpdateError::Generic { code }),
+                422 => Err(OrgsUpdateError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(OrgsUpdateError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(OrgsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -8760,33 +9166,33 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, OrgsUpdateError> {
+    pub fn update(&self, org: &str, body: PatchOrgsUpdate) -> Result<OrganizationFull, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdate::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdate>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateError::Status422(crate::adapters::to_json(github_response)?)),
-                409 => Err(OrgsUpdateError::Status409(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsUpdateError::Generic { code }),
+                422 => Err(OrgsUpdateError::Status422(github_response.to_json()?).into()),
+                409 => Err(OrgsUpdateError::Status409(github_response.to_json()?).into()),
+                code => Err(OrgsUpdateError::Generic { code }.into()),
             }
         }
     }
@@ -8800,34 +9206,34 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for update_membership_for_authenticated_user](https://docs.github.com/rest/orgs/members#update-an-organization-membership-for-the-authenticated-user)
     ///
     /// ---
-    pub async fn update_membership_for_authenticated_user_async(&self, org: &str, body: PatchOrgsUpdateMembershipForAuthenticatedUser) -> Result<OrgMembership, OrgsUpdateMembershipForAuthenticatedUserError> {
+    pub async fn update_membership_for_authenticated_user_async(&self, org: &str, body: PatchOrgsUpdateMembershipForAuthenticatedUser) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/user/memberships/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdateMembershipForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdateMembershipForAuthenticatedUser>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsUpdateMembershipForAuthenticatedUserError::Generic { code }),
+                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsUpdateMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -8842,34 +9248,34 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_membership_for_authenticated_user(&self, org: &str, body: PatchOrgsUpdateMembershipForAuthenticatedUser) -> Result<OrgMembership, OrgsUpdateMembershipForAuthenticatedUserError> {
+    pub fn update_membership_for_authenticated_user(&self, org: &str, body: PatchOrgsUpdateMembershipForAuthenticatedUser) -> Result<OrgMembership, AdapterError> {
 
         let request_uri = format!("{}/user/memberships/orgs/{}", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdateMembershipForAuthenticatedUser::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdateMembershipForAuthenticatedUser>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsUpdateMembershipForAuthenticatedUserError::Generic { code }),
+                403 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
+                404 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
+                422 => Err(OrgsUpdateMembershipForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsUpdateMembershipForAuthenticatedUserError::Generic { code }.into()),
             }
         }
     }
@@ -8885,35 +9291,35 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for update_pat_access](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-a-fine-grained-personal-access-token-has-to-organization-resources)
     ///
     /// ---
-    pub async fn update_pat_access_async(&self, org: &str, pat_id: i32, body: PostOrgsUpdatePatAccess) -> Result<(), OrgsUpdatePatAccessError> {
+    pub async fn update_pat_access_async(&self, org: &str, pat_id: i32, body: PostOrgsUpdatePatAccess) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-tokens/{}", super::GITHUB_BASE_API_URL, org, pat_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsUpdatePatAccess::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsUpdatePatAccess>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsUpdatePatAccessError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsUpdatePatAccessError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsUpdatePatAccessError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsUpdatePatAccessError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsUpdatePatAccessError::Generic { code }),
+                500 => Err(OrgsUpdatePatAccessError::Status500(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsUpdatePatAccessError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsUpdatePatAccessError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsUpdatePatAccessError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsUpdatePatAccessError::Generic { code }.into()),
             }
         }
     }
@@ -8930,35 +9336,35 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_pat_access(&self, org: &str, pat_id: i32, body: PostOrgsUpdatePatAccess) -> Result<(), OrgsUpdatePatAccessError> {
+    pub fn update_pat_access(&self, org: &str, pat_id: i32, body: PostOrgsUpdatePatAccess) -> Result<(), AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-tokens/{}", super::GITHUB_BASE_API_URL, org, pat_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsUpdatePatAccess::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsUpdatePatAccess>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsUpdatePatAccessError::Status500(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsUpdatePatAccessError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsUpdatePatAccessError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsUpdatePatAccessError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsUpdatePatAccessError::Generic { code }),
+                500 => Err(OrgsUpdatePatAccessError::Status500(github_response.to_json()?).into()),
+                404 => Err(OrgsUpdatePatAccessError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsUpdatePatAccessError::Status403(github_response.to_json()?).into()),
+                422 => Err(OrgsUpdatePatAccessError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsUpdatePatAccessError::Generic { code }.into()),
             }
         }
     }
@@ -8974,35 +9380,35 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for update_pat_accesses](https://docs.github.com/rest/orgs/personal-access-tokens#update-the-access-to-organization-resources-via-fine-grained-personal-access-tokens)
     ///
     /// ---
-    pub async fn update_pat_accesses_async(&self, org: &str, body: PostOrgsUpdatePatAccesses) -> Result<HashMap<String, Value>, OrgsUpdatePatAccessesError> {
+    pub async fn update_pat_accesses_async(&self, org: &str, body: PostOrgsUpdatePatAccesses) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsUpdatePatAccesses::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsUpdatePatAccesses>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsUpdatePatAccessesError::Status500(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsUpdatePatAccessesError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                403 => Err(OrgsUpdatePatAccessesError::Status403(crate::adapters::to_json_async(github_response).await?)),
-                422 => Err(OrgsUpdatePatAccessesError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsUpdatePatAccessesError::Generic { code }),
+                500 => Err(OrgsUpdatePatAccessesError::Status500(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsUpdatePatAccessesError::Status404(github_response.to_json_async().await?).into()),
+                403 => Err(OrgsUpdatePatAccessesError::Status403(github_response.to_json_async().await?).into()),
+                422 => Err(OrgsUpdatePatAccessesError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(OrgsUpdatePatAccessesError::Generic { code }.into()),
             }
         }
     }
@@ -9019,35 +9425,35 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_pat_accesses(&self, org: &str, body: PostOrgsUpdatePatAccesses) -> Result<HashMap<String, Value>, OrgsUpdatePatAccessesError> {
+    pub fn update_pat_accesses(&self, org: &str, body: PostOrgsUpdatePatAccesses) -> Result<HashMap<String, Value>, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/personal-access-tokens", super::GITHUB_BASE_API_URL, org);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PostOrgsUpdatePatAccesses::from_json(body)?),
+            body: Some(C::from_json::<PostOrgsUpdatePatAccesses>(body)?),
             method: "POST",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                500 => Err(OrgsUpdatePatAccessesError::Status500(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsUpdatePatAccessesError::Status404(crate::adapters::to_json(github_response)?)),
-                403 => Err(OrgsUpdatePatAccessesError::Status403(crate::adapters::to_json(github_response)?)),
-                422 => Err(OrgsUpdatePatAccessesError::Status422(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsUpdatePatAccessesError::Generic { code }),
+                500 => Err(OrgsUpdatePatAccessesError::Status500(github_response.to_json()?).into()),
+                404 => Err(OrgsUpdatePatAccessesError::Status404(github_response.to_json()?).into()),
+                403 => Err(OrgsUpdatePatAccessesError::Status403(github_response.to_json()?).into()),
+                422 => Err(OrgsUpdatePatAccessesError::Status422(github_response.to_json()?).into()),
+                code => Err(OrgsUpdatePatAccessesError::Generic { code }.into()),
             }
         }
     }
@@ -9070,33 +9476,33 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for update_webhook](https://docs.github.com/rest/orgs/webhooks#update-an-organization-webhook)
     ///
     /// ---
-    pub async fn update_webhook_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhook) -> Result<OrgHook, OrgsUpdateWebhookError> {
+    pub async fn update_webhook_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhook) -> Result<OrgHook, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdateWebhook>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateWebhookError::Status422(crate::adapters::to_json_async(github_response).await?)),
-                404 => Err(OrgsUpdateWebhookError::Status404(crate::adapters::to_json_async(github_response).await?)),
-                code => Err(OrgsUpdateWebhookError::Generic { code }),
+                422 => Err(OrgsUpdateWebhookError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(OrgsUpdateWebhookError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(OrgsUpdateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -9120,33 +9526,33 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_webhook(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhook) -> Result<OrgHook, OrgsUpdateWebhookError> {
+    pub fn update_webhook(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhook) -> Result<OrgHook, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdateWebhook::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdateWebhook>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                422 => Err(OrgsUpdateWebhookError::Status422(crate::adapters::to_json(github_response)?)),
-                404 => Err(OrgsUpdateWebhookError::Status404(crate::adapters::to_json(github_response)?)),
-                code => Err(OrgsUpdateWebhookError::Generic { code }),
+                422 => Err(OrgsUpdateWebhookError::Status422(github_response.to_json()?).into()),
+                404 => Err(OrgsUpdateWebhookError::Status404(github_response.to_json()?).into()),
+                code => Err(OrgsUpdateWebhookError::Generic { code }.into()),
             }
         }
     }
@@ -9165,31 +9571,31 @@ impl<'api> Orgs<'api> {
     /// [GitHub API docs for update_webhook_config_for_org](https://docs.github.com/rest/orgs/webhooks#update-a-webhook-configuration-for-an-organization)
     ///
     /// ---
-    pub async fn update_webhook_config_for_org_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhookConfigForOrg) -> Result<WebhookConfig, OrgsUpdateWebhookConfigForOrgError> {
+    pub async fn update_webhook_config_for_org_async(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhookConfigForOrg) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdateWebhookConfigForOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdateWebhookConfigForOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch_async(request).await?;
+        let github_response = self.client.fetch_async(request).await?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json_async(github_response).await?)
+            Ok(github_response.to_json_async().await?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsUpdateWebhookConfigForOrgError::Generic { code }),
+                code => Err(OrgsUpdateWebhookConfigForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -9209,31 +9615,31 @@ impl<'api> Orgs<'api> {
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn update_webhook_config_for_org(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhookConfigForOrg) -> Result<WebhookConfig, OrgsUpdateWebhookConfigForOrgError> {
+    pub fn update_webhook_config_for_org(&self, org: &str, hook_id: i32, body: PatchOrgsUpdateWebhookConfigForOrg) -> Result<WebhookConfig, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/hooks/{}/config", super::GITHUB_BASE_API_URL, org, hook_id);
 
 
         let req = GitHubRequest {
             uri: request_uri,
-            body: Some(PatchOrgsUpdateWebhookConfigForOrg::from_json(body)?),
+            body: Some(C::from_json::<PatchOrgsUpdateWebhookConfigForOrg>(body)?),
             method: "PATCH",
             headers: vec![]
         };
 
-        let request = GitHubRequestBuilder::build(req, self.auth)?;
+        let request = self.client.build(req)?;
 
         // --
 
-        let github_response = crate::adapters::fetch(request)?;
+        let github_response = self.client.fetch(request)?;
 
         // --
 
         if github_response.is_success() {
-            Ok(crate::adapters::to_json(github_response)?)
+            Ok(github_response.to_json()?)
         } else {
             match github_response.status_code() {
-                code => Err(OrgsUpdateWebhookConfigForOrgError::Generic { code }),
+                code => Err(OrgsUpdateWebhookConfigForOrgError::Generic { code }.into()),
             }
         }
     }
