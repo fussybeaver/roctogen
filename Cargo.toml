@@ -11,6 +11,13 @@ readme = "README.md"
 keywords = ["github"]
 edition = "2021"
 
+[workspace]
+members = [
+  "examples/auth/*",
+  "examples/min-req-adapter",
+]
+exclude = ["codegen/**"]
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 path = "src/lib.rs"
@@ -22,7 +29,7 @@ reqwest = ["dep:reqwest", "dep:bytes"]
 # Activate mock base url
 mock = []
 
-[dependencies]
+[workspace.dependencies]
 base64 = "0.22"
 chrono = { version = "0.4", features = ["serde"] }
 http = "1.1"
@@ -32,6 +39,27 @@ serde_json = {version = "1.0"}
 serde_urlencoded = { version = "0.7" }
 thiserror = "1"
 log = "0.4"
+
+# wasm
+cfg-if = { version = "1" }
+wasm-bindgen = { version = "0.2.95", features = ["serde-serialize"] }
+wasm-bindgen-futures = { version = "0.4" }
+console_error_panic_hook = { version = "0.1.1" }
+wee_alloc = { version = "0.4.2" }
+js-sys = { version = "0.3" }
+web-sys = { version = "0.3", features = [ 'Headers', 'Request', 'RequestInit', 'Response', 'ServiceWorkerGlobalScope', 'Window', 'console' ] }
+console_log = { version = "1", features = ["color"] }
+
+[dependencies]
+base64.workspace = true
+chrono.workspace = true
+http.workspace = true
+serde.workspace = true
+serde_derive.workspace = true
+serde_json.workspace = true
+serde_urlencoded.workspace = true
+thiserror.workspace = true
+log.workspace = true
 bytes = { version = "1", optional = true }
 
 # reqwest
@@ -63,7 +91,7 @@ features = [
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
 wasm-bindgen-test = "0.3.45"
-console_log = { version = "1", features = ["color"] }
+console_log = { workspace = true, features = ["color"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 futures-lite = { version = "2.3" }

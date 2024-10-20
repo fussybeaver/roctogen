@@ -1,17 +1,15 @@
-extern crate cfg_if;
-extern crate wasm_bindgen;
-
 mod utils;
 
 use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
+use roctogen::adapters::{wasm, Client};
 use roctogen::api::apps;
 use roctogen::auth::Auth;
 use roctogen::models;
 
-use log::{info, Level, error};
+use log::{error, info, Level};
 
 use roctogen_common::jwt::{create_claim, create_token};
 
@@ -50,15 +48,18 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
 
     let auth = Auth::Bearer(token);
 
-    let apps = apps::new(&auth);
+    let client = wasm::Client::new(&auth).expect("Cannot build client");
+    let apps = apps::new(&client);
 
-    let req = apps.list_installations_async(None::<apps::AppsListInstallationsParams>).await;
+    let req = apps
+        .list_installations_async(None::<apps::AppsListInstallationsParams>)
+        .await;
     let installation_id = match req {
         Ok(ref installations) => {
             info!("installations: {:?}", installations);
 
             // Just use the first one...
-            if let Some(models::Installation { id: Some(id), ..}) = installations.get(0) {
+            if let Some(models::Installation { id: Some(id), .. }) = installations.get(0) {
                 id
             } else {
                 return Err(Error::new("Installation id not found").into());
@@ -67,11 +68,13 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
         Err(ref e) => {
             error!("error fetching installations: {}", e);
             return Err(Error::new(&e.to_string()).into());
-        },
+        }
     };
 
     let post_apps = models::PostAppsCreateInstallationAccessToken::default();
-    let req = apps.create_installation_access_token_async(*installation_id as i32, post_apps).await;
+    let req = apps
+        .create_installation_access_token_async(*installation_id as i32, post_apps)
+        .await;
     match req {
         Ok(ref installation_token) => {
             info!("ok: {:?}", installation_token);
@@ -81,7 +84,6 @@ pub async fn run(jwt_js: JsValue, app_id_js: JsValue) -> Result<JsValue, JsValue
         Err(ref e) => {
             error!("err: {}", e);
             return Err(Error::new(&e.to_string()).into());
-        },
+        }
     }
-
 }
