@@ -2,7 +2,7 @@ name: Check
 on:
   repository_dispatch:
     types:
-      - github-openapi-release
+      - octokit/openapi-release
 
 jobs:
   update:
