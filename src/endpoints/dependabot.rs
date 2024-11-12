@@ -1029,7 +1029,7 @@ pub struct DependabotListAlertsForRepoParams<'req> {
     sort: Option<&'req str>, 
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
-    /// **Deprecated**. Page number of the results to fetch. Use cursor-based pagination with `before` or `after` instead.
+    /// **Closing down notice**. Page number of the results to fetch. Use cursor-based pagination with `before` or `after` instead.
     page: Option<u16>, 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
@@ -1208,7 +1208,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
         }
     }
 
-    /// **Deprecated**. Page number of the results to fetch. Use cursor-based pagination with `before` or `after` instead.
+    /// **Closing down notice**. Page number of the results to fetch. Use cursor-based pagination with `before` or `after` instead.
     pub fn page(self, page: u16) -> Self {
         Self {
             state: self.state, 
@@ -1494,7 +1494,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409.into()),
@@ -1538,7 +1538,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotAddSelectedRepoToOrgSecretError::Status409.into()),
@@ -1749,7 +1749,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteOrgSecretError::Generic { code }.into()),
@@ -1790,7 +1790,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteOrgSecretError::Generic { code }.into()),
@@ -1830,7 +1830,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteRepoSecretError::Generic { code }.into()),
@@ -1871,7 +1871,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(DependabotDeleteRepoSecretError::Generic { code }.into()),
@@ -2908,7 +2908,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409.into()),
@@ -2952,7 +2952,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(DependabotRemoveSelectedRepoFromOrgSecretError::Status409.into()),
@@ -2995,7 +2995,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }.into()),
@@ -3038,7 +3038,7 @@ impl<'api, C: Client> Dependabot<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(DependabotSetSelectedReposForOrgSecretError::Generic { code }.into()),

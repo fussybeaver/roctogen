@@ -1211,7 +1211,7 @@ impl<'api, C: Client> Pulls<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(PullsCheckIfMergedError::Status404.into()),
@@ -1251,7 +1251,7 @@ impl<'api, C: Client> Pulls<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(PullsCheckIfMergedError::Status404.into()),
@@ -1583,7 +1583,7 @@ impl<'api, C: Client> Pulls<'api, C> where AdapterError: From<<C as Client>::Err
     /// 
     /// If your comment applies to more than one line in the pull request diff, you should use the parameters `line`, `side`, and optionally `start_line` and `start_side` in your request.
     /// 
-    /// The `position` parameter is deprecated. If you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
+    /// The `position` parameter is closing down. If you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
     /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
@@ -1637,7 +1637,7 @@ impl<'api, C: Client> Pulls<'api, C> where AdapterError: From<<C as Client>::Err
     /// 
     /// If your comment applies to more than one line in the pull request diff, you should use the parameters `line`, `side`, and optionally `start_line` and `start_side` in your request.
     /// 
-    /// The `position` parameter is deprecated. If you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
+    /// The `position` parameter is closing down. If you use `position`, the `line`, `side`, `start_line`, and `start_side` parameters are not required.
     /// 
     /// This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
     /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
@@ -1809,7 +1809,7 @@ impl<'api, C: Client> Pulls<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(PullsDeleteReviewCommentError::Status404(github_response.to_json_async().await?).into()),
@@ -1849,7 +1849,7 @@ impl<'api, C: Client> Pulls<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(PullsDeleteReviewCommentError::Status404(github_response.to_json()?).into()),

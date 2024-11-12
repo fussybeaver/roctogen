@@ -4797,7 +4797,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
@@ -4838,7 +4838,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
@@ -4882,7 +4882,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409.into()),
@@ -4928,7 +4928,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsAddSelectedRepoToOrgSecretError::Status409.into()),
@@ -4972,7 +4972,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409.into()),
@@ -5017,7 +5017,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsAddSelectedRepoToOrgVariableError::Status409.into()),
@@ -5058,7 +5058,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }.into()),
@@ -5099,7 +5099,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsAddSelfHostedRunnerToGroupForOrgError::Generic { code }.into()),
@@ -6300,7 +6300,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateWorkflowDispatchError::Generic { code }.into()),
@@ -6343,7 +6343,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsCreateWorkflowDispatchError::Generic { code }.into()),
@@ -6383,7 +6383,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }.into()),
@@ -6424,7 +6424,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteActionsCacheByIdError::Generic { code }.into()),
@@ -6549,7 +6549,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteArtifactError::Generic { code }.into()),
@@ -6589,7 +6589,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteArtifactError::Generic { code }.into()),
@@ -6631,7 +6631,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }.into()),
@@ -6674,7 +6674,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteEnvironmentSecretError::Generic { code }.into()),
@@ -6716,7 +6716,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }.into()),
@@ -6759,7 +6759,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }.into()),
@@ -6801,7 +6801,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteOrgSecretError::Generic { code }.into()),
@@ -6844,7 +6844,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteOrgSecretError::Generic { code }.into()),
@@ -6886,7 +6886,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteOrgVariableError::Generic { code }.into()),
@@ -6929,7 +6929,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteOrgVariableError::Generic { code }.into()),
@@ -6971,7 +6971,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteRepoSecretError::Generic { code }.into()),
@@ -7014,7 +7014,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteRepoSecretError::Generic { code }.into()),
@@ -7056,7 +7056,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteRepoVariableError::Generic { code }.into()),
@@ -7099,7 +7099,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteRepoVariableError::Generic { code }.into()),
@@ -7141,7 +7141,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }.into()),
@@ -7184,7 +7184,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromOrgError::Generic { code }.into()),
@@ -7226,7 +7226,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }.into()),
@@ -7269,7 +7269,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerFromRepoError::Generic { code }.into()),
@@ -7309,7 +7309,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }.into()),
@@ -7350,7 +7350,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteSelfHostedRunnerGroupFromOrgError::Generic { code }.into()),
@@ -7392,7 +7392,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteWorkflowRunError::Generic { code }.into()),
@@ -7435,7 +7435,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteWorkflowRunError::Generic { code }.into()),
@@ -7475,7 +7475,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(github_response.to_json_async().await?).into()),
@@ -7518,7 +7518,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ActionsDeleteWorkflowRunLogsError::Status403(github_response.to_json()?).into()),
@@ -7560,7 +7560,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
@@ -7601,7 +7601,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
@@ -7641,7 +7641,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableWorkflowError::Generic { code }.into()),
@@ -7682,7 +7682,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDisableWorkflowError::Generic { code }.into()),
@@ -7723,7 +7723,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadArtifactError::Status302.into()),
@@ -7767,7 +7767,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadArtifactError::Status302.into()),
@@ -7812,7 +7812,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302.into()),
@@ -7857,7 +7857,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadJobLogsForWorkflowRunError::Status302.into()),
@@ -7901,7 +7901,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302.into()),
@@ -7946,7 +7946,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadWorkflowRunAttemptLogsError::Status302.into()),
@@ -7990,7 +7990,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadWorkflowRunLogsError::Status302.into()),
@@ -8035,7 +8035,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ActionsDownloadWorkflowRunLogsError::Status302.into()),
@@ -8076,7 +8076,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
@@ -8117,7 +8117,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableSelectedRepositoryGithubActionsOrganizationError::Generic { code }.into()),
@@ -8157,7 +8157,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableWorkflowError::Generic { code }.into()),
@@ -8198,7 +8198,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsEnableWorkflowError::Generic { code }.into()),
@@ -14455,7 +14455,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
@@ -14496,7 +14496,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
@@ -14540,7 +14540,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409.into()),
@@ -14586,7 +14586,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsRemoveSelectedRepoFromOrgSecretError::Status409.into()),
@@ -14631,7 +14631,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409.into()),
@@ -14677,7 +14677,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsRemoveSelectedRepoFromOrgVariableError::Status409.into()),
@@ -14718,7 +14718,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }.into()),
@@ -14759,7 +14759,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsRemoveSelfHostedRunnerFromGroupForOrgError::Generic { code }.into()),
@@ -14802,7 +14802,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsReviewCustomGatesForRunError::Generic { code }.into()),
@@ -14846,7 +14846,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsReviewCustomGatesForRunError::Generic { code }.into()),
@@ -14971,7 +14971,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }.into()),
@@ -15012,7 +15012,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsOrganizationError::Generic { code }.into()),
@@ -15052,7 +15052,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }.into()),
@@ -15093,7 +15093,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetAllowedActionsRepositoryError::Generic { code }.into()),
@@ -15404,7 +15404,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }.into()),
@@ -15447,7 +15447,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsOrganizationError::Generic { code }.into()),
@@ -15489,7 +15489,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409.into()),
@@ -15533,7 +15533,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsSetGithubActionsDefaultWorkflowPermissionsRepositoryError::Status409.into()),
@@ -15574,7 +15574,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }.into()),
@@ -15615,7 +15615,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsOrganizationError::Generic { code }.into()),
@@ -15655,7 +15655,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }.into()),
@@ -15696,7 +15696,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetGithubActionsPermissionsRepositoryError::Generic { code }.into()),
@@ -15736,7 +15736,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
@@ -15777,7 +15777,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetRepoAccessToSelfHostedRunnerGroupInOrgError::Generic { code }.into()),
@@ -15821,7 +15821,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }.into()),
@@ -15866,7 +15866,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedReposForOrgSecretError::Generic { code }.into()),
@@ -15910,7 +15910,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409.into()),
@@ -15956,7 +15956,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ActionsSetSelectedReposForOrgVariableError::Status409.into()),
@@ -15998,7 +15998,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }.into()),
@@ -16040,7 +16040,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelectedRepositoriesEnabledGithubActionsOrganizationError::Generic { code }.into()),
@@ -16080,7 +16080,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }.into()),
@@ -16121,7 +16121,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetSelfHostedRunnersInGroupForOrgError::Generic { code }.into()),
@@ -16163,7 +16163,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }.into()),
@@ -16206,7 +16206,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsSetWorkflowAccessToRepositoryError::Generic { code }.into()),
@@ -16248,7 +16248,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }.into()),
@@ -16291,7 +16291,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }.into()),
@@ -16333,7 +16333,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateOrgVariableError::Generic { code }.into()),
@@ -16376,7 +16376,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateOrgVariableError::Generic { code }.into()),
@@ -16418,7 +16418,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateRepoVariableError::Generic { code }.into()),
@@ -16461,7 +16461,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateRepoVariableError::Generic { code }.into()),

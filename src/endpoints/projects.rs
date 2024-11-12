@@ -1199,7 +1199,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsAddCollaboratorError::Status404(github_response.to_json_async().await?).into()),
@@ -1243,7 +1243,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ProjectsAddCollaboratorError::Status404(github_response.to_json()?).into()),
@@ -1713,7 +1713,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsDeleteError::Status304.into()),
@@ -1757,7 +1757,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsDeleteError::Status304.into()),
@@ -1800,7 +1800,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsDeleteCardError::Status304.into()),
@@ -1843,7 +1843,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsDeleteCardError::Status304.into()),
@@ -1885,7 +1885,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsDeleteColumnError::Status304.into()),
@@ -1927,7 +1927,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsDeleteColumnError::Status304.into()),
@@ -3024,7 +3024,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsRemoveCollaboratorError::Status304.into()),
@@ -3068,7 +3068,7 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ProjectsRemoveCollaboratorError::Status304.into()),

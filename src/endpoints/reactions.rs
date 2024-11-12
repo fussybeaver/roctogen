@@ -1592,7 +1592,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # Create reaction for a team discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
     /// 
     /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
@@ -1637,7 +1637,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # Create reaction for a team discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Create reaction for a team discussion comment](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion-comment)" endpoint.
     /// 
     /// Create a reaction to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
@@ -1776,7 +1776,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # Create reaction for a team discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion) endpoint.
     /// 
     /// Create a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
@@ -1821,7 +1821,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # Create reaction for a team discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create reaction for a team discussion`](https://docs.github.com/rest/reactions/reactions#create-reaction-for-a-team-discussion) endpoint.
     /// 
     /// Create a reaction to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
@@ -1895,7 +1895,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForCommitCommentError::Generic { code }.into()),
@@ -1937,7 +1937,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForCommitCommentError::Generic { code }.into()),
@@ -1978,7 +1978,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueError::Generic { code }.into()),
@@ -2020,7 +2020,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueError::Generic { code }.into()),
@@ -2061,7 +2061,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueCommentError::Generic { code }.into()),
@@ -2103,7 +2103,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForIssueCommentError::Generic { code }.into()),
@@ -2144,7 +2144,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }.into()),
@@ -2186,7 +2186,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForPullRequestCommentError::Generic { code }.into()),
@@ -2227,7 +2227,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForReleaseError::Generic { code }.into()),
@@ -2269,7 +2269,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForReleaseError::Generic { code }.into()),
@@ -2312,7 +2312,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }.into()),
@@ -2356,7 +2356,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionError::Generic { code }.into()),
@@ -2399,7 +2399,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }.into()),
@@ -2443,7 +2443,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReactionsDeleteForTeamDiscussionCommentError::Generic { code }.into()),
@@ -2994,7 +2994,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # List reactions for a team discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
     /// 
     /// List the reactions to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
@@ -3041,7 +3041,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # List reactions for a team discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion comment`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion-comment) endpoint.
     /// 
     /// List the reactions to a [team discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment).
     /// 
@@ -3186,7 +3186,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # List reactions for a team discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion) endpoint.
     /// 
     /// List the reactions to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 
@@ -3233,7 +3233,7 @@ impl<'api, C: Client> Reactions<'api, C> where AdapterError: From<<C as Client>:
     /// # List reactions for a team discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List reactions for a team discussion`](https://docs.github.com/rest/reactions/reactions#list-reactions-for-a-team-discussion) endpoint.
     /// 
     /// List the reactions to a [team discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion).
     /// 

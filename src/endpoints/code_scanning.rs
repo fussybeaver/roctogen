@@ -93,6 +93,36 @@ impl From<CodeScanningDeleteAnalysisError> for AdapterError {
     }
 }
 
+/// Errors for the [Delete a CodeQL database](CodeScanning::delete_codeql_database_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningDeleteCodeqlDatabaseError {
+    #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeScanningDeleteCodeqlDatabaseError> for AdapterError {
+    fn from(err: CodeScanningDeleteCodeqlDatabaseError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningDeleteCodeqlDatabaseError::Status403(_) => (String::from("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningDeleteCodeqlDatabaseError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningDeleteCodeqlDatabaseError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningDeleteCodeqlDatabaseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a code scanning alert](CodeScanning::get_alert_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningGetAlertError {
@@ -1598,6 +1628,93 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
 
     /// ---
     ///
+    /// # Delete a CodeQL database
+    ///
+    /// Deletes a CodeQL database for a language in a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for delete_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#delete-a-codeql-database)
+    ///
+    /// ---
+    pub async fn delete_codeql_database_async(&self, owner: &str, repo: &str, language: &str) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases/{}", super::GITHUB_BASE_API_URL, owner, repo, language);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(())
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningDeleteCodeqlDatabaseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningDeleteCodeqlDatabaseError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningDeleteCodeqlDatabaseError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningDeleteCodeqlDatabaseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a CodeQL database
+    ///
+    /// Deletes a CodeQL database for a language in a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for delete_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#delete-a-codeql-database)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_codeql_database(&self, owner: &str, repo: &str, language: &str) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/codeql/databases/{}", super::GITHUB_BASE_API_URL, owner, repo, language);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(())
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeScanningDeleteCodeqlDatabaseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningDeleteCodeqlDatabaseError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningDeleteCodeqlDatabaseError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningDeleteCodeqlDatabaseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a code scanning alert
     ///
     /// Gets a single code scanning alert.
@@ -1812,7 +1929,7 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
     /// your HTTP client is configured to follow redirects or use the `Location` header
     /// to make a second request to get the redirect URL.
     /// 
-    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     ///
     /// [GitHub API docs for get_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#get-a-codeql-database-for-a-repository)
     ///
@@ -1862,7 +1979,7 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
     /// your HTTP client is configured to follow redirects or use the `Location` header
     /// to make a second request to get the redirect URL.
     /// 
-    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     ///
     /// [GitHub API docs for get_codeql_database](https://docs.github.com/rest/code-scanning/code-scanning#get-a-codeql-database-for-a-repository)
     ///
@@ -2549,7 +2666,7 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
     ///
     /// Lists the CodeQL databases that are available in a repository.
     /// 
-    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     ///
     /// [GitHub API docs for list_codeql_databases](https://docs.github.com/rest/code-scanning/code-scanning#list-codeql-databases-for-a-repository)
     ///
@@ -2592,7 +2709,7 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
     ///
     /// Lists the CodeQL databases that are available in a repository.
     /// 
-    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     ///
     /// [GitHub API docs for list_codeql_databases](https://docs.github.com/rest/code-scanning/code-scanning#list-codeql-databases-for-a-repository)
     ///
@@ -2646,7 +2763,7 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
     /// and `0` is returned in this field.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
+    /// > **Closing down notice:** The `tool_name` field is closing down and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     ///
@@ -2705,7 +2822,7 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
     /// and `0` is returned in this field.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** The `tool_name` field is deprecated and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
+    /// > **Closing down notice:** The `tool_name` field is closing down and will, in future, not be included in the response for this endpoint. The example response reflects this change. The tool name can now be found inside the `tool` field.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
     ///

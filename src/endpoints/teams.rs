@@ -2186,7 +2186,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     ///
     /// # Add team member (Legacy)
     ///
-    /// The "Add team member" endpoint (described below) is deprecated.
+    /// The "Add team member" endpoint (described below) is closing down.
     /// 
     /// We recommend using the [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint instead. It allows you to invite new organization members to your teams.
     /// 
@@ -2223,7 +2223,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsAddMemberLegacyError::Status404.into()),
@@ -2238,7 +2238,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     ///
     /// # Add team member (Legacy)
     ///
-    /// The "Add team member" endpoint (described below) is deprecated.
+    /// The "Add team member" endpoint (described below) is closing down.
     /// 
     /// We recommend using the [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint instead. It allows you to invite new organization members to your teams.
     /// 
@@ -2276,7 +2276,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsAddMemberLegacyError::Status404.into()),
@@ -2397,7 +2397,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Add or update team membership for a user (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint.
     /// 
     /// Team synchronization is available for organizations using GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
@@ -2450,7 +2450,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Add or update team membership for a user (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint.
     /// 
     /// Team synchronization is available for organizations using GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
@@ -2532,7 +2532,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(github_response.to_json_async().await?).into()),
@@ -2575,7 +2575,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateProjectPermissionsInOrgError::Status403(github_response.to_json()?).into()),
@@ -2589,7 +2589,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Add or update team project permissions (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team project permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team project permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions) endpoint.
     /// 
     /// Adds an organization project to a team. To add a project to a team or update the team's permission on a project, the authenticated user must have `admin` permissions for the project. The project and team must be part of the same organization.
     ///
@@ -2617,7 +2617,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(github_response.to_json_async().await?).into()),
@@ -2633,7 +2633,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Add or update team project permissions (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team project permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Add or update team project permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions) endpoint.
     /// 
     /// Adds an organization project to a team. To add a project to a team or update the team's permission on a project, the authenticated user must have `admin` permissions for the project. The project and team must be part of the same organization.
     ///
@@ -2662,7 +2662,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateProjectPermissionsLegacyError::Status403(github_response.to_json()?).into()),
@@ -2708,7 +2708,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }.into()),
@@ -2752,7 +2752,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsAddOrUpdateRepoPermissionsInOrgError::Generic { code }.into()),
@@ -2765,7 +2765,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Add or update team repository permissions (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Add or update team repository permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions)" endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Add or update team repository permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions)" endpoint.
     /// 
     /// To add a repository to a team or update the team's permission on a repository, the authenticated user must have admin access to the repository, and must be able to see the team. The repository must be owned by the organization, or a direct fork of a repository owned by the organization. You will get a `422 Unprocessable Entity` status if you attempt to add a repository to a team that is not owned by the organization.
     /// 
@@ -2795,7 +2795,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(github_response.to_json_async().await?).into()),
@@ -2810,7 +2810,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Add or update team repository permissions (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Add or update team repository permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions)" endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new "[Add or update team repository permissions](https://docs.github.com/rest/teams/teams#add-or-update-team-repository-permissions)" endpoint.
     /// 
     /// To add a repository to a team or update the team's permission on a repository, the authenticated user must have admin access to the repository, and must be able to see the team. The repository must be owned by the organization, or a direct fork of a repository owned by the organization. You will get a `422 Unprocessable Entity` status if you attempt to add a repository to a team that is not owned by the organization.
     /// 
@@ -2841,7 +2841,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsAddOrUpdateRepoPermissionsLegacyError::Status403(github_response.to_json()?).into()),
@@ -2941,7 +2941,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Check team permissions for a project (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a project](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a project](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project) endpoint.
     /// 
     /// Checks whether a team has `read`, `write`, or `admin` permissions for an organization project. The response includes projects inherited from a parent team.
     ///
@@ -2983,7 +2983,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Check team permissions for a project (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a project](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a project](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project) endpoint.
     /// 
     /// Checks whether a team has `read`, `write`, or `admin` permissions for an organization project. The response includes projects inherited from a parent team.
     ///
@@ -3125,7 +3125,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Check team permissions for a repository (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a repository](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a repository](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository) endpoint.
     /// 
     /// > [!NOTE]
     /// > Repositories inherited through a parent team will also be checked.
@@ -3171,7 +3171,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Check team permissions for a repository (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a repository](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Check team permissions for a repository](https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-repository) endpoint.
     /// 
     /// > [!NOTE]
     /// > Repositories inherited through a parent team will also be checked.
@@ -3394,7 +3394,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Create a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Create a discussion comment](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Create a discussion comment](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment) endpoint.
     /// 
     /// Creates a new comment on a team discussion.
     /// 
@@ -3439,7 +3439,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Create a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Create a discussion comment](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Create a discussion comment](https://docs.github.com/rest/teams/discussion-comments#create-a-discussion-comment) endpoint.
     /// 
     /// Creates a new comment on a team discussion.
     /// 
@@ -3576,7 +3576,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Create a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create a discussion`](https://docs.github.com/rest/teams/discussions#create-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create a discussion`](https://docs.github.com/rest/teams/discussions#create-a-discussion) endpoint.
     /// 
     /// Creates a new discussion post on a team's page.
     /// 
@@ -3621,7 +3621,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Create a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create a discussion`](https://docs.github.com/rest/teams/discussions#create-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Create a discussion`](https://docs.github.com/rest/teams/discussions#create-a-discussion) endpoint.
     /// 
     /// Creates a new discussion post on a team's page.
     /// 
@@ -3697,7 +3697,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }.into()),
@@ -3741,7 +3741,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentInOrgError::Generic { code }.into()),
@@ -3754,7 +3754,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Delete a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a discussion comment](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a discussion comment](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment) endpoint.
     /// 
     /// Deletes a comment on a team discussion.
     /// 
@@ -3784,7 +3784,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }.into()),
@@ -3797,7 +3797,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Delete a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a discussion comment](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a discussion comment](https://docs.github.com/rest/teams/discussion-comments#delete-a-discussion-comment) endpoint.
     /// 
     /// Deletes a comment on a team discussion.
     /// 
@@ -3828,7 +3828,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionCommentLegacyError::Generic { code }.into()),
@@ -3871,7 +3871,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }.into()),
@@ -3915,7 +3915,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionInOrgError::Generic { code }.into()),
@@ -3928,7 +3928,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Delete a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Delete a discussion`](https://docs.github.com/rest/teams/discussions#delete-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Delete a discussion`](https://docs.github.com/rest/teams/discussions#delete-a-discussion) endpoint.
     /// 
     /// Delete a discussion from a team's page.
     /// 
@@ -3958,7 +3958,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }.into()),
@@ -3971,7 +3971,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Delete a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Delete a discussion`](https://docs.github.com/rest/teams/discussions#delete-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`Delete a discussion`](https://docs.github.com/rest/teams/discussions#delete-a-discussion) endpoint.
     /// 
     /// Delete a discussion from a team's page.
     /// 
@@ -4002,7 +4002,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteDiscussionLegacyError::Generic { code }.into()),
@@ -4045,7 +4045,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteInOrgError::Generic { code }.into()),
@@ -4089,7 +4089,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsDeleteInOrgError::Generic { code }.into()),
@@ -4102,7 +4102,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Delete a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a team](https://docs.github.com/rest/teams/teams#delete-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a team](https://docs.github.com/rest/teams/teams#delete-a-team) endpoint.
     /// 
     /// To delete a team, the authenticated user must be an organization owner or team maintainer.
     /// 
@@ -4132,7 +4132,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsDeleteLegacyError::Status404(github_response.to_json_async().await?).into()),
@@ -4147,7 +4147,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Delete a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a team](https://docs.github.com/rest/teams/teams#delete-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Delete a team](https://docs.github.com/rest/teams/teams#delete-a-team) endpoint.
     /// 
     /// To delete a team, the authenticated user must be an organization owner or team maintainer.
     /// 
@@ -4178,7 +4178,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsDeleteLegacyError::Status404(github_response.to_json()?).into()),
@@ -4365,7 +4365,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment) endpoint.
     /// 
     /// Get a specific comment on a team discussion.
     /// 
@@ -4408,7 +4408,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion comment](https://docs.github.com/rest/teams/discussion-comments#get-a-discussion-comment) endpoint.
     /// 
     /// Get a specific comment on a team discussion.
     /// 
@@ -4539,7 +4539,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion) endpoint.
     /// 
     /// Get a specific discussion on a team's page.
     /// 
@@ -4582,7 +4582,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get a discussion](https://docs.github.com/rest/teams/discussions#get-a-discussion) endpoint.
     /// 
     /// Get a specific discussion on a team's page.
     /// 
@@ -4626,7 +4626,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/teams/teams#get-a-team-by-name) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/teams/teams#get-a-team-by-name) endpoint.
     ///
     /// [GitHub API docs for get_legacy](https://docs.github.com/rest/teams/teams#get-a-team-legacy)
     ///
@@ -4666,7 +4666,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/teams/teams#get-a-team-by-name) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the [Get a team by name](https://docs.github.com/rest/teams/teams#get-a-team-by-name) endpoint.
     ///
     /// [GitHub API docs for get_legacy](https://docs.github.com/rest/teams/teams#get-a-team-legacy)
     ///
@@ -4706,7 +4706,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     ///
     /// # Get team member (Legacy)
     ///
-    /// The "Get team member" endpoint (described below) is deprecated.
+    /// The "Get team member" endpoint (described below) is closing down.
     /// 
     /// We recommend using the [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint instead. It allows you to get both active and pending memberships.
     /// 
@@ -4736,7 +4736,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsGetMemberLegacyError::Status404.into()),
@@ -4749,7 +4749,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     ///
     /// # Get team member (Legacy)
     ///
-    /// The "Get team member" endpoint (described below) is deprecated.
+    /// The "Get team member" endpoint (described below) is closing down.
     /// 
     /// We recommend using the [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint instead. It allows you to get both active and pending memberships.
     /// 
@@ -4780,7 +4780,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsGetMemberLegacyError::Status404.into()),
@@ -4893,7 +4893,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get team membership for a user (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint.
     /// 
     /// Team members will include the members of child teams.
     /// 
@@ -4942,7 +4942,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Get team membership for a user (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Get team membership for a user](https://docs.github.com/rest/teams/members#get-team-membership-for-a-user) endpoint.
     /// 
     /// Team members will include the members of child teams.
     /// 
@@ -5172,7 +5172,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List child teams (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/teams/teams#list-child-teams) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/teams/teams#list-child-teams) endpoint.
     ///
     /// [GitHub API docs for list_child_legacy](https://docs.github.com/rest/teams/teams#list-child-teams-legacy)
     ///
@@ -5218,7 +5218,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List child teams (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/teams/teams#list-child-teams) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List child teams`](https://docs.github.com/rest/teams/teams#list-child-teams) endpoint.
     ///
     /// [GitHub API docs for list_child_legacy](https://docs.github.com/rest/teams/teams#list-child-teams-legacy)
     ///
@@ -5362,7 +5362,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List discussion comments (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List discussion comments](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [List discussion comments](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments) endpoint.
     /// 
     /// List all comments on a team discussion.
     /// 
@@ -5409,7 +5409,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List discussion comments (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List discussion comments](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [List discussion comments](https://docs.github.com/rest/teams/discussion-comments#list-discussion-comments) endpoint.
     /// 
     /// List all comments on a team discussion.
     /// 
@@ -5554,7 +5554,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List discussions (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List discussions`](https://docs.github.com/rest/teams/discussions#list-discussions) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List discussions`](https://docs.github.com/rest/teams/discussions#list-discussions) endpoint.
     /// 
     /// List all discussions on a team's page.
     /// 
@@ -5601,7 +5601,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List discussions (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List discussions`](https://docs.github.com/rest/teams/discussions#list-discussions) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List discussions`](https://docs.github.com/rest/teams/discussions#list-discussions) endpoint.
     /// 
     /// List all discussions on a team's page.
     /// 
@@ -5842,7 +5842,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List team members (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team members`](https://docs.github.com/rest/teams/members#list-team-members) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team members`](https://docs.github.com/rest/teams/members#list-team-members) endpoint.
     /// 
     /// Team members will include the members of child teams.
     ///
@@ -5888,7 +5888,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List team members (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team members`](https://docs.github.com/rest/teams/members#list-team-members) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team members`](https://docs.github.com/rest/teams/members#list-team-members) endpoint.
     /// 
     /// Team members will include the members of child teams.
     ///
@@ -6028,7 +6028,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List pending team invitations (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
     /// 
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
     ///
@@ -6073,7 +6073,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List pending team invitations (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
     /// 
     /// The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
     ///
@@ -6212,7 +6212,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List team projects (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team projects`](https://docs.github.com/rest/teams/teams#list-team-projects) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team projects`](https://docs.github.com/rest/teams/teams#list-team-projects) endpoint.
     /// 
     /// Lists the organization projects for a team.
     ///
@@ -6258,7 +6258,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List team projects (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team projects`](https://docs.github.com/rest/teams/teams#list-team-projects) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List team projects`](https://docs.github.com/rest/teams/teams#list-team-projects) endpoint.
     /// 
     /// Lists the organization projects for a team.
     ///
@@ -6398,7 +6398,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List team repositories (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/teams/teams#list-team-repositories) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/teams/teams#list-team-repositories) endpoint.
     ///
     /// [GitHub API docs for list_repos_legacy](https://docs.github.com/rest/teams/teams#list-team-repositories-legacy)
     ///
@@ -6442,7 +6442,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # List team repositories (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/teams/teams#list-team-repositories) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [List team repositories](https://docs.github.com/rest/teams/teams#list-team-repositories) endpoint.
     ///
     /// [GitHub API docs for list_repos_legacy](https://docs.github.com/rest/teams/teams#list-team-repositories-legacy)
     ///
@@ -6487,7 +6487,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     ///
     /// # Remove team member (Legacy)
     ///
-    /// The "Remove team member" endpoint (described below) is deprecated.
+    /// The "Remove team member" endpoint (described below) is closing down.
     /// 
     /// We recommend using the [Remove team membership for a user](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user) endpoint instead. It allows you to remove both active and pending memberships.
     /// 
@@ -6522,7 +6522,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsRemoveMemberLegacyError::Status404.into()),
@@ -6535,7 +6535,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     ///
     /// # Remove team member (Legacy)
     ///
-    /// The "Remove team member" endpoint (described below) is deprecated.
+    /// The "Remove team member" endpoint (described below) is closing down.
     /// 
     /// We recommend using the [Remove team membership for a user](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user) endpoint instead. It allows you to remove both active and pending memberships.
     /// 
@@ -6571,7 +6571,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsRemoveMemberLegacyError::Status404.into()),
@@ -6618,7 +6618,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403.into()),
@@ -6666,7 +6666,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserInOrgError::Status403.into()),
@@ -6680,7 +6680,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Remove team membership for a user (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove team membership for a user](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove team membership for a user](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user) endpoint.
     /// 
     /// Team synchronization is available for organizations using GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
@@ -6713,7 +6713,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403.into()),
@@ -6727,7 +6727,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Remove team membership for a user (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove team membership for a user](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove team membership for a user](https://docs.github.com/rest/teams/members#remove-team-membership-for-a-user) endpoint.
     /// 
     /// Team synchronization is available for organizations using GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
     /// 
@@ -6761,7 +6761,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(TeamsRemoveMembershipForUserLegacyError::Status403.into()),
@@ -6803,7 +6803,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveProjectInOrgError::Generic { code }.into()),
@@ -6845,7 +6845,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveProjectInOrgError::Generic { code }.into()),
@@ -6858,7 +6858,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Remove a project from a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a project from a team](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a project from a team](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team) endpoint.
     /// 
     /// Removes an organization project from a team. An organization owner or a team maintainer can remove any project from the team. To remove a project from a team as an organization member, the authenticated user must have `read` access to both the team and project, or `admin` access to the team or project. **Note:** This endpoint removes the project from the team, but does not delete it.
     ///
@@ -6886,7 +6886,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsRemoveProjectLegacyError::Status404(github_response.to_json_async().await?).into()),
@@ -6901,7 +6901,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Remove a project from a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a project from a team](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a project from a team](https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team) endpoint.
     /// 
     /// Removes an organization project from a team. An organization owner or a team maintainer can remove any project from the team. To remove a project from a team as an organization member, the authenticated user must have `read` access to both the team and project, or `admin` access to the team or project. **Note:** This endpoint removes the project from the team, but does not delete it.
     ///
@@ -6930,7 +6930,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(TeamsRemoveProjectLegacyError::Status404(github_response.to_json()?).into()),
@@ -6973,7 +6973,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoInOrgError::Generic { code }.into()),
@@ -7015,7 +7015,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoInOrgError::Generic { code }.into()),
@@ -7028,7 +7028,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Remove a repository from a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a repository from a team](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a repository from a team](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team) endpoint.
     /// 
     /// If the authenticated user is an organization owner or a team maintainer, they can remove any repositories from the team. To remove a repository from a team as an organization member, the authenticated user must have admin access to the repository and must be able to see the team. NOTE: This does not delete the repository, it just removes it from the team.
     ///
@@ -7056,7 +7056,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoLegacyError::Generic { code }.into()),
@@ -7069,7 +7069,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Remove a repository from a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a repository from a team](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Remove a repository from a team](https://docs.github.com/rest/teams/teams#remove-a-repository-from-a-team) endpoint.
     /// 
     /// If the authenticated user is an organization owner or a team maintainer, they can remove any repositories from the team. To remove a repository from a team as an organization member, the authenticated user must have admin access to the repository and must be able to see the team. NOTE: This does not delete the repository, it just removes it from the team.
     ///
@@ -7098,7 +7098,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(TeamsRemoveRepoLegacyError::Generic { code }.into()),
@@ -7198,7 +7198,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Update a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion comment](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion comment](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment) endpoint.
     /// 
     /// Edits the body text of a discussion comment.
     /// 
@@ -7241,7 +7241,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Update a discussion comment (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion comment](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion comment](https://docs.github.com/rest/teams/discussion-comments#update-a-discussion-comment) endpoint.
     /// 
     /// Edits the body text of a discussion comment.
     /// 
@@ -7372,7 +7372,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Update a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion](https://docs.github.com/rest/teams/discussions#update-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion](https://docs.github.com/rest/teams/discussions#update-a-discussion) endpoint.
     /// 
     /// Edits the title and body text of a discussion post. Only the parameters you provide are updated.
     /// 
@@ -7415,7 +7415,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Update a discussion (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion](https://docs.github.com/rest/teams/discussions#update-a-discussion) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a discussion](https://docs.github.com/rest/teams/discussions#update-a-discussion) endpoint.
     /// 
     /// Edits the title and body text of a discussion post. Only the parameters you provide are updated.
     /// 
@@ -7550,7 +7550,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Update a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a team](https://docs.github.com/rest/teams/teams#update-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a team](https://docs.github.com/rest/teams/teams#update-a-team) endpoint.
     /// 
     /// To edit a team, the authenticated user must either be an organization owner or a team maintainer.
     /// 
@@ -7598,7 +7598,7 @@ impl<'api, C: Client> Teams<'api, C> where AdapterError: From<<C as Client>::Err
     /// # Update a team (Legacy)
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This endpoint route is deprecated and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a team](https://docs.github.com/rest/teams/teams#update-a-team) endpoint.
+    /// > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [Update a team](https://docs.github.com/rest/teams/teams#update-a-team) endpoint.
     /// 
     /// To edit a team, the authenticated user must either be an organization owner or a team maintainer.
     /// 

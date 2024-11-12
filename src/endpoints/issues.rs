@@ -2588,7 +2588,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(IssuesCheckUserCanBeAssignedError::Status404(github_response.to_json_async().await?).into()),
@@ -2632,7 +2632,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(IssuesCheckUserCanBeAssignedError::Status404(github_response.to_json()?).into()),
@@ -2675,7 +2675,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(github_response.to_json_async().await?).into()),
@@ -2719,7 +2719,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(IssuesCheckUserCanBeAssignedToIssueError::Status404(github_response.to_json()?).into()),
@@ -3138,7 +3138,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(IssuesDeleteCommentError::Generic { code }.into()),
@@ -3177,7 +3177,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(IssuesDeleteCommentError::Generic { code }.into()),
@@ -3215,7 +3215,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(IssuesDeleteLabelError::Generic { code }.into()),
@@ -3254,7 +3254,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(IssuesDeleteLabelError::Generic { code }.into()),
@@ -3292,7 +3292,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(IssuesDeleteMilestoneError::Status404(github_response.to_json_async().await?).into()),
@@ -3332,7 +3332,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(IssuesDeleteMilestoneError::Status404(github_response.to_json()?).into()),
@@ -5192,7 +5192,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(IssuesLockError::Status403(github_response.to_json_async().await?).into()),
@@ -5237,7 +5237,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(IssuesLockError::Status403(github_response.to_json()?).into()),
@@ -5279,7 +5279,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 301 => Err(IssuesRemoveAllLabelsError::Status301(github_response.to_json_async().await?).into()),
@@ -5321,7 +5321,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 301 => Err(IssuesRemoveAllLabelsError::Status301(github_response.to_json()?).into()),
@@ -5607,7 +5607,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(IssuesUnlockError::Status403(github_response.to_json_async().await?).into()),
@@ -5648,7 +5648,7 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(IssuesUnlockError::Status403(github_response.to_json()?).into()),

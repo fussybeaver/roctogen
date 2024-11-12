@@ -521,6 +521,8 @@ pub enum UsersFollowError {
     Status403(BasicError),
     #[error("Requires authentication")]
     Status401(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -532,6 +534,7 @@ impl From<UsersFollowError> for AdapterError {
             UsersFollowError::Status404(_) => (String::from("Resource not found"), 404),
             UsersFollowError::Status403(_) => (String::from("Forbidden"), 403),
             UsersFollowError::Status401(_) => (String::from("Requires authentication"), 401),
+            UsersFollowError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
             UsersFollowError::Generic { code } => (String::from("Generic"), code)
         };
 
@@ -2273,7 +2276,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersBlockError::Status304.into()),
@@ -2317,7 +2320,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersBlockError::Status304.into()),
@@ -2360,7 +2363,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersCheckBlockedError::Status404(github_response.to_json_async().await?).into()),
@@ -2403,7 +2406,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersCheckBlockedError::Status404(github_response.to_json()?).into()),
@@ -2443,7 +2446,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersCheckFollowingForUserError::Status404.into()),
@@ -2481,7 +2484,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersCheckFollowingForUserError::Status404.into()),
@@ -2518,7 +2521,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status404(github_response.to_json_async().await?).into()),
@@ -2559,7 +2562,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersCheckPersonIsFollowedByAuthenticatedError::Status404(github_response.to_json()?).into()),
@@ -2874,7 +2877,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304.into()),
@@ -2918,7 +2921,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersDeleteEmailForAuthenticatedUserError::Status304.into()),
@@ -2963,7 +2966,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
@@ -3009,7 +3012,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(UsersDeleteGpgKeyForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
@@ -3054,7 +3057,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304.into()),
@@ -3099,7 +3102,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersDeletePublicSshKeyForAuthenticatedUserError::Status304.into()),
@@ -3143,7 +3146,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(github_response.to_json_async().await?).into()),
@@ -3189,7 +3192,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(UsersDeleteSocialAccountForAuthenticatedUserError::Status422(github_response.to_json()?).into()),
@@ -3234,7 +3237,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304.into()),
@@ -3279,7 +3282,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersDeleteSshSigningKeyForAuthenticatedUserError::Status304.into()),
@@ -3323,13 +3326,14 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersFollowError::Status304.into()),
                 404 => Err(UsersFollowError::Status404(github_response.to_json_async().await?).into()),
                 403 => Err(UsersFollowError::Status403(github_response.to_json_async().await?).into()),
                 401 => Err(UsersFollowError::Status401(github_response.to_json_async().await?).into()),
+                422 => Err(UsersFollowError::Status422(github_response.to_json_async().await?).into()),
                 code => Err(UsersFollowError::Generic { code }.into()),
             }
         }
@@ -3368,13 +3372,14 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersFollowError::Status304.into()),
                 404 => Err(UsersFollowError::Status404(github_response.to_json()?).into()),
                 403 => Err(UsersFollowError::Status403(github_response.to_json()?).into()),
                 401 => Err(UsersFollowError::Status401(github_response.to_json()?).into()),
+                422 => Err(UsersFollowError::Status422(github_response.to_json()?).into()),
                 code => Err(UsersFollowError::Generic { code }.into()),
             }
         }
@@ -5695,7 +5700,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersUnblockError::Status304.into()),
@@ -5738,7 +5743,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersUnblockError::Status304.into()),
@@ -5780,7 +5785,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersUnfollowError::Status304.into()),
@@ -5823,7 +5828,7 @@ impl<'api, C: Client> Users<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(UsersUnfollowError::Status304.into()),

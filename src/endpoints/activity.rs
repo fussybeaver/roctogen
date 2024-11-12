@@ -1752,7 +1752,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
@@ -1795,7 +1795,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ActivityCheckRepoIsStarredByAuthenticatedUserError::Status404(github_response.to_json()?).into()),
@@ -1837,7 +1837,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }.into()),
@@ -1876,7 +1876,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActivityDeleteRepoSubscriptionError::Generic { code }.into()),
@@ -1914,7 +1914,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityDeleteThreadSubscriptionError::Status304.into()),
@@ -1956,7 +1956,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityDeleteThreadSubscriptionError::Status304.into()),
@@ -2325,7 +2325,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List events for the authenticated user
     ///
-    /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events.
+    /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events. _Optional_: use the fine-grained token with following permission set to view private events: "Events" user permissions (read).
     /// 
     /// > [!NOTE]
     /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
@@ -2370,7 +2370,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List events for the authenticated user
     ///
-    /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events.
+    /// If you are authenticated as the given user, you will see your private events. Otherwise, you'll only see public events. _Optional_: use the fine-grained token with following permission set to view private events: "Events" user permissions (read).
     /// 
     /// > [!NOTE]
     /// > This API is not built to serve real-time use cases. Depending on the time of day, event latency can be anywhere from 30s to 6h.
@@ -4069,7 +4069,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActivityMarkThreadAsDoneError::Generic { code }.into()),
@@ -4108,7 +4108,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ActivityMarkThreadAsDoneError::Generic { code }.into()),
@@ -4146,7 +4146,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityMarkThreadAsReadError::Status304.into()),
@@ -4187,7 +4187,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(ActivityMarkThreadAsReadError::Status304.into()),
@@ -4395,7 +4395,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
@@ -4438,7 +4438,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ActivityStarRepoForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
@@ -4480,7 +4480,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
@@ -4523,7 +4523,7 @@ impl<'api, C: Client> Activity<'api, C> where AdapterError: From<<C as Client>::
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ActivityUnstarRepoForAuthenticatedUserError::Status404(github_response.to_json()?).into()),

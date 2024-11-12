@@ -145,7 +145,7 @@ impl<'api, C: Client> {{classname}}<'api, C> where AdapterError: From<<C as Clie
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok({{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}{{^vendorExtensions.x-codegen-response-empty-default}}github_response.to_json_async().await?{{/vendorExtensions.x-codegen-response-empty-default}})
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}
@@ -209,7 +209,7 @@ impl<'api, C: Client> {{classname}}<'api, C> where AdapterError: From<<C as Clie
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok({{#vendorExtensions.x-codegen-response-empty-default}}(){{/vendorExtensions.x-codegen-response-empty-default}}{{^vendorExtensions.x-codegen-response-empty-default}}github_response.to_json()?{{/vendorExtensions.x-codegen-response-empty-default}})
         } else {
             match github_response.status_code() {
 {{#responses}}{{#vendorExtensions}}{{^x-is-default}}

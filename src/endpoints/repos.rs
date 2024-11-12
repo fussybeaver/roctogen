@@ -969,7 +969,7 @@ impl From<ReposCreateRepoRulesetError> for AdapterError {
     }
 }
 
-/// Errors for the [Deprecated - Create a tag protection state for a repository](Repos::create_tag_protection_async()) endpoint.
+/// Errors for the [Closing down - Create a tag protection state for a repository](Repos::create_tag_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCreateTagProtectionError {
     #[error("Forbidden")]
@@ -1545,7 +1545,7 @@ impl From<ReposDeleteRepoRulesetError> for AdapterError {
     }
 }
 
-/// Errors for the [Deprecated - Delete a tag protection state for a repository](Repos::delete_tag_protection_async()) endpoint.
+/// Errors for the [Closing down - Delete a tag protection state for a repository](Repos::delete_tag_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDeleteTagProtectionError {
     #[error("Forbidden")]
@@ -4008,7 +4008,7 @@ impl From<ReposListReleasesError> for AdapterError {
     }
 }
 
-/// Errors for the [Deprecated - List tag protection states for a repository](Repos::list_tag_protection_async()) endpoint.
+/// Errors for the [Closing down - List tag protection states for a repository](Repos::list_tag_protection_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposListTagProtectionError {
     #[error("Forbidden")]
@@ -7378,9 +7378,7 @@ pub struct ReposListWebhookDeliveriesParams<'req> {
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
-    cursor: Option<&'req str>, 
-    
-    redelivery: Option<bool>
+    cursor: Option<&'req str>
 }
 
 impl<'req> ReposListWebhookDeliveriesParams<'req> {
@@ -7393,7 +7391,6 @@ impl<'req> ReposListWebhookDeliveriesParams<'req> {
         Self {
             per_page: Some(per_page),
             cursor: self.cursor, 
-            redelivery: self.redelivery, 
         }
     }
 
@@ -7402,16 +7399,6 @@ impl<'req> ReposListWebhookDeliveriesParams<'req> {
         Self {
             per_page: self.per_page, 
             cursor: Some(cursor),
-            redelivery: self.redelivery, 
-        }
-    }
-
-    
-    pub fn redelivery(self, redelivery: bool) -> Self {
-        Self {
-            per_page: self.per_page, 
-            cursor: self.cursor, 
-            redelivery: Some(redelivery),
         }
     }
 }
@@ -7517,7 +7504,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
@@ -7558,7 +7545,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposAcceptInvitationForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
@@ -8065,7 +8052,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCancelPagesDeploymentError::Status404(github_response.to_json_async().await?).into()),
@@ -8107,7 +8094,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCancelPagesDeploymentError::Status404(github_response.to_json()?).into()),
@@ -8231,7 +8218,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckCollaboratorError::Status404.into()),
@@ -8277,7 +8264,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckCollaboratorError::Status404.into()),
@@ -8395,7 +8382,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckVulnerabilityAlertsError::Status404.into()),
@@ -8435,7 +8422,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCheckVulnerabilityAlertsError::Status404.into()),
@@ -9710,7 +9697,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCreateDispatchEventError::Status404(github_response.to_json_async().await?).into()),
@@ -9757,7 +9744,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposCreateDispatchEventError::Status404(github_response.to_json()?).into()),
@@ -10075,7 +10062,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status403(github_response.to_json_async().await?).into()),
@@ -10120,7 +10107,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposCreateOrUpdateCustomPropertiesValuesError::Status403(github_response.to_json()?).into()),
@@ -10746,15 +10733,15 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Deprecated - Create a tag protection state for a repository
+    /// # Closing down - Create a tag protection state for a repository
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This operation is deprecated and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#create-a-repository-ruleset)" endpoint instead.
+    /// > **Closing down notice:** This operation is closing down and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#create-a-repository-ruleset)" endpoint instead.
     /// 
     /// This creates a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
     ///
-    /// [GitHub API docs for create_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---create-a-tag-protection-state-for-a-repository)
+    /// [GitHub API docs for create_tag_protection](https://docs.github.com/rest/repos/tags#closing-down---create-a-tag-protection-state-for-a-repository)
     ///
     /// ---
     pub async fn create_tag_protection_async(&self, owner: &str, repo: &str, body: PostReposCreateTagProtection) -> Result<TagProtection, AdapterError> {
@@ -10790,15 +10777,15 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Deprecated - Create a tag protection state for a repository
+    /// # Closing down - Create a tag protection state for a repository
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This operation is deprecated and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#create-a-repository-ruleset)" endpoint instead.
+    /// > **Closing down notice:** This operation is closing down and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#create-a-repository-ruleset)" endpoint instead.
     /// 
     /// This creates a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
     ///
-    /// [GitHub API docs for create_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---create-a-tag-protection-state-for-a-repository)
+    /// [GitHub API docs for create_tag_protection](https://docs.github.com/rest/repos/tags#closing-down---create-a-tag-protection-state-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -11027,7 +11014,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(github_response.to_json_async().await?).into()),
@@ -11068,7 +11055,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(ReposDeclineInvitationForAuthenticatedUserError::Status409(github_response.to_json()?).into()),
@@ -11115,7 +11102,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteError::Status403(github_response.to_json_async().await?).into()),
@@ -11162,7 +11149,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteError::Status403(github_response.to_json()?).into()),
@@ -11205,7 +11192,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAccessRestrictionsError::Generic { code }.into()),
@@ -11246,7 +11233,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAccessRestrictionsError::Generic { code }.into()),
@@ -11286,7 +11273,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json_async().await?).into()),
@@ -11328,7 +11315,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteAdminBranchProtectionError::Status404(github_response.to_json()?).into()),
@@ -11367,7 +11354,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAnEnvironmentError::Generic { code }.into()),
@@ -11406,7 +11393,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteAnEnvironmentError::Generic { code }.into()),
@@ -11446,7 +11433,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteAutolinkError::Status404(github_response.to_json_async().await?).into()),
@@ -11488,7 +11475,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteAutolinkError::Status404(github_response.to_json()?).into()),
@@ -11527,7 +11514,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json_async().await?).into()),
@@ -11567,7 +11554,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteBranchProtectionError::Status403(github_response.to_json()?).into()),
@@ -11604,7 +11591,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json_async().await?).into()),
@@ -11642,7 +11629,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteCommitCommentError::Status404(github_response.to_json()?).into()),
@@ -11683,7 +11670,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json_async().await?).into()),
@@ -11725,7 +11712,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteCommitSignatureProtectionError::Status404(github_response.to_json()?).into()),
@@ -11764,7 +11751,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteDeployKeyError::Generic { code }.into()),
@@ -11803,7 +11790,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteDeployKeyError::Generic { code }.into()),
@@ -11850,7 +11837,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json_async().await?).into()),
@@ -11900,7 +11887,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteDeploymentError::Status404(github_response.to_json()?).into()),
@@ -11942,7 +11929,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteDeploymentBranchPolicyError::Generic { code }.into()),
@@ -11983,7 +11970,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteDeploymentBranchPolicyError::Generic { code }.into()),
@@ -12122,7 +12109,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteInvitationError::Generic { code }.into()),
@@ -12159,7 +12146,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteInvitationError::Generic { code }.into()),
@@ -12197,7 +12184,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteOrgRulesetError::Status404(github_response.to_json_async().await?).into()),
@@ -12238,7 +12225,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteOrgRulesetError::Status404(github_response.to_json()?).into()),
@@ -12282,7 +12269,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json_async().await?).into()),
@@ -12328,7 +12315,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposDeletePagesSiteError::Status422(github_response.to_json()?).into()),
@@ -12369,7 +12356,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json_async().await?).into()),
@@ -12409,7 +12396,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeletePullRequestReviewProtectionError::Status404(github_response.to_json()?).into()),
@@ -12448,7 +12435,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseError::Generic { code }.into()),
@@ -12487,7 +12474,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseError::Generic { code }.into()),
@@ -12523,7 +12510,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseAssetError::Generic { code }.into()),
@@ -12560,7 +12547,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDeleteReleaseAssetError::Generic { code }.into()),
@@ -12598,7 +12585,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteRepoRulesetError::Status404(github_response.to_json_async().await?).into()),
@@ -12639,7 +12626,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteRepoRulesetError::Status404(github_response.to_json()?).into()),
@@ -12651,15 +12638,15 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Deprecated - Delete a tag protection state for a repository
+    /// # Closing down - Delete a tag protection state for a repository
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This operation is deprecated and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset)" endpoint instead.
+    /// > **Closing down notice:** This operation is closing down and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset)" endpoint instead.
     /// 
     /// This deletes a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
     ///
-    /// [GitHub API docs for delete_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---delete-a-tag-protection-state-for-a-repository)
+    /// [GitHub API docs for delete_tag_protection](https://docs.github.com/rest/repos/tags#closing-down---delete-a-tag-protection-state-for-a-repository)
     ///
     /// ---
     pub async fn delete_tag_protection_async(&self, owner: &str, repo: &str, tag_protection_id: i32) -> Result<(), AdapterError> {
@@ -12683,7 +12670,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteTagProtectionError::Status403(github_response.to_json_async().await?).into()),
@@ -12695,15 +12682,15 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Deprecated - Delete a tag protection state for a repository
+    /// # Closing down - Delete a tag protection state for a repository
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This operation is deprecated and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset)" endpoint instead.
+    /// > **Closing down notice:** This operation is closing down and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset)" endpoint instead.
     /// 
     /// This deletes a tag protection state for a repository.
     /// This endpoint is only available to repository administrators.
     ///
-    /// [GitHub API docs for delete_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---delete-a-tag-protection-state-for-a-repository)
+    /// [GitHub API docs for delete_tag_protection](https://docs.github.com/rest/repos/tags#closing-down---delete-a-tag-protection-state-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12728,7 +12715,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(ReposDeleteTagProtectionError::Status403(github_response.to_json()?).into()),
@@ -12766,7 +12753,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json_async().await?).into()),
@@ -12804,7 +12791,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposDeleteWebhookError::Status404(github_response.to_json()?).into()),
@@ -12843,7 +12830,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }.into()),
@@ -12882,7 +12869,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableAutomatedSecurityFixesError::Generic { code }.into()),
@@ -12924,7 +12911,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableDeploymentProtectionRuleError::Generic { code }.into()),
@@ -12967,7 +12954,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableDeploymentProtectionRuleError::Generic { code }.into()),
@@ -13005,7 +12992,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposDisablePrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?).into()),
@@ -13045,7 +13032,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposDisablePrivateVulnerabilityReportingError::Status422(github_response.to_json()?).into()),
@@ -13086,7 +13073,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }.into()),
@@ -13127,7 +13114,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposDisableVulnerabilityAlertsError::Generic { code }.into()),
@@ -13170,7 +13157,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadTarballArchiveError::Status302.into()),
@@ -13215,7 +13202,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadTarballArchiveError::Status302.into()),
@@ -13259,7 +13246,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadZipballArchiveError::Status302.into()),
@@ -13304,7 +13291,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(ReposDownloadZipballArchiveError::Status302.into()),
@@ -13343,7 +13330,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }.into()),
@@ -13382,7 +13369,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableAutomatedSecurityFixesError::Generic { code }.into()),
@@ -13420,7 +13407,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposEnablePrivateVulnerabilityReportingError::Status422(github_response.to_json_async().await?).into()),
@@ -13460,7 +13447,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposEnablePrivateVulnerabilityReportingError::Status422(github_response.to_json()?).into()),
@@ -13499,7 +13486,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }.into()),
@@ -13538,7 +13525,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposEnableVulnerabilityAlertsError::Generic { code }.into()),
@@ -21602,16 +21589,16 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Deprecated - List tag protection states for a repository
+    /// # Closing down - List tag protection states for a repository
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This operation is deprecated and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets)" endpoint instead.
+    /// > **Closing down notice:** This operation is closing down and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets)" endpoint instead.
     /// 
     /// This returns the tag protection states of a repository.
     /// 
     /// This information is only available to repository administrators.
     ///
-    /// [GitHub API docs for list_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---list-tag-protection-states-for-a-repository)
+    /// [GitHub API docs for list_tag_protection](https://docs.github.com/rest/repos/tags#closing-down---list-tag-protection-states-for-a-repository)
     ///
     /// ---
     pub async fn list_tag_protection_async(&self, owner: &str, repo: &str) -> Result<Vec<TagProtection>, AdapterError> {
@@ -21647,16 +21634,16 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Deprecated - List tag protection states for a repository
+    /// # Closing down - List tag protection states for a repository
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** This operation is deprecated and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets)" endpoint instead.
+    /// > **Closing down notice:** This operation is closing down and will be removed after August 30, 2024. Use the "[Repository Rulesets](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets)" endpoint instead.
     /// 
     /// This returns the tag protection states of a repository.
     /// 
     /// This information is only available to repository administrators.
     ///
-    /// [GitHub API docs for list_tag_protection](https://docs.github.com/rest/repos/tags#deprecated---list-tag-protection-states-for-a-repository)
+    /// [GitHub API docs for list_tag_protection](https://docs.github.com/rest/repos/tags#closing-down---list-tag-protection-states-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -22241,7 +22228,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposPingWebhookError::Status404(github_response.to_json_async().await?).into()),
@@ -22281,7 +22268,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposPingWebhookError::Status404(github_response.to_json()?).into()),
@@ -22505,7 +22492,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposRemoveCollaboratorError::Status422(github_response.to_json_async().await?).into()),
@@ -22567,7 +22554,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposRemoveCollaboratorError::Status422(github_response.to_json()?).into()),
@@ -22688,7 +22675,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }.into()),
@@ -22727,7 +22714,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(ReposRemoveStatusCheckProtectionError::Generic { code }.into()),
@@ -23616,7 +23603,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json_async().await?).into()),
@@ -23659,7 +23646,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(ReposTestPushWebhookError::Status404(github_response.to_json()?).into()),
@@ -24137,7 +24124,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json_async().await?).into()),
@@ -24183,7 +24170,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(ReposUpdateInformationAboutPagesSiteError::Status422(github_response.to_json()?).into()),

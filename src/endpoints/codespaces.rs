@@ -2007,7 +2007,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
@@ -2054,7 +2054,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 401 => Err(CodespacesAddRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
@@ -2097,7 +2097,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json_async().await?).into()),
@@ -2140,7 +2140,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesAddSelectedRepoToOrgSecretError::Status404(github_response.to_json()?).into()),
@@ -2919,7 +2919,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304.into()),
@@ -2968,7 +2968,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesDeleteCodespacesAccessUsersError::Status304.into()),
@@ -3195,7 +3195,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json_async().await?).into()),
@@ -3237,7 +3237,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesDeleteOrgSecretError::Status404(github_response.to_json()?).into()),
@@ -3278,7 +3278,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteRepoSecretError::Generic { code }.into()),
@@ -3319,7 +3319,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteRepoSecretError::Generic { code }.into()),
@@ -3361,7 +3361,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }.into()),
@@ -3404,7 +3404,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(CodespacesDeleteSecretForAuthenticatedUserError::Generic { code }.into()),
@@ -5369,7 +5369,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
@@ -5416,7 +5416,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 401 => Err(CodespacesRemoveRepositoryForSecretForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
@@ -5462,7 +5462,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json_async().await?).into()),
@@ -5508,7 +5508,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesRemoveSelectedRepoFromOrgSecretError::Status404(github_response.to_json()?).into()),
@@ -5650,7 +5650,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessError::Status304.into()),
@@ -5695,7 +5695,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessError::Status304.into()),
@@ -5743,7 +5743,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessUsersError::Status304.into()),
@@ -5792,7 +5792,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(CodespacesSetCodespacesAccessUsersError::Status304.into()),
@@ -5839,7 +5839,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json_async().await?).into()),
@@ -5886,7 +5886,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 401 => Err(CodespacesSetRepositoriesForSecretForAuthenticatedUserError::Status401(github_response.to_json()?).into()),
@@ -5932,7 +5932,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json_async().await?).into()),
@@ -5977,7 +5977,7 @@ impl<'api, C: Client> Codespaces<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(CodespacesSetSelectedReposForOrgSecretError::Status404(github_response.to_json()?).into()),

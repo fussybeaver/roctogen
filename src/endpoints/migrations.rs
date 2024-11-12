@@ -876,7 +876,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// Stop an import for a repository.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for cancel_import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import)
     ///
@@ -902,7 +902,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 503 => Err(MigrationsCancelImportError::Status503(github_response.to_json_async().await?).into()),
@@ -918,7 +918,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// Stop an import for a repository.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for cancel_import](https://docs.github.com/rest/migrations/source-imports#cancel-an-import)
     ///
@@ -945,7 +945,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 503 => Err(MigrationsCancelImportError::Status503(github_response.to_json()?).into()),
@@ -984,7 +984,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(github_response.to_json_async().await?).into()),
@@ -1027,7 +1027,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsDeleteArchiveForAuthenticatedUserError::Status404(github_response.to_json()?).into()),
@@ -1069,7 +1069,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsDeleteArchiveForOrgError::Status404(github_response.to_json_async().await?).into()),
@@ -1109,7 +1109,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsDeleteArchiveForOrgError::Status404(github_response.to_json()?).into()),
@@ -1148,7 +1148,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsDownloadArchiveForOrgError::Status302.into()),
@@ -1189,7 +1189,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsDownloadArchiveForOrgError::Status302.into()),
@@ -1249,7 +1249,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302.into()),
@@ -1312,7 +1312,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(MigrationsGetArchiveForAuthenticatedUserError::Status302.into()),
@@ -1333,7 +1333,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// This endpoint and the [Map a commit author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/migrations/source-imports#get-commit-authors)
     ///
@@ -1382,7 +1382,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// This endpoint and the [Map a commit author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author) endpoint allow you to provide correct Git author information.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for get_commit_authors](https://docs.github.com/rest/migrations/source-imports#get-commit-authors)
     ///
@@ -1431,7 +1431,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// View the progress of an import.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     /// 
     /// **Import status**
     /// 
@@ -1507,7 +1507,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// View the progress of an import.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     /// 
     /// **Import status**
     /// 
@@ -1584,7 +1584,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// List files larger than 100MB found during the import
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for get_large_files](https://docs.github.com/rest/migrations/source-imports#get-large-files)
     ///
@@ -1626,7 +1626,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// List files larger than 100MB found during the import
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for get_large_files](https://docs.github.com/rest/migrations/source-imports#get-large-files)
     ///
@@ -2238,7 +2238,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// new commits to the repository.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author)
     ///
@@ -2283,7 +2283,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// new commits to the repository.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for map_commit_author](https://docs.github.com/rest/migrations/source-imports#map-a-commit-author)
     ///
@@ -2332,7 +2332,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// site](https://docs.github.com/repositories/working-with-files/managing-large-files).
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference)
     ///
@@ -2379,7 +2379,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// site](https://docs.github.com/repositories/working-with-files/managing-large-files).
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for set_lfs_preference](https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference)
     ///
@@ -2591,7 +2591,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// return a status `422 Unprocessable Entity` response.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for start_import](https://docs.github.com/rest/migrations/source-imports#start-an-import)
     ///
@@ -2637,7 +2637,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// return a status `422 Unprocessable Entity` response.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for start_import](https://docs.github.com/rest/migrations/source-imports#start-an-import)
     ///
@@ -2705,7 +2705,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304.into()),
@@ -2748,7 +2748,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(MigrationsUnlockRepoForAuthenticatedUserError::Status304.into()),
@@ -2790,7 +2790,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsUnlockRepoForOrgError::Status404(github_response.to_json_async().await?).into()),
@@ -2830,7 +2830,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(MigrationsUnlockRepoForOrgError::Status404(github_response.to_json()?).into()),
@@ -2851,7 +2851,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// You can select the project to import by providing one of the objects in the `project_choices` array in the update request.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for update_import](https://docs.github.com/rest/migrations/source-imports#update-an-import)
     ///
@@ -2898,7 +2898,7 @@ impl<'api, C: Client> Migrations<'api, C> where AdapterError: From<<C as Client>
     /// You can select the project to import by providing one of the objects in the `project_choices` array in the update request.
     /// 
     /// > [!WARNING]
-    /// > **Deprecation notice:** Due to very low levels of usage and available alternatives, this endpoint is deprecated and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
+    /// > **Endpoint closing down notice:** Due to very low levels of usage and available alternatives, this endpoint is closing down and will no longer be available from 00:00 UTC on April 12, 2024. For more details and alternatives, see the [changelog](https://gh.io/source-imports-api-deprecation).
     ///
     /// [GitHub API docs for update_import](https://docs.github.com/rest/migrations/source-imports#update-an-import)
     ///
