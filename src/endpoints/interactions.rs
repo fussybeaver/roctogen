@@ -500,7 +500,7 @@ impl<'api, C: Client> Interactions<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }.into()),
@@ -539,7 +539,7 @@ impl<'api, C: Client> Interactions<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForAuthenticatedUserError::Generic { code }.into()),
@@ -577,7 +577,7 @@ impl<'api, C: Client> Interactions<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }.into()),
@@ -616,7 +616,7 @@ impl<'api, C: Client> Interactions<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(InteractionsRemoveRestrictionsForOrgError::Generic { code }.into()),
@@ -654,7 +654,7 @@ impl<'api, C: Client> Interactions<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409.into()),
@@ -694,7 +694,7 @@ impl<'api, C: Client> Interactions<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 409 => Err(InteractionsRemoveRestrictionsForRepoError::Status409.into()),

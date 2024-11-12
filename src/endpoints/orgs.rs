@@ -633,6 +633,195 @@ impl From<OrgsGetOrgRoleError> for AdapterError {
     }
 }
 
+/// Errors for the [Get route stats by actor](Orgs::get_route_stats_by_actor_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetRouteStatsByActorError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetRouteStatsByActorError> for AdapterError {
+    fn from(err: OrgsGetRouteStatsByActorError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetRouteStatsByActorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get subject stats](Orgs::get_subject_stats_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetSubjectStatsError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetSubjectStatsError> for AdapterError {
+    fn from(err: OrgsGetSubjectStatsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetSubjectStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get summary stats](Orgs::get_summary_stats_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetSummaryStatsError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetSummaryStatsError> for AdapterError {
+    fn from(err: OrgsGetSummaryStatsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetSummaryStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get summary stats by actor](Orgs::get_summary_stats_by_actor_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetSummaryStatsByActorError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetSummaryStatsByActorError> for AdapterError {
+    fn from(err: OrgsGetSummaryStatsByActorError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetSummaryStatsByActorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get summary stats by user](Orgs::get_summary_stats_by_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetSummaryStatsByUserError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetSummaryStatsByUserError> for AdapterError {
+    fn from(err: OrgsGetSummaryStatsByUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetSummaryStatsByUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get time stats](Orgs::get_time_stats_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetTimeStatsError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetTimeStatsError> for AdapterError {
+    fn from(err: OrgsGetTimeStatsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetTimeStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get time stats by actor](Orgs::get_time_stats_by_actor_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetTimeStatsByActorError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetTimeStatsByActorError> for AdapterError {
+    fn from(err: OrgsGetTimeStatsByActorError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetTimeStatsByActorError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get time stats by user](Orgs::get_time_stats_by_user_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetTimeStatsByUserError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetTimeStatsByUserError> for AdapterError {
+    fn from(err: OrgsGetTimeStatsByUserError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetTimeStatsByUserError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get user stats](Orgs::get_user_stats_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum OrgsGetUserStatsError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<OrgsGetUserStatsError> for AdapterError {
+    fn from(err: OrgsGetUserStatsError) -> Self {
+        let (description, status_code) = match err {
+            OrgsGetUserStatsError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get an organization webhook](Orgs::get_webhook_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum OrgsGetWebhookError {
@@ -1909,6 +2098,543 @@ impl From<OrgsUpdateWebhookConfigForOrgError> for AdapterError {
 }
 
 
+/// Query parameters for the [Get route stats by actor](Orgs::get_route_stats_by_actor_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetRouteStatsByActorParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// The property to sort the results by.
+    sort: Option<Vec<String>>
+}
+
+impl<'req> OrgsGetRouteStatsByActorParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: Some(page),
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: Some(per_page),
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: Some(direction),
+            sort: self.sort, 
+        }
+    }
+
+    /// The property to sort the results by.
+    pub fn sort(self, sort: Vec<String>) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: Some(sort),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsGetRouteStatsByActorParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [Get subject stats](Orgs::get_subject_stats_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetSubjectStatsParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// The property to sort the results by.
+    sort: Option<Vec<String>>
+}
+
+impl<'req> OrgsGetSubjectStatsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: Some(page),
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: Some(per_page),
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: Some(direction),
+            sort: self.sort, 
+        }
+    }
+
+    /// The property to sort the results by.
+    pub fn sort(self, sort: Vec<String>) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: Some(sort),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsGetSubjectStatsParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [Get summary stats](Orgs::get_summary_stats_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetSummaryStatsParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str
+}
+
+impl<'req> OrgsGetSummaryStatsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+        }
+    }
+}
+
+/// Query parameters for the [Get summary stats by actor](Orgs::get_summary_stats_by_actor_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetSummaryStatsByActorParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str
+}
+
+impl<'req> OrgsGetSummaryStatsByActorParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+        }
+    }
+}
+
+/// Query parameters for the [Get summary stats by user](Orgs::get_summary_stats_by_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetSummaryStatsByUserParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str
+}
+
+impl<'req> OrgsGetSummaryStatsByUserParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+        }
+    }
+}
+
+/// Query parameters for the [Get time stats](Orgs::get_time_stats_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetTimeStatsParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str, 
+    /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
+    timestamp_increment: &'req str
+}
+
+impl<'req> OrgsGetTimeStatsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+            timestamp_increment: self.timestamp_increment, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+            timestamp_increment: self.timestamp_increment, 
+        }
+    }
+
+    /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
+    pub fn timestamp_increment(self, timestamp_increment: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            timestamp_increment: timestamp_increment,
+        }
+    }
+}
+
+/// Query parameters for the [Get time stats by actor](Orgs::get_time_stats_by_actor_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetTimeStatsByActorParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str, 
+    /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
+    timestamp_increment: &'req str
+}
+
+impl<'req> OrgsGetTimeStatsByActorParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+            timestamp_increment: self.timestamp_increment, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+            timestamp_increment: self.timestamp_increment, 
+        }
+    }
+
+    /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
+    pub fn timestamp_increment(self, timestamp_increment: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            timestamp_increment: timestamp_increment,
+        }
+    }
+}
+
+/// Query parameters for the [Get time stats by user](Orgs::get_time_stats_by_user_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetTimeStatsByUserParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str, 
+    /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
+    timestamp_increment: &'req str
+}
+
+impl<'req> OrgsGetTimeStatsByUserParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+            timestamp_increment: self.timestamp_increment, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+            timestamp_increment: self.timestamp_increment, 
+        }
+    }
+
+    /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
+    pub fn timestamp_increment(self, timestamp_increment: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            timestamp_increment: timestamp_increment,
+        }
+    }
+}
+
+/// Query parameters for the [Get user stats](Orgs::get_user_stats_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct OrgsGetUserStatsParams<'req> {
+    /// The minimum timestamp to query for stats
+    min_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats
+    max_timestamp: &'req str, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The direction to sort the results by.
+    direction: Option<&'req str>, 
+    /// The property to sort the results by.
+    sort: Option<Vec<String>>
+}
+
+impl<'req> OrgsGetUserStatsParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The minimum timestamp to query for stats
+    pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: min_timestamp,
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The maximum timestamp to query for stats
+    pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: max_timestamp,
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: Some(page),
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: Some(per_page),
+            direction: self.direction, 
+            sort: self.sort, 
+        }
+    }
+
+    /// The direction to sort the results by.
+    pub fn direction(self, direction: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: Some(direction),
+            sort: self.sort, 
+        }
+    }
+
+    /// The property to sort the results by.
+    pub fn sort(self, sort: Vec<String>) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: Some(sort),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for OrgsGetUserStatsParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List organizations](Orgs::list_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsListParams {
@@ -3071,9 +3797,7 @@ pub struct OrgsListWebhookDeliveriesParams<'req> {
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     per_page: Option<u16>, 
     /// Used for pagination: the starting delivery from which the page of deliveries is fetched. Refer to the `link` header for the next and previous page cursors.
-    cursor: Option<&'req str>, 
-    
-    redelivery: Option<bool>
+    cursor: Option<&'req str>
 }
 
 impl<'req> OrgsListWebhookDeliveriesParams<'req> {
@@ -3086,7 +3810,6 @@ impl<'req> OrgsListWebhookDeliveriesParams<'req> {
         Self {
             per_page: Some(per_page),
             cursor: self.cursor, 
-            redelivery: self.redelivery, 
         }
     }
 
@@ -3095,16 +3818,6 @@ impl<'req> OrgsListWebhookDeliveriesParams<'req> {
         Self {
             per_page: self.per_page, 
             cursor: Some(cursor),
-            redelivery: self.redelivery, 
-        }
-    }
-
-    
-    pub fn redelivery(self, redelivery: bool) -> Self {
-        Self {
-            per_page: self.per_page, 
-            cursor: self.cursor, 
-            redelivery: Some(redelivery),
         }
     }
 }
@@ -3185,7 +3898,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsAddSecurityManagerTeamError::Generic { code }.into()),
@@ -3228,7 +3941,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsAddSecurityManagerTeamError::Generic { code }.into()),
@@ -3270,7 +3983,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsAssignTeamToOrgRoleError::Status404.into()),
@@ -3315,7 +4028,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsAssignTeamToOrgRoleError::Status404.into()),
@@ -3359,7 +4072,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsAssignUserToOrgRoleError::Status404.into()),
@@ -3404,7 +4117,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsAssignUserToOrgRoleError::Status404.into()),
@@ -3444,7 +4157,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsBlockUserError::Status422(github_response.to_json_async().await?).into()),
@@ -3484,7 +4197,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsBlockUserError::Status422(github_response.to_json()?).into()),
@@ -3525,7 +4238,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsCancelInvitationError::Status422(github_response.to_json_async().await?).into()),
@@ -3568,7 +4281,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsCancelInvitationError::Status422(github_response.to_json()?).into()),
@@ -3608,7 +4321,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsCheckBlockedUserError::Status404(github_response.to_json_async().await?).into()),
@@ -3648,7 +4361,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsCheckBlockedUserError::Status404(github_response.to_json()?).into()),
@@ -3687,7 +4400,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(OrgsCheckMembershipForUserError::Status302.into()),
@@ -3728,7 +4441,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 302 => Err(OrgsCheckMembershipForUserError::Status302.into()),
@@ -3768,7 +4481,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsCheckPublicMembershipForUserError::Status404.into()),
@@ -3808,7 +4521,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsCheckPublicMembershipForUserError::Status404.into()),
@@ -4115,7 +4828,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(github_response.to_json_async().await?).into()),
@@ -4166,7 +4879,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsCreateOrUpdateCustomPropertiesValuesForReposError::Status403(github_response.to_json()?).into()),
@@ -4483,7 +5196,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsDeleteWebhookError::Status404(github_response.to_json_async().await?).into()),
@@ -4526,7 +5239,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsDeleteWebhookError::Status404(github_response.to_json()?).into()),
@@ -4540,7 +5253,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     /// # Enable or disable a security feature for an organization
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** The ability to enable or disable a security feature for all eligible repositories in an organization is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead. For more information, see the [changelog](https://github.blog/changelog/2024-07-22-deprecation-of-api-endpoint-to-enable-or-disable-a-security-feature-for-an-organization/).
+    /// > **Closing down notice:** The ability to enable or disable a security feature for all eligible repositories in an organization is closing down. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead. For more information, see the [changelog](https://github.blog/changelog/2024-07-22-deprecation-of-api-endpoint-to-enable-or-disable-a-security-feature-for-an-organization/).
     /// 
     /// Enables or disables the specified security feature for all eligible repositories in an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
     /// 
@@ -4572,7 +5285,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422.into()),
@@ -4586,7 +5299,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     /// # Enable or disable a security feature for an organization
     ///
     /// > [!WARNING]
-    /// > **Deprecation notice:** The ability to enable or disable a security feature for all eligible repositories in an organization is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead. For more information, see the [changelog](https://github.blog/changelog/2024-07-22-deprecation-of-api-endpoint-to-enable-or-disable-a-security-feature-for-an-organization/).
+    /// > **Closing down notice:** The ability to enable or disable a security feature for all eligible repositories in an organization is closing down. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead. For more information, see the [changelog](https://github.blog/changelog/2024-07-22-deprecation-of-api-endpoint-to-enable-or-disable-a-security-feature-for-an-organization/).
     /// 
     /// Enables or disables the specified security feature for all eligible repositories in an organization. For more information, see "[Managing security managers in your organization](https://docs.github.com/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization)."
     /// 
@@ -4619,7 +5332,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsEnableOrDisableSecurityProductOnAllOrgReposError::Status422.into()),
@@ -5142,6 +5855,744 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
                 404 => Err(OrgsGetOrgRoleError::Status404(github_response.to_json()?).into()),
                 422 => Err(OrgsGetOrgRoleError::Status422(github_response.to_json()?).into()),
                 code => Err(OrgsGetOrgRoleError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get route stats by actor
+    ///
+    /// Get API request count statistics for an actor broken down by route within a specified time frame.
+    ///
+    /// [GitHub API docs for get_route_stats_by_actor](https://docs.github.com/rest/orgs/api-insights#get-route-stats-by-actor)
+    ///
+    /// ---
+    pub async fn get_route_stats_by_actor_async(&self, org: &str, actor_type: &str, actor_id: i32, query_params: impl Into<OrgsGetRouteStatsByActorParams<'api>>) -> Result<ApiInsightsRouteStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/route-stats/{}/{}", super::GITHUB_BASE_API_URL, org, actor_type, actor_id);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetRouteStatsByActorError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get route stats by actor
+    ///
+    /// Get API request count statistics for an actor broken down by route within a specified time frame.
+    ///
+    /// [GitHub API docs for get_route_stats_by_actor](https://docs.github.com/rest/orgs/api-insights#get-route-stats-by-actor)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_route_stats_by_actor(&self, org: &str, actor_type: &str, actor_id: i32, query_params: impl Into<OrgsGetRouteStatsByActorParams<'api>>) -> Result<ApiInsightsRouteStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/route-stats/{}/{}", super::GITHUB_BASE_API_URL, org, actor_type, actor_id);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetRouteStatsByActorParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetRouteStatsByActorError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get subject stats
+    ///
+    /// Get API request statistics for all subjects within an organization within a specified time frame. Subjects can be users or GitHub Apps.
+    ///
+    /// [GitHub API docs for get_subject_stats](https://docs.github.com/rest/orgs/api-insights#get-subject-stats)
+    ///
+    /// ---
+    pub async fn get_subject_stats_async(&self, org: &str, query_params: impl Into<OrgsGetSubjectStatsParams<'api>>) -> Result<ApiInsightsSubjectStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/subject-stats", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSubjectStatsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get subject stats
+    ///
+    /// Get API request statistics for all subjects within an organization within a specified time frame. Subjects can be users or GitHub Apps.
+    ///
+    /// [GitHub API docs for get_subject_stats](https://docs.github.com/rest/orgs/api-insights#get-subject-stats)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_subject_stats(&self, org: &str, query_params: impl Into<OrgsGetSubjectStatsParams<'api>>) -> Result<ApiInsightsSubjectStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/subject-stats", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetSubjectStatsParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSubjectStatsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get summary stats
+    ///
+    /// Get overall statistics of API requests made within an organization by all users and apps within a specified time frame.
+    ///
+    /// [GitHub API docs for get_summary_stats](https://docs.github.com/rest/orgs/api-insights#get-summary-stats)
+    ///
+    /// ---
+    pub async fn get_summary_stats_async(&self, org: &str, query_params: impl Into<OrgsGetSummaryStatsParams<'api>>) -> Result<ApiInsightsSummaryStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/summary-stats", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSummaryStatsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get summary stats
+    ///
+    /// Get overall statistics of API requests made within an organization by all users and apps within a specified time frame.
+    ///
+    /// [GitHub API docs for get_summary_stats](https://docs.github.com/rest/orgs/api-insights#get-summary-stats)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_summary_stats(&self, org: &str, query_params: impl Into<OrgsGetSummaryStatsParams<'api>>) -> Result<ApiInsightsSummaryStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/summary-stats", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetSummaryStatsParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSummaryStatsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get summary stats by actor
+    ///
+    /// Get overall statistics of API requests within the organization made by a specific actor. Actors can be GitHub App installations, OAuth apps or other tokens on behalf of a user.
+    ///
+    /// [GitHub API docs for get_summary_stats_by_actor](https://docs.github.com/rest/orgs/api-insights#get-summary-stats-by-actor)
+    ///
+    /// ---
+    pub async fn get_summary_stats_by_actor_async(&self, org: &str, actor_type: &str, actor_id: i32, query_params: impl Into<OrgsGetSummaryStatsByActorParams<'api>>) -> Result<ApiInsightsSummaryStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/summary-stats/{}/{}", super::GITHUB_BASE_API_URL, org, actor_type, actor_id);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSummaryStatsByActorError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get summary stats by actor
+    ///
+    /// Get overall statistics of API requests within the organization made by a specific actor. Actors can be GitHub App installations, OAuth apps or other tokens on behalf of a user.
+    ///
+    /// [GitHub API docs for get_summary_stats_by_actor](https://docs.github.com/rest/orgs/api-insights#get-summary-stats-by-actor)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_summary_stats_by_actor(&self, org: &str, actor_type: &str, actor_id: i32, query_params: impl Into<OrgsGetSummaryStatsByActorParams<'api>>) -> Result<ApiInsightsSummaryStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/summary-stats/{}/{}", super::GITHUB_BASE_API_URL, org, actor_type, actor_id);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetSummaryStatsByActorParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSummaryStatsByActorError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get summary stats by user
+    ///
+    /// Get overall statistics of API requests within the organization for a user.
+    ///
+    /// [GitHub API docs for get_summary_stats_by_user](https://docs.github.com/rest/orgs/api-insights#get-summary-stats-by-user)
+    ///
+    /// ---
+    pub async fn get_summary_stats_by_user_async(&self, org: &str, user_id: &str, query_params: impl Into<OrgsGetSummaryStatsByUserParams<'api>>) -> Result<ApiInsightsSummaryStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/summary-stats/users/{}", super::GITHUB_BASE_API_URL, org, user_id);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSummaryStatsByUserError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get summary stats by user
+    ///
+    /// Get overall statistics of API requests within the organization for a user.
+    ///
+    /// [GitHub API docs for get_summary_stats_by_user](https://docs.github.com/rest/orgs/api-insights#get-summary-stats-by-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_summary_stats_by_user(&self, org: &str, user_id: &str, query_params: impl Into<OrgsGetSummaryStatsByUserParams<'api>>) -> Result<ApiInsightsSummaryStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/summary-stats/users/{}", super::GITHUB_BASE_API_URL, org, user_id);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetSummaryStatsByUserParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetSummaryStatsByUserError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get time stats
+    ///
+    /// Get the number of API requests and rate-limited requests made within an organization over a specified time period.
+    ///
+    /// [GitHub API docs for get_time_stats](https://docs.github.com/rest/orgs/api-insights#get-time-stats)
+    ///
+    /// ---
+    pub async fn get_time_stats_async(&self, org: &str, query_params: impl Into<OrgsGetTimeStatsParams<'api>>) -> Result<ApiInsightsTimeStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/time-stats", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetTimeStatsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get time stats
+    ///
+    /// Get the number of API requests and rate-limited requests made within an organization over a specified time period.
+    ///
+    /// [GitHub API docs for get_time_stats](https://docs.github.com/rest/orgs/api-insights#get-time-stats)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_time_stats(&self, org: &str, query_params: impl Into<OrgsGetTimeStatsParams<'api>>) -> Result<ApiInsightsTimeStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/time-stats", super::GITHUB_BASE_API_URL, org);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetTimeStatsParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetTimeStatsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get time stats by actor
+    ///
+    /// Get the number of API requests and rate-limited requests made within an organization by a specific actor within a specified time period.
+    ///
+    /// [GitHub API docs for get_time_stats_by_actor](https://docs.github.com/rest/orgs/api-insights#get-time-stats-by-actor)
+    ///
+    /// ---
+    pub async fn get_time_stats_by_actor_async(&self, org: &str, actor_type: &str, actor_id: i32, query_params: impl Into<OrgsGetTimeStatsByActorParams<'api>>) -> Result<ApiInsightsTimeStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/time-stats/{}/{}", super::GITHUB_BASE_API_URL, org, actor_type, actor_id);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetTimeStatsByActorError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get time stats by actor
+    ///
+    /// Get the number of API requests and rate-limited requests made within an organization by a specific actor within a specified time period.
+    ///
+    /// [GitHub API docs for get_time_stats_by_actor](https://docs.github.com/rest/orgs/api-insights#get-time-stats-by-actor)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_time_stats_by_actor(&self, org: &str, actor_type: &str, actor_id: i32, query_params: impl Into<OrgsGetTimeStatsByActorParams<'api>>) -> Result<ApiInsightsTimeStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/time-stats/{}/{}", super::GITHUB_BASE_API_URL, org, actor_type, actor_id);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetTimeStatsByActorParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetTimeStatsByActorError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get time stats by user
+    ///
+    /// Get the number of API requests and rate-limited requests made within an organization by a specific user over a specified time period.
+    ///
+    /// [GitHub API docs for get_time_stats_by_user](https://docs.github.com/rest/orgs/api-insights#get-time-stats-by-user)
+    ///
+    /// ---
+    pub async fn get_time_stats_by_user_async(&self, org: &str, user_id: &str, query_params: impl Into<OrgsGetTimeStatsByUserParams<'api>>) -> Result<ApiInsightsTimeStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/time-stats/users/{}", super::GITHUB_BASE_API_URL, org, user_id);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetTimeStatsByUserError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get time stats by user
+    ///
+    /// Get the number of API requests and rate-limited requests made within an organization by a specific user over a specified time period.
+    ///
+    /// [GitHub API docs for get_time_stats_by_user](https://docs.github.com/rest/orgs/api-insights#get-time-stats-by-user)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_time_stats_by_user(&self, org: &str, user_id: &str, query_params: impl Into<OrgsGetTimeStatsByUserParams<'api>>) -> Result<ApiInsightsTimeStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/time-stats/users/{}", super::GITHUB_BASE_API_URL, org, user_id);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetTimeStatsByUserParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetTimeStatsByUserError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get user stats
+    ///
+    /// Get API usage statistics within an organization for a user broken down by the type of access.
+    ///
+    /// [GitHub API docs for get_user_stats](https://docs.github.com/rest/orgs/api-insights#get-user-stats)
+    ///
+    /// ---
+    pub async fn get_user_stats_async(&self, org: &str, user_id: &str, query_params: impl Into<OrgsGetUserStatsParams<'api>>) -> Result<ApiInsightsUserStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/user-stats/{}", super::GITHUB_BASE_API_URL, org, user_id);
+
+        request_uri.push_str("?");
+        request_uri.push_str(&serde_urlencoded::to_string(query_params.into())?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetUserStatsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get user stats
+    ///
+    /// Get API usage statistics within an organization for a user broken down by the type of access.
+    ///
+    /// [GitHub API docs for get_user_stats](https://docs.github.com/rest/orgs/api-insights#get-user-stats)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_user_stats(&self, org: &str, user_id: &str, query_params: impl Into<OrgsGetUserStatsParams<'api>>) -> Result<ApiInsightsUserStats, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/insights/api/user-stats/{}", super::GITHUB_BASE_API_URL, org, user_id);
+
+        request_uri.push_str("?");
+        let qp: OrgsGetUserStatsParams = query_params.into();
+        request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(OrgsGetUserStatsError::Generic { code }.into()),
             }
         }
     }
@@ -5972,6 +7423,9 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     /// List organizations for the authenticated user.
     /// 
     /// For OAuth app tokens and personal access tokens (classic), this endpoint only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope for OAuth app tokens and personal access tokens (classic). Requests with insufficient scope will receive a `403 Forbidden` response.
+    /// 
+    /// > [!NOTE]
+    /// > Requests using a fine-grained access token will receive a `200 Success` response with an empty list.
     ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user)
     ///
@@ -6019,6 +7473,9 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     /// List organizations for the authenticated user.
     /// 
     /// For OAuth app tokens and personal access tokens (classic), this endpoint only lists organizations that your authorization allows you to operate on in some way (e.g., you can list teams with `read:org` scope, you can publicize your organization membership with `user` scope, etc.). Therefore, this API requires at least `user` or `read:org` scope for OAuth app tokens and personal access tokens (classic). Requests with insufficient scope will receive a `403 Forbidden` response.
+    /// 
+    /// > [!NOTE]
+    /// > Requests using a fine-grained access token will receive a `200 Success` response with an empty list.
     ///
     /// [GitHub API docs for list_for_authenticated_user](https://docs.github.com/rest/orgs/orgs#list-organizations-for-the-authenticated-user)
     ///
@@ -7681,7 +9138,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsPingWebhookError::Status404(github_response.to_json_async().await?).into()),
@@ -7727,7 +9184,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(OrgsPingWebhookError::Status404(github_response.to_json()?).into()),
@@ -7861,7 +9318,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsRemoveCustomPropertyError::Status403(github_response.to_json_async().await?).into()),
@@ -7906,7 +9363,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsRemoveCustomPropertyError::Status403(github_response.to_json()?).into()),
@@ -7946,7 +9403,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsRemoveMemberError::Status403(github_response.to_json_async().await?).into()),
@@ -7986,7 +9443,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsRemoveMemberError::Status403(github_response.to_json()?).into()),
@@ -8027,7 +9484,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsRemoveMembershipForUserError::Status403(github_response.to_json_async().await?).into()),
@@ -8070,7 +9527,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsRemoveMembershipForUserError::Status403(github_response.to_json()?).into()),
@@ -8110,7 +9567,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(github_response.to_json_async().await?).into()),
@@ -8150,7 +9607,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(OrgsRemoveOutsideCollaboratorError::Status422(github_response.to_json()?).into()),
@@ -8189,7 +9646,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }.into()),
@@ -8228,7 +9685,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRemovePublicMembershipForAuthenticatedUserError::Generic { code }.into()),
@@ -8270,7 +9727,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }.into()),
@@ -8313,7 +9770,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRemoveSecurityManagerTeamError::Generic { code }.into()),
@@ -8353,7 +9810,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 500 => Err(OrgsReviewPatGrantRequestError::Status500(github_response.to_json_async().await?).into()),
@@ -8398,7 +9855,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 500 => Err(OrgsReviewPatGrantRequestError::Status500(github_response.to_json()?).into()),
@@ -8533,7 +9990,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }.into()),
@@ -8576,7 +10033,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeAllOrgRolesTeamError::Generic { code }.into()),
@@ -8618,7 +10075,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }.into()),
@@ -8661,7 +10118,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeAllOrgRolesUserError::Generic { code }.into()),
@@ -8703,7 +10160,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }.into()),
@@ -8746,7 +10203,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeOrgRoleTeamError::Generic { code }.into()),
@@ -8788,7 +10245,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeOrgRoleUserError::Generic { code }.into()),
@@ -8831,7 +10288,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsRevokeOrgRoleUserError::Generic { code }.into()),
@@ -8968,7 +10425,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(github_response.to_json_async().await?).into()),
@@ -9010,7 +10467,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 403 => Err(OrgsSetPublicMembershipForAuthenticatedUserError::Status403(github_response.to_json()?).into()),
@@ -9049,7 +10506,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsUnblockUserError::Generic { code }.into()),
@@ -9088,7 +10545,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 code => Err(OrgsUnblockUserError::Generic { code }.into()),
@@ -9101,10 +10558,10 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     /// # Update an organization
     ///
     /// > [!WARNING]
-    /// > **Parameter deprecation notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
+    /// > **Closing down notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
     /// 
     /// > [!WARNING]
-    /// > **Parameter deprecation notice:** Code security product enablement for new repositories through the organization API is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization) to set defaults instead. For more information on setting a default security configuration, see the [changelog](https://github.blog/changelog/2024-07-09-sunsetting-security-settings-defaults-parameters-in-the-organizations-rest-api/).
+    /// > **Closing down notice:** Code security product enablement for new repositories through the organization API is closing down. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization) to set defaults instead. For more information on setting a default security configuration, see the [changelog](https://github.blog/changelog/2024-07-09-sunsetting-security-settings-defaults-parameters-in-the-organizations-rest-api/).
     /// 
     /// Updates the organization's profile and member privileges.
     /// 
@@ -9151,10 +10608,10 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     /// # Update an organization
     ///
     /// > [!WARNING]
-    /// > **Parameter deprecation notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
+    /// > **Closing down notice:** GitHub will replace and discontinue `members_allowed_repository_creation_type` in favor of more granular permissions. The new input parameters are `members_can_create_public_repositories`, `members_can_create_private_repositories` for all organizations and `members_can_create_internal_repositories` for organizations associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+. For more information, see the [blog post](https://developer.github.com/changes/2019-12-03-internal-visibility-changes).
     /// 
     /// > [!WARNING]
-    /// > **Parameter deprecation notice:** Code security product enablement for new repositories through the organization API is deprecated. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization) to set defaults instead. For more information on setting a default security configuration, see the [changelog](https://github.blog/changelog/2024-07-09-sunsetting-security-settings-defaults-parameters-in-the-organizations-rest-api/).
+    /// > **Closing down notice:** Code security product enablement for new repositories through the organization API is closing down. Please use [code security configurations](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization) to set defaults instead. For more information on setting a default security configuration, see the [changelog](https://github.blog/changelog/2024-07-09-sunsetting-security-settings-defaults-parameters-in-the-organizations-rest-api/).
     /// 
     /// Updates the organization's profile and member privileges.
     /// 
@@ -9312,7 +10769,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 500 => Err(OrgsUpdatePatAccessError::Status500(github_response.to_json_async().await?).into()),
@@ -9357,7 +10814,7 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 500 => Err(OrgsUpdatePatAccessError::Status500(github_response.to_json()?).into()),

@@ -990,7 +990,7 @@ impl<'api, C: Client> Git<'api, C> where AdapterError: From<<C as Client>::Err> 
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(GitDeleteRefError::Status422(github_response.to_json_async().await?).into()),
@@ -1031,7 +1031,7 @@ impl<'api, C: Client> Git<'api, C> where AdapterError: From<<C as Client>::Err> 
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 422 => Err(GitDeleteRefError::Status422(github_response.to_json()?).into()),

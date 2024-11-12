@@ -667,7 +667,7 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 400 => Err(CodeSecurityDeleteConfigurationError::Status400(github_response.to_json_async().await?).into()),
@@ -716,7 +716,7 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 400 => Err(CodeSecurityDeleteConfigurationError::Status400(github_response.to_json()?).into()),
@@ -763,7 +763,7 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 400 => Err(CodeSecurityDetachConfigurationError::Status400(github_response.to_json_async().await?).into()),
@@ -811,7 +811,7 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 400 => Err(CodeSecurityDetachConfigurationError::Status400(github_response.to_json()?).into()),

@@ -255,7 +255,11 @@ pub struct SecretScanningListAlertsForEnterpriseParams<'req> {
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     after: Option<&'req str>, 
     /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
-    validity: Option<&'req str>
+    validity: Option<&'req str>, 
+    /// A boolean value representing whether or not to filter alerts by the publicly-leaked tag being present.
+    is_publicly_leaked: Option<bool>, 
+    /// A boolean value representing whether or not to filter alerts by the multi-repo tag being present.
+    is_multi_repo: Option<bool>
 }
 
 impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
@@ -275,6 +279,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -290,6 +296,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -305,6 +313,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -320,6 +330,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -335,6 +347,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -350,6 +364,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -365,6 +381,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: Some(before),
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -380,6 +398,8 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: Some(after),
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -395,6 +415,42 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: Some(validity),
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
+        }
+    }
+
+    /// A boolean value representing whether or not to filter alerts by the publicly-leaked tag being present.
+    pub fn is_publicly_leaked(self, is_publicly_leaked: bool) -> Self {
+        Self {
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+            is_publicly_leaked: Some(is_publicly_leaked),
+            is_multi_repo: self.is_multi_repo, 
+        }
+    }
+
+    /// A boolean value representing whether or not to filter alerts by the multi-repo tag being present.
+    pub fn is_multi_repo(self, is_multi_repo: bool) -> Self {
+        Self {
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: Some(is_multi_repo),
         }
     }
 }
@@ -421,7 +477,11 @@ pub struct SecretScanningListAlertsForOrgParams<'req> {
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
     after: Option<&'req str>, 
     /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
-    validity: Option<&'req str>
+    validity: Option<&'req str>, 
+    /// A boolean value representing whether or not to filter alerts by the publicly-leaked tag being present.
+    is_publicly_leaked: Option<bool>, 
+    /// A boolean value representing whether or not to filter alerts by the multi-repo tag being present.
+    is_multi_repo: Option<bool>
 }
 
 impl<'req> SecretScanningListAlertsForOrgParams<'req> {
@@ -442,6 +502,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -458,6 +520,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -474,6 +538,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -490,6 +556,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -506,6 +574,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -522,6 +592,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -538,6 +610,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -554,6 +628,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: Some(before),
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -570,6 +646,8 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: Some(after),
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -586,6 +664,44 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: Some(validity),
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
+        }
+    }
+
+    /// A boolean value representing whether or not to filter alerts by the publicly-leaked tag being present.
+    pub fn is_publicly_leaked(self, is_publicly_leaked: bool) -> Self {
+        Self {
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+            is_publicly_leaked: Some(is_publicly_leaked),
+            is_multi_repo: self.is_multi_repo, 
+        }
+    }
+
+    /// A boolean value representing whether or not to filter alerts by the multi-repo tag being present.
+    pub fn is_multi_repo(self, is_multi_repo: bool) -> Self {
+        Self {
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: Some(is_multi_repo),
         }
     }
 }
@@ -621,7 +737,11 @@ pub struct SecretScanningListAlertsForRepoParams<'req> {
     /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for events after this cursor.  To receive an initial cursor on your first request, include an empty \"after\" query string.
     after: Option<&'req str>, 
     /// A comma-separated list of validities that, when present, will return alerts that match the validities in this list. Valid options are `active`, `inactive`, and `unknown`.
-    validity: Option<&'req str>
+    validity: Option<&'req str>, 
+    /// A boolean value representing whether or not to filter alerts by the publicly-leaked tag being present.
+    is_publicly_leaked: Option<bool>, 
+    /// A boolean value representing whether or not to filter alerts by the multi-repo tag being present.
+    is_multi_repo: Option<bool>
 }
 
 impl<'req> SecretScanningListAlertsForRepoParams<'req> {
@@ -642,6 +762,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -658,6 +780,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -674,6 +798,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -690,6 +816,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -706,6 +834,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -722,6 +852,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -738,6 +870,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -754,6 +888,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: Some(before),
             after: self.after, 
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -770,6 +906,8 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: Some(after),
             validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
         }
     }
 
@@ -786,6 +924,44 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
             before: self.before, 
             after: self.after, 
             validity: Some(validity),
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: self.is_multi_repo, 
+        }
+    }
+
+    /// A boolean value representing whether or not to filter alerts by the publicly-leaked tag being present.
+    pub fn is_publicly_leaked(self, is_publicly_leaked: bool) -> Self {
+        Self {
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+            is_publicly_leaked: Some(is_publicly_leaked),
+            is_multi_repo: self.is_multi_repo, 
+        }
+    }
+
+    /// A boolean value representing whether or not to filter alerts by the multi-repo tag being present.
+    pub fn is_multi_repo(self, is_multi_repo: bool) -> Self {
+        Self {
+            state: self.state, 
+            secret_type: self.secret_type, 
+            resolution: self.resolution, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            validity: self.validity, 
+            is_publicly_leaked: self.is_publicly_leaked, 
+            is_multi_repo: Some(is_multi_repo),
         }
     }
 }

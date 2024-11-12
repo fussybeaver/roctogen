@@ -174,6 +174,138 @@ impl From<CopilotCancelCopilotSeatAssignmentForUsersError> for AdapterError {
     }
 }
 
+/// Errors for the [Get Copilot metrics for an enterprise](Copilot::copilot_metrics_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CopilotCopilotMetricsForEnterpriseError {
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Copilot Usage Merics API setting is disabled at the organization or enterprise level.")]
+    Status422(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CopilotCopilotMetricsForEnterpriseError> for AdapterError {
+    fn from(err: CopilotCopilotMetricsForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CopilotCopilotMetricsForEnterpriseError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotCopilotMetricsForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotCopilotMetricsForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotCopilotMetricsForEnterpriseError::Status422(_) => (String::from("Copilot Usage Merics API setting is disabled at the organization or enterprise level."), 422),
+            CopilotCopilotMetricsForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get Copilot metrics for an enterprise team](Copilot::copilot_metrics_for_enterprise_team_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CopilotCopilotMetricsForEnterpriseTeamError {
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Copilot Usage Merics API setting is disabled at the organization or enterprise level.")]
+    Status422(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CopilotCopilotMetricsForEnterpriseTeamError> for AdapterError {
+    fn from(err: CopilotCopilotMetricsForEnterpriseTeamError) -> Self {
+        let (description, status_code) = match err {
+            CopilotCopilotMetricsForEnterpriseTeamError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotCopilotMetricsForEnterpriseTeamError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotCopilotMetricsForEnterpriseTeamError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotCopilotMetricsForEnterpriseTeamError::Status422(_) => (String::from("Copilot Usage Merics API setting is disabled at the organization or enterprise level."), 422),
+            CopilotCopilotMetricsForEnterpriseTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get Copilot metrics for an organization](Copilot::copilot_metrics_for_organization_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CopilotCopilotMetricsForOrganizationError {
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Copilot Usage Merics API setting is disabled at the organization or enterprise level.")]
+    Status422(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CopilotCopilotMetricsForOrganizationError> for AdapterError {
+    fn from(err: CopilotCopilotMetricsForOrganizationError) -> Self {
+        let (description, status_code) = match err {
+            CopilotCopilotMetricsForOrganizationError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotCopilotMetricsForOrganizationError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotCopilotMetricsForOrganizationError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotCopilotMetricsForOrganizationError::Status422(_) => (String::from("Copilot Usage Merics API setting is disabled at the organization or enterprise level."), 422),
+            CopilotCopilotMetricsForOrganizationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get Copilot metrics for a team](Copilot::copilot_metrics_for_team_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CopilotCopilotMetricsForTeamError {
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Copilot Usage Merics API setting is disabled at the organization or enterprise level.")]
+    Status422(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CopilotCopilotMetricsForTeamError> for AdapterError {
+    fn from(err: CopilotCopilotMetricsForTeamError) -> Self {
+        let (description, status_code) = match err {
+            CopilotCopilotMetricsForTeamError::Status500(_) => (String::from("Internal Error"), 500),
+            CopilotCopilotMetricsForTeamError::Status403(_) => (String::from("Forbidden"), 403),
+            CopilotCopilotMetricsForTeamError::Status404(_) => (String::from("Resource not found"), 404),
+            CopilotCopilotMetricsForTeamError::Status422(_) => (String::from("Copilot Usage Merics API setting is disabled at the organization or enterprise level."), 422),
+            CopilotCopilotMetricsForTeamError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get Copilot seat information and settings for an organization](Copilot::get_copilot_organization_details_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CopilotGetCopilotOrganizationDetailsError {
@@ -445,6 +577,278 @@ impl From<CopilotUsageMetricsForTeamError> for AdapterError {
 }
 
 
+/// Query parameters for the [Get Copilot metrics for an enterprise](Copilot::copilot_metrics_for_enterprise_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CopilotCopilotMetricsForEnterpriseParams<'req> {
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    since: Option<&'req str>, 
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    until: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
+}
+
+impl<'req> CopilotCopilotMetricsForEnterpriseParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    pub fn since(self, since: &'req str) -> Self {
+        Self {
+            since: Some(since),
+            until: self.until, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    pub fn until(self, until: &'req str) -> Self {
+        Self {
+            since: self.since, 
+            until: Some(until),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CopilotCopilotMetricsForEnterpriseParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [Get Copilot metrics for an enterprise team](Copilot::copilot_metrics_for_enterprise_team_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CopilotCopilotMetricsForEnterpriseTeamParams<'req> {
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    since: Option<&'req str>, 
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    until: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
+}
+
+impl<'req> CopilotCopilotMetricsForEnterpriseTeamParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    pub fn since(self, since: &'req str) -> Self {
+        Self {
+            since: Some(since),
+            until: self.until, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    pub fn until(self, until: &'req str) -> Self {
+        Self {
+            since: self.since, 
+            until: Some(until),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CopilotCopilotMetricsForEnterpriseTeamParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [Get Copilot metrics for an organization](Copilot::copilot_metrics_for_organization_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CopilotCopilotMetricsForOrganizationParams<'req> {
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    since: Option<&'req str>, 
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    until: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
+}
+
+impl<'req> CopilotCopilotMetricsForOrganizationParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    pub fn since(self, since: &'req str) -> Self {
+        Self {
+            since: Some(since),
+            until: self.until, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    pub fn until(self, until: &'req str) -> Self {
+        Self {
+            since: self.since, 
+            until: Some(until),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CopilotCopilotMetricsForOrganizationParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [Get Copilot metrics for a team](Copilot::copilot_metrics_for_team_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CopilotCopilotMetricsForTeamParams<'req> {
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    since: Option<&'req str>, 
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    until: Option<&'req str>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>, 
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>
+}
+
+impl<'req> CopilotCopilotMetricsForTeamParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Show usage metrics since this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`). Maximum value is 28 days ago.
+    pub fn since(self, since: &'req str) -> Self {
+        Self {
+            since: Some(since),
+            until: self.until, 
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// Show usage metrics until this date. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format (`YYYY-MM-DDTHH:MM:SSZ`) and should not preceed the `since` date if it is passed.
+    pub fn until(self, until: &'req str) -> Self {
+        Self {
+            since: self.since, 
+            until: Some(until),
+            page: self.page, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: Some(page),
+            per_page: self.per_page, 
+        }
+    }
+
+    /// The number of days of metrics to display per page (max 28). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            since: self.since, 
+            until: self.until, 
+            page: self.page, 
+            per_page: Some(per_page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for CopilotCopilotMetricsForTeamParams<'enc> {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 /// Query parameters for the [List all Copilot seat assignments for an organization](Copilot::list_copilot_seats_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct CopilotListCopilotSeatsParams {
@@ -804,16 +1208,16 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Add teams to the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// Purchases a GitHub Copilot seat for all users within each specified team.
-    /// The organization will be billed accordingly. For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
     /// Only organization owners can add Copilot seats for their organization members.
     /// 
     /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
-    /// For more information about setting up a Copilot subscription, see "[Setting up a Copilot subscription for your organization](https://docs.github.com/billing/managing-billing-for-github-copilot/managing-your-github-copilot-subscription-for-your-organization-or-enterprise)".
-    /// For more information about setting a suggestion matching policy, see "[Configuring suggestion matching policies for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-github-copilot-in-your-organization#configuring-suggestion-matching-policies-for-github-copilot-in-your-organization)".
+    /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
+    /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
@@ -822,7 +1226,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// [GitHub API docs for add_copilot_seats_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#add-teams-to-the-copilot-subscription-for-an-organization)
     ///
     /// ---
-    pub async fn add_copilot_seats_for_teams_async(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, AdapterError> {
+    pub async fn add_copilot_seats_for_teams_async(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForTeamsResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
@@ -861,16 +1265,16 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Add teams to the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// Purchases a GitHub Copilot seat for all users within each specified team.
-    /// The organization will be billed accordingly. For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
     /// Only organization owners can add Copilot seats for their organization members.
     /// 
     /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
-    /// For more information about setting up a Copilot subscription, see "[Setting up a Copilot subscription for your organization](https://docs.github.com/billing/managing-billing-for-github-copilot/managing-your-github-copilot-subscription-for-your-organization-or-enterprise)".
-    /// For more information about setting a suggestion matching policy, see "[Configuring suggestion matching policies for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-github-copilot-in-your-organization#configuring-suggestion-matching-policies-for-github-copilot-in-your-organization)".
+    /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
+    /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
@@ -880,7 +1284,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn add_copilot_seats_for_teams(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForUsersResponse201, AdapterError> {
+    pub fn add_copilot_seats_for_teams(&self, org: &str, body: PostCopilotAddCopilotSeatsForTeams) -> Result<PostCopilotAddCopilotSeatsForTeamsResponse201, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
@@ -919,16 +1323,16 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Add users to the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// Purchases a GitHub Copilot seat for each user specified.
-    /// The organization will be billed accordingly. For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
     /// Only organization owners can add Copilot seats for their organization members.
     /// 
     /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
-    /// For more information about setting up a Copilot subscription, see "[Setting up a Copilot subscription for your organization](https://docs.github.com/billing/managing-billing-for-github-copilot/managing-your-github-copilot-subscription-for-your-organization-or-enterprise)".
-    /// For more information about setting a suggestion matching policy, see "[Configuring suggestion matching policies for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-github-copilot-in-your-organization#configuring-suggestion-matching-policies-for-github-copilot-in-your-organization)".
+    /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
+    /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
@@ -976,16 +1380,16 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Add users to the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// Purchases a GitHub Copilot seat for each user specified.
-    /// The organization will be billed accordingly. For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
     /// Only organization owners can add Copilot seats for their organization members.
     /// 
     /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
-    /// For more information about setting up a Copilot subscription, see "[Setting up a Copilot subscription for your organization](https://docs.github.com/billing/managing-billing-for-github-copilot/managing-your-github-copilot-subscription-for-your-organization-or-enterprise)".
-    /// For more information about setting a suggestion matching policy, see "[Configuring suggestion matching policies for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-github-copilot-in-your-organization#configuring-suggestion-matching-policies-for-github-copilot-in-your-organization)".
+    /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
+    /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
     /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
     /// 
@@ -1034,23 +1438,25 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Remove teams from the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Cancels the Copilot seat assignment for all members of each team specified.
-    /// This will cause the members of the specified team(s) to lose access to GitHub Copilot at the end of the current billing cycle, and the organization will not be billed further for those users.
+    /// Sets seats for all members of each team specified to "pending cancellation".
+    /// This will cause the members of the specified team(s) to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through another team.
     /// 
-    /// For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to GitHub Copilot for specific users in your organization](https://docs.github.com/copilot/managing-copilot/managing-access-for-copilot-in-your-organization#revoking-access-to-github-copilot-for-specific-users-in-your-organization)".
+    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
+    /// 
+    /// The response will contain the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
     /// [GitHub API docs for cancel_copilot_seat_assignment_for_teams](https://docs.github.com/rest/copilot/copilot-user-management#remove-teams-from-the-copilot-subscription-for-an-organization)
     ///
     /// ---
-    pub async fn cancel_copilot_seat_assignment_for_teams_async(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, AdapterError> {
+    pub async fn cancel_copilot_seat_assignment_for_teams_async(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForTeamsResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
@@ -1089,16 +1495,18 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Remove teams from the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Cancels the Copilot seat assignment for all members of each team specified.
-    /// This will cause the members of the specified team(s) to lose access to GitHub Copilot at the end of the current billing cycle, and the organization will not be billed further for those users.
+    /// Sets seats for all members of each team specified to "pending cancellation".
+    /// This will cause the members of the specified team(s) to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through another team.
     /// 
-    /// For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to GitHub Copilot for specific users in your organization](https://docs.github.com/copilot/managing-copilot/managing-access-for-copilot-in-your-organization#revoking-access-to-github-copilot-for-specific-users-in-your-organization)".
+    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
+    /// 
+    /// The response will contain the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1106,7 +1514,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn cancel_copilot_seat_assignment_for_teams(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForUsersResponse200, AdapterError> {
+    pub fn cancel_copilot_seat_assignment_for_teams(&self, org: &str, body: DeleteCopilotCancelCopilotSeatAssignmentForTeams) -> Result<DeleteCopilotCancelCopilotSeatAssignmentForTeamsResponse200, AdapterError> {
 
         let request_uri = format!("{}/orgs/{}/copilot/billing/selected_teams", super::GITHUB_BASE_API_URL, org);
 
@@ -1145,16 +1553,18 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Remove users from the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Cancels the Copilot seat assignment for each user specified.
-    /// This will cause the specified users to lose access to GitHub Copilot at the end of the current billing cycle, and the organization will not be billed further for those users.
+    /// Sets seats for all users specified to "pending cancellation".
+    /// This will cause the specified users to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through team membership.
     /// 
-    /// For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to GitHub Copilot for specific users in your organization](https://docs.github.com/copilot/managing-copilot/managing-access-for-copilot-in-your-organization#revoking-access-to-github-copilot-for-specific-users-in-your-organization)".
+    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
+    /// 
+    /// The response will contain the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1200,16 +1610,18 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Remove users from the Copilot subscription for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Cancels the Copilot seat assignment for each user specified.
-    /// This will cause the specified users to lose access to GitHub Copilot at the end of the current billing cycle, and the organization will not be billed further for those users.
+    /// Sets seats for all users specified to "pending cancellation".
+    /// This will cause the specified users to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through team membership.
     /// 
-    /// For more information about Copilot pricing, see "[Pricing for GitHub Copilot](https://docs.github.com/billing/managing-billing-for-github-copilot/about-billing-for-github-copilot#about-billing-for-github-copilot)".
+    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to GitHub Copilot for specific users in your organization](https://docs.github.com/copilot/managing-copilot/managing-access-for-copilot-in-your-organization#revoking-access-to-github-copilot-for-specific-users-in-your-organization)".
+    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
+    /// 
+    /// The response will contain the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1253,14 +1665,480 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
 
     /// ---
     ///
+    /// # Get Copilot metrics for an enterprise
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled or set to "no policy" for the enterprise within GitHub settings.
+    /// Only enterprise owners and billing managers can view Copilot metrics for the enterprise.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_enterprise](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn copilot_metrics_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<CopilotCopilotMetricsForEnterpriseParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/copilot/metrics", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForEnterpriseError::Status500(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotCopilotMetricsForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotCopilotMetricsForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotCopilotMetricsForEnterpriseError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CopilotCopilotMetricsForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get Copilot metrics for an enterprise
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled or set to "no policy" for the enterprise within GitHub settings.
+    /// Only enterprise owners and billing managers can view Copilot metrics for the enterprise.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_enterprise](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn copilot_metrics_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<CopilotCopilotMetricsForEnterpriseParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/copilot/metrics", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CopilotCopilotMetricsForEnterpriseParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForEnterpriseError::Status500(github_response.to_json()?).into()),
+                403 => Err(CopilotCopilotMetricsForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotCopilotMetricsForEnterpriseError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotCopilotMetricsForEnterpriseError::Status422(github_response.to_json()?).into()),
+                code => Err(CopilotCopilotMetricsForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get Copilot metrics for an enterprise team
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint will only return results for a given day if the enterprise team had **five or more members with active Copilot licenses** on that day, as evaluated at the end of that day.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled or set to "no policy" for the enterprise within GitHub settings.
+    /// Only owners and billing managers for the enterprise that contains the enterprise team can view Copilot metrics for the enterprise team.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_enterprise_team](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-an-enterprise-team)
+    ///
+    /// ---
+    pub async fn copilot_metrics_for_enterprise_team_async(&self, enterprise: &str, team_slug: &str, query_params: Option<impl Into<CopilotCopilotMetricsForEnterpriseTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/team/{}/copilot/metrics", super::GITHUB_BASE_API_URL, enterprise, team_slug);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status500(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CopilotCopilotMetricsForEnterpriseTeamError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get Copilot metrics for an enterprise team
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint will only return results for a given day if the enterprise team had **five or more members with active Copilot licenses** on that day, as evaluated at the end of that day.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled or set to "no policy" for the enterprise within GitHub settings.
+    /// Only owners and billing managers for the enterprise that contains the enterprise team can view Copilot metrics for the enterprise team.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_enterprise_team](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-an-enterprise-team)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn copilot_metrics_for_enterprise_team(&self, enterprise: &str, team_slug: &str, query_params: Option<impl Into<CopilotCopilotMetricsForEnterpriseTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/team/{}/copilot/metrics", super::GITHUB_BASE_API_URL, enterprise, team_slug);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CopilotCopilotMetricsForEnterpriseTeamParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status500(github_response.to_json()?).into()),
+                403 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotCopilotMetricsForEnterpriseTeamError::Status422(github_response.to_json()?).into()),
+                code => Err(CopilotCopilotMetricsForEnterpriseTeamError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get Copilot metrics for an organization
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint will only return results for a given day if the organization contained **five or more members with active Copilot licenses** on that day, as evaluated at the end of that day.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled for the organization.
+    /// Only organization owners and owners and billing managers of the parent enterprise can view Copilot metrics.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_organization](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-an-organization)
+    ///
+    /// ---
+    pub async fn copilot_metrics_for_organization_async(&self, org: &str, query_params: Option<impl Into<CopilotCopilotMetricsForOrganizationParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/copilot/metrics", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForOrganizationError::Status500(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotCopilotMetricsForOrganizationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotCopilotMetricsForOrganizationError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotCopilotMetricsForOrganizationError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CopilotCopilotMetricsForOrganizationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get Copilot metrics for an organization
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint will only return results for a given day if the organization contained **five or more members with active Copilot licenses** on that day, as evaluated at the end of that day.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled for the organization.
+    /// Only organization owners and owners and billing managers of the parent enterprise can view Copilot metrics.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_organization](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn copilot_metrics_for_organization(&self, org: &str, query_params: Option<impl Into<CopilotCopilotMetricsForOrganizationParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/copilot/metrics", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CopilotCopilotMetricsForOrganizationParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForOrganizationError::Status500(github_response.to_json()?).into()),
+                403 => Err(CopilotCopilotMetricsForOrganizationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotCopilotMetricsForOrganizationError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotCopilotMetricsForOrganizationError::Status422(github_response.to_json()?).into()),
+                code => Err(CopilotCopilotMetricsForOrganizationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get Copilot metrics for a team
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint will only return results for a given day if the team had **five or more members with active Copilot licenses** on that day, as evaluated at the end of that day.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled for the organization containing the team within GitHub settings.
+    /// Only organization owners for the organization that contains this team and owners and billing managers of the parent enterprise can view Copilot metrics for a team.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_team](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-a-team)
+    ///
+    /// ---
+    pub async fn copilot_metrics_for_team_async(&self, org: &str, team_slug: &str, query_params: Option<impl Into<CopilotCopilotMetricsForTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/team/{}/copilot/metrics", super::GITHUB_BASE_API_URL, org, team_slug);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForTeamError::Status500(github_response.to_json_async().await?).into()),
+                403 => Err(CopilotCopilotMetricsForTeamError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CopilotCopilotMetricsForTeamError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CopilotCopilotMetricsForTeamError::Status422(github_response.to_json_async().await?).into()),
+                code => Err(CopilotCopilotMetricsForTeamError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get Copilot metrics for a team
+    ///
+    /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
+    /// 
+    /// > [!NOTE]
+    /// > This endpoint will only return results for a given day if the team had **five or more members with active Copilot licenses** on that day, as evaluated at the end of that day.
+    /// 
+    /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
+    /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
+    /// they must have telemetry enabled in their IDE.
+    /// 
+    /// To access this endpoint, the Copilot Metrics API access policy must be enabled for the organization containing the team within GitHub settings.
+    /// Only organization owners for the organization that contains this team and owners and billing managers of the parent enterprise can view Copilot metrics for a team.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot`, `read:org`, or `read:enterprise` scopes to use this endpoint.
+    ///
+    /// [GitHub API docs for copilot_metrics_for_team](https://docs.github.com/rest/copilot/copilot-metrics#get-copilot-metrics-for-a-team)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn copilot_metrics_for_team(&self, org: &str, team_slug: &str, query_params: Option<impl Into<CopilotCopilotMetricsForTeamParams<'api>>>) -> Result<Vec<CopilotUsageMetricsDay>, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/team/{}/copilot/metrics", super::GITHUB_BASE_API_URL, org, team_slug);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CopilotCopilotMetricsForTeamParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                500 => Err(CopilotCopilotMetricsForTeamError::Status500(github_response.to_json()?).into()),
+                403 => Err(CopilotCopilotMetricsForTeamError::Status403(github_response.to_json()?).into()),
+                404 => Err(CopilotCopilotMetricsForTeamError::Status404(github_response.to_json()?).into()),
+                422 => Err(CopilotCopilotMetricsForTeamError::Status422(github_response.to_json()?).into()),
+                code => Err(CopilotCopilotMetricsForTeamError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get Copilot seat information and settings for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// Gets information about an organization's Copilot subscription, including seat breakdown
     /// and feature policies. To configure these settings, go to your organization's settings on GitHub.com.
-    /// For more information, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-copilot-business-in-your-organization)".
+    /// For more information, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-copilot-business-in-your-organization)."
     /// 
     /// Only organization owners can view details about the organization's Copilot Business or Copilot Enterprise subscription.
     /// 
@@ -1308,11 +2186,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get Copilot seat information and settings for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// Gets information about an organization's Copilot subscription, including seat breakdown
     /// and feature policies. To configure these settings, go to your organization's settings on GitHub.com.
-    /// For more information, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-copilot-business-in-your-organization)".
+    /// For more information, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-policies-for-copilot-business-in-your-organization)."
     /// 
     /// Only organization owners can view details about the organization's Copilot Business or Copilot Enterprise subscription.
     /// 
@@ -1361,9 +2239,12 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get Copilot seat assignment details for a user
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Gets the GitHub Copilot seat assignment details for a member of an organization who currently has access to GitHub Copilot.
+    /// Gets the GitHub Copilot seat details for a member of an organization who currently has access to GitHub Copilot.
+    /// 
+    /// The seat object contains information about the user's most recent Copilot activity. Users must have telemetry enabled in their IDE for Copilot in the IDE activity to be reflected in `last_activity_at`.
+    /// For more information about activity data, see "[Reviewing user activity data for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/reviewing-activity-related-to-github-copilot-in-your-organization/reviewing-user-activity-data-for-copilot-in-your-organization)."
     /// 
     /// Only organization owners can view Copilot seat assignment details for members of their organization.
     /// 
@@ -1411,9 +2292,12 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get Copilot seat assignment details for a user
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Gets the GitHub Copilot seat assignment details for a member of an organization who currently has access to GitHub Copilot.
+    /// Gets the GitHub Copilot seat details for a member of an organization who currently has access to GitHub Copilot.
+    /// 
+    /// The seat object contains information about the user's most recent Copilot activity. Users must have telemetry enabled in their IDE for Copilot in the IDE activity to be reflected in `last_activity_at`.
+    /// For more information about activity data, see "[Reviewing user activity data for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/reviewing-activity-related-to-github-copilot-in-your-organization/reviewing-user-activity-data-for-copilot-in-your-organization)."
     /// 
     /// Only organization owners can view Copilot seat assignment details for members of their organization.
     /// 
@@ -1462,10 +2346,13 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # List all Copilot seat assignments for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Lists all active Copilot seats for an organization with a Copilot Business or Copilot Enterprise subscription.
+    /// Lists all Copilot seats for which an organization with a Copilot Business or Copilot Enterprise subscription is currently being billed.
     /// Only organization owners can view assigned seats.
+    /// 
+    /// Each seat object contains information about the assigned user's most recent Copilot activity. Users must have telemetry enabled in their IDE for Copilot in the IDE activity to be reflected in `last_activity_at`.
+    /// For more information about activity data, see "[Reviewing user activity data for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/reviewing-activity-related-to-github-copilot-in-your-organization/reviewing-user-activity-data-for-copilot-in-your-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
     ///
@@ -1514,10 +2401,13 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # List all Copilot seat assignments for an organization
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Lists all active Copilot seats for an organization with a Copilot Business or Copilot Enterprise subscription.
+    /// Lists all Copilot seats for which an organization with a Copilot Business or Copilot Enterprise subscription is currently being billed.
     /// Only organization owners can view assigned seats.
+    /// 
+    /// Each seat object contains information about the assigned user's most recent Copilot activity. Users must have telemetry enabled in their IDE for Copilot in the IDE activity to be reflected in `last_activity_at`.
+    /// For more information about activity data, see "[Reviewing user activity data for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/reviewing-activity-related-to-github-copilot-in-your-organization/reviewing-user-activity-data-for-copilot-in-your-organization)."
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `read:org` scopes to use this endpoint.
     ///
@@ -1568,13 +2458,16 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # List all Copilot seat assignments for an enterprise
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Lists all active Copilot seats across organizations or enterprise teams for an enterprise with a Copilot Business or Copilot Enterprise subscription.
+    /// Lists all Copilot seats currently being billed for across organizations or enterprise teams for an enterprise with a Copilot Business or Copilot Enterprise subscription.
     /// 
     /// Users with access through multiple organizations or enterprise teams will only be counted toward `total_seats` once.
     /// 
     /// For each organization or enterprise team which grants Copilot access to a user, a seat detail object will appear in the `seats` array.
+    /// Each seat object contains information about the assigned user's most recent Copilot activity. Users must have
+    /// telemetry enabled in their IDE for Copilot in the IDE activity to be reflected in `last_activity_at`. For more information about activity data,
+    /// see "[Reviewing user activity data for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/reviewing-activity-related-to-github-copilot-in-your-organization/reviewing-user-activity-data-for-copilot-in-your-organization)."
     /// 
     /// Only enterprise owners and billing managers can view assigned Copilot seats across their child organizations or enterprise teams.
     /// 
@@ -1625,13 +2518,16 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # List all Copilot seat assignments for an enterprise
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
-    /// Lists all active Copilot seats across organizations or enterprise teams for an enterprise with a Copilot Business or Copilot Enterprise subscription.
+    /// Lists all Copilot seats currently being billed for across organizations or enterprise teams for an enterprise with a Copilot Business or Copilot Enterprise subscription.
     /// 
     /// Users with access through multiple organizations or enterprise teams will only be counted toward `total_seats` once.
     /// 
     /// For each organization or enterprise team which grants Copilot access to a user, a seat detail object will appear in the `seats` array.
+    /// Each seat object contains information about the assigned user's most recent Copilot activity. Users must have
+    /// telemetry enabled in their IDE for Copilot in the IDE activity to be reflected in `last_activity_at`. For more information about activity data,
+    /// see "[Reviewing user activity data for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/reviewing-activity-related-to-github-copilot-in-your-organization/reviewing-user-activity-data-for-copilot-in-your-organization)."
     /// 
     /// Only enterprise owners and billing managers can view assigned Copilot seats across their child organizations or enterprise teams.
     /// 
@@ -1684,7 +2580,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for enterprise members
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for all users across organizations with access to Copilot within your enterprise, with a further breakdown of suggestions, acceptances,
@@ -1693,6 +2589,8 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// The response contains metrics for up to 28 days prior. Usage metrics are processed once per day for the previous day,
     /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
     /// they must have telemetry enabled in their IDE.
+    /// 
+    /// The time zone in the response is in UTC time, that means that the cutoff time for the "day" is UTC time.
     /// 
     /// Only owners and billing managers can view Copilot usage metrics for the enterprise.
     /// 
@@ -1743,7 +2641,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for enterprise members
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for all users across organizations with access to Copilot within your enterprise, with a further breakdown of suggestions, acceptances,
@@ -1752,6 +2650,8 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// The response contains metrics for up to 28 days prior. Usage metrics are processed once per day for the previous day,
     /// and the response will only include data up until yesterday. In order for an end user to be counted towards these metrics,
     /// they must have telemetry enabled in their IDE.
+    /// 
+    /// The time zone in the response is in UTC time, that means that the cutoff time for the "day" is UTC time.
     /// 
     /// Only owners and billing managers can view Copilot usage metrics for the enterprise.
     /// 
@@ -1804,7 +2704,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for an enterprise team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within an enterprise team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -1866,7 +2766,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for an enterprise team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within an enterprise team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -1930,7 +2830,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for organization members
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// across an organization, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -1989,7 +2889,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for organization members
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// across an organization, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -2050,7 +2950,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for a team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within a team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -2112,7 +3012,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for a team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in beta and is subject to change.
+    /// > This endpoint is in public preview and is subject to change.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within a team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.

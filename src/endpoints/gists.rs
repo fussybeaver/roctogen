@@ -981,7 +981,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(GistsCheckIsStarredError::Status404(github_response.to_json_async().await?).into()),
@@ -1021,7 +1021,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(GistsCheckIsStarredError::Status404(github_response.to_json()?).into()),
@@ -1244,7 +1244,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(GistsDeleteError::Status404(github_response.to_json_async().await?).into()),
@@ -1284,7 +1284,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(GistsDeleteError::Status404(github_response.to_json()?).into()),
@@ -1323,7 +1323,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(GistsDeleteCommentError::Status304.into()),
@@ -1363,7 +1363,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(GistsDeleteCommentError::Status304.into()),
@@ -2408,7 +2408,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(GistsStarError::Status404(github_response.to_json_async().await?).into()),
@@ -2450,7 +2450,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 404 => Err(GistsStarError::Status404(github_response.to_json()?).into()),
@@ -2489,7 +2489,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json_async().await?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(GistsUnstarError::Status304.into()),
@@ -2529,7 +2529,7 @@ impl<'api, C: Client> Gists<'api, C> where AdapterError: From<<C as Client>::Err
         // --
 
         if github_response.is_success() {
-            Ok(github_response.to_json()?)
+            Ok(())
         } else {
             match github_response.status_code() {
                 304 => Err(GistsUnstarError::Status304.into()),
