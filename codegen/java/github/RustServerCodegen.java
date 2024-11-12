@@ -349,6 +349,9 @@ public class RustServerCodegen extends DefaultCodegenConfig {
     public String toModelName(String name) {
         // camelize the model name
         // phone_number => PhoneNumber
+        if (name != null && name.contains("chrono")) {
+            return name;
+        }
         String camelizedName = camelize(toModelFilename(name));
 
         // model name cannot use reserved keyword, e.g. return
