@@ -15,6 +15,7 @@ edition = "2021"
 members = [
   "examples/auth/*",
   "examples/min-req-adapter",
+  "examples/search",
 ]
 exclude = ["codegen/**"]
 

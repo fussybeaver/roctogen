@@ -113,39 +113,4 @@ impl GitHubResponseExt for Response {
     }
 }
 
-// impl<C: super::Client> GitHubRequestBuilder<Vec<u8>, C> for http::Request<Vec<u8>> {
-//     fn build(req: GitHubRequest<Vec<u8>>, client: &C) -> Result<Self, AdapterError> {
-//         let mut builder = http::Request::builder();
-
-//         builder = builder
-//             .uri(req.uri)
-//             .method(req.method)
-//             .header(ACCEPT, "application/vnd.github.v3+json")
-//             .header(USER_AGENT, "roctogen")
-//             .header(CONTENT_TYPE, "application/json");
-
-//         for header in req.headers.iter() {
-//             builder = builder.header(header.0, header.1);
-//         }
-
-//         builder = match client.get_auth() {
-//             Auth::Basic { user, pass } => {
-//                 let creds = format!("{}:{}", user, pass);
-//                 builder.header(
-//                     AUTHORIZATION,
-//                     format!("Basic {}", BASE64_STANDARD.encode(creds.as_bytes())),
-//                 )
-//             }
-//             Auth::Token(token) => builder.header(AUTHORIZATION, format!("token {}", token)),
-//             Auth::Bearer(bearer) => builder.header(AUTHORIZATION, format!("Bearer {}", bearer)),
-//             Auth::None => builder,
-//         };
-
-//         Ok(RequestWithBody {
-//             req: builder,
-//             body: req.body,
-//         })
-//     }
-// }
-
 fn main() {}

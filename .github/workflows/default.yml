@@ -51,13 +51,19 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --workspace --target wasm32-unknown-unknown
+          args: -p roctogen-common -p roctogen-github-update-issue-bot -p roctogen-jwt-example --target wasm32-unknown-unknown
 
       - name: Run cargo check min-req-adapter
         uses: actions-rs/cargo@v1
         with:
           command: check
           args: -p min-req-adapter
+          
+      - name: Run cargo check search
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: -p search
           
   test:
     name: Test Suite

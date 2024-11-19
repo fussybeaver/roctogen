@@ -9280,6 +9280,9 @@ pub struct CustomProperty {
     /// The URL that can be used to fetch, update, or delete info about this property via the API.
     #[serde(skip_serializing_if="Option::is_none")]
     pub url: Option<String>,
+    /// The source type of the property
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub source_type: Option<String>,
     /// The type of the value for the property
     #[serde(skip_serializing_if="Option::is_none")]
     pub value_type: Option<String>,
@@ -18251,6 +18254,12 @@ pub struct OrganizationRole {
     /// A short description about who this role is for or what permissions it grants.
     #[serde(skip_serializing_if="Option::is_none")]
     pub description: Option<String>,
+    /// The system role from which this role inherits permissions.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub base_role: Option<String>,
+    /// Source answers the question, \"where did this role come from?\"
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub source: Option<String>,
     /// A list of permissions included in this role.
     #[serde(skip_serializing_if="Option::is_none")]
     pub permissions: Option<Vec<String>>,
@@ -18307,6 +18316,14 @@ pub struct OrganizationSecretScanningAlert {
     /// The time that push protection was bypassed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub push_protection_bypassed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_reviewer: Option<NullableSimpleUser>,
+    /// An optional comment when requesting a push protection bypass.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_comment: Option<String>,
+    /// The URL to a push protection bypass request.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_html_url: Option<String>,
     /// The comment that was optionally added when this alert was closed
     #[serde(skip_serializing_if="Option::is_none")]
     pub resolution_comment: Option<String>,
@@ -27785,6 +27802,14 @@ pub struct SecretScanningAlert {
     /// The time that push protection was bypassed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub push_protection_bypassed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_reviewer: Option<NullableSimpleUser>,
+    /// An optional comment when requesting a push protection bypass.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_comment: Option<String>,
+    /// The URL to a push protection bypass request.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_html_url: Option<String>,
     /// The token status as of the latest validity check.
     #[serde(skip_serializing_if="Option::is_none")]
     pub validity: Option<String>,
@@ -27969,6 +27994,14 @@ pub struct SecretScanningAlertWebhook {
     /// The time that push protection was bypassed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub push_protection_bypassed_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_reviewer: Option<NullableSimpleUser>,
+    /// An optional comment when requesting a push protection bypass.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_comment: Option<String>,
+    /// The URL to a push protection bypass request.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub push_protection_bypass_request_html_url: Option<String>,
     /// Whether the detected secret was publicly leaked.
     #[serde(skip_serializing_if="Option::is_none")]
     pub publicly_leaked: Option<bool>,
@@ -30162,6 +30195,9 @@ pub struct TeamRepository {
 /// The Relationship a Team has with a role.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TeamRoleAssignment {
+    /// Determines if the team has a direct, indirect, or mixed relationship to a role
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignment: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub id: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -31256,6 +31292,12 @@ pub struct UserMarketplacePurchase {
 /// The Relationship a User has with a role.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserRoleAssignment {
+    /// Determines if the user has a direct, indirect, or mixed relationship to a role
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub assignment: Option<String>,
+    /// Team the user has gotten the role through
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub inherited_from: Option<Vec<TeamSimple>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
