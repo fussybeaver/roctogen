@@ -2632,6 +2632,57 @@ pub struct BasicError {
     pub status: Option<String>,
 }
 
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BillingUsageReport {
+    #[serde(rename = "usageItems")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub usage_items: Option<Vec<BillingusagereportUsageItems>>,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BillingusagereportUsageItems {
+    /// Date of the usage line item.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub date: Option<String>,
+    /// Product name.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub product: Option<String>,
+    /// SKU name.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub sku: Option<String>,
+    /// Quantity of the usage line item.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub quantity: Option<i64>,
+    /// Unit type of the usage line item.
+    #[serde(rename = "unitType")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub unit_type: Option<String>,
+    /// Price per unit of the usage line item.
+    #[serde(rename = "pricePerUnit")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub price_per_unit: Option<f64>,
+    /// Gross amount of the usage line item.
+    #[serde(rename = "grossAmount")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub gross_amount: Option<f64>,
+    /// Discount amount of the usage line item.
+    #[serde(rename = "discountAmount")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub discount_amount: Option<f64>,
+    /// Net amount of the usage line item.
+    #[serde(rename = "netAmount")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub net_amount: Option<f64>,
+    /// Name of the organization.
+    #[serde(rename = "organizationName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub organization_name: Option<String>,
+    /// Name of the repository.
+    #[serde(rename = "repositoryName")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub repository_name: Option<String>,
+}
+
 /// Blob
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Blob {
@@ -9073,7 +9124,7 @@ pub struct CopilotUsageMetricsDay {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CopilotdotcomchatModels {
-    /// Name of the language used for Copilot code completion suggestions, for the given editor.
+    /// Name of the model used for Copilot code completion suggestions. If the default model is used will appear as 'default'.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     /// Indicates whether a model is custom or default.
@@ -9092,7 +9143,7 @@ pub struct CopilotdotcomchatModels {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CopilotdotcompullrequestsModels {
-    /// Name of the language used for Copilot code completion suggestions, for the given editor.
+    /// Name of the model used for Copilot code completion suggestions. If the default model is used will appear as 'default'.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     /// Indicates whether a model is custom or default.
@@ -9138,7 +9189,7 @@ pub struct CopilotidechatEditors {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CopilotidechatModels {
-    /// Name of the language used for Copilot code completion suggestions, for the given editor.
+    /// Name of the model used for Copilot code completion suggestions. If the default model is used will appear as 'default'.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     /// Indicates whether a model is custom or default.
@@ -9211,7 +9262,7 @@ pub struct CopilotidecodecompletionsLanguages1 {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CopilotidecodecompletionsModels {
-    /// Name of the language used for Copilot code completion suggestions, for the given editor.
+    /// Name of the model used for Copilot code completion suggestions. If the default model is used will appear as 'default'.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     /// Indicates whether a model is custom or default.

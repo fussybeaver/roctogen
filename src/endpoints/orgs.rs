@@ -2101,10 +2101,10 @@ impl From<OrgsUpdateWebhookConfigForOrgError> for AdapterError {
 /// Query parameters for the [Get route stats by actor](Orgs::get_route_stats_by_actor_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetRouteStatsByActorParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>, 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
@@ -2120,7 +2120,7 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2132,11 +2132,11 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
             page: self.page, 
             per_page: self.per_page, 
             direction: self.direction, 
@@ -2205,10 +2205,10 @@ impl<'enc> From<&'enc PerPage> for OrgsGetRouteStatsByActorParams<'enc> {
 /// Query parameters for the [Get subject stats](Orgs::get_subject_stats_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetSubjectStatsParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>, 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
@@ -2224,7 +2224,7 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2236,11 +2236,11 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
             page: self.page, 
             per_page: self.per_page, 
             direction: self.direction, 
@@ -2309,10 +2309,10 @@ impl<'enc> From<&'enc PerPage> for OrgsGetSubjectStatsParams<'enc> {
 /// Query parameters for the [Get summary stats](Orgs::get_summary_stats_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetSummaryStatsParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>
 }
 
 impl<'req> OrgsGetSummaryStatsParams<'req> {
@@ -2320,7 +2320,7 @@ impl<'req> OrgsGetSummaryStatsParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2328,11 +2328,11 @@ impl<'req> OrgsGetSummaryStatsParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
         }
     }
 }
@@ -2340,10 +2340,10 @@ impl<'req> OrgsGetSummaryStatsParams<'req> {
 /// Query parameters for the [Get summary stats by actor](Orgs::get_summary_stats_by_actor_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetSummaryStatsByActorParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>
 }
 
 impl<'req> OrgsGetSummaryStatsByActorParams<'req> {
@@ -2351,7 +2351,7 @@ impl<'req> OrgsGetSummaryStatsByActorParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2359,11 +2359,11 @@ impl<'req> OrgsGetSummaryStatsByActorParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
         }
     }
 }
@@ -2371,10 +2371,10 @@ impl<'req> OrgsGetSummaryStatsByActorParams<'req> {
 /// Query parameters for the [Get summary stats by user](Orgs::get_summary_stats_by_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetSummaryStatsByUserParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>
 }
 
 impl<'req> OrgsGetSummaryStatsByUserParams<'req> {
@@ -2382,7 +2382,7 @@ impl<'req> OrgsGetSummaryStatsByUserParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2390,11 +2390,11 @@ impl<'req> OrgsGetSummaryStatsByUserParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
         }
     }
 }
@@ -2402,10 +2402,10 @@ impl<'req> OrgsGetSummaryStatsByUserParams<'req> {
 /// Query parameters for the [Get time stats](Orgs::get_time_stats_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetTimeStatsParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>, 
     /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
     timestamp_increment: &'req str
 }
@@ -2415,7 +2415,7 @@ impl<'req> OrgsGetTimeStatsParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2424,11 +2424,11 @@ impl<'req> OrgsGetTimeStatsParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
             timestamp_increment: self.timestamp_increment, 
         }
     }
@@ -2446,10 +2446,10 @@ impl<'req> OrgsGetTimeStatsParams<'req> {
 /// Query parameters for the [Get time stats by actor](Orgs::get_time_stats_by_actor_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetTimeStatsByActorParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>, 
     /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
     timestamp_increment: &'req str
 }
@@ -2459,7 +2459,7 @@ impl<'req> OrgsGetTimeStatsByActorParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2468,11 +2468,11 @@ impl<'req> OrgsGetTimeStatsByActorParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
             timestamp_increment: self.timestamp_increment, 
         }
     }
@@ -2490,10 +2490,10 @@ impl<'req> OrgsGetTimeStatsByActorParams<'req> {
 /// Query parameters for the [Get time stats by user](Orgs::get_time_stats_by_user_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetTimeStatsByUserParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>, 
     /// The increment of time used to breakdown the query results (5m, 10m, 1h, etc.)
     timestamp_increment: &'req str
 }
@@ -2503,7 +2503,7 @@ impl<'req> OrgsGetTimeStatsByUserParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2512,11 +2512,11 @@ impl<'req> OrgsGetTimeStatsByUserParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
             timestamp_increment: self.timestamp_increment, 
         }
     }
@@ -2534,10 +2534,10 @@ impl<'req> OrgsGetTimeStatsByUserParams<'req> {
 /// Query parameters for the [Get user stats](Orgs::get_user_stats_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct OrgsGetUserStatsParams<'req> {
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     min_timestamp: &'req str, 
-    /// The maximum timestamp to query for stats
-    max_timestamp: &'req str, 
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
+    max_timestamp: Option<&'req str>, 
     /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
     page: Option<u16>, 
     /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
@@ -2553,7 +2553,7 @@ impl<'req> OrgsGetUserStatsParams<'req> {
         Self::default()
     }
 
-    /// The minimum timestamp to query for stats
+    /// The minimum timestamp to query for stats. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn min_timestamp(self, min_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: min_timestamp,
@@ -2565,11 +2565,11 @@ impl<'req> OrgsGetUserStatsParams<'req> {
         }
     }
 
-    /// The maximum timestamp to query for stats
+    /// The maximum timestamp to query for stats. Defaults to the time 30 days ago. This is a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
     pub fn max_timestamp(self, max_timestamp: &'req str) -> Self {
         Self {
             min_timestamp: self.min_timestamp, 
-            max_timestamp: max_timestamp,
+            max_timestamp: Some(max_timestamp),
             page: self.page, 
             per_page: self.per_page, 
             direction: self.direction, 

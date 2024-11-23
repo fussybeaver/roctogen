@@ -72,6 +72,39 @@ impl From<BillingGetGithubActionsBillingUserError> for AdapterError {
     }
 }
 
+/// Errors for the [Get billing usage report for an organization](Billing::get_github_billing_usage_report_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum BillingGetGithubBillingUsageReportOrgError {
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Internal Error")]
+    Status500(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<BillingGetGithubBillingUsageReportOrgError> for AdapterError {
+    fn from(err: BillingGetGithubBillingUsageReportOrgError) -> Self {
+        let (description, status_code) = match err {
+            BillingGetGithubBillingUsageReportOrgError::Status400(_) => (String::from("Bad Request"), 400),
+            BillingGetGithubBillingUsageReportOrgError::Status403(_) => (String::from("Forbidden"), 403),
+            BillingGetGithubBillingUsageReportOrgError::Status500(_) => (String::from("Internal Error"), 500),
+            BillingGetGithubBillingUsageReportOrgError::Status503(_) => (String::from("Service unavailable"), 503),
+            BillingGetGithubBillingUsageReportOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get GitHub Packages billing for an organization](Billing::get_github_packages_billing_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum BillingGetGithubPackagesBillingOrgError {
@@ -156,6 +189,65 @@ impl From<BillingGetSharedStorageBillingUserError> for AdapterError {
     }
 }
 
+
+/// Query parameters for the [Get billing usage report for an organization](Billing::get_github_billing_usage_report_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct BillingGetGithubBillingUsageReportOrgParams {
+    /// If specified, only return results for a single year. The value of `year` is an integer with four digits representing a year. For example, `2024`. Default value is the current year.
+    year: Option<i32>, 
+    /// If specified, only return results for a single month. The value of `month` is an integer between `1` and `12`.
+    month: Option<i32>, 
+    /// If specified, only return results for a single day. The value of `day` is an integer between `1` and `31`.
+    day: Option<i32>, 
+    /// If specified, only return results for a single hour. The value of `hour` is an integer between `0` and `23`.
+    hour: Option<i32>
+}
+
+impl BillingGetGithubBillingUsageReportOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// If specified, only return results for a single year. The value of `year` is an integer with four digits representing a year. For example, `2024`. Default value is the current year.
+    pub fn year(self, year: i32) -> Self {
+        Self {
+            year: Some(year),
+            month: self.month, 
+            day: self.day, 
+            hour: self.hour, 
+        }
+    }
+
+    /// If specified, only return results for a single month. The value of `month` is an integer between `1` and `12`.
+    pub fn month(self, month: i32) -> Self {
+        Self {
+            year: self.year, 
+            month: Some(month),
+            day: self.day, 
+            hour: self.hour, 
+        }
+    }
+
+    /// If specified, only return results for a single day. The value of `day` is an integer between `1` and `31`.
+    pub fn day(self, day: i32) -> Self {
+        Self {
+            year: self.year, 
+            month: self.month, 
+            day: Some(day),
+            hour: self.hour, 
+        }
+    }
+
+    /// If specified, only return results for a single hour. The value of `hour` is an integer between `0` and `23`.
+    pub fn hour(self, hour: i32) -> Self {
+        Self {
+            year: self.year, 
+            month: self.month, 
+            day: self.day, 
+            hour: Some(hour),
+        }
+    }
+}
 
 
 impl<'api, C: Client> Billing<'api, C> where AdapterError: From<<C as Client>::Err> {
@@ -325,6 +417,104 @@ impl<'api, C: Client> Billing<'api, C> where AdapterError: From<<C as Client>::E
         } else {
             match github_response.status_code() {
                 code => Err(BillingGetGithubActionsBillingUserError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get billing usage report for an organization
+    ///
+    /// Gets a report of the total usage for an organization. To use this endpoint, you must be an administrator of an organization within an enterprise or an organization account.
+    /// 
+    /// **Note:** This endpoint is only available to organizations with access to the enhanced billing platform. For more information, see "[About the enhanced billing platform](https://docs.github.com/billing/using-the-new-billing-platform)."
+    ///
+    /// [GitHub API docs for get_github_billing_usage_report_org](https://docs.github.com/rest/billing/enhanced-billing#get-billing-usage-report-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_github_billing_usage_report_org_async(&self, org: &str, query_params: Option<impl Into<BillingGetGithubBillingUsageReportOrgParams>>) -> Result<BillingUsageReport, AdapterError> {
+
+        let mut request_uri = format!("{}/organizations/{}/settings/billing/usage", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(BillingGetGithubBillingUsageReportOrgError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(BillingGetGithubBillingUsageReportOrgError::Status403(github_response.to_json_async().await?).into()),
+                500 => Err(BillingGetGithubBillingUsageReportOrgError::Status500(github_response.to_json_async().await?).into()),
+                503 => Err(BillingGetGithubBillingUsageReportOrgError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(BillingGetGithubBillingUsageReportOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get billing usage report for an organization
+    ///
+    /// Gets a report of the total usage for an organization. To use this endpoint, you must be an administrator of an organization within an enterprise or an organization account.
+    /// 
+    /// **Note:** This endpoint is only available to organizations with access to the enhanced billing platform. For more information, see "[About the enhanced billing platform](https://docs.github.com/billing/using-the-new-billing-platform)."
+    ///
+    /// [GitHub API docs for get_github_billing_usage_report_org](https://docs.github.com/rest/billing/enhanced-billing#get-billing-usage-report-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_github_billing_usage_report_org(&self, org: &str, query_params: Option<impl Into<BillingGetGithubBillingUsageReportOrgParams>>) -> Result<BillingUsageReport, AdapterError> {
+
+        let mut request_uri = format!("{}/organizations/{}/settings/billing/usage", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: BillingGetGithubBillingUsageReportOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(BillingGetGithubBillingUsageReportOrgError::Status400(github_response.to_json()?).into()),
+                403 => Err(BillingGetGithubBillingUsageReportOrgError::Status403(github_response.to_json()?).into()),
+                500 => Err(BillingGetGithubBillingUsageReportOrgError::Status500(github_response.to_json()?).into()),
+                503 => Err(BillingGetGithubBillingUsageReportOrgError::Status503(github_response.to_json()?).into()),
+                code => Err(BillingGetGithubBillingUsageReportOrgError::Generic { code }.into()),
             }
         }
     }
