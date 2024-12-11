@@ -93,6 +93,33 @@ impl From<SecretScanningGetAlertError> for AdapterError {
     }
 }
 
+/// Errors for the [Get secret scanning scan history for a repository](SecretScanning::get_scan_history_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum SecretScanningGetScanHistoryError {
+    #[error("Repository does not have GitHub Advanced Security or secret scanning enabled")]
+    Status404,
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<SecretScanningGetScanHistoryError> for AdapterError {
+    fn from(err: SecretScanningGetScanHistoryError) -> Self {
+        let (description, status_code) = match err {
+            SecretScanningGetScanHistoryError::Status404 => (String::from("Repository does not have GitHub Advanced Security or secret scanning enabled"), 404),
+            SecretScanningGetScanHistoryError::Status503(_) => (String::from("Service unavailable"), 503),
+            SecretScanningGetScanHistoryError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [List secret scanning alerts for an enterprise](SecretScanning::list_alerts_for_enterprise_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum SecretScanningListAlertsForEnterpriseError {
@@ -1197,6 +1224,91 @@ impl<'api, C: Client> SecretScanning<'api, C> where AdapterError: From<<C as Cli
                 404 => Err(SecretScanningGetAlertError::Status404.into()),
                 503 => Err(SecretScanningGetAlertError::Status503(github_response.to_json()?).into()),
                 code => Err(SecretScanningGetAlertError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get secret scanning scan history for a repository
+    ///
+    /// Lists the latest incremental and backfill scans by type for a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    ///
+    /// [GitHub API docs for get_scan_history](https://docs.github.com/rest/secret-scanning/secret-scanning#get-secret-scanning-scan-history-for-a-repository)
+    ///
+    /// ---
+    pub async fn get_scan_history_async(&self, owner: &str, repo: &str) -> Result<SecretScanningScanHistory, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/secret-scanning/scan-history", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningGetScanHistoryError::Status404.into()),
+                503 => Err(SecretScanningGetScanHistoryError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(SecretScanningGetScanHistoryError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get secret scanning scan history for a repository
+    ///
+    /// Lists the latest incremental and backfill scans by type for a repository.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
+    ///
+    /// [GitHub API docs for get_scan_history](https://docs.github.com/rest/secret-scanning/secret-scanning#get-secret-scanning-scan-history-for-a-repository)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_scan_history(&self, owner: &str, repo: &str) -> Result<SecretScanningScanHistory, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/secret-scanning/scan-history", super::GITHUB_BASE_API_URL, owner, repo);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(SecretScanningGetScanHistoryError::Status404.into()),
+                503 => Err(SecretScanningGetScanHistoryError::Status503(github_response.to_json()?).into()),
+                code => Err(SecretScanningGetScanHistoryError::Generic { code }.into()),
             }
         }
     }

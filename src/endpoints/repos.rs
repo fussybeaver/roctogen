@@ -5322,8 +5322,8 @@ impl<'req> ReposGetContentParams<'req> {
 pub struct ReposGetOrgRuleSuitesParams<'req> {
     /// The name of the ref. Cannot contain wildcard characters. Optionally prefix with `refs/heads/` to limit to branches or `refs/tags/` to limit to tags. Omit the prefix to search across all refs. When specified, only rule evaluations triggered for this ref will be returned.
     git_ref: Option<&'req str>, 
-    /// The name of the repository to filter on. When specified, only rule evaluations from this repository will be returned.
-    repository_name: Option<i32>, 
+    /// The name of the repository to filter on.
+    repository_name: Option<&'req str>, 
     /// The time period to filter by.  For example, `day` will filter for rule suites that occurred in the past 24 hours, and `week` will filter for insights that occurred in the past 7 days (168 hours).
     time_period: Option<&'req str>, 
     /// The handle for the GitHub user account to filter on. When specified, only rule evaluations triggered by this actor will be returned.
@@ -5354,8 +5354,8 @@ impl<'req> ReposGetOrgRuleSuitesParams<'req> {
         }
     }
 
-    /// The name of the repository to filter on. When specified, only rule evaluations from this repository will be returned.
-    pub fn repository_name(self, repository_name: i32) -> Self {
+    /// The name of the repository to filter on.
+    pub fn repository_name(self, repository_name: &'req str) -> Self {
         Self {
             git_ref: self.git_ref, 
             repository_name: Some(repository_name),
@@ -8563,6 +8563,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
+    /// | `verified_at` | `string` | The date the signature was verified by GitHub. |
     /// 
     /// These are the possible values for `reason` in the `verification` object:
     /// 
@@ -8657,6 +8658,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
+    /// | `verified_at` | `string` | The date the signature was verified by GitHub. |
     /// 
     /// These are the possible values for `reason` in the `verification` object:
     /// 
@@ -12729,6 +12731,10 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     ///
     /// # Delete a repository webhook
     ///
+    /// Delete a webhook for an organization.
+    /// 
+    /// The authenticated user must be a repository owner, or have admin access in the repository, to delete the webhook.
+    ///
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/repos/webhooks#delete-a-repository-webhook)
     ///
     /// ---
@@ -12765,6 +12771,10 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     /// ---
     ///
     /// # Delete a repository webhook
+    ///
+    /// Delete a webhook for an organization.
+    /// 
+    /// The authenticated user must be a repository owner, or have admin access in the repository, to delete the webhook.
     ///
     /// [GitHub API docs for delete_webhook](https://docs.github.com/rest/repos/webhooks#delete-a-repository-webhook)
     ///
@@ -15018,6 +15028,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
+    /// | `verified_at` | `string` | The date the signature was verified by GitHub. |
     /// 
     /// These are the possible values for `reason` in the `verification` object:
     /// 
@@ -15103,6 +15114,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
+    /// | `verified_at` | `string` | The date the signature was verified by GitHub. |
     /// 
     /// These are the possible values for `reason` in the `verification` object:
     /// 
@@ -19846,6 +19858,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
+    /// | `verified_at` | `string` | The date the signature was verified by GitHub. |
     /// 
     /// These are the possible values for `reason` in the `verification` object:
     /// 
@@ -19919,6 +19932,7 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
     /// | `reason` | `string` | The reason for verified value. Possible values and their meanings are enumerated in table below. |
     /// | `signature` | `string` | The signature that was extracted from the commit. |
     /// | `payload` | `string` | The value that was signed. |
+    /// | `verified_at` | `string` | The date the signature was verified by GitHub. |
     /// 
     /// These are the possible values for `reason` in the `verification` object:
     /// 

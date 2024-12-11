@@ -2112,7 +2112,9 @@ pub struct OrgsGetRouteStatsByActorParams<'req> {
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
     /// The property to sort the results by.
-    sort: Option<Vec<String>>
+    sort: Option<Vec<String>>, 
+    /// Providing a substring will filter results where the API route contains the substring. This is a case-insensitive search.
+    api_route_substring: Option<&'req str>
 }
 
 impl<'req> OrgsGetRouteStatsByActorParams<'req> {
@@ -2129,6 +2131,7 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            api_route_substring: self.api_route_substring, 
         }
     }
 
@@ -2141,6 +2144,7 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            api_route_substring: self.api_route_substring, 
         }
     }
 
@@ -2153,6 +2157,7 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            api_route_substring: self.api_route_substring, 
         }
     }
 
@@ -2165,6 +2170,7 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
             per_page: Some(per_page),
             direction: self.direction, 
             sort: self.sort, 
+            api_route_substring: self.api_route_substring, 
         }
     }
 
@@ -2177,6 +2183,7 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
             per_page: self.per_page, 
             direction: Some(direction),
             sort: self.sort, 
+            api_route_substring: self.api_route_substring, 
         }
     }
 
@@ -2189,6 +2196,20 @@ impl<'req> OrgsGetRouteStatsByActorParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: Some(sort),
+            api_route_substring: self.api_route_substring, 
+        }
+    }
+
+    /// Providing a substring will filter results where the API route contains the substring. This is a case-insensitive search.
+    pub fn api_route_substring(self, api_route_substring: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+            api_route_substring: Some(api_route_substring),
         }
     }
 }
@@ -2216,7 +2237,9 @@ pub struct OrgsGetSubjectStatsParams<'req> {
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
     /// The property to sort the results by.
-    sort: Option<Vec<String>>
+    sort: Option<Vec<String>>, 
+    /// Providing a substring will filter results where the subject name contains the substring. This is a case-insensitive search.
+    subject_name_substring: Option<&'req str>
 }
 
 impl<'req> OrgsGetSubjectStatsParams<'req> {
@@ -2233,6 +2256,7 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            subject_name_substring: self.subject_name_substring, 
         }
     }
 
@@ -2245,6 +2269,7 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            subject_name_substring: self.subject_name_substring, 
         }
     }
 
@@ -2257,6 +2282,7 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            subject_name_substring: self.subject_name_substring, 
         }
     }
 
@@ -2269,6 +2295,7 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
             per_page: Some(per_page),
             direction: self.direction, 
             sort: self.sort, 
+            subject_name_substring: self.subject_name_substring, 
         }
     }
 
@@ -2281,6 +2308,7 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
             per_page: self.per_page, 
             direction: Some(direction),
             sort: self.sort, 
+            subject_name_substring: self.subject_name_substring, 
         }
     }
 
@@ -2293,6 +2321,20 @@ impl<'req> OrgsGetSubjectStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: Some(sort),
+            subject_name_substring: self.subject_name_substring, 
+        }
+    }
+
+    /// Providing a substring will filter results where the subject name contains the substring. This is a case-insensitive search.
+    pub fn subject_name_substring(self, subject_name_substring: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+            subject_name_substring: Some(subject_name_substring),
         }
     }
 }
@@ -2545,7 +2587,9 @@ pub struct OrgsGetUserStatsParams<'req> {
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
     /// The property to sort the results by.
-    sort: Option<Vec<String>>
+    sort: Option<Vec<String>>, 
+    /// Providing a substring will filter results where the actor name contains the substring. This is a case-insensitive search.
+    actor_name_substring: Option<&'req str>
 }
 
 impl<'req> OrgsGetUserStatsParams<'req> {
@@ -2562,6 +2606,7 @@ impl<'req> OrgsGetUserStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            actor_name_substring: self.actor_name_substring, 
         }
     }
 
@@ -2574,6 +2619,7 @@ impl<'req> OrgsGetUserStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            actor_name_substring: self.actor_name_substring, 
         }
     }
 
@@ -2586,6 +2632,7 @@ impl<'req> OrgsGetUserStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: self.sort, 
+            actor_name_substring: self.actor_name_substring, 
         }
     }
 
@@ -2598,6 +2645,7 @@ impl<'req> OrgsGetUserStatsParams<'req> {
             per_page: Some(per_page),
             direction: self.direction, 
             sort: self.sort, 
+            actor_name_substring: self.actor_name_substring, 
         }
     }
 
@@ -2610,6 +2658,7 @@ impl<'req> OrgsGetUserStatsParams<'req> {
             per_page: self.per_page, 
             direction: Some(direction),
             sort: self.sort, 
+            actor_name_substring: self.actor_name_substring, 
         }
     }
 
@@ -2622,6 +2671,20 @@ impl<'req> OrgsGetUserStatsParams<'req> {
             per_page: self.per_page, 
             direction: self.direction, 
             sort: Some(sort),
+            actor_name_substring: self.actor_name_substring, 
+        }
+    }
+
+    /// Providing a substring will filter results where the actor name contains the substring. This is a case-insensitive search.
+    pub fn actor_name_substring(self, actor_name_substring: &'req str) -> Self {
+        Self {
+            min_timestamp: self.min_timestamp, 
+            max_timestamp: self.max_timestamp, 
+            page: self.page, 
+            per_page: self.per_page, 
+            direction: self.direction, 
+            sort: self.sort, 
+            actor_name_substring: Some(actor_name_substring),
         }
     }
 }
@@ -5167,7 +5230,9 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     ///
     /// # Delete an organization webhook
     ///
-    /// You must be an organization owner to use this endpoint.
+    /// Delete a webhook for an organization.
+    /// 
+    /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
@@ -5209,7 +5274,9 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     ///
     /// # Delete an organization webhook
     ///
-    /// You must be an organization owner to use this endpoint.
+    /// Delete a webhook for an organization.
+    /// 
+    /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
@@ -9012,7 +9079,9 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     ///
     /// # List organization webhooks
     ///
-    /// You must be an organization owner to use this endpoint.
+    /// List webhooks for an organization.
+    /// 
+    /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
@@ -9058,7 +9127,9 @@ impl<'api, C: Client> Orgs<'api, C> where AdapterError: From<<C as Client>::Err>
     ///
     /// # List organization webhooks
     ///
-    /// You must be an organization owner to use this endpoint.
+    /// List webhooks for an organization.
+    /// 
+    /// The authenticated user must be an organization owner to use this endpoint.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need `admin:org_hook` scope. OAuth apps cannot list, view, or edit
     /// webhooks that they did not create and users cannot list, view, or edit webhooks that were created by OAuth apps.
