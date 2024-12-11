@@ -84,6 +84,39 @@ impl From<IssuesAddLabelsError> for AdapterError {
     }
 }
 
+/// Errors for the [Add sub-issue](Issues::add_sub_issue_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum IssuesAddSubIssueError {
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Gone")]
+    Status410(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<IssuesAddSubIssueError> for AdapterError {
+    fn from(err: IssuesAddSubIssueError) -> Self {
+        let (description, status_code) = match err {
+            IssuesAddSubIssueError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesAddSubIssueError::Status410(_) => (String::from("Gone"), 410),
+            IssuesAddSubIssueError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesAddSubIssueError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesAddSubIssueError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Check if a user can be assigned](Issues::check_user_can_be_assigned_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesCheckUserCanBeAssignedError {
@@ -822,6 +855,33 @@ impl From<IssuesListMilestonesError> for AdapterError {
     }
 }
 
+/// Errors for the [List sub-issues](Issues::list_sub_issues_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum IssuesListSubIssuesError {
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Gone")]
+    Status410(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<IssuesListSubIssuesError> for AdapterError {
+    fn from(err: IssuesListSubIssuesError) -> Self {
+        let (description, status_code) = match err {
+            IssuesListSubIssuesError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesListSubIssuesError::Status410(_) => (String::from("Gone"), 410),
+            IssuesListSubIssuesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Lock an issue](Issues::lock_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum IssuesLockError {
@@ -926,6 +986,66 @@ impl From<IssuesRemoveLabelError> for AdapterError {
             IssuesRemoveLabelError::Status404(_) => (String::from("Resource not found"), 404),
             IssuesRemoveLabelError::Status410(_) => (String::from("Gone"), 410),
             IssuesRemoveLabelError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Remove sub-issue](Issues::remove_sub_issue_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum IssuesRemoveSubIssueError {
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<IssuesRemoveSubIssueError> for AdapterError {
+    fn from(err: IssuesRemoveSubIssueError) -> Self {
+        let (description, status_code) = match err {
+            IssuesRemoveSubIssueError::Status400(_) => (String::from("Bad Request"), 400),
+            IssuesRemoveSubIssueError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesRemoveSubIssueError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Reprioritize sub-issue](Issues::reprioritize_sub_issue_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum IssuesReprioritizeSubIssueError {
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Validation failed, or the endpoint has been spammed.")]
+    Status422(ValidationErrorSimple),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<IssuesReprioritizeSubIssueError> for AdapterError {
+    fn from(err: IssuesReprioritizeSubIssueError) -> Self {
+        let (description, status_code) = match err {
+            IssuesReprioritizeSubIssueError::Status403(_) => (String::from("Forbidden"), 403),
+            IssuesReprioritizeSubIssueError::Status404(_) => (String::from("Resource not found"), 404),
+            IssuesReprioritizeSubIssueError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            IssuesReprioritizeSubIssueError::Status503(_) => (String::from("Service unavailable"), 503),
+            IssuesReprioritizeSubIssueError::Generic { code } => (String::from("Generic"), code)
         };
 
         Self::Endpoint {
@@ -2390,6 +2510,46 @@ impl<'enc> From<&'enc PerPage> for IssuesListMilestonesParams<'enc> {
         }
     }
 }
+/// Query parameters for the [List sub-issues](Issues::list_sub_issues_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct IssuesListSubIssuesParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl IssuesListSubIssuesParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for IssuesListSubIssuesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
 
 impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
@@ -2550,6 +2710,113 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
                 410 => Err(IssuesAddLabelsError::Status410(github_response.to_json()?).into()),
                 422 => Err(IssuesAddLabelsError::Status422(github_response.to_json()?).into()),
                 code => Err(IssuesAddLabelsError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add sub-issue
+    ///
+    /// You can use the REST API to add sub-issues to issues.
+    /// 
+    /// Creating content too quickly using this endpoint may result in secondary rate limiting.
+    /// For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for add_sub_issue](https://docs.github.com/rest/issues/sub-issues#add-sub-issue)
+    ///
+    /// ---
+    pub async fn add_sub_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddSubIssue) -> Result<Issue, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issues", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostIssuesAddSubIssue>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(IssuesAddSubIssueError::Status403(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesAddSubIssueError::Status410(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesAddSubIssueError::Status422(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesAddSubIssueError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesAddSubIssueError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Add sub-issue
+    ///
+    /// You can use the REST API to add sub-issues to issues.
+    /// 
+    /// Creating content too quickly using this endpoint may result in secondary rate limiting.
+    /// For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for add_sub_issue](https://docs.github.com/rest/issues/sub-issues#add-sub-issue)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn add_sub_issue(&self, owner: &str, repo: &str, issue_number: i32, body: PostIssuesAddSubIssue) -> Result<Issue, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issues", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostIssuesAddSubIssue>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(IssuesAddSubIssueError::Status403(github_response.to_json()?).into()),
+                410 => Err(IssuesAddSubIssueError::Status410(github_response.to_json()?).into()),
+                422 => Err(IssuesAddSubIssueError::Status422(github_response.to_json()?).into()),
+                404 => Err(IssuesAddSubIssueError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesAddSubIssueError::Generic { code }.into()),
             }
         }
     }
@@ -5162,6 +5429,110 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
 
     /// ---
     ///
+    /// # List sub-issues
+    ///
+    /// You can use the REST API to list the sub-issues on an issue.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_sub_issues](https://docs.github.com/rest/issues/sub-issues#list-sub-issues)
+    ///
+    /// ---
+    pub async fn list_sub_issues_async(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListSubIssuesParams>>) -> Result<Vec<Issue>, AdapterError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issues", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(IssuesListSubIssuesError::Status404(github_response.to_json_async().await?).into()),
+                410 => Err(IssuesListSubIssuesError::Status410(github_response.to_json_async().await?).into()),
+                code => Err(IssuesListSubIssuesError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List sub-issues
+    ///
+    /// You can use the REST API to list the sub-issues on an issue.
+    /// 
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// 
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass any specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for list_sub_issues](https://docs.github.com/rest/issues/sub-issues#list-sub-issues)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_sub_issues(&self, owner: &str, repo: &str, issue_number: i32, query_params: Option<impl Into<IssuesListSubIssuesParams>>) -> Result<Vec<Issue>, AdapterError> {
+
+        let mut request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issues", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: IssuesListSubIssuesParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                404 => Err(IssuesListSubIssuesError::Status404(github_response.to_json()?).into()),
+                410 => Err(IssuesListSubIssuesError::Status410(github_response.to_json()?).into()),
+                code => Err(IssuesListSubIssuesError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Lock an issue
     ///
     /// Users with push access can lock an issue or pull request's conversation.
@@ -5488,6 +5859,188 @@ impl<'api, C: Client> Issues<'api, C> where AdapterError: From<<C as Client>::Er
                 404 => Err(IssuesRemoveLabelError::Status404(github_response.to_json()?).into()),
                 410 => Err(IssuesRemoveLabelError::Status410(github_response.to_json()?).into()),
                 code => Err(IssuesRemoveLabelError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove sub-issue
+    ///
+    /// You can use the REST API to remove a sub-issue from an issue.
+    /// Removing content too quickly using this endpoint may result in secondary rate limiting.
+    /// For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass a specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for remove_sub_issue](https://docs.github.com/rest/issues/sub-issues#remove-sub-issue)
+    ///
+    /// ---
+    pub async fn remove_sub_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveSubIssue) -> Result<Issue, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issue", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<DeleteIssuesRemoveSubIssue>(body)?),
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(IssuesRemoveSubIssueError::Status400(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesRemoveSubIssueError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(IssuesRemoveSubIssueError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Remove sub-issue
+    ///
+    /// You can use the REST API to remove a sub-issue from an issue.
+    /// Removing content too quickly using this endpoint may result in secondary rate limiting.
+    /// For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
+    /// and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
+    /// This endpoint supports the following custom media types. For more information, see "[Media types](https://docs.github.com/rest/using-the-rest-api/getting-started-with-the-rest-api#media-types)."
+    /// - **`application/vnd.github.raw+json`**: Returns the raw markdown body. Response will include `body`. This is the default if you do not pass a specific media type.
+    /// - **`application/vnd.github.text+json`**: Returns a text only representation of the markdown body. Response will include `body_text`.
+    /// - **`application/vnd.github.html+json`**: Returns HTML rendered from the body's markdown. Response will include `body_html`.
+    /// - **`application/vnd.github.full+json`**: Returns raw, text, and HTML representations. Response will include `body`, `body_text`, and `body_html`.
+    ///
+    /// [GitHub API docs for remove_sub_issue](https://docs.github.com/rest/issues/sub-issues#remove-sub-issue)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn remove_sub_issue(&self, owner: &str, repo: &str, issue_number: i32, body: DeleteIssuesRemoveSubIssue) -> Result<Issue, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issue", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<DeleteIssuesRemoveSubIssue>(body)?),
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(IssuesRemoveSubIssueError::Status400(github_response.to_json()?).into()),
+                404 => Err(IssuesRemoveSubIssueError::Status404(github_response.to_json()?).into()),
+                code => Err(IssuesRemoveSubIssueError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Reprioritize sub-issue
+    ///
+    /// You can use the REST API to reprioritize a sub-issue to a different position in the parent list.
+    ///
+    /// [GitHub API docs for reprioritize_sub_issue](https://docs.github.com/rest/issues/sub-issues#reprioritize-sub-issue)
+    ///
+    /// ---
+    pub async fn reprioritize_sub_issue_async(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesReprioritizeSubIssue) -> Result<Issue, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issues/priority", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchIssuesReprioritizeSubIssue>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(IssuesReprioritizeSubIssueError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(IssuesReprioritizeSubIssueError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(IssuesReprioritizeSubIssueError::Status422(github_response.to_json_async().await?).into()),
+                503 => Err(IssuesReprioritizeSubIssueError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(IssuesReprioritizeSubIssueError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Reprioritize sub-issue
+    ///
+    /// You can use the REST API to reprioritize a sub-issue to a different position in the parent list.
+    ///
+    /// [GitHub API docs for reprioritize_sub_issue](https://docs.github.com/rest/issues/sub-issues#reprioritize-sub-issue)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn reprioritize_sub_issue(&self, owner: &str, repo: &str, issue_number: i32, body: PatchIssuesReprioritizeSubIssue) -> Result<Issue, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/issues/{}/sub_issues/priority", super::GITHUB_BASE_API_URL, owner, repo, issue_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchIssuesReprioritizeSubIssue>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(IssuesReprioritizeSubIssueError::Status403(github_response.to_json()?).into()),
+                404 => Err(IssuesReprioritizeSubIssueError::Status404(github_response.to_json()?).into()),
+                422 => Err(IssuesReprioritizeSubIssueError::Status422(github_response.to_json()?).into()),
+                503 => Err(IssuesReprioritizeSubIssueError::Status503(github_response.to_json()?).into()),
+                code => Err(IssuesReprioritizeSubIssueError::Generic { code }.into()),
             }
         }
     }

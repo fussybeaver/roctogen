@@ -1213,13 +1213,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// Purchases a GitHub Copilot seat for all users within each specified team.
     /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// Only organization owners can add Copilot seats for their organization members.
-    /// 
-    /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
+    /// Only organization owners can purchase Copilot seats for their organization members. The organization must have a Copilot Business or Copilot Enterprise subscription and a configured suggestion matching policy.
     /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
     /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
-    /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
+    /// The response contains the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1270,13 +1268,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// Purchases a GitHub Copilot seat for all users within each specified team.
     /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// Only organization owners can add Copilot seats for their organization members.
-    /// 
-    /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
+    /// Only organization owners can purchase Copilot seats for their organization members. The organization must have a Copilot Business or Copilot Enterprise subscription and a configured suggestion matching policy.
     /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
     /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
-    /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
+    /// The response contains the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1328,13 +1324,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// Purchases a GitHub Copilot seat for each user specified.
     /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// Only organization owners can add Copilot seats for their organization members.
-    /// 
-    /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
+    /// Only organization owners can purchase Copilot seats for their organization members. The organization must have a Copilot Business or Copilot Enterprise subscription and a configured suggestion matching policy.
     /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
     /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
-    /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
+    /// The response contains the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1385,13 +1379,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// Purchases a GitHub Copilot seat for each user specified.
     /// The organization will be billed for each seat based on the organization's Copilot plan. For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
     /// 
-    /// Only organization owners can add Copilot seats for their organization members.
-    /// 
-    /// In order for an admin to use this endpoint, the organization must have a Copilot Business or Enterprise subscription and a configured suggestion matching policy.
+    /// Only organization owners can purchase Copilot seats for their organization members. The organization must have a Copilot Business or Copilot Enterprise subscription and a configured suggestion matching policy.
     /// For more information about setting up a Copilot subscription, see "[Subscribing to Copilot for your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/subscribing-to-copilot-for-your-organization)."
     /// For more information about setting a suggestion matching policy, see "[Managing policies for Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/setting-policies-for-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#policies-for-suggestion-matching)."
     /// 
-    /// The response will contain the total number of new seats that were created and existing seats that were refreshed.
+    /// The response contains the total number of new seats that were created and existing seats that were refreshed.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1442,14 +1434,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// 
     /// Sets seats for all members of each team specified to "pending cancellation".
     /// This will cause the members of the specified team(s) to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through another team.
-    /// 
-    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
-    /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
+    /// For more information about disabling access to Copilot, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
-    /// The response will contain the total number of seats set to "pending cancellation".
+    /// The response contains the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1499,14 +1488,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// 
     /// Sets seats for all members of each team specified to "pending cancellation".
     /// This will cause the members of the specified team(s) to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through another team.
-    /// 
-    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
-    /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
+    /// For more information about disabling access to Copilot, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
-    /// The response will contain the total number of seats set to "pending cancellation".
+    /// The response contains the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1557,14 +1543,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// 
     /// Sets seats for all users specified to "pending cancellation".
     /// This will cause the specified users to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through team membership.
-    /// 
-    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
-    /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
+    /// For more information about disabling access to Copilot, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
-    /// The response will contain the total number of seats set to "pending cancellation".
+    /// The response contains the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1614,14 +1597,11 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// 
     /// Sets seats for all users specified to "pending cancellation".
     /// This will cause the specified users to lose access to GitHub Copilot at the end of the current billing cycle unless they retain access through team membership.
-    /// 
-    /// For more information about Copilot pricing, see "[About billing for GitHub Copilot in your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/about-billing-for-github-copilot-in-your-organization)."
-    /// 
-    /// For more information about disabling access to Copilot Business or Enterprise, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
+    /// For more information about disabling access to Copilot, see "[Revoking access to Copilot for members of your organization](https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/revoking-access-to-copilot-for-members-of-your-organization)."
     /// 
     /// Only organization owners can cancel Copilot seats for their organization members.
     /// 
-    /// The response will contain the total number of seats set to "pending cancellation".
+    /// The response contains the total number of seats set to "pending cancellation".
     /// 
     /// OAuth app tokens and personal access tokens (classic) need either the `manage_billing:copilot` or `admin:org` scopes to use this endpoint.
     ///
@@ -1779,6 +1759,9 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     ///
     /// # Get Copilot metrics for an enterprise team
     ///
+    /// > [!NOTE]
+    /// > This endpoint is only applicable to dedicated enterprise accounts for Copilot Business. See "[About enterprise accounts for Copilot Business](https://docs.github.com/admin/copilot-business-only/about-enterprise-accounts-for-copilot-business)."
+    /// 
     /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
     /// 
     /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
@@ -1837,6 +1820,9 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     ///
     /// # Get Copilot metrics for an enterprise team
     ///
+    /// > [!NOTE]
+    /// > This endpoint is only applicable to dedicated enterprise accounts for Copilot Business. See "[About enterprise accounts for Copilot Business](https://docs.github.com/admin/copilot-business-only/about-enterprise-accounts-for-copilot-business)."
+    /// 
     /// Use this endpoint to see a breakdown of aggregated metrics for various GitHub Copilot features. See the response schema tab for detailed metrics definitions.
     /// 
     /// The response contains metrics for up to 28 days prior. Metrics are processed once per day for the previous day,
@@ -2704,7 +2690,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for an enterprise team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in public preview and is subject to change.
+    /// > This endpoint is in public preview and is subject to change. This endpoint is only applicable to dedicated enterprise accounts for Copilot Business. See "[About enterprise accounts for Copilot Business](https://docs.github.com/admin/copilot-business-only/about-enterprise-accounts-for-copilot-business)."
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within an enterprise team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -2766,7 +2752,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for an enterprise team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in public preview and is subject to change.
+    /// > This endpoint is in public preview and is subject to change. This endpoint is only applicable to dedicated enterprise accounts for Copilot Business. See "[About enterprise accounts for Copilot Business](https://docs.github.com/admin/copilot-business-only/about-enterprise-accounts-for-copilot-business)."
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within an enterprise team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.

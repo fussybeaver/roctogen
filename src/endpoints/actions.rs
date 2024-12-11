@@ -13623,6 +13623,8 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
     /// Anyone with read access to the repository can use this endpoint
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    /// 
+    /// This endpoint will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
     ///
     /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     ///
@@ -13669,6 +13671,8 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
     /// Anyone with read access to the repository can use this endpoint
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
+    /// 
+    /// This endpoint will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
     ///
     /// [GitHub API docs for list_workflow_runs](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-workflow)
     ///
@@ -13718,7 +13722,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
     /// 
-    /// This API will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
+    /// This endpoint will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
     ///
     /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     ///
@@ -13766,7 +13770,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with a private repository.
     /// 
-    /// This API will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
+    /// This endpoint will return up to 1,000 results for each search when using the following parameters: `actor`, `branch`, `check_suite_id`, `created`, `event`, `head_sha`, `status`.
     ///
     /// [GitHub API docs for list_workflow_runs_for_repo](https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
     ///
