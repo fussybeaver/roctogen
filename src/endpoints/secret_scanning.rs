@@ -267,7 +267,7 @@ impl From<SecretScanningUpdateAlertError> for AdapterError {
 pub struct SecretScanningListAlertsForEnterpriseParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    /// A comma-separated list of secret types to return. All default secret patterns are returned. To return experimental patterns, pass the token name(s) in the parameter. See \"[Supported secret scanning patterns](https://docs.github.com/enterprise-cloud@latest/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     secret_type: Option<&'req str>, 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     resolution: Option<&'req str>, 
@@ -311,7 +311,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
         }
     }
 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    /// A comma-separated list of secret types to return. All default secret patterns are returned. To return experimental patterns, pass the token name(s) in the parameter. See \"[Supported secret scanning patterns](https://docs.github.com/enterprise-cloud@latest/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self {
             state: self.state, 
@@ -487,7 +487,7 @@ impl<'req> SecretScanningListAlertsForEnterpriseParams<'req> {
 pub struct SecretScanningListAlertsForOrgParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    /// A comma-separated list of secret types to return. All default secret patterns are returned. To return experimental patterns, pass the token name(s) in the parameter. See \"[Supported secret scanning patterns](https://docs.github.com/enterprise-cloud@latest/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     secret_type: Option<&'req str>, 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     resolution: Option<&'req str>, 
@@ -534,7 +534,7 @@ impl<'req> SecretScanningListAlertsForOrgParams<'req> {
         }
     }
 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    /// A comma-separated list of secret types to return. All default secret patterns are returned. To return experimental patterns, pass the token name(s) in the parameter. See \"[Supported secret scanning patterns](https://docs.github.com/enterprise-cloud@latest/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self {
             state: self.state, 
@@ -747,7 +747,7 @@ impl<'enc> From<&'enc PerPage> for SecretScanningListAlertsForOrgParams<'enc> {
 pub struct SecretScanningListAlertsForRepoParams<'req> {
     /// Set to `open` or `resolved` to only list secret scanning alerts in a specific state.
     state: Option<&'req str>, 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    /// A comma-separated list of secret types to return. All default secret patterns are returned. To return experimental patterns, pass the token name(s) in the parameter. See \"[Supported secret scanning patterns](https://docs.github.com/enterprise-cloud@latest/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     secret_type: Option<&'req str>, 
     /// A comma-separated list of resolutions. Only secret scanning alerts with one of these resolutions are listed. Valid resolutions are `false_positive`, `wont_fix`, `revoked`, `pattern_edited`, `pattern_deleted` or `used_in_tests`.
     resolution: Option<&'req str>, 
@@ -794,7 +794,7 @@ impl<'req> SecretScanningListAlertsForRepoParams<'req> {
         }
     }
 
-    /// A comma-separated list of secret types to return. By default all secret types are returned. See \"[Supported secret scanning patterns](https://docs.github.com/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
+    /// A comma-separated list of secret types to return. All default secret patterns are returned. To return experimental patterns, pass the token name(s) in the parameter. See \"[Supported secret scanning patterns](https://docs.github.com/enterprise-cloud@latest/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets)\" for a complete list of secret types.
     pub fn secret_type(self, secret_type: &'req str) -> Self {
         Self {
             state: self.state, 

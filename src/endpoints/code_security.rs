@@ -51,6 +51,36 @@ impl From<CodeSecurityAttachConfigurationError> for AdapterError {
     }
 }
 
+/// Errors for the [Attach an enterprise configuration to repositories](CodeSecurity::attach_enterprise_configuration_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityAttachEnterpriseConfigurationError {
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityAttachEnterpriseConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityAttachEnterpriseConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityAttachEnterpriseConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityAttachEnterpriseConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityAttachEnterpriseConfigurationError::Status409(_) => (String::from("Conflict"), 409),
+            CodeSecurityAttachEnterpriseConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a code security configuration](CodeSecurity::create_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityCreateConfigurationError {
@@ -62,6 +92,36 @@ impl From<CodeSecurityCreateConfigurationError> for AdapterError {
     fn from(err: CodeSecurityCreateConfigurationError) -> Self {
         let (description, status_code) = match err {
             CodeSecurityCreateConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Create a code security configuration for an enterprise](CodeSecurity::create_configuration_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityCreateConfigurationForEnterpriseError {
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityCreateConfigurationForEnterpriseError> for AdapterError {
+    fn from(err: CodeSecurityCreateConfigurationForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityCreateConfigurationForEnterpriseError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeSecurityCreateConfigurationForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityCreateConfigurationForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityCreateConfigurationForEnterpriseError::Generic { code } => (String::from("Generic"), code)
         };
 
         Self::Endpoint {
@@ -95,6 +155,39 @@ impl From<CodeSecurityDeleteConfigurationError> for AdapterError {
             CodeSecurityDeleteConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
             CodeSecurityDeleteConfigurationError::Status409(_) => (String::from("Conflict"), 409),
             CodeSecurityDeleteConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Delete a code security configuration for an enterprise](CodeSecurity::delete_configuration_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityDeleteConfigurationForEnterpriseError {
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityDeleteConfigurationForEnterpriseError> for AdapterError {
+    fn from(err: CodeSecurityDeleteConfigurationForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityDeleteConfigurationForEnterpriseError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeSecurityDeleteConfigurationForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityDeleteConfigurationForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityDeleteConfigurationForEnterpriseError::Status409(_) => (String::from("Conflict"), 409),
+            CodeSecurityDeleteConfigurationForEnterpriseError::Generic { code } => (String::from("Generic"), code)
         };
 
         Self::Endpoint {
@@ -201,6 +294,33 @@ impl From<CodeSecurityGetConfigurationForRepositoryError> for AdapterError {
     }
 }
 
+/// Errors for the [Get code security configurations for an enterprise](CodeSecurity::get_configurations_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityGetConfigurationsForEnterpriseError {
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityGetConfigurationsForEnterpriseError> for AdapterError {
+    fn from(err: CodeSecurityGetConfigurationsForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetConfigurationsForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetConfigurationsForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetConfigurationsForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get code security configurations for an organization](CodeSecurity::get_configurations_for_org_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityGetConfigurationsForOrgError {
@@ -258,6 +378,27 @@ impl From<CodeSecurityGetDefaultConfigurationsError> for AdapterError {
     }
 }
 
+/// Errors for the [Get default code security configurations for an enterprise](CodeSecurity::get_default_configurations_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityGetDefaultConfigurationsForEnterpriseError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityGetDefaultConfigurationsForEnterpriseError> for AdapterError {
+    fn from(err: CodeSecurityGetDefaultConfigurationsForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetDefaultConfigurationsForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get repositories associated with a code security configuration](CodeSecurity::get_repositories_for_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityGetRepositoriesForConfigurationError {
@@ -275,6 +416,63 @@ impl From<CodeSecurityGetRepositoriesForConfigurationError> for AdapterError {
             CodeSecurityGetRepositoriesForConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
             CodeSecurityGetRepositoriesForConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
             CodeSecurityGetRepositoriesForConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get repositories associated with an enterprise code security configuration](CodeSecurity::get_repositories_for_enterprise_configuration_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityGetRepositoriesForEnterpriseConfigurationError {
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityGetRepositoriesForEnterpriseConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityGetRepositoriesForEnterpriseConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Retrieve a code security configuration of an enterprise](CodeSecurity::get_single_configuration_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityGetSingleConfigurationForEnterpriseError {
+    #[error("Not modified")]
+    Status304,
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityGetSingleConfigurationForEnterpriseError> for AdapterError {
+    fn from(err: CodeSecurityGetSingleConfigurationForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityGetSingleConfigurationForEnterpriseError::Status304 => (String::from("Not modified"), 304),
+            CodeSecurityGetSingleConfigurationForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityGetSingleConfigurationForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityGetSingleConfigurationForEnterpriseError::Generic { code } => (String::from("Generic"), code)
         };
 
         Self::Endpoint {
@@ -312,6 +510,33 @@ impl From<CodeSecuritySetConfigurationAsDefaultError> for AdapterError {
     }
 }
 
+/// Errors for the [Set a code security configuration as a default for an enterprise](CodeSecurity::set_configuration_as_default_for_enterprise_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecuritySetConfigurationAsDefaultForEnterpriseError {
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecuritySetConfigurationAsDefaultForEnterpriseError> for AdapterError {
+    fn from(err: CodeSecuritySetConfigurationAsDefaultForEnterpriseError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update a code security configuration](CodeSecurity::update_configuration_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeSecurityUpdateConfigurationError {
@@ -336,6 +561,83 @@ impl From<CodeSecurityUpdateConfigurationError> for AdapterError {
     }
 }
 
+/// Errors for the [Update a custom code security configuration for an enterprise](CodeSecurity::update_enterprise_configuration_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeSecurityUpdateEnterpriseConfigurationError {
+    #[error("Not modified")]
+    Status304,
+    #[error("Forbidden")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Conflict")]
+    Status409(BasicError),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeSecurityUpdateEnterpriseConfigurationError> for AdapterError {
+    fn from(err: CodeSecurityUpdateEnterpriseConfigurationError) -> Self {
+        let (description, status_code) = match err {
+            CodeSecurityUpdateEnterpriseConfigurationError::Status304 => (String::from("Not modified"), 304),
+            CodeSecurityUpdateEnterpriseConfigurationError::Status403(_) => (String::from("Forbidden"), 403),
+            CodeSecurityUpdateEnterpriseConfigurationError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeSecurityUpdateEnterpriseConfigurationError::Status409(_) => (String::from("Conflict"), 409),
+            CodeSecurityUpdateEnterpriseConfigurationError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+
+/// Query parameters for the [Get code security configurations for an enterprise](CodeSecurity::get_configurations_for_enterprise_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodeSecurityGetConfigurationsForEnterpriseParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    after: Option<&'req str>
+}
+
+impl<'req> CodeSecurityGetConfigurationsForEnterpriseParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            before: self.before, 
+            after: self.after, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn before(self, before: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: Some(before),
+            after: self.after, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn after(self, after: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: self.before, 
+            after: Some(after),
+        }
+    }
+}
 
 /// Query parameters for the [Get code security configurations for an organization](CodeSecurity::get_configurations_for_org_async()) endpoint.
 #[derive(Default, Serialize)]
@@ -455,6 +757,65 @@ impl<'req> CodeSecurityGetRepositoriesForConfigurationParams<'req> {
     }
 }
 
+/// Query parameters for the [Get repositories associated with an enterprise code security configuration](CodeSecurity::get_repositories_for_enterprise_configuration_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct CodeSecurityGetRepositoriesForEnterpriseConfigurationParams<'req> {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    before: Option<&'req str>, 
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    after: Option<&'req str>, 
+    /// A comma-separated list of statuses. If specified, only repositories with these attachment statuses will be returned.  Can be: `all`, `attached`, `attaching`, `removed`, `enforced`, `failed`, `updating`, `removed_by_enterprise`
+    status: Option<&'req str>
+}
+
+impl<'req> CodeSecurityGetRepositoriesForEnterpriseConfigurationParams<'req> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            before: self.before, 
+            after: self.after, 
+            status: self.status, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results before this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn before(self, before: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: Some(before),
+            after: self.after, 
+            status: self.status, 
+        }
+    }
+
+    /// A cursor, as given in the [Link header](https://docs.github.com/rest/guides/using-pagination-in-the-rest-api#using-link-headers). If specified, the query only searches for results after this cursor. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn after(self, after: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: self.before, 
+            after: Some(after),
+            status: self.status, 
+        }
+    }
+
+    /// A comma-separated list of statuses. If specified, only repositories with these attachment statuses will be returned.  Can be: `all`, `attached`, `attaching`, `removed`, `enforced`, `failed`, `updating`, `removed_by_enterprise`
+    pub fn status(self, status: &'req str) -> Self {
+        Self {
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            status: Some(status),
+        }
+    }
+}
+
 
 impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
@@ -548,6 +909,101 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
 
     /// ---
     ///
+    /// # Attach an enterprise configuration to repositories
+    ///
+    /// Attaches an enterprise code security configuration to repositories. If the repositories specified are already attached to a configuration, they will be re-attached to the provided configuration.
+    /// 
+    /// If insufficient GHAS licenses are available to attach the configuration to a repository, only free features will be enabled.
+    /// 
+    /// The authenticated user must be an administrator for the enterprise to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for attach_enterprise_configuration](https://docs.github.com/rest/code-security/configurations#attach-an-enterprise-configuration-to-repositories)
+    ///
+    /// ---
+    pub async fn attach_enterprise_configuration_async(&self, enterprise: &str, configuration_id: i32, body: PostCodeSecurityAttachEnterpriseConfiguration) -> Result<HashMap<String, Value>, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}/attach", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostCodeSecurityAttachEnterpriseConfiguration>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecurityAttachEnterpriseConfigurationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityAttachEnterpriseConfigurationError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodeSecurityAttachEnterpriseConfigurationError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityAttachEnterpriseConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Attach an enterprise configuration to repositories
+    ///
+    /// Attaches an enterprise code security configuration to repositories. If the repositories specified are already attached to a configuration, they will be re-attached to the provided configuration.
+    /// 
+    /// If insufficient GHAS licenses are available to attach the configuration to a repository, only free features will be enabled.
+    /// 
+    /// The authenticated user must be an administrator for the enterprise to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for attach_enterprise_configuration](https://docs.github.com/rest/code-security/configurations#attach-an-enterprise-configuration-to-repositories)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn attach_enterprise_configuration(&self, enterprise: &str, configuration_id: i32, body: PostCodeSecurityAttachEnterpriseConfiguration) -> Result<HashMap<String, Value>, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}/attach", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostCodeSecurityAttachEnterpriseConfiguration>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecurityAttachEnterpriseConfigurationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityAttachEnterpriseConfigurationError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodeSecurityAttachEnterpriseConfigurationError::Status409(github_response.to_json()?).into()),
+                code => Err(CodeSecurityAttachEnterpriseConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Create a code security configuration
     ///
     /// Creates a code security configuration in an organization.
@@ -627,6 +1083,97 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
         } else {
             match github_response.status_code() {
                 code => Err(CodeSecurityCreateConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a code security configuration for an enterprise
+    ///
+    /// Creates a code security configuration in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_configuration_for_enterprise](https://docs.github.com/rest/code-security/configurations#create-a-code-security-configuration-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn create_configuration_for_enterprise_async(&self, enterprise: &str, body: PostCodeSecurityCreateConfigurationForEnterprise) -> Result<CodeSecurityConfiguration, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations", super::GITHUB_BASE_API_URL, enterprise);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostCodeSecurityCreateConfigurationForEnterprise>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeSecurityCreateConfigurationForEnterpriseError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeSecurityCreateConfigurationForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityCreateConfigurationForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityCreateConfigurationForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a code security configuration for an enterprise
+    ///
+    /// Creates a code security configuration in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_configuration_for_enterprise](https://docs.github.com/rest/code-security/configurations#create-a-code-security-configuration-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_configuration_for_enterprise(&self, enterprise: &str, body: PostCodeSecurityCreateConfigurationForEnterprise) -> Result<CodeSecurityConfiguration, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations", super::GITHUB_BASE_API_URL, enterprise);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostCodeSecurityCreateConfigurationForEnterprise>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeSecurityCreateConfigurationForEnterpriseError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeSecurityCreateConfigurationForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityCreateConfigurationForEnterpriseError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityCreateConfigurationForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -724,6 +1271,103 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
                 404 => Err(CodeSecurityDeleteConfigurationError::Status404(github_response.to_json()?).into()),
                 409 => Err(CodeSecurityDeleteConfigurationError::Status409(github_response.to_json()?).into()),
                 code => Err(CodeSecurityDeleteConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a code security configuration for an enterprise
+    ///
+    /// Deletes a code security configuration from an enterprise.
+    /// Repositories attached to the configuration will retain their settings but will no longer be associated with
+    /// the configuration.
+    /// 
+    /// The authenticated user must be an administrator for the enterprise to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_configuration_for_enterprise](https://docs.github.com/rest/code-security/configurations#delete-a-code-security-configuration-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn delete_configuration_for_enterprise_async(&self, enterprise: &str, configuration_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(())
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a code security configuration for an enterprise
+    ///
+    /// Deletes a code security configuration from an enterprise.
+    /// Repositories attached to the configuration will retain their settings but will no longer be associated with
+    /// the configuration.
+    /// 
+    /// The authenticated user must be an administrator for the enterprise to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for delete_configuration_for_enterprise](https://docs.github.com/rest/code-security/configurations#delete-a-code-security-configuration-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_configuration_for_enterprise(&self, enterprise: &str, configuration_id: i32) -> Result<(), AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(())
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Status409(github_response.to_json()?).into()),
+                code => Err(CodeSecurityDeleteConfigurationForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1009,6 +1653,104 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
 
     /// ---
     ///
+    /// # Get code security configurations for an enterprise
+    ///
+    /// Lists all code security configurations available in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_configurations_for_enterprise](https://docs.github.com/rest/code-security/configurations#get-code-security-configurations-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn get_configurations_for_enterprise_async(&self, enterprise: &str, query_params: Option<impl Into<CodeSecurityGetConfigurationsForEnterpriseParams<'api>>>) -> Result<Vec<CodeSecurityConfiguration>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/code-security/configurations", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecurityGetConfigurationsForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetConfigurationsForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetConfigurationsForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get code security configurations for an enterprise
+    ///
+    /// Lists all code security configurations available in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_configurations_for_enterprise](https://docs.github.com/rest/code-security/configurations#get-code-security-configurations-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_configurations_for_enterprise(&self, enterprise: &str, query_params: Option<impl Into<CodeSecurityGetConfigurationsForEnterpriseParams<'api>>>) -> Result<Vec<CodeSecurityConfiguration>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/code-security/configurations", super::GITHUB_BASE_API_URL, enterprise);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodeSecurityGetConfigurationsForEnterpriseParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecurityGetConfigurationsForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetConfigurationsForEnterpriseError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetConfigurationsForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get code security configurations for an organization
     ///
     /// Lists all code security configurations available in an organization.
@@ -1198,6 +1940,91 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
 
     /// ---
     ///
+    /// # Get default code security configurations for an enterprise
+    ///
+    /// Lists the default code security configurations for an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_default_configurations_for_enterprise](https://docs.github.com/rest/code-security/configurations#get-default-code-security-configurations-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn get_default_configurations_for_enterprise_async(&self, enterprise: &str) -> Result<CodeSecurityDefaultConfigurations, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/defaults", super::GITHUB_BASE_API_URL, enterprise);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodeSecurityGetDefaultConfigurationsForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get default code security configurations for an enterprise
+    ///
+    /// Lists the default code security configurations for an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_default_configurations_for_enterprise](https://docs.github.com/rest/code-security/configurations#get-default-code-security-configurations-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_default_configurations_for_enterprise(&self, enterprise: &str) -> Result<CodeSecurityDefaultConfigurations, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/defaults", super::GITHUB_BASE_API_URL, enterprise);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(CodeSecurityGetDefaultConfigurationsForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get repositories associated with a code security configuration
     ///
     /// Lists the repositories associated with a code security configuration in an organization.
@@ -1290,6 +2117,195 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
                 403 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status403(github_response.to_json()?).into()),
                 404 => Err(CodeSecurityGetRepositoriesForConfigurationError::Status404(github_response.to_json()?).into()),
                 code => Err(CodeSecurityGetRepositoriesForConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get repositories associated with an enterprise code security configuration
+    ///
+    /// Lists the repositories associated with an enterprise code security configuration in an organization.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repositories_for_enterprise_configuration](https://docs.github.com/rest/code-security/configurations#get-repositories-associated-with-an-enterprise-code-security-configuration)
+    ///
+    /// ---
+    pub async fn get_repositories_for_enterprise_configuration_async(&self, enterprise: &str, configuration_id: i32, query_params: Option<impl Into<CodeSecurityGetRepositoriesForEnterpriseConfigurationParams<'api>>>) -> Result<Vec<CodeSecurityConfigurationRepositories>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/code-security/configurations/{}/repositories", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get repositories associated with an enterprise code security configuration
+    ///
+    /// Lists the repositories associated with an enterprise code security configuration in an organization.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_repositories_for_enterprise_configuration](https://docs.github.com/rest/code-security/configurations#get-repositories-associated-with-an-enterprise-code-security-configuration)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_repositories_for_enterprise_configuration(&self, enterprise: &str, configuration_id: i32, query_params: Option<impl Into<CodeSecurityGetRepositoriesForEnterpriseConfigurationParams<'api>>>) -> Result<Vec<CodeSecurityConfigurationRepositories>, AdapterError> {
+
+        let mut request_uri = format!("{}/enterprises/{}/code-security/configurations/{}/repositories", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: CodeSecurityGetRepositoriesForEnterpriseConfigurationParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetRepositoriesForEnterpriseConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Retrieve a code security configuration of an enterprise
+    ///
+    /// Gets a code security configuration available in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_single_configuration_for_enterprise](https://docs.github.com/rest/code-security/configurations#retrieve-a-code-security-configuration-of-an-enterprise)
+    ///
+    /// ---
+    pub async fn get_single_configuration_for_enterprise_async(&self, enterprise: &str, configuration_id: i32) -> Result<CodeSecurityConfiguration, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Status304.into()),
+                403 => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Retrieve a code security configuration of an enterprise
+    ///
+    /// Gets a code security configuration available in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `read:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_single_configuration_for_enterprise](https://docs.github.com/rest/code-security/configurations#retrieve-a-code-security-configuration-of-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_single_configuration_for_enterprise(&self, enterprise: &str, configuration_id: i32) -> Result<CodeSecurityConfiguration, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Status304.into()),
+                403 => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecurityGetSingleConfigurationForEnterpriseError::Generic { code }.into()),
             }
         }
     }
@@ -1389,6 +2405,99 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
 
     /// ---
     ///
+    /// # Set a code security configuration as a default for an enterprise
+    ///
+    /// Sets a code security configuration as a default to be applied to new repositories in your enterprise.
+    /// 
+    /// This configuration will be applied by default to the matching repository type when created, but only for organizations within the enterprise that do not already have a default code security configuration set.
+    /// 
+    /// The authenticated user must be an administrator for the enterprise to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_configuration_as_default_for_enterprise](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn set_configuration_as_default_for_enterprise_async(&self, enterprise: &str, configuration_id: i32, body: PutCodeSecuritySetConfigurationAsDefaultForEnterprise) -> Result<PutCodeSecuritySetConfigurationAsDefaultResponse200, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}/defaults", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PutCodeSecuritySetConfigurationAsDefaultForEnterprise>(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Status404(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Set a code security configuration as a default for an enterprise
+    ///
+    /// Sets a code security configuration as a default to be applied to new repositories in your enterprise.
+    /// 
+    /// This configuration will be applied by default to the matching repository type when created, but only for organizations within the enterprise that do not already have a default code security configuration set.
+    /// 
+    /// The authenticated user must be an administrator for the enterprise to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for set_configuration_as_default_for_enterprise](https://docs.github.com/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn set_configuration_as_default_for_enterprise(&self, enterprise: &str, configuration_id: i32, body: PutCodeSecuritySetConfigurationAsDefaultForEnterprise) -> Result<PutCodeSecuritySetConfigurationAsDefaultResponse200, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}/defaults", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PutCodeSecuritySetConfigurationAsDefaultForEnterprise>(body)?),
+            method: "PUT",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                403 => Err(CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Status404(github_response.to_json()?).into()),
+                code => Err(CodeSecuritySetConfigurationAsDefaultForEnterpriseError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Update a code security configuration
     ///
     /// Updates a code security configuration in an organization.
@@ -1470,6 +2579,99 @@ impl<'api, C: Client> CodeSecurity<'api, C> where AdapterError: From<<C as Clien
             match github_response.status_code() {
                 204 => Err(CodeSecurityUpdateConfigurationError::Status204.into()),
                 code => Err(CodeSecurityUpdateConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a custom code security configuration for an enterprise
+    ///
+    /// Updates a code security configuration in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_enterprise_configuration](https://docs.github.com/rest/code-security/configurations#update-a-custom-code-security-configuration-for-an-enterprise)
+    ///
+    /// ---
+    pub async fn update_enterprise_configuration_async(&self, enterprise: &str, configuration_id: i32, body: PatchCodeSecurityUpdateEnterpriseConfiguration) -> Result<CodeSecurityConfiguration, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchCodeSecurityUpdateEnterpriseConfiguration>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status304.into()),
+                403 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status404(github_response.to_json_async().await?).into()),
+                409 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status409(github_response.to_json_async().await?).into()),
+                code => Err(CodeSecurityUpdateEnterpriseConfigurationError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a custom code security configuration for an enterprise
+    ///
+    /// Updates a code security configuration in an enterprise.
+    /// 
+    /// The authenticated user must be an administrator of the enterprise in order to use this endpoint.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:enterprise` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_enterprise_configuration](https://docs.github.com/rest/code-security/configurations#update-a-custom-code-security-configuration-for-an-enterprise)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_enterprise_configuration(&self, enterprise: &str, configuration_id: i32, body: PatchCodeSecurityUpdateEnterpriseConfiguration) -> Result<CodeSecurityConfiguration, AdapterError> {
+
+        let request_uri = format!("{}/enterprises/{}/code-security/configurations/{}", super::GITHUB_BASE_API_URL, enterprise, configuration_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchCodeSecurityUpdateEnterpriseConfiguration>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                304 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status304.into()),
+                403 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status404(github_response.to_json()?).into()),
+                409 => Err(CodeSecurityUpdateEnterpriseConfigurationError::Status409(github_response.to_json()?).into()),
+                code => Err(CodeSecurityUpdateEnterpriseConfigurationError::Generic { code }.into()),
             }
         }
     }
