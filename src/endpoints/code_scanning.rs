@@ -30,6 +30,81 @@ pub fn new<C: Client>(client: &C) -> CodeScanning<C> where AdapterError: From<<C
     CodeScanning { client }
 }
 
+/// Errors for the [Commit an autofix for a code scanning alert](CodeScanning::commit_autofix_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningCommitAutofixError {
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Unprocessable Entity")]
+    Status422,
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeScanningCommitAutofixError> for AdapterError {
+    fn from(err: CodeScanningCommitAutofixError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningCommitAutofixError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeScanningCommitAutofixError::Status403(_) => (String::from("Response if the repository is archived or if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningCommitAutofixError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningCommitAutofixError::Status422 => (String::from("Unprocessable Entity"), 422),
+            CodeScanningCommitAutofixError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningCommitAutofixError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Create an autofix for a code scanning alert](CodeScanning::create_autofix_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningCreateAutofixError {
+    #[error("Accepted")]
+    Status202(CodeScanningAutofix),
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Response if the repository is archived, if GitHub Advanced Security is not enabled for this repository or if rate limit is exceeded")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Unprocessable Entity")]
+    Status422,
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeScanningCreateAutofixError> for AdapterError {
+    fn from(err: CodeScanningCreateAutofixError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningCreateAutofixError::Status202(_) => (String::from("Accepted"), 202),
+            CodeScanningCreateAutofixError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeScanningCreateAutofixError::Status403(_) => (String::from("Response if the repository is archived, if GitHub Advanced Security is not enabled for this repository or if rate limit is exceeded"), 403),
+            CodeScanningCreateAutofixError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningCreateAutofixError::Status422 => (String::from("Unprocessable Entity"), 422),
+            CodeScanningCreateAutofixError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningCreateAutofixError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create a CodeQL variant analysis](CodeScanning::create_variant_analysis_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum CodeScanningCreateVariantAnalysisError {
@@ -176,6 +251,39 @@ impl From<CodeScanningGetAnalysisError> for AdapterError {
             CodeScanningGetAnalysisError::Status404(_) => (String::from("Resource not found"), 404),
             CodeScanningGetAnalysisError::Status503(_) => (String::from("Service unavailable"), 503),
             CodeScanningGetAnalysisError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get the status of an autofix for a code scanning alert](CodeScanning::get_autofix_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum CodeScanningGetAutofixError {
+    #[error("Bad Request")]
+    Status400(BasicError),
+    #[error("Response if GitHub Advanced Security is not enabled for this repository")]
+    Status403(BasicError),
+    #[error("Resource not found")]
+    Status404(BasicError),
+    #[error("Service unavailable")]
+    Status503(PostCodespacesCreateForAuthenticatedUserResponse503),
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<CodeScanningGetAutofixError> for AdapterError {
+    fn from(err: CodeScanningGetAutofixError) -> Self {
+        let (description, status_code) = match err {
+            CodeScanningGetAutofixError::Status400(_) => (String::from("Bad Request"), 400),
+            CodeScanningGetAutofixError::Status403(_) => (String::from("Response if GitHub Advanced Security is not enabled for this repository"), 403),
+            CodeScanningGetAutofixError::Status404(_) => (String::from("Resource not found"), 404),
+            CodeScanningGetAutofixError::Status503(_) => (String::from("Service unavailable"), 503),
+            CodeScanningGetAutofixError::Generic { code } => (String::from("Generic"), code)
         };
 
         Self::Endpoint {
@@ -1311,6 +1419,202 @@ impl<'enc> From<&'enc PerPage> for CodeScanningListRecentAnalysesParams<'enc> {
 impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Client>::Err> {
     /// ---
     ///
+    /// # Commit an autofix for a code scanning alert
+    ///
+    /// Commits an autofix for a code scanning alert.
+    /// 
+    /// If an autofix is commited as a result of this request, then this endpoint will return a 201 Created response.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for commit_autofix](https://docs.github.com/rest/code-scanning/code-scanning#commit-an-autofix-for-a-code-scanning-alert)
+    ///
+    /// ---
+    pub async fn commit_autofix_async(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PostCodeScanningCommitAutofix) -> Result<CodeScanningAutofixCommitsResponse, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/autofix/commits", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostCodeScanningCommitAutofix>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeScanningCommitAutofixError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeScanningCommitAutofixError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningCommitAutofixError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodeScanningCommitAutofixError::Status422.into()),
+                503 => Err(CodeScanningCommitAutofixError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningCommitAutofixError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Commit an autofix for a code scanning alert
+    ///
+    /// Commits an autofix for a code scanning alert.
+    /// 
+    /// If an autofix is commited as a result of this request, then this endpoint will return a 201 Created response.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `repo` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for commit_autofix](https://docs.github.com/rest/code-scanning/code-scanning#commit-an-autofix-for-a-code-scanning-alert)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn commit_autofix(&self, owner: &str, repo: &str, alert_number: AlertNumber, body: PostCodeScanningCommitAutofix) -> Result<CodeScanningAutofixCommitsResponse, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/autofix/commits", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostCodeScanningCommitAutofix>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeScanningCommitAutofixError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeScanningCommitAutofixError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningCommitAutofixError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodeScanningCommitAutofixError::Status422.into()),
+                503 => Err(CodeScanningCommitAutofixError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningCommitAutofixError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create an autofix for a code scanning alert
+    ///
+    /// Creates an autofix for a code scanning alert.
+    /// 
+    /// If a new autofix is to be created as a result of this request or is currently being generated, then this endpoint will return a 202 Accepted response.
+    /// 
+    /// If an autofix already exists for a given alert, then this endpoint will return a 200 OK response.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for create_autofix](https://docs.github.com/rest/code-scanning/code-scanning#create-an-autofix-for-a-code-scanning-alert)
+    ///
+    /// ---
+    pub async fn create_autofix_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAutofix, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/autofix", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                202 => Err(CodeScanningCreateAutofixError::Status202(github_response.to_json_async().await?).into()),
+                400 => Err(CodeScanningCreateAutofixError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeScanningCreateAutofixError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningCreateAutofixError::Status404(github_response.to_json_async().await?).into()),
+                422 => Err(CodeScanningCreateAutofixError::Status422.into()),
+                503 => Err(CodeScanningCreateAutofixError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningCreateAutofixError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create an autofix for a code scanning alert
+    ///
+    /// Creates an autofix for a code scanning alert.
+    /// 
+    /// If a new autofix is to be created as a result of this request or is currently being generated, then this endpoint will return a 202 Accepted response.
+    /// 
+    /// If an autofix already exists for a given alert, then this endpoint will return a 200 OK response.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for create_autofix](https://docs.github.com/rest/code-scanning/code-scanning#create-an-autofix-for-a-code-scanning-alert)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_autofix(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAutofix, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/autofix", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                202 => Err(CodeScanningCreateAutofixError::Status202(github_response.to_json()?).into()),
+                400 => Err(CodeScanningCreateAutofixError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeScanningCreateAutofixError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningCreateAutofixError::Status404(github_response.to_json()?).into()),
+                422 => Err(CodeScanningCreateAutofixError::Status422.into()),
+                503 => Err(CodeScanningCreateAutofixError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningCreateAutofixError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Create a CodeQL variant analysis
     ///
     /// Creates a new CodeQL variant analysis, which will run a CodeQL query against one or more repositories.
@@ -1913,6 +2217,95 @@ impl<'api, C: Client> CodeScanning<'api, C> where AdapterError: From<<C as Clien
                 404 => Err(CodeScanningGetAnalysisError::Status404(github_response.to_json()?).into()),
                 503 => Err(CodeScanningGetAnalysisError::Status503(github_response.to_json()?).into()),
                 code => Err(CodeScanningGetAnalysisError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the status of an autofix for a code scanning alert
+    ///
+    /// Gets the status and description of an autofix for a code scanning alert.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_autofix](https://docs.github.com/rest/code-scanning/code-scanning#get-the-status-of-an-autofix-for-a-code-scanning-alert)
+    ///
+    /// ---
+    pub async fn get_autofix_async(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAutofix, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/autofix", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeScanningGetAutofixError::Status400(github_response.to_json_async().await?).into()),
+                403 => Err(CodeScanningGetAutofixError::Status403(github_response.to_json_async().await?).into()),
+                404 => Err(CodeScanningGetAutofixError::Status404(github_response.to_json_async().await?).into()),
+                503 => Err(CodeScanningGetAutofixError::Status503(github_response.to_json_async().await?).into()),
+                code => Err(CodeScanningGetAutofixError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get the status of an autofix for a code scanning alert
+    ///
+    /// Gets the status and description of an autofix for a code scanning alert.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `security_events` scope to use this endpoint with private or public repositories, or the `public_repo` scope to use this endpoint with only public repositories.
+    ///
+    /// [GitHub API docs for get_autofix](https://docs.github.com/rest/code-scanning/code-scanning#get-the-status-of-an-autofix-for-a-code-scanning-alert)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_autofix(&self, owner: &str, repo: &str, alert_number: AlertNumber) -> Result<CodeScanningAutofix, AdapterError> {
+
+        let request_uri = format!("{}/repos/{}/{}/code-scanning/alerts/{}/autofix", super::GITHUB_BASE_API_URL, owner, repo, alert_number);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                400 => Err(CodeScanningGetAutofixError::Status400(github_response.to_json()?).into()),
+                403 => Err(CodeScanningGetAutofixError::Status403(github_response.to_json()?).into()),
+                404 => Err(CodeScanningGetAutofixError::Status404(github_response.to_json()?).into()),
+                503 => Err(CodeScanningGetAutofixError::Status503(github_response.to_json()?).into()),
+                code => Err(CodeScanningGetAutofixError::Generic { code }.into()),
             }
         }
     }
