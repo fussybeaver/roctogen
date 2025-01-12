@@ -2621,6 +2621,8 @@ pub struct BaseGist {
     #[serde(skip_serializing_if="Option::is_none")]
     pub comments: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_enabled: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub user: Option<NullableSimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub comments_url: Option<String>,
@@ -4578,7 +4580,7 @@ pub struct PostReposCreateTagProtection {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PutReposReplaceAllTopics {
-    /// An array of topics to add to the repository. Pass one or more topics to _replace_ the set of existing topics. Send an empty array (`[]`) to clear all topics from the repository. **Note:** Topic `names` cannot contain uppercase letters.
+    /// An array of topics to add to the repository. Pass one or more topics to _replace_ the set of existing topics. Send an empty array (`[]`) to clear all topics from the repository. **Note:** Topic `names` will be saved as lowercase.
     #[serde(skip_serializing_if="Option::is_none")]
     pub names: Option<Vec<String>>,
 }
@@ -11906,6 +11908,8 @@ pub struct Gist {
     #[serde(skip_serializing_if="Option::is_none")]
     pub comments: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_enabled: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub user: Option<NullableSimpleUser>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub comments_url: Option<String>,
@@ -12023,6 +12027,8 @@ pub struct GistSimple {
     pub description: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub comments: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub comments_enabled: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub user: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -37335,9 +37341,14 @@ pub struct WebhookcodescanningalertappearedinbranchAlert {
     pub dismissed_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_by: Option<User1>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_comment: Option<CodeScanningAlertDismissedComment>,
     /// The reason for dismissing or closing the alert.
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_reason: Option<String>,
+    /// The time that the alert was fixed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fixed_at: Option<Value>,
     /// The GitHub URL of the alert resource.
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
@@ -37348,7 +37359,7 @@ pub struct WebhookcodescanningalertappearedinbranchAlert {
     pub number: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub rule: Option<WebhookcodescanningalertappearedinbranchAlertRule>,
-    /// State of a code scanning alert.
+    /// State of a code scanning alert. Events for alerts found outside the default branch will return a `null` value until they are dismissed or fixed.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -37391,9 +37402,14 @@ pub struct WebhookcodescanningalertclosedbyuserAlert {
     pub dismissed_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_by: Option<User1>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_comment: Option<CodeScanningAlertDismissedComment>,
     /// The reason for dismissing or closing the alert.
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_reason: Option<String>,
+    /// The time that the alert was fixed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fixed_at: Option<Value>,
     /// The GitHub URL of the alert resource.
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
@@ -37465,6 +37481,7 @@ pub struct WebhookcodescanningalertcreatedAlert {
     /// The reason for dismissing or closing the alert. Can be one of: `false positive`, `won't fix`, and `used in tests`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_reason: Option<Value>,
+    /// The time that the alert was fixed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub fixed_at: Option<Value>,
     /// The GitHub URL of the alert resource.
@@ -37479,7 +37496,7 @@ pub struct WebhookcodescanningalertcreatedAlert {
     pub number: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub rule: Option<WebhookcodescanningalertclosedbyuserAlertRule>,
-    /// State of a code scanning alert.
+    /// State of a code scanning alert. Events for alerts found outside the default branch will return a `null` value until they are dismissed or fixed.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -37501,9 +37518,14 @@ pub struct WebhookcodescanningalertfixedAlert {
     pub dismissed_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_by: Option<User1>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_comment: Option<CodeScanningAlertDismissedComment>,
     /// The reason for dismissing or closing the alert.
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_reason: Option<String>,
+    /// The time that the alert was fixed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fixed_at: Option<Value>,
     /// The GitHub URL of the alert resource.
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
@@ -37516,7 +37538,7 @@ pub struct WebhookcodescanningalertfixedAlert {
     pub number: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub rule: Option<WebhookcodescanningalertclosedbyuserAlertRule>,
-    /// State of a code scanning alert.
+    /// State of a code scanning alert. Events for alerts found outside the default branch will return a `null` value until they are dismissed or fixed.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -37536,9 +37558,14 @@ pub struct WebhookcodescanningalertreopenedAlert {
     pub dismissed_at: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_by: Option<HashMap<String, Value>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_comment: Option<CodeScanningAlertDismissedComment>,
     /// The reason for dismissing or closing the alert. Can be one of: `false positive`, `won't fix`, and `used in tests`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_reason: Option<String>,
+    /// The time that the alert was fixed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fixed_at: Option<Value>,
     /// The GitHub URL of the alert resource.
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
@@ -37549,7 +37576,7 @@ pub struct WebhookcodescanningalertreopenedAlert {
     pub number: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub rule: Option<WebhookcodescanningalertclosedbyuserAlertRule>,
-    /// State of a code scanning alert.
+    /// State of a code scanning alert. Events for alerts found outside the default branch will return a `null` value until they are dismissed or fixed.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -37569,9 +37596,14 @@ pub struct WebhookcodescanningalertreopenedbyuserAlert {
     pub dismissed_at: Option<Value>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_by: Option<Value>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub dismissed_comment: Option<CodeScanningAlertDismissedComment>,
     /// The reason for dismissing or closing the alert. Can be one of: `false positive`, `won't fix`, and `used in tests`.
     #[serde(skip_serializing_if="Option::is_none")]
     pub dismissed_reason: Option<Value>,
+    /// The time that the alert was fixed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub fixed_at: Option<Value>,
     /// The GitHub URL of the alert resource.
     #[serde(skip_serializing_if="Option::is_none")]
     pub html_url: Option<String>,
@@ -37582,7 +37614,7 @@ pub struct WebhookcodescanningalertreopenedbyuserAlert {
     pub number: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub rule: Option<WebhookcodescanningalertappearedinbranchAlertRule>,
-    /// State of a code scanning alert.
+    /// State of a code scanning alert. Events for alerts found outside the default branch will return a `null` value until they are dismissed or fixed.
     #[serde(skip_serializing_if="Option::is_none")]
     pub state: Option<String>,
     #[serde(skip_serializing_if="Option::is_none")]

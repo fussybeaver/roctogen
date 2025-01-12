@@ -1232,7 +1232,7 @@ impl<'api, C: Client> SecretScanning<'api, C> where AdapterError: From<<C as Cli
     ///
     /// # Get secret scanning scan history for a repository
     ///
-    /// Lists the latest incremental and backfill scans by type for a repository.
+    /// Lists the latest default incremental and backfill scans by type for a repository. Scans from Copilot Secret Scanning are not included.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
     ///
@@ -1274,7 +1274,7 @@ impl<'api, C: Client> SecretScanning<'api, C> where AdapterError: From<<C as Cli
     ///
     /// # Get secret scanning scan history for a repository
     ///
-    /// Lists the latest incremental and backfill scans by type for a repository.
+    /// Lists the latest default incremental and backfill scans by type for a repository. Scans from Copilot Secret Scanning are not included.
     /// 
     /// OAuth app tokens and personal access tokens (classic) need the `repo` or `security_events` scope to use this endpoint. If this endpoint is only used with public repositories, the token can use the `public_repo` scope instead.
     ///
