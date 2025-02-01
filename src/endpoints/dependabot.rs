@@ -519,9 +519,11 @@ pub struct DependabotListAlertsForEnterpriseParams<'req> {
     ecosystem: Option<&'req str>, 
     /// A comma-separated list of package names. If specified, only alerts for these packages will be returned.
     package: Option<&'req str>, 
+    /// CVE Exploit Prediction Scoring System (EPSS) percentage. Can be specified as: - An exact number (`n`) - Comparators such as `>n`, `<n`, `>=n`, `<=n` - A range like `n..n`, where `n` is a number from 0.0 to 1.0  Filters the list of alerts based on EPSS percentages. If specified, only alerts with the provided EPSS percentages will be returned.
+    epss_percentage: Option<&'req str>, 
     /// The scope of the vulnerable dependency. If specified, only alerts with this scope will be returned.
     scope: Option<&'req str>, 
-    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
+    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed. `epss_percentage` sorts alerts by the Exploit Prediction Scoring System (EPSS) percentage.
     sort: Option<&'req str>, 
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
@@ -549,6 +551,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -567,6 +570,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: Some(severity),
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -585,6 +589,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: Some(ecosystem),
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -603,6 +608,26 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: Some(package),
+            epss_percentage: self.epss_percentage, 
+            scope: self.scope, 
+            sort: self.sort, 
+            direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
+            first: self.first, 
+            last: self.last, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// CVE Exploit Prediction Scoring System (EPSS) percentage. Can be specified as: - An exact number (`n`) - Comparators such as `>n`, `<n`, `>=n`, `<=n` - A range like `n..n`, where `n` is a number from 0.0 to 1.0  Filters the list of alerts based on EPSS percentages. If specified, only alerts with the provided EPSS percentages will be returned.
+    pub fn epss_percentage(self, epss_percentage: &'req str) -> Self {
+        Self {
+            state: self.state, 
+            severity: self.severity, 
+            ecosystem: self.ecosystem, 
+            package: self.package, 
+            epss_percentage: Some(epss_percentage),
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -621,6 +646,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: Some(scope),
             sort: self.sort, 
             direction: self.direction, 
@@ -632,13 +658,14 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
         }
     }
 
-    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
+    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed. `epss_percentage` sorts alerts by the Exploit Prediction Scoring System (EPSS) percentage.
     pub fn sort(self, sort: &'req str) -> Self {
         Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: Some(sort),
             direction: self.direction, 
@@ -657,6 +684,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: Some(direction),
@@ -675,6 +703,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -693,6 +722,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -711,6 +741,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -729,6 +760,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -747,6 +779,7 @@ impl<'req> DependabotListAlertsForEnterpriseParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -770,9 +803,11 @@ pub struct DependabotListAlertsForOrgParams<'req> {
     ecosystem: Option<&'req str>, 
     /// A comma-separated list of package names. If specified, only alerts for these packages will be returned.
     package: Option<&'req str>, 
+    /// CVE Exploit Prediction Scoring System (EPSS) percentage. Can be specified as: - An exact number (`n`) - Comparators such as `>n`, `<n`, `>=n`, `<=n` - A range like `n..n`, where `n` is a number from 0.0 to 1.0  Filters the list of alerts based on EPSS percentages. If specified, only alerts with the provided EPSS percentages will be returned.
+    epss_percentage: Option<&'req str>, 
     /// The scope of the vulnerable dependency. If specified, only alerts with this scope will be returned.
     scope: Option<&'req str>, 
-    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
+    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed. `epss_percentage` sorts alerts by the Exploit Prediction Scoring System (EPSS) percentage.
     sort: Option<&'req str>, 
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
@@ -800,6 +835,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -818,6 +854,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: Some(severity),
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -836,6 +873,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: Some(ecosystem),
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -854,6 +892,26 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: Some(package),
+            epss_percentage: self.epss_percentage, 
+            scope: self.scope, 
+            sort: self.sort, 
+            direction: self.direction, 
+            before: self.before, 
+            after: self.after, 
+            first: self.first, 
+            last: self.last, 
+            per_page: self.per_page, 
+        }
+    }
+
+    /// CVE Exploit Prediction Scoring System (EPSS) percentage. Can be specified as: - An exact number (`n`) - Comparators such as `>n`, `<n`, `>=n`, `<=n` - A range like `n..n`, where `n` is a number from 0.0 to 1.0  Filters the list of alerts based on EPSS percentages. If specified, only alerts with the provided EPSS percentages will be returned.
+    pub fn epss_percentage(self, epss_percentage: &'req str) -> Self {
+        Self {
+            state: self.state, 
+            severity: self.severity, 
+            ecosystem: self.ecosystem, 
+            package: self.package, 
+            epss_percentage: Some(epss_percentage),
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -872,6 +930,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: Some(scope),
             sort: self.sort, 
             direction: self.direction, 
@@ -883,13 +942,14 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
         }
     }
 
-    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
+    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed. `epss_percentage` sorts alerts by the Exploit Prediction Scoring System (EPSS) percentage.
     pub fn sort(self, sort: &'req str) -> Self {
         Self {
             state: self.state, 
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: Some(sort),
             direction: self.direction, 
@@ -908,6 +968,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: Some(direction),
@@ -926,6 +987,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -944,6 +1006,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -962,6 +1025,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -980,6 +1044,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -998,6 +1063,7 @@ impl<'req> DependabotListAlertsForOrgParams<'req> {
             severity: self.severity, 
             ecosystem: self.ecosystem, 
             package: self.package, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1023,9 +1089,11 @@ pub struct DependabotListAlertsForRepoParams<'req> {
     package: Option<&'req str>, 
     /// A comma-separated list of full manifest paths. If specified, only alerts for these manifests will be returned.
     manifest: Option<&'req str>, 
+    /// CVE Exploit Prediction Scoring System (EPSS) percentage. Can be specified as: - An exact number (`n`) - Comparators such as `>n`, `<n`, `>=n`, `<=n` - A range like `n..n`, where `n` is a number from 0.0 to 1.0  Filters the list of alerts based on EPSS percentages. If specified, only alerts with the provided EPSS percentages will be returned.
+    epss_percentage: Option<&'req str>, 
     /// The scope of the vulnerable dependency. If specified, only alerts with this scope will be returned.
     scope: Option<&'req str>, 
-    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
+    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed. `epss_percentage` sorts alerts by the Exploit Prediction Scoring System (EPSS) percentage.
     sort: Option<&'req str>, 
     /// The direction to sort the results by.
     direction: Option<&'req str>, 
@@ -1056,6 +1124,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1076,6 +1145,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1096,6 +1166,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: Some(ecosystem),
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1116,6 +1187,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: Some(package),
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1136,6 +1208,28 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: Some(manifest),
+            epss_percentage: self.epss_percentage, 
+            scope: self.scope, 
+            sort: self.sort, 
+            direction: self.direction, 
+            page: self.page, 
+            per_page: self.per_page, 
+            before: self.before, 
+            after: self.after, 
+            first: self.first, 
+            last: self.last, 
+        }
+    }
+
+    /// CVE Exploit Prediction Scoring System (EPSS) percentage. Can be specified as: - An exact number (`n`) - Comparators such as `>n`, `<n`, `>=n`, `<=n` - A range like `n..n`, where `n` is a number from 0.0 to 1.0  Filters the list of alerts based on EPSS percentages. If specified, only alerts with the provided EPSS percentages will be returned.
+    pub fn epss_percentage(self, epss_percentage: &'req str) -> Self {
+        Self {
+            state: self.state, 
+            severity: self.severity, 
+            ecosystem: self.ecosystem, 
+            package: self.package, 
+            manifest: self.manifest, 
+            epss_percentage: Some(epss_percentage),
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1156,6 +1250,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: Some(scope),
             sort: self.sort, 
             direction: self.direction, 
@@ -1168,7 +1263,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
         }
     }
 
-    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed.
+    /// The property by which to sort the results. `created` means when the alert was created. `updated` means when the alert's state last changed. `epss_percentage` sorts alerts by the Exploit Prediction Scoring System (EPSS) percentage.
     pub fn sort(self, sort: &'req str) -> Self {
         Self {
             state: self.state, 
@@ -1176,6 +1271,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: Some(sort),
             direction: self.direction, 
@@ -1196,6 +1292,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: Some(direction),
@@ -1216,6 +1313,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1236,6 +1334,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1256,6 +1355,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1276,6 +1376,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1296,6 +1397,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 
@@ -1316,6 +1418,7 @@ impl<'req> DependabotListAlertsForRepoParams<'req> {
             ecosystem: self.ecosystem, 
             package: self.package, 
             manifest: self.manifest, 
+            epss_percentage: self.epss_percentage, 
             scope: self.scope, 
             sort: self.sort, 
             direction: self.direction, 

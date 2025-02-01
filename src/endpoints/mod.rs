@@ -39,6 +39,7 @@ pub mod actions;
 pub mod migrations;
 pub mod code_security;
 pub mod gists;
+pub mod hosted_compute;
 pub mod dependency_graph;
 pub mod copilot;
 pub mod dependabot;

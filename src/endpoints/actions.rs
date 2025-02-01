@@ -246,6 +246,27 @@ impl From<ActionsCreateEnvironmentVariableError> for AdapterError {
     }
 }
 
+/// Errors for the [Create a GitHub-hosted runner for an organization](Actions::create_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsCreateHostedRunnerForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsCreateHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsCreateHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsCreateHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Create or update an environment secret](Actions::create_or_update_environment_secret_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsCreateOrUpdateEnvironmentSecretError {
@@ -581,6 +602,27 @@ impl From<ActionsDeleteEnvironmentVariableError> for AdapterError {
     fn from(err: ActionsDeleteEnvironmentVariableError) -> Self {
         let (description, status_code) = match err {
             ActionsDeleteEnvironmentVariableError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Delete a GitHub-hosted runner for an organization](Actions::delete_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsDeleteHostedRunnerForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsDeleteHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsDeleteHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsDeleteHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
         };
 
         Self::Endpoint {
@@ -1368,6 +1410,132 @@ impl From<ActionsGetGithubActionsPermissionsRepositoryError> for AdapterError {
     }
 }
 
+/// Errors for the [Get a GitHub-hosted runner for an organization](Actions::get_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetHostedRunnerForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsGetHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsGetHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get GitHub-owned images for GitHub-hosted runners in an organization](Actions::get_hosted_runners_github_owned_images_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetHostedRunnersGithubOwnedImagesForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsGetHostedRunnersGithubOwnedImagesForOrgError> for AdapterError {
+    fn from(err: ActionsGetHostedRunnersGithubOwnedImagesForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetHostedRunnersGithubOwnedImagesForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get limits on GitHub-hosted runners for an organization](Actions::get_hosted_runners_limits_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetHostedRunnersLimitsForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsGetHostedRunnersLimitsForOrgError> for AdapterError {
+    fn from(err: ActionsGetHostedRunnersLimitsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetHostedRunnersLimitsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get GitHub-hosted runners machine specs for an organization](Actions::get_hosted_runners_machine_specs_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetHostedRunnersMachineSpecsForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsGetHostedRunnersMachineSpecsForOrgError> for AdapterError {
+    fn from(err: ActionsGetHostedRunnersMachineSpecsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetHostedRunnersMachineSpecsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get partner images for GitHub-hosted runners in an organization](Actions::get_hosted_runners_partner_images_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetHostedRunnersPartnerImagesForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsGetHostedRunnersPartnerImagesForOrgError> for AdapterError {
+    fn from(err: ActionsGetHostedRunnersPartnerImagesForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetHostedRunnersPartnerImagesForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [Get platforms for GitHub-hosted runners in an organization](Actions::get_hosted_runners_platforms_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsGetHostedRunnersPlatformsForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsGetHostedRunnersPlatformsForOrgError> for AdapterError {
+    fn from(err: ActionsGetHostedRunnersPlatformsForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsGetHostedRunnersPlatformsForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Get a job for a workflow run](Actions::get_job_for_workflow_run_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsGetJobForWorkflowRunError {
@@ -1799,6 +1967,48 @@ impl From<ActionsListEnvironmentVariablesError> for AdapterError {
     fn from(err: ActionsListEnvironmentVariablesError) -> Self {
         let (description, status_code) = match err {
             ActionsListEnvironmentVariablesError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [List GitHub-hosted runners in a group for an organization](Actions::list_github_hosted_runners_in_group_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListGithubHostedRunnersInGroupForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsListGithubHostedRunnersInGroupForOrgError> for AdapterError {
+    fn from(err: ActionsListGithubHostedRunnersInGroupForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListGithubHostedRunnersInGroupForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
+/// Errors for the [List GitHub-hosted runners for an organization](Actions::list_hosted_runners_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsListHostedRunnersForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsListHostedRunnersForOrgError> for AdapterError {
+    fn from(err: ActionsListHostedRunnersForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsListHostedRunnersForOrgError::Generic { code } => (String::from("Generic"), code)
         };
 
         Self::Endpoint {
@@ -2988,6 +3198,27 @@ impl From<ActionsUpdateEnvironmentVariableError> for AdapterError {
     }
 }
 
+/// Errors for the [Update a GitHub-hosted runner for an organization](Actions::update_hosted_runner_for_org_async()) endpoint.
+#[derive(Debug, thiserror::Error)]
+pub enum ActionsUpdateHostedRunnerForOrgError {
+    #[error("Status code: {}", code)]
+    Generic { code: u16 },
+}
+
+impl From<ActionsUpdateHostedRunnerForOrgError> for AdapterError {
+    fn from(err: ActionsUpdateHostedRunnerForOrgError) -> Self {
+        let (description, status_code) = match err {
+            ActionsUpdateHostedRunnerForOrgError::Generic { code } => (String::from("Generic"), code)
+        };
+
+        Self::Endpoint {
+            description,
+            status_code,
+            source: Some(Box::new(err))
+        }
+    }
+}
+
 /// Errors for the [Update an organization variable](Actions::update_org_variable_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ActionsUpdateOrgVariableError {
@@ -3392,6 +3623,86 @@ impl ActionsListEnvironmentVariablesParams {
 }
 
 impl<'enc> From<&'enc PerPage> for ActionsListEnvironmentVariablesParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List GitHub-hosted runners in a group for an organization](Actions::list_github_hosted_runners_in_group_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListGithubHostedRunnersInGroupForOrgParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsListGithubHostedRunnersInGroupForOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListGithubHostedRunnersInGroupForOrgParams {
+    fn from(per_page: &'enc PerPage) -> Self {
+        Self {
+            per_page: Some(per_page.per_page),
+            page: Some(per_page.page),
+            ..Default::default()
+        }
+    }
+}
+/// Query parameters for the [List GitHub-hosted runners for an organization](Actions::list_hosted_runners_for_org_async()) endpoint.
+#[derive(Default, Serialize)]
+pub struct ActionsListHostedRunnersForOrgParams {
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    per_page: Option<u16>, 
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    page: Option<u16>
+}
+
+impl ActionsListHostedRunnersForOrgParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn per_page(self, per_page: u16) -> Self {
+        Self {
+            per_page: Some(per_page),
+            page: self.page, 
+        }
+    }
+
+    /// The page number of the results to fetch. For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"
+    pub fn page(self, page: u16) -> Self {
+        Self {
+            per_page: self.per_page, 
+            page: Some(page),
+        }
+    }
+}
+
+impl<'enc> From<&'enc PerPage> for ActionsListHostedRunnersForOrgParams {
     fn from(per_page: &'enc PerPage) -> Self {
         Self {
             per_page: Some(per_page.per_page),
@@ -5362,6 +5673,85 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
 
     /// ---
     ///
+    /// # Create a GitHub-hosted runner for an organization
+    ///
+    /// Creates a GitHub-hosted runner for an organization.
+    /// OAuth tokens and personal access tokens (classic) need the `manage_runners:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#create-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn create_hosted_runner_for_org_async(&self, org: &str, body: PostActionsCreateHostedRunnerForOrg) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostActionsCreateHostedRunnerForOrg>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateHostedRunnerForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Create a GitHub-hosted runner for an organization
+    ///
+    /// Creates a GitHub-hosted runner for an organization.
+    /// OAuth tokens and personal access tokens (classic) need the `manage_runners:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for create_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#create-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn create_hosted_runner_for_org(&self, org: &str, body: PostActionsCreateHostedRunnerForOrg) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PostActionsCreateHostedRunnerForOrg>(body)?),
+            method: "POST",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsCreateHostedRunnerForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Create or update an environment secret
     ///
     /// Creates or updates an environment secret with an encrypted value. Encrypt your secret using
@@ -6763,6 +7153,83 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         } else {
             match github_response.status_code() {
                 code => Err(ActionsDeleteEnvironmentVariableError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a GitHub-hosted runner for an organization
+    ///
+    /// Deletes a GitHub-hosted runner for an organization.
+    ///
+    /// [GitHub API docs for delete_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#delete-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn delete_hosted_runner_for_org_async(&self, org: &str, hosted_runner_id: i32) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/{}", super::GITHUB_BASE_API_URL, org, hosted_runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteHostedRunnerForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Delete a GitHub-hosted runner for an organization
+    ///
+    /// Deletes a GitHub-hosted runner for an organization.
+    ///
+    /// [GitHub API docs for delete_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#delete-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn delete_hosted_runner_for_org(&self, org: &str, hosted_runner_id: i32) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/{}", super::GITHUB_BASE_API_URL, org, hosted_runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "DELETE",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsDeleteHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -9744,6 +10211,472 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
 
     /// ---
     ///
+    /// # Get a GitHub-hosted runner for an organization
+    ///
+    /// Gets a GitHub-hosted runner configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `manage_runners:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#get-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_hosted_runner_for_org_async(&self, org: &str, hosted_runner_id: i32) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/{}", super::GITHUB_BASE_API_URL, org, hosted_runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnerForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get a GitHub-hosted runner for an organization
+    ///
+    /// Gets a GitHub-hosted runner configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `manage_runners:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for get_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#get-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_hosted_runner_for_org(&self, org: &str, hosted_runner_id: i32) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/{}", super::GITHUB_BASE_API_URL, org, hosted_runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnerForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub-owned images for GitHub-hosted runners in an organization
+    ///
+    /// Get the list of GitHub-owned images available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_github_owned_images_for_org](https://docs.github.com/rest/actions/hosted-runners#get-github-owned-images-for-github-hosted-runners-in-an-organization)
+    ///
+    /// ---
+    pub async fn get_hosted_runners_github_owned_images_for_org_async(&self, org: &str) -> Result<GetActionsGetHostedRunnersPartnerImagesForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/images/github-owned", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersGithubOwnedImagesForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub-owned images for GitHub-hosted runners in an organization
+    ///
+    /// Get the list of GitHub-owned images available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_github_owned_images_for_org](https://docs.github.com/rest/actions/hosted-runners#get-github-owned-images-for-github-hosted-runners-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_hosted_runners_github_owned_images_for_org(&self, org: &str) -> Result<GetActionsGetHostedRunnersPartnerImagesForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/images/github-owned", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersGithubOwnedImagesForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get limits on GitHub-hosted runners for an organization
+    ///
+    /// Get the GitHub-hosted runners limits for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_limits_for_org](https://docs.github.com/rest/actions/hosted-runners#get-limits-on-github-hosted-runners-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_hosted_runners_limits_for_org_async(&self, org: &str) -> Result<ActionsHostedRunnerLimits, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/limits", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersLimitsForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get limits on GitHub-hosted runners for an organization
+    ///
+    /// Get the GitHub-hosted runners limits for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_limits_for_org](https://docs.github.com/rest/actions/hosted-runners#get-limits-on-github-hosted-runners-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_hosted_runners_limits_for_org(&self, org: &str) -> Result<ActionsHostedRunnerLimits, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/limits", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersLimitsForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub-hosted runners machine specs for an organization
+    ///
+    /// Get the list of machine specs available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_machine_specs_for_org](https://docs.github.com/rest/actions/hosted-runners#get-github-hosted-runners-machine-specs-for-an-organization)
+    ///
+    /// ---
+    pub async fn get_hosted_runners_machine_specs_for_org_async(&self, org: &str) -> Result<GetActionsGetHostedRunnersMachineSpecsForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/machine-sizes", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersMachineSpecsForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get GitHub-hosted runners machine specs for an organization
+    ///
+    /// Get the list of machine specs available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_machine_specs_for_org](https://docs.github.com/rest/actions/hosted-runners#get-github-hosted-runners-machine-specs-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_hosted_runners_machine_specs_for_org(&self, org: &str) -> Result<GetActionsGetHostedRunnersMachineSpecsForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/machine-sizes", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersMachineSpecsForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get partner images for GitHub-hosted runners in an organization
+    ///
+    /// Get the list of partner images available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_partner_images_for_org](https://docs.github.com/rest/actions/hosted-runners#get-partner-images-for-github-hosted-runners-in-an-organization)
+    ///
+    /// ---
+    pub async fn get_hosted_runners_partner_images_for_org_async(&self, org: &str) -> Result<GetActionsGetHostedRunnersPartnerImagesForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/images/partner", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersPartnerImagesForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get partner images for GitHub-hosted runners in an organization
+    ///
+    /// Get the list of partner images available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_partner_images_for_org](https://docs.github.com/rest/actions/hosted-runners#get-partner-images-for-github-hosted-runners-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_hosted_runners_partner_images_for_org(&self, org: &str) -> Result<GetActionsGetHostedRunnersPartnerImagesForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/images/partner", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersPartnerImagesForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get platforms for GitHub-hosted runners in an organization
+    ///
+    /// Get the list of platforms available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_platforms_for_org](https://docs.github.com/rest/actions/hosted-runners#get-platforms-for-github-hosted-runners-in-an-organization)
+    ///
+    /// ---
+    pub async fn get_hosted_runners_platforms_for_org_async(&self, org: &str) -> Result<GetActionsGetHostedRunnersPlatformsForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/platforms", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersPlatformsForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Get platforms for GitHub-hosted runners in an organization
+    ///
+    /// Get the list of platforms available for GitHub-hosted runners for an organization.
+    ///
+    /// [GitHub API docs for get_hosted_runners_platforms_for_org](https://docs.github.com/rest/actions/hosted-runners#get-platforms-for-github-hosted-runners-in-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_hosted_runners_platforms_for_org(&self, org: &str) -> Result<GetActionsGetHostedRunnersPlatformsForOrgResponse200, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/platforms", super::GITHUB_BASE_API_URL, org);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsGetHostedRunnersPlatformsForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
     /// # Get a job for a workflow run
     ///
     /// Gets a specific job in a workflow run.
@@ -11572,6 +12505,186 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         } else {
             match github_response.status_code() {
                 code => Err(ActionsListEnvironmentVariablesError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List GitHub-hosted runners in a group for an organization
+    ///
+    /// Lists the GitHub-hosted runners in an organization group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_github_hosted_runners_in_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-github-hosted-runners-in-a-group-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_github_hosted_runners_in_group_for_org_async(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListGithubHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListGithubHostedRunnersInGroupForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/hosted-runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListGithubHostedRunnersInGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List GitHub-hosted runners in a group for an organization
+    ///
+    /// Lists the GitHub-hosted runners in an organization group.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `admin:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_github_hosted_runners_in_group_for_org](https://docs.github.com/rest/actions/self-hosted-runner-groups#list-github-hosted-runners-in-a-group-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_github_hosted_runners_in_group_for_org(&self, org: &str, runner_group_id: i32, query_params: Option<impl Into<ActionsListGithubHostedRunnersInGroupForOrgParams>>) -> Result<GetActionsListGithubHostedRunnersInGroupForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/runner-groups/{}/hosted-runners", super::GITHUB_BASE_API_URL, org, runner_group_id);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListGithubHostedRunnersInGroupForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListGithubHostedRunnersInGroupForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List GitHub-hosted runners for an organization
+    ///
+    /// Lists all GitHub-hosted runners configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `manage_runner:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_hosted_runners_for_org](https://docs.github.com/rest/actions/hosted-runners#list-github-hosted-runners-for-an-organization)
+    ///
+    /// ---
+    pub async fn list_hosted_runners_for_org_async(&self, org: &str, query_params: Option<impl Into<ActionsListHostedRunnersForOrgParams>>) -> Result<GetActionsListHostedRunnersForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/hosted-runners", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            request_uri.push_str(&serde_urlencoded::to_string(params.into())?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None::<C::Body>,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListHostedRunnersForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # List GitHub-hosted runners for an organization
+    ///
+    /// Lists all GitHub-hosted runners configured in an organization.
+    /// 
+    /// OAuth app tokens and personal access tokens (classic) need the `manage_runner:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for list_hosted_runners_for_org](https://docs.github.com/rest/actions/hosted-runners#list-github-hosted-runners-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn list_hosted_runners_for_org(&self, org: &str, query_params: Option<impl Into<ActionsListHostedRunnersForOrgParams>>) -> Result<GetActionsListHostedRunnersForOrgResponse200, AdapterError> {
+
+        let mut request_uri = format!("{}/orgs/{}/actions/hosted-runners", super::GITHUB_BASE_API_URL, org);
+
+        if let Some(params) = query_params {
+            request_uri.push_str("?");
+            let qp: ActionsListHostedRunnersForOrgParams = params.into();
+            request_uri.push_str(&serde_urlencoded::to_string(qp)?);
+        }
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: None,
+            method: "GET",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsListHostedRunnersForOrgError::Generic { code }.into()),
             }
         }
     }
@@ -16299,6 +17412,85 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
         } else {
             match github_response.status_code() {
                 code => Err(ActionsUpdateEnvironmentVariableError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a GitHub-hosted runner for an organization
+    ///
+    /// Updates a GitHub-hosted runner for an organization.
+    /// OAuth app tokens and personal access tokens (classic) need the `manage_runners:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#update-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    pub async fn update_hosted_runner_for_org_async(&self, org: &str, hosted_runner_id: i32, body: PatchActionsUpdateHostedRunnerForOrg) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/{}", super::GITHUB_BASE_API_URL, org, hosted_runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchActionsUpdateHostedRunnerForOrg>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch_async(request).await?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json_async().await?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateHostedRunnerForOrgError::Generic { code }.into()),
+            }
+        }
+    }
+
+    /// ---
+    ///
+    /// # Update a GitHub-hosted runner for an organization
+    ///
+    /// Updates a GitHub-hosted runner for an organization.
+    /// OAuth app tokens and personal access tokens (classic) need the `manage_runners:org` scope to use this endpoint.
+    ///
+    /// [GitHub API docs for update_hosted_runner_for_org](https://docs.github.com/rest/actions/hosted-runners#update-a-github-hosted-runner-for-an-organization)
+    ///
+    /// ---
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn update_hosted_runner_for_org(&self, org: &str, hosted_runner_id: i32, body: PatchActionsUpdateHostedRunnerForOrg) -> Result<ActionsHostedRunner, AdapterError> {
+
+        let request_uri = format!("{}/orgs/{}/actions/hosted-runners/{}", super::GITHUB_BASE_API_URL, org, hosted_runner_id);
+
+
+        let req = GitHubRequest {
+            uri: request_uri,
+            body: Some(C::from_json::<PatchActionsUpdateHostedRunnerForOrg>(body)?),
+            method: "PATCH",
+            headers: vec![]
+        };
+
+        let request = self.client.build(req)?;
+
+        // --
+
+        let github_response = self.client.fetch(request)?;
+
+        // --
+
+        if github_response.is_success() {
+            Ok(github_response.to_json()?)
+        } else {
+            match github_response.status_code() {
+                code => Err(ActionsUpdateHostedRunnerForOrgError::Generic { code }.into()),
             }
         }
     }

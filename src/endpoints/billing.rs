@@ -193,13 +193,13 @@ impl From<BillingGetSharedStorageBillingUserError> for AdapterError {
 /// Query parameters for the [Get billing usage report for an organization](Billing::get_github_billing_usage_report_org_async()) endpoint.
 #[derive(Default, Serialize)]
 pub struct BillingGetGithubBillingUsageReportOrgParams {
-    /// If specified, only return results for a single year. The value of `year` is an integer with four digits representing a year. For example, `2024`. Default value is the current year.
+    /// If specified, only return results for a single year. The value of `year` is an integer with four digits representing a year. For example, `2025`. Default value is the current year.
     year: Option<i32>, 
-    /// If specified, only return results for a single month. The value of `month` is an integer between `1` and `12`.
+    /// If specified, only return results for a single month. The value of `month` is an integer between `1` and `12`. If no year is specified the default `year` is used.
     month: Option<i32>, 
-    /// If specified, only return results for a single day. The value of `day` is an integer between `1` and `31`.
+    /// If specified, only return results for a single day. The value of `day` is an integer between `1` and `31`. If no `year` or `month` is specified, the default `year` and `month` are used.
     day: Option<i32>, 
-    /// If specified, only return results for a single hour. The value of `hour` is an integer between `0` and `23`.
+    /// If specified, only return results for a single hour. The value of `hour` is an integer between `0` and `23`. If no `year`, `month`, or `day` is specified, the default `year`, `month`, and `day` are used.
     hour: Option<i32>
 }
 
@@ -208,7 +208,7 @@ impl BillingGetGithubBillingUsageReportOrgParams {
         Self::default()
     }
 
-    /// If specified, only return results for a single year. The value of `year` is an integer with four digits representing a year. For example, `2024`. Default value is the current year.
+    /// If specified, only return results for a single year. The value of `year` is an integer with four digits representing a year. For example, `2025`. Default value is the current year.
     pub fn year(self, year: i32) -> Self {
         Self {
             year: Some(year),
@@ -218,7 +218,7 @@ impl BillingGetGithubBillingUsageReportOrgParams {
         }
     }
 
-    /// If specified, only return results for a single month. The value of `month` is an integer between `1` and `12`.
+    /// If specified, only return results for a single month. The value of `month` is an integer between `1` and `12`. If no year is specified the default `year` is used.
     pub fn month(self, month: i32) -> Self {
         Self {
             year: self.year, 
@@ -228,7 +228,7 @@ impl BillingGetGithubBillingUsageReportOrgParams {
         }
     }
 
-    /// If specified, only return results for a single day. The value of `day` is an integer between `1` and `31`.
+    /// If specified, only return results for a single day. The value of `day` is an integer between `1` and `31`. If no `year` or `month` is specified, the default `year` and `month` are used.
     pub fn day(self, day: i32) -> Self {
         Self {
             year: self.year, 
@@ -238,7 +238,7 @@ impl BillingGetGithubBillingUsageReportOrgParams {
         }
     }
 
-    /// If specified, only return results for a single hour. The value of `hour` is an integer between `0` and `23`.
+    /// If specified, only return results for a single hour. The value of `hour` is an integer between `0` and `23`. If no `year`, `month`, or `day` is specified, the default `year`, `month`, and `day` are used.
     pub fn hour(self, hour: i32) -> Self {
         Self {
             year: self.year, 
