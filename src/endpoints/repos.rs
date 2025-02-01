@@ -219,7 +219,7 @@ impl From<ReposCancelPagesDeploymentError> for AdapterError {
     }
 }
 
-/// Errors for the [Check if automated security fixes are enabled for a repository](Repos::check_automated_security_fixes_async()) endpoint.
+/// Errors for the [Check if Dependabot security updates are enabled for a repository](Repos::check_automated_security_fixes_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposCheckAutomatedSecurityFixesError {
     #[error("Not Found if Dependabot is not enabled for the repository")]
@@ -1596,7 +1596,7 @@ impl From<ReposDeleteWebhookError> for AdapterError {
     }
 }
 
-/// Errors for the [Disable automated security fixes](Repos::disable_automated_security_fixes_async()) endpoint.
+/// Errors for the [Disable Dependabot security updates](Repos::disable_automated_security_fixes_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposDisableAutomatedSecurityFixesError {
     #[error("Status code: {}", code)]
@@ -1731,7 +1731,7 @@ impl From<ReposDownloadZipballArchiveError> for AdapterError {
     }
 }
 
-/// Errors for the [Enable automated security fixes](Repos::enable_automated_security_fixes_async()) endpoint.
+/// Errors for the [Enable Dependabot security updates](Repos::enable_automated_security_fixes_async()) endpoint.
 #[derive(Debug, thiserror::Error)]
 pub enum ReposEnableAutomatedSecurityFixesError {
     #[error("Status code: {}", code)]
@@ -8105,11 +8105,11 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Check if automated security fixes are enabled for a repository
+    /// # Check if Dependabot security updates are enabled for a repository
     ///
-    /// Shows whether automated security fixes are enabled, disabled or paused for a repository. The authenticated user must have admin read access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
+    /// Shows whether Dependabot security updates are enabled, disabled or paused for a repository. The authenticated user must have admin read access to the repository. For more information, see "[Configuring Dependabot security updates](https://docs.github.com/articles/configuring-automated-security-fixes)".
     ///
-    /// [GitHub API docs for check_automated_security_fixes](https://docs.github.com/rest/repos/repos#check-if-automated-security-fixes-are-enabled-for-a-repository)
+    /// [GitHub API docs for check_automated_security_fixes](https://docs.github.com/rest/repos/repos#check-if-dependabot-security-updates-are-enabled-for-a-repository)
     ///
     /// ---
     pub async fn check_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<CheckAutomatedSecurityFixes, AdapterError> {
@@ -8144,11 +8144,11 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Check if automated security fixes are enabled for a repository
+    /// # Check if Dependabot security updates are enabled for a repository
     ///
-    /// Shows whether automated security fixes are enabled, disabled or paused for a repository. The authenticated user must have admin read access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
+    /// Shows whether Dependabot security updates are enabled, disabled or paused for a repository. The authenticated user must have admin read access to the repository. For more information, see "[Configuring Dependabot security updates](https://docs.github.com/articles/configuring-automated-security-fixes)".
     ///
-    /// [GitHub API docs for check_automated_security_fixes](https://docs.github.com/rest/repos/repos#check-if-automated-security-fixes-are-enabled-for-a-repository)
+    /// [GitHub API docs for check_automated_security_fixes](https://docs.github.com/rest/repos/repos#check-if-dependabot-security-updates-are-enabled-for-a-repository)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -12812,11 +12812,11 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Disable automated security fixes
+    /// # Disable Dependabot security updates
     ///
-    /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
+    /// Disables Dependabot security updates for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring Dependabot security updates](https://docs.github.com/articles/configuring-automated-security-fixes)".
     ///
-    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/repos/repos#disable-automated-security-fixes)
+    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/repos/repos#disable-dependabot-security-updates)
     ///
     /// ---
     pub async fn disable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
@@ -12850,11 +12850,11 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Disable automated security fixes
+    /// # Disable Dependabot security updates
     ///
-    /// Disables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
+    /// Disables Dependabot security updates for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring Dependabot security updates](https://docs.github.com/articles/configuring-automated-security-fixes)".
     ///
-    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/repos/repos#disable-automated-security-fixes)
+    /// [GitHub API docs for disable_automated_security_fixes](https://docs.github.com/rest/repos/repos#disable-dependabot-security-updates)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]
@@ -13312,11 +13312,11 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Enable automated security fixes
+    /// # Enable Dependabot security updates
     ///
-    /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
+    /// Enables Dependabot security updates for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring Dependabot security updates](https://docs.github.com/articles/configuring-automated-security-fixes)".
     ///
-    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/repos/repos#enable-automated-security-fixes)
+    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/repos/repos#enable-dependabot-security-updates)
     ///
     /// ---
     pub async fn enable_automated_security_fixes_async(&self, owner: &str, repo: &str) -> Result<(), AdapterError> {
@@ -13350,11 +13350,11 @@ impl<'api, C: Client> Repos<'api, C> where AdapterError: From<<C as Client>::Err
 
     /// ---
     ///
-    /// # Enable automated security fixes
+    /// # Enable Dependabot security updates
     ///
-    /// Enables automated security fixes for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring automated security fixes](https://docs.github.com/articles/configuring-automated-security-fixes)".
+    /// Enables Dependabot security updates for a repository. The authenticated user must have admin access to the repository. For more information, see "[Configuring Dependabot security updates](https://docs.github.com/articles/configuring-automated-security-fixes)".
     ///
-    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/repos/repos#enable-automated-security-fixes)
+    /// [GitHub API docs for enable_automated_security_fixes](https://docs.github.com/rest/repos/repos#enable-dependabot-security-updates)
     ///
     /// ---
     #[cfg(not(target_arch = "wasm32"))]

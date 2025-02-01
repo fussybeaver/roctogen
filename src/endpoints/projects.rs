@@ -1173,7 +1173,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Add project collaborator
     ///
-    /// Adds a collaborator to an organization project and sets their permission level. You must be an organization owner or a project `admin` to add a collaborator.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/projects/collaborators#add-project-collaborator)
     ///
@@ -1216,7 +1218,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Add project collaborator
     ///
-    /// Adds a collaborator to an organization project and sets their permission level. You must be an organization owner or a project `admin` to add a collaborator.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for add_collaborator](https://docs.github.com/rest/projects/collaborators#add-project-collaborator)
     ///
@@ -1260,6 +1264,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create a project card
     ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
+    ///
     /// [GitHub API docs for create_card](https://docs.github.com/rest/projects/cards#create-a-project-card)
     ///
     /// ---
@@ -1300,6 +1308,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     /// ---
     ///
     /// # Create a project card
+    ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_card](https://docs.github.com/rest/projects/cards#create-a-project-card)
     ///
@@ -1343,7 +1355,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create a project column
     ///
-    /// Creates a new project column.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_column](https://docs.github.com/rest/projects/columns#create-a-project-column)
     ///
@@ -1385,7 +1399,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create a project column
     ///
-    /// Creates a new project column.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_column](https://docs.github.com/rest/projects/columns#create-a-project-column)
     ///
@@ -1428,7 +1444,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create a user project
     ///
-    /// Creates a user project board. Returns a `410 Gone` status if the user does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/projects/projects#create-a-user-project)
     ///
@@ -1470,7 +1488,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create a user project
     ///
-    /// Creates a user project board. Returns a `410 Gone` status if the user does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_for_authenticated_user](https://docs.github.com/rest/projects/projects#create-a-user-project)
     ///
@@ -1513,7 +1533,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create an organization project
     ///
-    /// Creates an organization project board. Returns a `410 Gone` status if projects are disabled in the organization or if the organization does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/projects/projects#create-an-organization-project)
     ///
@@ -1556,7 +1578,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create an organization project
     ///
-    /// Creates an organization project board. Returns a `410 Gone` status if projects are disabled in the organization or if the organization does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_for_org](https://docs.github.com/rest/projects/projects#create-an-organization-project)
     ///
@@ -1600,7 +1624,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create a repository project
     ///
-    /// Creates a repository project board. Returns a `410 Gone` status if projects are disabled in the repository or if the repository does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/projects/projects#create-a-repository-project)
     ///
@@ -1643,7 +1669,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Create a repository project
     ///
-    /// Creates a repository project board. Returns a `410 Gone` status if projects are disabled in the repository or if the repository does not have existing classic projects. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for create_for_repo](https://docs.github.com/rest/projects/projects#create-a-repository-project)
     ///
@@ -1687,7 +1715,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Delete a project
     ///
-    /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/projects/projects#delete-a-project)
     ///
@@ -1730,7 +1760,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Delete a project
     ///
-    /// Deletes a project board. Returns a `404 Not Found` status if projects are disabled.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for delete](https://docs.github.com/rest/projects/projects#delete-a-project)
     ///
@@ -1774,7 +1806,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Delete a project card
     ///
-    /// Deletes a project card
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/projects/cards#delete-a-project-card)
     ///
@@ -1816,7 +1850,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Delete a project card
     ///
-    /// Deletes a project card
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for delete_card](https://docs.github.com/rest/projects/cards#delete-a-project-card)
     ///
@@ -1859,7 +1895,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Delete a project column
     ///
-    /// Deletes a project column.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/projects/columns#delete-a-project-column)
     ///
@@ -1900,7 +1938,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Delete a project column
     ///
-    /// Deletes a project column.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for delete_column](https://docs.github.com/rest/projects/columns#delete-a-project-column)
     ///
@@ -1942,7 +1982,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get a project
     ///
-    /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get](https://docs.github.com/rest/projects/projects#get-a-project)
     ///
@@ -1983,7 +2025,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get a project
     ///
-    /// Gets a project by its `id`. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get](https://docs.github.com/rest/projects/projects#get-a-project)
     ///
@@ -2025,7 +2069,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get a project card
     ///
-    /// Gets information about a project card.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get_card](https://docs.github.com/rest/projects/cards#get-a-project-card)
     ///
@@ -2067,7 +2113,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get a project card
     ///
-    /// Gets information about a project card.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get_card](https://docs.github.com/rest/projects/cards#get-a-project-card)
     ///
@@ -2110,7 +2158,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get a project column
     ///
-    /// Gets information about a project column.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get_column](https://docs.github.com/rest/projects/columns#get-a-project-column)
     ///
@@ -2152,7 +2202,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get a project column
     ///
-    /// Gets information about a project column.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get_column](https://docs.github.com/rest/projects/columns#get-a-project-column)
     ///
@@ -2195,7 +2247,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get project permission for a user
     ///
-    /// Returns the collaborator's permission level for an organization project. Possible values for the `permission` key: `admin`, `write`, `read`, `none`. You must be an organization owner or a project `admin` to review a user's permission level.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user)
     ///
@@ -2238,7 +2292,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Get project permission for a user
     ///
-    /// Returns the collaborator's permission level for an organization project. Possible values for the `permission` key: `admin`, `write`, `read`, `none`. You must be an organization owner or a project `admin` to review a user's permission level.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for get_permission_for_user](https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user)
     ///
@@ -2282,7 +2338,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List project cards
     ///
-    /// Lists the project cards in a project.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/projects/cards#list-project-cards)
     ///
@@ -2327,7 +2385,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List project cards
     ///
-    /// Lists the project cards in a project.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_cards](https://docs.github.com/rest/projects/cards#list-project-cards)
     ///
@@ -2374,7 +2434,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List project collaborators
     ///
-    /// Lists the collaborators for an organization project. For a project, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners. You must be an organization owner or a project `admin` to list collaborators.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/projects/collaborators#list-project-collaborators)
     ///
@@ -2421,7 +2483,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List project collaborators
     ///
-    /// Lists the collaborators for an organization project. For a project, the list of collaborators includes outside collaborators, organization members that are direct collaborators, organization members with access through team memberships, organization members with access through default organization permissions, and organization owners. You must be an organization owner or a project `admin` to list collaborators.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_collaborators](https://docs.github.com/rest/projects/collaborators#list-project-collaborators)
     ///
@@ -2470,7 +2534,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List project columns
     ///
-    /// Lists the project columns in a project.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/projects/columns#list-project-columns)
     ///
@@ -2515,7 +2581,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List project columns
     ///
-    /// Lists the project columns in a project.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_columns](https://docs.github.com/rest/projects/columns#list-project-columns)
     ///
@@ -2562,7 +2630,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List organization projects
     ///
-    /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/projects/projects#list-organization-projects)
     ///
@@ -2605,7 +2675,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List organization projects
     ///
-    /// Lists the projects in an organization. Returns a `404 Not Found` status if projects are disabled in the organization. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_for_org](https://docs.github.com/rest/projects/projects#list-organization-projects)
     ///
@@ -2650,7 +2722,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List repository projects
     ///
-    /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/projects/projects#list-repository-projects)
     ///
@@ -2697,7 +2771,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List repository projects
     ///
-    /// Lists the projects in a repository. Returns a `404 Not Found` status if projects are disabled in the repository. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_for_repo](https://docs.github.com/rest/projects/projects#list-repository-projects)
     ///
@@ -2746,7 +2822,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List user projects
     ///
-    /// Lists projects for a user.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/projects/projects#list-user-projects)
     ///
@@ -2789,7 +2867,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # List user projects
     ///
-    /// Lists projects for a user.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for list_for_user](https://docs.github.com/rest/projects/projects#list-user-projects)
     ///
@@ -2834,6 +2914,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Move a project card
     ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
+    ///
     /// [GitHub API docs for move_card](https://docs.github.com/rest/projects/cards#move-a-project-card)
     ///
     /// ---
@@ -2874,6 +2958,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     /// ---
     ///
     /// # Move a project card
+    ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for move_card](https://docs.github.com/rest/projects/cards#move-a-project-card)
     ///
@@ -2917,6 +3005,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Move a project column
     ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
+    ///
     /// [GitHub API docs for move_column](https://docs.github.com/rest/projects/columns#move-a-project-column)
     ///
     /// ---
@@ -2956,6 +3048,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     /// ---
     ///
     /// # Move a project column
+    ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for move_column](https://docs.github.com/rest/projects/columns#move-a-project-column)
     ///
@@ -2998,7 +3094,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Remove user as a collaborator
     ///
-    /// Removes a collaborator from an organization project. You must be an organization owner or a project `admin` to remove a collaborator.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator)
     ///
@@ -3041,7 +3139,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Remove user as a collaborator
     ///
-    /// Removes a collaborator from an organization project. You must be an organization owner or a project `admin` to remove a collaborator.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for remove_collaborator](https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator)
     ///
@@ -3085,7 +3185,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Update a project
     ///
-    /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for update](https://docs.github.com/rest/projects/projects#update-a-project)
     ///
@@ -3129,7 +3231,9 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Update a project
     ///
-    /// Updates a project board's information. Returns a `404 Not Found` status if projects are disabled. If you do not have sufficient privileges to perform this action, a `401 Unauthorized` or `410 Gone` status is returned.
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for update](https://docs.github.com/rest/projects/projects#update-a-project)
     ///
@@ -3174,6 +3278,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Update an existing project card
     ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
+    ///
     /// [GitHub API docs for update_card](https://docs.github.com/rest/projects/cards#update-an-existing-project-card)
     ///
     /// ---
@@ -3214,6 +3322,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     /// ---
     ///
     /// # Update an existing project card
+    ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for update_card](https://docs.github.com/rest/projects/cards#update-an-existing-project-card)
     ///
@@ -3257,6 +3369,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     ///
     /// # Update an existing project column
     ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
+    ///
     /// [GitHub API docs for update_column](https://docs.github.com/rest/projects/columns#update-an-existing-project-column)
     ///
     /// ---
@@ -3295,6 +3411,10 @@ impl<'api, C: Client> Projects<'api, C> where AdapterError: From<<C as Client>::
     /// ---
     ///
     /// # Update an existing project column
+    ///
+    /// > [!WARNING]
+    /// > **Closing down notice:** Projects (classic) is being deprecated in favor of the new Projects experience.
+    /// > See the [changelog](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/) for more information.
     ///
     /// [GitHub API docs for update_column](https://docs.github.com/rest/projects/columns#update-an-existing-project-column)
     ///
