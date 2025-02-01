@@ -1,9 +1,8 @@
 use base64::{prelude::BASE64_STANDARD, Engine};
-use roctogen::adapters::GitHubRequest;
-use roctogen::adapters::GitHubResponseExt;
-use roctogen::auth::Auth;
+use roctokit::adapters::GitHubRequest;
+use roctokit::adapters::GitHubResponseExt;
+use roctokit::auth::Auth;
 use serde::{ser, Deserialize};
-use std::error::Error;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AdapterError {
@@ -17,7 +16,7 @@ pub enum AdapterError {
     UnimplementedAsync,
 }
 
-impl From<AdapterError> for roctogen::adapters::AdapterError {
+impl From<AdapterError> for roctokit::adapters::AdapterError {
     fn from(err: AdapterError) -> Self {
         Self::Client {
             description: err.to_string(),
@@ -30,9 +29,12 @@ struct Response {
     pub inner: minreq::Response,
 }
 
-impl roctogen::adapters::Client for Client {
+impl roctokit::adapters::Client for Client {
     type Req = minreq::Request;
-    type Err = AdapterError where roctogen::adapters::AdapterError: From<Self::Err>;
+    type Err
+        = AdapterError
+    where
+        roctokit::adapters::AdapterError: From<Self::Err>;
     type Body = Vec<u8>;
 
     fn new(auth: &Auth) -> Result<Self, Self::Err> {
@@ -53,7 +55,7 @@ impl roctogen::adapters::Client for Client {
         let mut min_req =
             minreq::Request::new(minreq::Method::Custom(String::from(req.method)), req.uri);
         min_req = min_req.with_header("accept", "application/vnd.github.v3+json");
-        min_req = min_req.with_header("user-agent", "roctogen");
+        min_req = min_req.with_header("user-agent", "roctokit");
         min_req = min_req.with_header("content-type", "application/json");
 
         for header in req.headers.iter() {

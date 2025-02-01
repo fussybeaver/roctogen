@@ -22,6 +22,7 @@ To include Roctogen in your project, add it to your `Cargo.toml`:
 ```nocompile
 [dependencies]
 roctogen = "*"
+roctokit = "*"
 ```
 
 ### Documentation
@@ -57,6 +58,7 @@ Roctogen supports a wide range of GitHub API endpoints, including:
   - [Migrations](https://docs.rs/roctogen/latest/roctogen/endpoints/migrations/struct.Migrations.html)
   - [CodeSecurity](https://docs.rs/roctogen/latest/roctogen/endpoints/code_security/struct.CodeSecurity.html)
   - [Gists](https://docs.rs/roctogen/latest/roctogen/endpoints/gists/struct.Gists.html)
+  - [HostedCompute](https://docs.rs/roctogen/latest/roctogen/endpoints/hosted_compute/struct.HostedCompute.html)
   - [DependencyGraph](https://docs.rs/roctogen/latest/roctogen/endpoints/dependency_graph/struct.DependencyGraph.html)
   - [Copilot](https://docs.rs/roctogen/latest/roctogen/endpoints/copilot/struct.Copilot.html)
   - [Dependabot](https://docs.rs/roctogen/latest/roctogen/endpoints/dependabot/struct.Dependabot.html)
@@ -79,8 +81,8 @@ Here's a basic example demonstrating how to use Roctogen:
 
 ```rust
 use roctogen::api::{self, repos};
-use roctogen::adapters::client;
-use roctogen::auth::Auth;
+use roctokit::adapters::client;
+use roctokit::auth::Auth;
 
 let auth = Auth::None;
 let client = client(&auth).expect("Cannot create new client");
@@ -175,7 +177,7 @@ tests with the `--mock` feature:
 ```nocompile
 $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock
 rodolpheche/wiremock
-$ cargo test --feature mock,ureq
+$ cargo test --features mock,ureq
 ```
 
 #### Regenerate the wiremock stubs
