@@ -22,6 +22,7 @@
 //! ```nocompile
 //! [dependencies]
 //! roctogen = "*"
+//! roctokit = "*"
 //! ```
 //!
 //! ## Documentation
@@ -43,8 +44,8 @@
 //!
 //! ```no_run
 //! use roctogen::api::{self, repos};
-//! use roctogen::adapters::client;
-//! use roctogen::auth::Auth;
+//! use roctokit::adapters::client;
+//! use roctokit::auth::Auth;
 //!
 //! let auth = Auth::None;
 //! let client = client(&auth).expect("Cannot create new client");
@@ -139,7 +140,7 @@
 //! ```nocompile
 //! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock
 //! rodolpheche/wiremock
-//! $ cargo test --feature mock,ureq
+//! $ cargo test --features mock,ureq
 //! ```
 //!
 //! ### Regenerate the wiremock stubs
@@ -160,7 +161,6 @@ extern crate serde_derive;
 
 use std::collections::HashMap;
 
-pub mod adapters;
 pub mod endpoints;
 pub mod models;
 

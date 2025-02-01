@@ -22,11 +22,11 @@ use hyper::header::USER_AGENT;
 use hyper_rustls::ConfigBuilderExt;
 use hyper_util::client::legacy::connect::HttpConnector;
 use log::debug;
-use roctogen::adapters::GitHubRequest;
-use roctogen::adapters::GitHubResponseExt;
 use roctogen::api::search;
 use roctogen::api::PerPage;
-use roctogen::auth::Auth;
+use roctokit::adapters::GitHubRequest;
+use roctokit::adapters::GitHubResponseExt;
+use roctokit::auth::Auth;
 use serde::de::Error;
 use serde::{ser, Deserialize};
 
@@ -54,7 +54,7 @@ pub enum AdapterError {
     ParseIntError(#[from] std::num::ParseIntError),
 }
 
-impl From<AdapterError> for roctogen::adapters::AdapterError {
+impl From<AdapterError> for roctokit::adapters::AdapterError {
     fn from(err: AdapterError) -> Self {
         Self::Client {
             description: err.to_string(),
@@ -67,9 +67,12 @@ struct Response {
     pub inner: hyper::Response<Incoming>,
 }
 
-impl roctogen::adapters::Client for Client {
+impl roctokit::adapters::Client for Client {
     type Req = hyper::Request<Full<Bytes>>;
-    type Err = AdapterError where roctogen::adapters::AdapterError: From<Self::Err>;
+    type Err
+        = AdapterError
+    where
+        roctokit::adapters::AdapterError: From<Self::Err>;
     type Body = Empty<Bytes>;
 
     fn new(auth: &Auth) -> Result<Self, Self::Err> {
@@ -131,7 +134,7 @@ impl roctogen::adapters::Client for Client {
             .uri(req.uri)
             .method(req.method)
             .header(ACCEPT, "application/vnd.github.v3+json")
-            .header(USER_AGENT, "roctogen")
+            .header(USER_AGENT, "roctokit")
             .header(CONTENT_TYPE, "application/json");
 
         for header in req.headers.iter() {
@@ -209,7 +212,7 @@ struct IterableState {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client: Client = <Client as roctogen::adapters::Client>::new(&Auth::None).unwrap();
+    let client: Client = <Client as roctokit::adapters::Client>::new(&Auth::None).unwrap();
     let per_page = roctogen::api::PerPage::new(100);
     let search = roctogen::api::search::new(&client);
     let stream = unfold(&search, per_page.as_ref());
@@ -225,7 +228,7 @@ fn unfold<'a>(
     search: &'a search::Search<Client>,
     per_page: &'a PerPage,
 ) -> impl stream::Stream<
-    Item = Result<roctogen::models::IssueSearchResultItem, roctogen::adapters::AdapterError>,
+    Item = Result<roctogen::models::IssueSearchResultItem, roctokit::adapters::AdapterError>,
 > + 'a {
     let state = IterableState {
         page: 1,

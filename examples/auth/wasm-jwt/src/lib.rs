@@ -1,13 +1,15 @@
+#![cfg(target_arch = "wasm32")]
+
 mod utils;
 
 use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use roctogen::adapters::{wasm, Client};
 use roctogen::api::apps;
-use roctogen::auth::Auth;
 use roctogen::models;
+use roctokit::adapters::{wasm, Client};
+use roctokit::auth::Auth;
 
 use log::{error, info, Level};
 

@@ -1,8 +1,7 @@
 [package]
 name = "roctogen-jwt-example"
 version = "0.1.0"
-authors = ["Niel Drummond <niel.drummond@fundingcircle.com>"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -16,7 +15,8 @@ cfg-if.workspace = true
 wasm-bindgen = { workspace = true, features = ["serde-serialize"] }
 wasm-bindgen-futures.workspace = true
 console_error_panic_hook = { workspace = true, optional = true }
-roctogen = { version = "*", path = "../../.." }
+roctogen.workspace = true
+roctokit.workspace = true
 js-sys.workspace = true
 log.workspace = true
 console_log = { workspace = true, features = ["color"] }

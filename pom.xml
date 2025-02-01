@@ -22,7 +22,7 @@
               <configuration>
                 <inputSpec>https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json</inputSpec>
                 <language>github.GitHubCodegen</language>
-                <output>${project.basedir}</output>
+                <output>${project.basedir}/roctogen</output>
                 <generateApis>true</generateApis>
                 <templateDirectory>${project.basedir}/codegen/templates</templateDirectory>
                 <configOptions>

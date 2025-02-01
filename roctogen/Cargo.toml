@@ -1,0 +1,88 @@
+[package]
+name = "roctogen"
+version = "0.13.0"
+authors = [ "Roctogen contributors" ]
+description = "Github API and models generated from the official swagger OpenAPI specification"
+license = "Apache-2.0"
+homepage = "https://github.com/fussybeaver/roctokit"
+repository = "https://github.com/fussybeaver/roctokit"
+documentation = "https://docs.rs/roctogen"
+readme = "README.md"
+keywords = ["github"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[features]
+default = []
+reqwest = ["dep:reqwest", "dep:bytes"]
+
+# Activate mock base url
+mock = []
+
+[dependencies]
+base64 = "0.22"
+chrono = { version = "0.4", features = ["serde"] }
+http = "1.1"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = {version = "1.0"}
+serde_urlencoded = { version = "0.7" }
+thiserror = "1"
+log = "0.4"
+roctokit = { workspace = true }
+
+# wasm
+cfg-if = { version = "1" }
+wasm-bindgen = { version = "0.2.95", features = ["serde-serialize"] }
+wasm-bindgen-futures = { version = "0.4" }
+console_error_panic_hook = { version = "0.1.1" }
+wee_alloc = { version = "0.4.2" }
+js-sys = { version = "0.3" }
+web-sys = { version = "0.3", features = [ 'Headers', 'Request', 'RequestInit', 'Response', 'ServiceWorkerGlobalScope', 'Window', 'console' ] }
+console_log = { version = "1", features = ["color"] }
+
+bytes = { version = "1", optional = true }
+
+# reqwest
+reqwest = { version = "0.12", optional = true, features = [] }
+
+# ureq
+ureq = { version = "3.0.3", optional = true, features = ["json"] }
+
+# wasm 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+cfg-if = { version = "1" }
+wasm-bindgen = { version = "0.2.95", features = ["serde-serialize"] }
+wasm-bindgen-futures = { version = "0.4" }
+console_error_panic_hook = { version = "0.1.1" }
+wee_alloc = { version = "0.4.2" }
+js-sys = { version = "0.3" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
+version = "0.3"
+features = [
+  'Headers',
+  'Request',
+  'RequestInit',
+  'Response',
+  'ServiceWorkerGlobalScope',
+  'Window',
+  'console',
+]
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "0.3.45"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+futures-lite = { version = "2.3" }
+futures-io = { version = "0.3" }
+futures-core = { version = "0.3" }
+tokio = { version = "1.2", default-features = false, features = ["macros", "rt-multi-thread"] }
+env_logger = "0.11"
+
+[package.metadata.docs.rs]
+default-target = "x86_64-unknown-linux-gnu"
+targets = ["wasm32-unknown-unknown"]

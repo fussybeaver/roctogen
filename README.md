@@ -1,190 +1,39 @@
 [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![docs](https://docs.rs/roctogen/badge.svg)](https://docs.rs/roctogen/)
-[![GitHub workflow](https://github.com/fussybeaver/roctogen/actions/workflows/default.yml/badge.svg)](https://github.com/fussybeaver/roctogen/actions/workflows/default.yml)
+[![GitHub workflow](https://github.com/fussybeaver/roctokit/actions/workflows/default.yml/badge.svg)](https://github.com/fussybeaver/roctokit/actions/workflows/default.yml)
 
-## Roctogen: Rust Client Library for GitHub v3 API
+# Roctokit: A Rust Client Library for the GitHub v3 API
 
-**Roctogen** is a Rust library generated from the [GitHub REST API OpenAPI
-specification](https://github.com/github/rest-api-description/). providing
-comprehensive support for the GitHub v3 API. It offers flexible support for
-both synchronous and asynchronous HTTP clients, including WebAssembly
-compatibility. You can choose between multiple client libraries via Cargo
-features, or integrate your own HTTP client handling by extending the
-`adapter` subsytem:
+**Roctokit** is a Rust library providing high-level client interfaces for interacting with the [GitHub REST API](https://docs.github.com/en/rest/repos). Built on models and endpoints generated from [GitHub's OpenAPI specification](https://github.com/github/rest-api-description), it offers an ergonomic and efficient way to work with GitHub's v3 API.
 
-  - `reqwest`: Enables asynchronous requests using the [Reqwest client](https://github.com/seanmonstar/reqwest)
-  - `ureq`: Provides synchronous requests with the [Ureq client](https://github.com/algesten/ureq)
+Roctokit includes stock client implementations supporting both synchronous and asynchronous HTTP clients, as well as WebAssembly compatibility. Additionally, it allows for custom client implementations, enabling advanced use cases such as [handling GitHub’s rate limits](./examples/search) or building streams from paginated results by extending its `adapter` subsystem.
 
-### Installation
+## Features
 
-To include Roctogen in your project, add it to your `Cargo.toml`:
+- **Multi-client support**: Use the built-in HTTP clients or implement your own.
+- **WebAssembly compatibility**: Works seamlessly in browser environments.
+- **Extensible adapters**: Customise request handling for rate limiting, pagination, or alternative transport layers.
 
-```nocompile
-[dependencies]
-roctogen = "*"
-```
+## Supported Client Implementations
 
-### Documentation
+Roctokit provides out-of-the-box support for the following HTTP clients:
 
-- [API docs](https://docs.rs/roctogen/latest).
-- [Endpoints](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html).
+- **`reqwest`**: Enables asynchronous requests via the [Reqwest client](https://github.com/seanmonstar/reqwest).
+- **`ureq`**: Provides synchronous requests using the [Ureq client](https://github.com/algesten/ureq).
+- **`wasm`**: Uses the browser's [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) for WebAssembly environments.
 
-#### Supported endpoints:
+## Repository Structure
 
-Roctogen supports a wide range of GitHub API endpoints, including:
+This repository is divided into two main components:
 
-  - [Meta](https://docs.rs/roctogen/latest/roctogen/endpoints/meta/struct.Meta.html)
-  - [Issues](https://docs.rs/roctogen/latest/roctogen/endpoints/issues/struct.Issues.html)
-  - [Licenses](https://docs.rs/roctogen/latest/roctogen/endpoints/licenses/struct.Licenses.html)
-  - [Reactions](https://docs.rs/roctogen/latest/roctogen/endpoints/reactions/struct.Reactions.html)
-  - [Activity](https://docs.rs/roctogen/latest/roctogen/endpoints/activity/struct.Activity.html)
-  - [Projects](https://docs.rs/roctogen/latest/roctogen/endpoints/projects/struct.Projects.html)
-  - [Orgs](https://docs.rs/roctogen/latest/roctogen/endpoints/orgs/struct.Orgs.html)
-  - [Users](https://docs.rs/roctogen/latest/roctogen/endpoints/users/struct.Users.html)
-  - [Apps](https://docs.rs/roctogen/latest/roctogen/endpoints/apps/struct.Apps.html)
-  - [RateLimit](https://docs.rs/roctogen/latest/roctogen/endpoints/rate_limit/struct.RateLimit.html)
-  - [Repos](https://docs.rs/roctogen/latest/roctogen/endpoints/repos/struct.Repos.html)
-  - [SecretScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/secret_scanning/struct.SecretScanning.html)
-  - [SecurityAdvisories](https://docs.rs/roctogen/latest/roctogen/endpoints/security_advisories/struct.SecurityAdvisories.html)
-  - [Packages](https://docs.rs/roctogen/latest/roctogen/endpoints/packages/struct.Packages.html)
-  - [Search](https://docs.rs/roctogen/latest/roctogen/endpoints/search/struct.Search.html)
-  - [Classroom](https://docs.rs/roctogen/latest/roctogen/endpoints/classroom/struct.Classroom.html)
-  - [Teams](https://docs.rs/roctogen/latest/roctogen/endpoints/teams/struct.Teams.html)
-  - [PrivateRegistries](https://docs.rs/roctogen/latest/roctogen/endpoints/private_registries/struct.PrivateRegistries.html)
-  - [Oidc](https://docs.rs/roctogen/latest/roctogen/endpoints/oidc/struct.Oidc.html)
-  - [Markdown](https://docs.rs/roctogen/latest/roctogen/endpoints/markdown/struct.Markdown.html)
-  - [Actions](https://docs.rs/roctogen/latest/roctogen/endpoints/actions/struct.Actions.html)
-  - [Migrations](https://docs.rs/roctogen/latest/roctogen/endpoints/migrations/struct.Migrations.html)
-  - [CodeSecurity](https://docs.rs/roctogen/latest/roctogen/endpoints/code_security/struct.CodeSecurity.html)
-  - [Gists](https://docs.rs/roctogen/latest/roctogen/endpoints/gists/struct.Gists.html)
-  - [DependencyGraph](https://docs.rs/roctogen/latest/roctogen/endpoints/dependency_graph/struct.DependencyGraph.html)
-  - [Copilot](https://docs.rs/roctogen/latest/roctogen/endpoints/copilot/struct.Copilot.html)
-  - [Dependabot](https://docs.rs/roctogen/latest/roctogen/endpoints/dependabot/struct.Dependabot.html)
-  - [CodesOfConduct](https://docs.rs/roctogen/latest/roctogen/endpoints/codes_of_conduct/struct.CodesOfConduct.html)
-  - [Pulls](https://docs.rs/roctogen/latest/roctogen/endpoints/pulls/struct.Pulls.html)
-  - [Gitignore](https://docs.rs/roctogen/latest/roctogen/endpoints/gitignore/struct.Gitignore.html)
-  - [Git](https://docs.rs/roctogen/latest/roctogen/endpoints/git/struct.Git.html)
-  - [CodeScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/code_scanning/struct.CodeScanning.html)
-  - [Checks](https://docs.rs/roctogen/latest/roctogen/endpoints/checks/struct.Checks.html)
-  - [Billing](https://docs.rs/roctogen/latest/roctogen/endpoints/billing/struct.Billing.html)
-  - [Interactions](https://docs.rs/roctogen/latest/roctogen/endpoints/interactions/struct.Interactions.html)
-  - [Codespaces](https://docs.rs/roctogen/latest/roctogen/endpoints/codespaces/struct.Codespaces.html)
-  - [Emojis](https://docs.rs/roctogen/latest/roctogen/endpoints/emojis/struct.Emojis.html)
+- **[roctogen](./roctogen/README.md)**: A Rust library that provides low-level API bindings and models generated from the [GitHub OpenAPI specification](https://github.com/github/rest-api-description).
+- **[roctokit](./roctokit/README.md)**: A higher-level client built on top of `roctogen`, offering more user-friendly abstractions for interacting with the GitHub API.
 
-For a full list of supported endpoints, refer to the [API documentation](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html).
+## Getting Started
 
-### Usage
+To start using Roctokit, begin with a basic example provided in the [roctogen README](./roctogen/README.md#Usage). Once familiar with the basics, explore the [endpoint documentation](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html) to determine which GitHub API endpoints are available. For more advanced use cases, consider implementing a custom adapter, which covered in the [roctokit README](./core/README.md).
 
-Here's a basic example demonstrating how to use Roctogen:
+## License
 
-```rust
-use roctogen::api::{self, repos};
-use roctogen::adapters::client;
-use roctogen::auth::Auth;
-
-let auth = Auth::None;
-let client = client(&auth).expect("Cannot create new client");
-let per_page = api::PerPage::new(10);
-
-let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
-params = params.author("fussybeaver").page(2);
-
-repos::new(&client).list_commits("fussybeaver", "bollard", Some(params));
-```
-
-#### Asynchronous Requests
-
-For async support, use the `_async` suffix for method calls. These are
-available with the `reqwest`, or WebAssembly targets.
-
-#### Webassembly
-
-Roctogen can be compiled to WebAssembly using
-[`wasm-pack`](https://github.com/rustwasm/wasm-pack) or by directly
-targeting wasm32-unknown-unknown:
-
-```nocompile
-$ wasm-pack build
-```
-
-```nocompile
-$ cargo build --target wasm32-unknown-unknown
-```
-
-### Client adapters
-
-Roctogen supports multiple HTTP clients, or you can write your own. Enable
-the desired client using Cargo features:
-
-#### Reqwest
-
-Compile with Reqwest support using the `reqwest` feature:
-
-```nocompile
-$ cargo build --features reqwest
-```
-
-#### Ureq
-
-Compile with Ureq support using the `ureq` feature:
-
-```nocompile
-$ cargo build --features ureq
-```
-
-#### Custom Client Adapters
-
-It's possible to write your own adapter, by extending
-`roctogen::adapters::Client`. This allows you to handle rate limiting and
-pagination - an example of extending the base adapter is available in the
-example [`min-req-adapter`](/fussybeaver/roctogen/tree/master/examples/min-req-adapter).
-
-### Generating the API
-
-Roctogen's code is largely generated from the GitHub REST API specification
-using the [Swagger OpenAPI
-generator](https://github.com/swagger-api/swagger-codegen) (version 3).
-Building the API requires the Java-based `mvn` tool with JDK 8 installed:
-
-```nocompile
-$ mvn -D org.slf4j.simpleLogger.defaultLogLevel=info clean compiler:compile generate-resources
-```
-
-### Testing
-
-Roctogen supports both WebAssembly and synchronous test environments. Be
-aware that some tests perform real HTTP requests to the GitHub API unless
-mocked.
-
-- **WebAssembly Tests**:
-
-```nocompile
-$ wasm-pack test --firefox --headless
-```
-
-- ** **Synchronous Tests**:
-
-```nocompile
-$ cargo test --features isahc,mercy,squirrel-girl,inertia,starfox --target x86_64-unknown-linux-gnu -- --nocapture
-```
-
-To avoid GitHub's API rate limits during testing, you can use WireMock to
-mock the API locally. Run the following to start WireMock, and run the
-tests with the `--mock` feature:
-
-```nocompile
-$ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock
-rodolpheche/wiremock
-$ cargo test --feature mock,ureq
-```
-
-#### Regenerate the wiremock stubs
-
-If the GitHub API changes, you can regenerate the WireMock stubs:
-
-```nocompile
-$ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock -u (id -u):(id -g) rodolpheche/wiremock --verbose --proxy-all="https://api.github.com" --record-mappings
-```
+This project is licensed under the Apache 2.0 License. 
 
 
-License: Apache-2.0
