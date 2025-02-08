@@ -47,23 +47,30 @@ jobs:
           command: check
           args: --target wasm32-unknown-unknown
 
-      - name: Run cargo check workspace examples
+      - name: Run cargo check example wasm-jwt
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: -p roctogen-common -p roctogen-github-update-issue-bot -p roctogen-jwt-example --target wasm32-unknown-unknown
+          args: --manifest-path examples/auth/wasm-jwt/Cargo.toml --target wasm32-unknown-unknown
 
-      - name: Run cargo check min-req-adapter
+      - name: Run cargo check example github-update-issue-bot
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: -p min-req-adapter
+          args: --manifest-path examples/auth/github-update-issue-bot/Cargo.toml --target wasm32-unknown-unknown
+
+      - name: Run cargo check example min-req-adapter
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --manifest-path examples/min-req-adapter/Cargo.toml
           
-      - name: Run cargo check search
+      - name: Run cargo check example search
         uses: actions-rs/cargo@v1
+        
         with:
           command: check
-          args: -p search
+          args: --manifest-path examples/search/Cargo.toml
           
   test:
     name: Test Suite

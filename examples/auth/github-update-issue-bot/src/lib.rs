@@ -1,5 +1,4 @@
-extern crate cfg_if;
-extern crate wasm_bindgen;
+#![cfg(target_arch = "wasm32")]
 
 mod utils;
 
@@ -9,10 +8,10 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 
-use roctogen::adapters::{wasm, Client};
 use roctogen::api::{self, apps, issues, repos};
-use roctogen::auth::Auth;
 use roctogen::models;
+use roctokit::adapters::{wasm, Client};
+use roctokit::auth::Auth;
 
 use log::{debug, info, trace, Level};
 

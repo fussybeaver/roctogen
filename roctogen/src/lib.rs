@@ -33,8 +33,45 @@
 //! ### Supported endpoints:
 //! 
 //! Roctogen supports a wide range of GitHub API endpoints, including:
-//! {{#apiInfo}}{{#tags}}
-//!   - [{{classname}}](https://docs.rs/roctogen/latest/roctogen/endpoints/{{baseName}}/struct.{{classname}}.html){{/tags}}{{/apiInfo}}
+//! 
+//!   - [Meta](https://docs.rs/roctogen/latest/roctogen/endpoints/meta/struct.Meta.html)
+//!   - [Issues](https://docs.rs/roctogen/latest/roctogen/endpoints/issues/struct.Issues.html)
+//!   - [Licenses](https://docs.rs/roctogen/latest/roctogen/endpoints/licenses/struct.Licenses.html)
+//!   - [Reactions](https://docs.rs/roctogen/latest/roctogen/endpoints/reactions/struct.Reactions.html)
+//!   - [Activity](https://docs.rs/roctogen/latest/roctogen/endpoints/activity/struct.Activity.html)
+//!   - [Projects](https://docs.rs/roctogen/latest/roctogen/endpoints/projects/struct.Projects.html)
+//!   - [Orgs](https://docs.rs/roctogen/latest/roctogen/endpoints/orgs/struct.Orgs.html)
+//!   - [Users](https://docs.rs/roctogen/latest/roctogen/endpoints/users/struct.Users.html)
+//!   - [Apps](https://docs.rs/roctogen/latest/roctogen/endpoints/apps/struct.Apps.html)
+//!   - [RateLimit](https://docs.rs/roctogen/latest/roctogen/endpoints/rate_limit/struct.RateLimit.html)
+//!   - [Repos](https://docs.rs/roctogen/latest/roctogen/endpoints/repos/struct.Repos.html)
+//!   - [SecretScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/secret_scanning/struct.SecretScanning.html)
+//!   - [SecurityAdvisories](https://docs.rs/roctogen/latest/roctogen/endpoints/security_advisories/struct.SecurityAdvisories.html)
+//!   - [Packages](https://docs.rs/roctogen/latest/roctogen/endpoints/packages/struct.Packages.html)
+//!   - [Search](https://docs.rs/roctogen/latest/roctogen/endpoints/search/struct.Search.html)
+//!   - [Classroom](https://docs.rs/roctogen/latest/roctogen/endpoints/classroom/struct.Classroom.html)
+//!   - [Teams](https://docs.rs/roctogen/latest/roctogen/endpoints/teams/struct.Teams.html)
+//!   - [PrivateRegistries](https://docs.rs/roctogen/latest/roctogen/endpoints/private_registries/struct.PrivateRegistries.html)
+//!   - [Oidc](https://docs.rs/roctogen/latest/roctogen/endpoints/oidc/struct.Oidc.html)
+//!   - [Markdown](https://docs.rs/roctogen/latest/roctogen/endpoints/markdown/struct.Markdown.html)
+//!   - [Actions](https://docs.rs/roctogen/latest/roctogen/endpoints/actions/struct.Actions.html)
+//!   - [Migrations](https://docs.rs/roctogen/latest/roctogen/endpoints/migrations/struct.Migrations.html)
+//!   - [CodeSecurity](https://docs.rs/roctogen/latest/roctogen/endpoints/code_security/struct.CodeSecurity.html)
+//!   - [Gists](https://docs.rs/roctogen/latest/roctogen/endpoints/gists/struct.Gists.html)
+//!   - [HostedCompute](https://docs.rs/roctogen/latest/roctogen/endpoints/hosted_compute/struct.HostedCompute.html)
+//!   - [DependencyGraph](https://docs.rs/roctogen/latest/roctogen/endpoints/dependency_graph/struct.DependencyGraph.html)
+//!   - [Copilot](https://docs.rs/roctogen/latest/roctogen/endpoints/copilot/struct.Copilot.html)
+//!   - [Dependabot](https://docs.rs/roctogen/latest/roctogen/endpoints/dependabot/struct.Dependabot.html)
+//!   - [CodesOfConduct](https://docs.rs/roctogen/latest/roctogen/endpoints/codes_of_conduct/struct.CodesOfConduct.html)
+//!   - [Pulls](https://docs.rs/roctogen/latest/roctogen/endpoints/pulls/struct.Pulls.html)
+//!   - [Gitignore](https://docs.rs/roctogen/latest/roctogen/endpoints/gitignore/struct.Gitignore.html)
+//!   - [Git](https://docs.rs/roctogen/latest/roctogen/endpoints/git/struct.Git.html)
+//!   - [CodeScanning](https://docs.rs/roctogen/latest/roctogen/endpoints/code_scanning/struct.CodeScanning.html)
+//!   - [Checks](https://docs.rs/roctogen/latest/roctogen/endpoints/checks/struct.Checks.html)
+//!   - [Billing](https://docs.rs/roctogen/latest/roctogen/endpoints/billing/struct.Billing.html)
+//!   - [Interactions](https://docs.rs/roctogen/latest/roctogen/endpoints/interactions/struct.Interactions.html)
+//!   - [Codespaces](https://docs.rs/roctogen/latest/roctogen/endpoints/codespaces/struct.Codespaces.html)
+//!   - [Emojis](https://docs.rs/roctogen/latest/roctogen/endpoints/emojis/struct.Emojis.html)
 //!
 //! For a full list of supported endpoints, refer to the [API documentation](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html).
 //!
