@@ -9600,7 +9600,7 @@ pub struct CopilotUsageMetricsDay {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CopilotdotcomchatModels {
-    /// Name of the model used for Copilot code completion suggestions. If the default model is used will appear as 'default'.
+    /// Name of the model used for Copilot Chat. If the default model is used will appear as 'default'.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     /// Indicates whether a model is custom or default.
@@ -9619,7 +9619,7 @@ pub struct CopilotdotcomchatModels {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CopilotdotcompullrequestsModels {
-    /// Name of the model used for Copilot code completion suggestions. If the default model is used will appear as 'default'.
+    /// Name of the model used for Copilot pull request summaries. If the default model is used will appear as 'default'.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     /// Indicates whether a model is custom or default.
@@ -9665,7 +9665,7 @@ pub struct CopilotidechatEditors {
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CopilotidechatModels {
-    /// Name of the model used for Copilot code completion suggestions. If the default model is used will appear as 'default'.
+    /// Name of the model used for Copilot Chat. If the default model is used will appear as 'default'.
     #[serde(skip_serializing_if="Option::is_none")]
     pub name: Option<String>,
     /// Indicates whether a model is custom or default.
@@ -28470,6 +28470,8 @@ pub struct Runner {
     pub busy: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")]
     pub labels: Option<Vec<RunnerLabel>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub ephemeral: Option<bool>,
 }
 
 /// Runner Application

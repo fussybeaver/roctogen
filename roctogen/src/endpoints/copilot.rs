@@ -1731,7 +1731,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for organization members
     ///
     /// > [!NOTE]
-    /// > This endpoint is in public preview and is subject to change.
+    /// > This endpoint is closing down. It will be accessible throughout February 2025, but will not return any new data after February 1st.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// across an organization, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -1790,7 +1790,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for organization members
     ///
     /// > [!NOTE]
-    /// > This endpoint is in public preview and is subject to change.
+    /// > This endpoint is closing down. It will be accessible throughout February 2025, but will not return any new data after February 1st.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// across an organization, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -1851,7 +1851,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for a team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in public preview and is subject to change.
+    /// > This endpoint is closing down. It will be accessible throughout February 2025, but will not return any new data after February 1st.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within a team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.
@@ -1913,7 +1913,7 @@ impl<'api, C: Client> Copilot<'api, C> where AdapterError: From<<C as Client>::E
     /// # Get a summary of Copilot usage for a team
     ///
     /// > [!NOTE]
-    /// > This endpoint is in public preview and is subject to change.
+    /// > This endpoint is closing down. It will be accessible throughout February 2025, but will not return any new data after February 1st.
     /// 
     /// You can use this endpoint to see a daily breakdown of aggregated usage metrics for Copilot completions and Copilot Chat in the IDE
     /// for users within a team, with a further breakdown of suggestions, acceptances, and number of active users by editor and language for each day.

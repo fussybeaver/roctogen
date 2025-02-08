@@ -1,14 +1,29 @@
-//! [![crates.io](https://img.shields.io/crates/v/roctogen.svg)](https://crates.io/crates/roctogen)
 //! [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 //! [![docs](https://docs.rs/roctogen/badge.svg)](https://docs.rs/roctogen/)
+//! [![GitHub workflow](https://github.com/fussybeaver/roctogen/actions/workflows/default.yml/badge.svg)](https://github.com/fussybeaver/roctogen/actions/workflows/default.yml)
 //!
 //! # Roctogen: Rust Client Library for GitHub v3 API  
 //!
 //! **Roctogen** is a Rust library generated from the [GitHub REST API OpenAPI
 //! specification](https://github.com/github/rest-api-description/). providing
-//! comprehensive support for the GitHub v3 API. It provides generated models
-//! and endpoints that are intended to be used with the sister library
-//! [**roctokit**](https://crates.io/crates/roctokit), that provides client interfaces.
+//! comprehensive support for the GitHub v3 API. It offers flexible support for
+//! both synchronous and asynchronous HTTP clients, including WebAssembly
+//! compatibility. You can choose between multiple client libraries via Cargo
+//! features, or integrate your own HTTP client handling by extending the
+//! `adapter` subsytem:
+//!
+//!   - `reqwest`: Enables asynchronous requests using the [Reqwest client](https://github.com/seanmonstar/reqwest)
+//!   - `ureq`: Provides synchronous requests with the [Ureq client](https://github.com/algesten/ureq) 
+//!
+//! ## Installation
+//!
+//! To include Roctogen in your project, add it to your `Cargo.toml`:
+//!
+//! ```nocompile
+//! [dependencies]
+//! roctogen = "*"
+//! roctokit = "*"
+//! ```
 //!
 //! ## Documentation
 //!
@@ -16,9 +31,9 @@
 //! - [Endpoints](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html).
 //!
 //! ### Supported endpoints:
-//!
+//! 
 //! Roctogen supports a wide range of GitHub API endpoints, including:
-//!
+//! 
 //!   - [Meta](https://docs.rs/roctogen/latest/roctogen/endpoints/meta/struct.Meta.html)
 //!   - [Issues](https://docs.rs/roctogen/latest/roctogen/endpoints/issues/struct.Issues.html)
 //!   - [Licenses](https://docs.rs/roctogen/latest/roctogen/endpoints/licenses/struct.Licenses.html)
@@ -72,12 +87,59 @@
 //! let auth = Auth::None;
 //! let client = client(&auth).expect("Cannot create new client");
 //! let per_page = api::PerPage::new(10);
-//!
+//! 
 //! let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
 //! params = params.author("fussybeaver").page(2);
 //!
 //! repos::new(&client).list_commits("fussybeaver", "bollard", Some(params));
 //! ```
+//!
+//! ### Asynchronous Requests
+//!
+//! For async support, use the `_async` suffix for method calls. These are
+//! available with the `reqwest`, or WebAssembly targets.
+//!
+//! ### Webassembly
+//!
+//! Roctogen can be compiled to WebAssembly using
+//! [`wasm-pack`](https://github.com/rustwasm/wasm-pack) or by directly
+//! targeting wasm32-unknown-unknown:
+//!
+//! ```nocompile
+//! $ wasm-pack build
+//! ```
+//!
+//! ```nocompile
+//! $ cargo build --target wasm32-unknown-unknown
+//! ```
+//!
+//! ## Client adapters
+//!
+//! Roctogen supports multiple HTTP clients, or you can write your own. Enable
+//! the desired client using Cargo features:
+//!
+//! ### Reqwest
+//!
+//! Compile with Reqwest support using the `reqwest` feature:
+//!
+//! ```nocompile
+//! $ cargo build --features reqwest
+//! ```
+//!
+//! ### Ureq
+//!
+//! Compile with Ureq support using the `ureq` feature:
+//!
+//! ```nocompile
+//! $ cargo build --features ureq
+//! ```
+//!
+//! ### Custom Client Adapters
+//!
+//! It's possible to write your own adapter, by extending
+//! `roctogen::adapters::Client`. This allows you to handle rate limiting and
+//! pagination - an example of extending the base adapter is available in the
+//! example [`min-req-adapter`](/fussybeaver/roctogen/tree/master/examples/min-req-adapter).
 //!
 //! ## Generating the API
 //!
@@ -90,7 +152,46 @@
 //! $ mvn -D org.slf4j.simpleLogger.defaultLogLevel=info clean compiler:compile generate-resources
 //! ```
 //!
-#![allow(missing_docs, unused_imports)]
+//! ## Testing 
+//!
+//! Roctogen supports both WebAssembly and synchronous test environments. Be
+//! aware that some tests perform real HTTP requests to the GitHub API unless
+//! mocked.
+//!
+//! - **WebAssembly Tests**:
+//!
+//! ```nocompile
+//! $ wasm-pack test --firefox --headless 
+//! ```
+//!
+//! - ** **Synchronous Tests**:
+//!
+//! ```nocompile
+//! $ cargo test --features isahc,mercy,squirrel-girl,inertia,starfox --target x86_64-unknown-linux-gnu -- --nocapture
+//! ```
+//!
+//! To avoid GitHub's API rate limits during testing, you can use WireMock to
+//! mock the API locally. Run the following to start WireMock, and run the
+//! tests with the `--mock` feature:
+//!
+//! ```nocompile
+//! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock
+//! rodolpheche/wiremock
+//! $ cargo test --features mock,ureq
+//! ```
+//!
+//! ### Regenerate the wiremock stubs
+//!
+//! If the GitHub API changes, you can regenerate the WireMock stubs:
+//!
+//! ```nocompile
+//! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock -u (id -u):(id -g) rodolpheche/wiremock --verbose --proxy-all="https://api.github.com" --record-mappings
+//! ```
+//!
+#![allow(
+    missing_docs,
+    unused_imports,
+)]
 
 #[macro_use]
 extern crate serde_derive;
@@ -101,10 +202,13 @@ pub mod endpoints;
 pub mod models;
 
 pub mod auth {
-
+    
     #[derive(Clone, Debug)]
     pub enum Auth {
-        Basic { user: String, pass: String },
+        Basic {
+            user: String,
+            pass: String,
+        },
         Token(String),
         Bearer(String),
         None,

@@ -32,7 +32,7 @@ serde_json = {version = "1.0"}
 serde_urlencoded = { version = "0.7" }
 thiserror = "1"
 log = "0.4"
-roctokit = { workspace = true }
+roctokit = { workspace = true, version = "0.13" }
 
 # wasm
 cfg-if = { version = "1" }

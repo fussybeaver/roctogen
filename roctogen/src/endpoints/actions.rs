@@ -1042,6 +1042,8 @@ pub enum ActionsGenerateRunnerJitconfigForOrgError {
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1051,6 +1053,7 @@ impl From<ActionsGenerateRunnerJitconfigForOrgError> for AdapterError {
         let (description, status_code) = match err {
             ActionsGenerateRunnerJitconfigForOrgError::Status404(_) => (String::from("Resource not found"), 404),
             ActionsGenerateRunnerJitconfigForOrgError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsGenerateRunnerJitconfigForOrgError::Status409(_) => (String::from("Conflict"), 409),
             ActionsGenerateRunnerJitconfigForOrgError::Generic { code } => (String::from("Generic"), code)
         };
 
@@ -1069,6 +1072,8 @@ pub enum ActionsGenerateRunnerJitconfigForRepoError {
     Status404(BasicError),
     #[error("Validation failed, or the endpoint has been spammed.")]
     Status422(ValidationErrorSimple),
+    #[error("Conflict")]
+    Status409(BasicError),
     #[error("Status code: {}", code)]
     Generic { code: u16 },
 }
@@ -1078,6 +1083,7 @@ impl From<ActionsGenerateRunnerJitconfigForRepoError> for AdapterError {
         let (description, status_code) = match err {
             ActionsGenerateRunnerJitconfigForRepoError::Status404(_) => (String::from("Resource not found"), 404),
             ActionsGenerateRunnerJitconfigForRepoError::Status422(_) => (String::from("Validation failed, or the endpoint has been spammed."), 422),
+            ActionsGenerateRunnerJitconfigForRepoError::Status409(_) => (String::from("Conflict"), 409),
             ActionsGenerateRunnerJitconfigForRepoError::Generic { code } => (String::from("Generic"), code)
         };
 
@@ -8797,6 +8803,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
             match github_response.status_code() {
                 404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(github_response.to_json_async().await?).into()),
                 422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status409(github_response.to_json_async().await?).into()),
                 code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }.into()),
             }
         }
@@ -8842,6 +8849,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
             match github_response.status_code() {
                 404 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status404(github_response.to_json()?).into()),
                 422 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status422(github_response.to_json()?).into()),
+                409 => Err(ActionsGenerateRunnerJitconfigForOrgError::Status409(github_response.to_json()?).into()),
                 code => Err(ActionsGenerateRunnerJitconfigForOrgError::Generic { code }.into()),
             }
         }
@@ -8886,6 +8894,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
             match github_response.status_code() {
                 404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(github_response.to_json_async().await?).into()),
                 422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(github_response.to_json_async().await?).into()),
+                409 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status409(github_response.to_json_async().await?).into()),
                 code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }.into()),
             }
         }
@@ -8931,6 +8940,7 @@ impl<'api, C: Client> Actions<'api, C> where AdapterError: From<<C as Client>::E
             match github_response.status_code() {
                 404 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status404(github_response.to_json()?).into()),
                 422 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status422(github_response.to_json()?).into()),
+                409 => Err(ActionsGenerateRunnerJitconfigForRepoError::Status409(github_response.to_json()?).into()),
                 code => Err(ActionsGenerateRunnerJitconfigForRepoError::Generic { code }.into()),
             }
         }

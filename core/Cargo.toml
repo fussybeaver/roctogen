@@ -50,7 +50,7 @@ reqwest = { version = "0.12", optional = true, features = [] }
 ureq = { version = "3.0.3", optional = true, features = ["json"] }
 
 [dev-dependencies]
-roctogen = { workspace = true, version = "*" }
+roctogen = { workspace = true }
 
 # wasm 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
