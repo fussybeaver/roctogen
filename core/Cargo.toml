@@ -1,6 +1,6 @@
 [package]
 name = "roctokit"
-version = "0.13.0"
+version = "0.15.0"
 authors = [ "Roctokit contributors" ]
 description = "Github v3 Client interfaces"
 license = "Apache-2.0"

@@ -34,7 +34,7 @@ js-sys = { version = "0.3" }
 web-sys = { version = "0.3", features = [ 'Headers', 'Request', 'RequestInit', 'Response', 'ServiceWorkerGlobalScope', 'Window', 'console' ] }
 console_log = { version = "1", features = ["color"] }
 
-roctokit = { path = "core", version = "0.13" }
+roctokit = { path = "core", version = "0.15" }
 roctogen = { path = "roctogen" }
 
 
