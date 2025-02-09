@@ -13,7 +13,7 @@
 //! `adapter` subsytem:
 //!
 //!   - `reqwest`: Enables asynchronous requests using the [Reqwest client](https://github.com/seanmonstar/reqwest)
-//!   - `ureq`: Provides synchronous requests with the [Ureq client](https://github.com/algesten/ureq) 
+//!   - `ureq`: Provides synchronous requests with the [Ureq client](https://github.com/algesten/ureq)
 //!
 //! ## Installation
 //!
@@ -31,9 +31,9 @@
 //! - [Endpoints](https://docs.rs/roctogen/latest/roctogen/endpoints/index.html).
 //!
 //! ### Supported endpoints:
-//! 
+//!
 //! Roctogen supports a wide range of GitHub API endpoints, including:
-//! 
+//!
 //!   - [Meta](https://docs.rs/roctogen/latest/roctogen/endpoints/meta/struct.Meta.html)
 //!   - [Issues](https://docs.rs/roctogen/latest/roctogen/endpoints/issues/struct.Issues.html)
 //!   - [Licenses](https://docs.rs/roctogen/latest/roctogen/endpoints/licenses/struct.Licenses.html)
@@ -87,7 +87,7 @@
 //! let auth = Auth::None;
 //! let client = client(&auth).expect("Cannot create new client");
 //! let per_page = api::PerPage::new(10);
-//! 
+//!
 //! let mut params: repos::ReposListCommitsParams = per_page.as_ref().into();
 //! params = params.author("fussybeaver").page(2);
 //!
@@ -152,7 +152,7 @@
 //! $ mvn -D org.slf4j.simpleLogger.defaultLogLevel=info clean compiler:compile generate-resources
 //! ```
 //!
-//! ## Testing 
+//! ## Testing
 //!
 //! Roctogen supports both WebAssembly and synchronous test environments. Be
 //! aware that some tests perform real HTTP requests to the GitHub API unless
@@ -161,7 +161,7 @@
 //! - **WebAssembly Tests**:
 //!
 //! ```nocompile
-//! $ wasm-pack test --firefox --headless 
+//! $ wasm-pack test --firefox --headless
 //! ```
 //!
 //! - ** **Synchronous Tests**:
@@ -188,10 +188,7 @@
 //! $ docker run -d --name wiremock -p 8080:8080 -v $PWD/tests/stubs:/home/wiremock -u (id -u):(id -g) rodolpheche/wiremock --verbose --proxy-all="https://api.github.com" --record-mappings
 //! ```
 //!
-#![allow(
-    missing_docs,
-    unused_imports,
-)]
+#![allow(missing_docs, unused_imports)]
 
 #[macro_use]
 extern crate serde_derive;
@@ -202,13 +199,10 @@ pub mod endpoints;
 pub mod models;
 
 pub mod auth {
-    
+
     #[derive(Clone, Debug)]
     pub enum Auth {
-        Basic {
-            user: String,
-            pass: String,
-        },
+        Basic { user: String, pass: String },
         Token(String),
         Bearer(String),
         None,
