@@ -26,7 +26,7 @@ Roctokit provides out-of-the-box support for the following HTTP clients:
 This repository is divided into two main components:
 
 - **[roctogen](./roctogen/README.md)**: A Rust library that provides low-level API bindings and models generated from the [GitHub OpenAPI specification](https://github.com/github/rest-api-description).
-- **[roctokit](./roctokit/README.md)**: A higher-level client built on top of `roctogen`, offering more user-friendly abstractions for interacting with the GitHub API.
+- **[roctokit](./core/README.md)**: A higher-level client built on top of `roctogen`, offering more user-friendly abstractions for interacting with the GitHub API.
 
 ## Getting Started
 
